@@ -12,10 +12,11 @@
     'website': "https://apexive.com",
     'license': "Other OSI approved licence",
     'category': 'Industries',
-    'version': '16.0.0.2',
+    'version': '16.0.0.3',
 
     'depends': [
         'base',
+        'flight',
     ],
 
     'data': [
