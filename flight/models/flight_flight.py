@@ -13,12 +13,9 @@ class FlightFlight(models.Model):
     departure_id = fields.Many2one('flight.aerodrome', required=True, tracking=True)
     arrival_id = fields.Many2one('flight.aerodrome', required=True, tracking=True)
 
-    @api.depends("aircraft_id", "date", "departure_id", "arrival_id")
-    def _compute_display_name(self):
-        for record in self:
-            record.display_name = f"{record.date} / {record.aircraft_id.registration}: {record.departure_id.icao} - {record.arrival_id.icao}"
-
     def name_get(self):
-        return [(record.id, record.display_name) for record in self]
-
-fl
+        result = []
+        for record in self:
+            name = f"{record.date} / {record.aircraft_id.registration}: {record.departure_id.icao} - {record.arrival_id.icao}"
+            result.append((record.id, name))
+        return result

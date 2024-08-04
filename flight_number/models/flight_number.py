@@ -6,15 +6,16 @@ from odoo import models, fields, api
 class FlightNumber(models.Model):
     _name = 'flight.number'
     _description = 'Flight Number'
-    _rec_name = 'display_name'
 
     prefix_id = fields.Many2one('flight.prefix')
     number = fields.Char()
 
-    @api.depends("prefix_id.name", "number")
-    def _compute_display_name(self):
+    def name_get(self):
+        result = []
         for record in self:
-            record.display_name = f"{record.prefix_id.name}{record.number}"
+            name = f"{record.prefix_id.name}{record.number}"
+            result.append((record.id, name))
+        return result
 
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
