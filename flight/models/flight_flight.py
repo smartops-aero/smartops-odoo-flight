@@ -17,3 +17,8 @@ class FlightFlight(models.Model):
     def _compute_display_name(self):
         for record in self:
             record.display_name = f"{record.date} / {record.aircraft_id.registration}: {record.departure_id.icao} - {record.arrival_id.icao}"
+
+    def name_get(self):
+        return [(record.id, record.display_name) for record in self]
+
+fl
