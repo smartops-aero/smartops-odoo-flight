@@ -1,0 +1,13 @@
+id,aircraft_category,name
+class_airplane_sel,airplane,Single-Engine Land
+class_airplane_mel,airplane,Multi-Engine Land
+class_airplane_ses,airplane,Single-Engine Sea
+class_airplane_mes,airplane,Multi-Engine Sea
+class_rotorcraft_helicopter,rotorcraft,Helicopter
+class_rotorcraft_gyroplane,rotorcraft,Gyroplane
+class_glider,glider,Glider
+class_lighter_than_air_balloon,lighter_than_air,Balloon
+class_lighter_than_air_airship,lighter_than_air,Airship
+class_powered_lift,powered_lift,Powered Lift
+class_powered_parachute,powered_parachute,Powered Parachute
+class_weight_shift_control,weight_shift_control,Weight Shift Control

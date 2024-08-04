@@ -1,0 +1,5 @@
+"id","code","sequence","name","description"
+"flight_event_code_to","TO",100000,"Take-off","Aircraft has become airborne"
+"flight_event_code_ld","LD",300000,"Landing","Aircraft touched-down"
+"flight_event_code_ob","OB",080000,"Off-blocks","Aircraft started moving under its own power (or pushed back)"
+"flight_event_code_ib","IB",500000,"In-blocks","Aircraft stopped at the stand with parking brake set"

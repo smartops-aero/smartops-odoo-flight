@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search view for flight.aerodrome -->
+    <record id="view_flight_aerodrome_search" model="ir.ui.view">
+        <field name="name">flight.aerodrome.search</field>
+        <field name="model">flight.aerodrome</field>
+        <field name="arch" type="xml">
+            <search>
+                <!-- Default search filter by ICAO or IATA -->
+                <field name="icao" string="Aerodrome code" filter_domain="['|', ('icao', 'ilike', self), ('iata', 'ilike', self)]"/>
+                <field name="name" string="Name"/>
+                <field name="city" string="City"/>
+                <field name="country_id" string="Country"/>
+
+                <group expand="1" string="Country">
+                    <filter name="country_id" string="Country" context="{'group_by': 'country_id'}"/>
+                </group>
+
+            </search>
+        </field>
+    </record>
+
+    <!-- Aerodrome Tree View -->
+    <record id="view_flight_aerodrome_tree" model="ir.ui.view">
+        <field name="name">flight.aerodrome.tree</field>
+        <field name="model">flight.aerodrome</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="icao"/>
+                <field name="iata"/>
+                <field name="country_id"/>
+                <field name="city"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Aerodrome Form View -->
+    <record id="view_flight_aerodrome_form" model="ir.ui.view">
+        <field name="name">flight.aerodrome.form</field>
+        <field name="model">flight.aerodrome</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="icao"/>
+                            <field name="iata"/>
+                            <field name="lid"/>
+                            <field name="country_id"/>
+                            <field name="city"/>
+                            <field name="municipality"/>
+                        </group>
+                        <group>
+                            <field name="elevation"/>
+                            <field name="tz"/>
+                            <field name="latitude"/>
+                            <field name="longitude"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+
+    <!-- Aerodrome Action Window -->
+    <record id="action_flight_aerodrome_list" model="ir.actions.act_window">
+        <field name="name">Aerodromes</field>
+        <field name="res_model">flight.aerodrome</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

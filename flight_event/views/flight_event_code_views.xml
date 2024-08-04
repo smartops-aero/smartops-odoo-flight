@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Flight Event Code Tree View -->
+    <record id="view_flight_event_code_tree" model="ir.ui.view">
+        <field name="name">flight.event.code.tree</field>
+        <field name="model">flight.event.code</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="sequence" widget="handle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Flight Event Code Form View -->
+    <record id="view_flight_event_code_form" model="ir.ui.view">
+        <field name="name">flight.event.code.form</field>
+        <field name="model">flight.event.code</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="sequence"/>
+                        <field name="name"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Flight Event Code Action Window -->
+    <record id="action_flight_event_code_list" model="ir.actions.act_window">
+        <field name="name">Flight Event Codes</field>
+        <field name="res_model">flight.event.code</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Flight Event Time Tree View -->
+    <record id="view_flight_event_time_tree" model="ir.ui.view">
+        <field name="name">flight.event.time.tree</field>
+        <field name="model">flight.event.time</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="flight_id"/>
+                <field name="time_kind"/>
+                <field name="code_id"/>
+                <field name="time"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Flight Event Time Action Window -->
+    <record id="action_flight_event_time_list" model="ir.actions.act_window">
+        <field name="name">Flight Event Times</field>
+        <field name="res_model">flight.event.time</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_flight_event_time_tree"/>
+        <field name="context">{'search_default_filter_by_aircraft':1, 'search_default_filter_by_date':1, 'search_default_filter_by_flight_number':1}</field>
+    </record>
+</odoo>

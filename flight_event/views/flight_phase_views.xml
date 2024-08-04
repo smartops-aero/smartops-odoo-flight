@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Flight Phase Tree View -->
+    <record id="view_flight_phase_tree" model="ir.ui.view">
+        <field name="name">flight.phase.tree</field>
+        <field name="model">flight.phase</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="start_event_code_id"/>
+                <field name="end_event_code_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Flight Phase Form View -->
+    <record id="view_flight_phase_form" model="ir.ui.view">
+        <field name="name">flight.phase.form</field>
+        <field name="model">flight.phase</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="sequence"/>
+                        <field name="start_event_code_id"/>
+                        <field name="end_event_code_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Flight Phase Action Window -->
+    <record id="action_flight_phase_list" model="ir.actions.act_window">
+        <field name="name">Flight Phases</field>
+        <field name="res_model">flight.phase</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="flight_event.FlightEventTimeMatrixRenderer" owl="1">
+        <table
+                class="o_list_table table table-responsive table-sm table-hover position-relative mb-0 o_list_table_ungrouped table-striped"
+                t-if="eventCodes.length > 0"
+        >
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th t-foreach="timeKinds"
+                        t-as="timeKind"
+                        t-key="timeKind.key"
+                        class="text-center">
+                        <t t-esc="timeKind.label"/>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr t-foreach="eventCodes" t-as="eventCode" t-key="eventCode.code">
+                    <td>
+                        <t t-esc="eventCode.name"/>
+                    </td>
+                    <td t-foreach="timeKinds" t-as="timeKind" t-key="timeKind.key">
+                        <RelativeDateTimePicker
+                                baseDate="props.date"
+                                date="matrix[eventCode.code][timeKind.key].value"
+                                onDateTimeChanged="(value) => this.update(timeKind, eventCode, value)"
+                                readonly="props.readonly"
+                        />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div t-else="" class="alert alert-info">
+            Nothing to display.
+        </div>
+    </t>
+</templates>

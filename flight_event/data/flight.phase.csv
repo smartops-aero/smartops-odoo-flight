@@ -1,0 +1,5 @@
+id,name,sequence,start_event_code_id/id,end_event_code_id/id
+flight_phase_block,Block,100,flight_event_code_ob,flight_event_code_ib
+flight_phase_taxi_out,Taxi-out,009000,flight_event_code_ob,flight_event_code_to
+flight_phase_flight,Flight,100000,flight_event_code_to,flight_event_code_ld
+flight_phase_taxi_in,Taxi-in,110000,flight_event_code_ld,flight_event_code_ib

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Aircraft Tree View -->
+    <record id="view_flight_aircraft_tree" model="ir.ui.view">
+        <field name="name">flight.aircraft.tree</field>
+        <field name="model">flight.aircraft</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="registration"/>
+                <field name="model_id"/>
+                <field name="sn"/>
+                <field name="dom"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Aircraft Form View -->
+    <record id="view_flight_aircraft_form" model="ir.ui.view">
+        <field name="name">flight.aircraft.form</field>
+        <field name="model">flight.aircraft</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="registration"/>
+                        <field name="sn"/>
+                        <field name="model_id"/>
+                        <field name="dom"/>
+                        <field name="mtow_lb"/>
+                        <field name="equipment_type"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Aircraft Search View -->
+    <record id="view_flight_aircraft_search" model="ir.ui.view">
+        <field name="name">flight.aircraft.search</field>
+        <field name="model">flight.aircraft</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="registration"/>
+                <field name="model_id"/>
+                <field name="sn"/>
+                <group expand="0" string="Group By">
+                    <filter string="Model" name="groupby_model" domain="[]" context="{'group_by': 'model_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Aircraft Action Window -->
+    <record id="action_flight_aircraft_list" model="ir.actions.act_window">
+        <field name="name">Aircraft</field>
+        <field name="res_model">flight.aircraft</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Aircraft Class Views -->
+    <record id="view_flight_aircraft_class_tree" model="ir.ui.view">
+        <field name="name">flight.aircraft.class.tree</field>
+        <field name="model">flight.aircraft.class</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="aircraft_category"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_flight_aircraft_class_form" model="ir.ui.view">
+        <field name="name">flight.aircraft.class.form</field>
+        <field name="model">flight.aircraft.class</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="aircraft_category"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_flight_aircraft_class_list" model="ir.actions.act_window">
+        <field name="name">Aircraft Classes</field>
+        <field name="res_model">flight.aircraft.class</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Aircraft Make Views -->
+    <record id="view_flight_aircraft_make_tree" model="ir.ui.view">
+        <field name="name">flight.aircraft.make.tree</field>
+        <field name="model">flight.aircraft.make</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_flight_aircraft_make_form" model="ir.ui.view">
+        <field name="name">flight.aircraft.make.form</field>
+        <field name="model">flight.aircraft.make</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_flight_aircraft_make_list" model="ir.actions.act_window">
+        <field name="name">Aircraft Makes</field>
+        <field name="res_model">flight.aircraft.make</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Aircraft Model Views -->
+    <record id="view_flight_aircraft_model_tree" model="ir.ui.view">
+        <field name="name">flight.aircraft.model.tree</field>
+        <field name="model">flight.aircraft.model</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="make_id"/>
+                <field name="class_id"/>
+                <field name="engine_type"/>
+                <field name="gear_type"/>
+                <field name="code"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_flight_aircraft_model_form" model="ir.ui.view">
+        <field name="name">flight.aircraft.model.form</field>
+        <field name="model">flight.aircraft.model</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="make_id"/>
+                        <field name="class_id"/>
+                        <field name="engine_type"/>
+                        <field name="gear_type"/>
+                        <field name="code"/>
+                        <field name="tag_ids" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_flight_aircraft_model_list" model="ir.actions.act_window">
+        <field name="name">Aircraft Models</field>
+        <field name="res_model">flight.aircraft.model</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Aircraft Model Tag Views -->
+    <record id="view_flight_aircraft_model_tag_tree" model="ir.ui.view">
+        <field name="name">flight.aircraft.model.tag.tree</field>
+        <field name="model">flight.aircraft.model.tag</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_flight_aircraft_model_tag_form" model="ir.ui.view">
+        <field name="name">flight.aircraft.model.tag.form</field>
+        <field name="model">flight.aircraft.model.tag</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_flight_aircraft_model_tag_list" model="ir.actions.act_window">
+        <field name="name">Aircraft Model Tags</field>
+        <field name="res_model">flight.aircraft.model.tag</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

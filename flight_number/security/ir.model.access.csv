@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_flight_number_manager,flight.number.manager,model_flight_number,flight.group_flight_manager,1,1,1,1
+access_flight_number_dispatcher,flight.number.dispatcher,model_flight_number,flight.group_flight_dispatcher,1,1,1,1
+access_flight_number_crew,flight.number.crew,model_flight_number,flight.group_flight_crew,1,0,0,0
+access_flight_number_user,flight.number.user,model_flight_number,flight.group_flight_user,1,0,0,0
+
+access_flight_prefix_manager,flight.prefix.manager,model_flight_prefix,flight.group_flight_manager,1,1,1,1
+access_flight_prefix_dispatcher,flight.prefix.dispatcher,model_flight_prefix,flight.group_flight_dispatcher,1,1,1,1
+access_flight_prefix_crew,flight.prefix.crew,model_flight_prefix,flight.group_flight_crew,1,0,0,0
+access_flight_prefix_user,flight.prefix.user,model_flight_prefix,flight.group_flight_user,1,0,0,0

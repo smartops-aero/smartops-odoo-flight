@@ -1,0 +1,50 @@
+<odoo>
+    <!-- Flight Number Tree View -->
+    <record id="view_flight_number_tree" model="ir.ui.view">
+        <field name="name">flight.number.tree</field>
+        <field name="model">flight.number</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="display_name" string="Flight Number"/>
+                <field name="prefix_id"/>
+                <field name="number"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Flight Number Form View -->
+    <record id="view_flight_number_form" model="ir.ui.view">
+        <field name="name">flight.number.form</field>
+        <field name="model">flight.number</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="prefix_id"/>
+                        <field name="number"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Flight Number Search View -->
+    <record id="view_flight_number_search" model="ir.ui.view">
+        <field name="name">flight.number.search</field>
+        <field name="model">flight.number</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="display_name" string="Flight Number"/>
+                <field name="prefix_id"/>
+                <field name="number"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Flight Number Action Window -->
+    <record id="action_flight_number_list" model="ir.actions.act_window">
+        <field name="name">Flight Numbers</field>
+        <field name="res_model">flight.number</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

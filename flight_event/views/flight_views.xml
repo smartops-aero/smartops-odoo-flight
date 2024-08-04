@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="flight_event_view_flight_form" model="ir.ui.view">
+        <field name="name">flight.ops.flight.form</field>
+        <field name="model">flight.flight</field>
+        <field name="inherit_id" ref="flight.view_flight_form"/>
+        <field name="arch" type="xml">
+            <sheet position="inside">
+                <notebook>
+                    <page string="Times">
+                        <field name="event_time_ids" widget="flight_event_time_matrix" options="{'time_kinds': 'get_time_kinds'}">
+                            <tree>
+                                <field name="flight_id"/>
+                                <field name="time_kind"/>
+                                <field name="code_id"/>
+                                <field name="time"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </sheet>
+        </field>
+    </record>
+
+    <record id="view_flight_tree_inherited" model="ir.ui.view">
+        <field name="name">flight.flight.tree.inherited</field>
+        <field name="model">flight.flight</field>
+        <field name="inherit_id" ref="flight.view_flight_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="block_duration" widget="float_time"/>
+                <field name="flight_duration" widget="float_time"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

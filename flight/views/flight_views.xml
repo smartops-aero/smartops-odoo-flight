@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Flight Tree View -->
+    <record id="view_flight_tree" model="ir.ui.view">
+        <field name="name">flight.flight.tree</field>
+        <field name="model">flight.flight</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date"/>
+                <field name="aircraft_id"/>
+                <field name="departure_id"/>
+                <field name="arrival_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Flight Form View -->
+    <record id="view_flight_form" model="ir.ui.view">
+        <field name="name">flight.flight.form</field>
+        <field name="model">flight.flight</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="date"/>
+                        <field name="aircraft_id"/>
+                        <field name="departure_id"/>
+                        <field name="arrival_id"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Flight Action Window -->
+    <record id="action_flight_flight_list" model="ir.actions.act_window">
+        <field name="name">Flights</field>
+        <field name="res_model">flight.flight</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
