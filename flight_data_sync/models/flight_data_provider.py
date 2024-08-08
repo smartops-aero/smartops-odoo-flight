@@ -120,6 +120,17 @@ class FlightDataSyncSchedule(models.Model):
     last_success = fields.Datetime(string='Last Successful Run')
     next_run = fields.Datetime(string='Next Run', compute='_compute_next_run')
 
+    def action_view_logs(self):
+        self.ensure_one()
+        return {
+            'name': _('Sync Logs'),
+            'res_model': 'flight.data.sync.log',
+            'view_mode': 'tree,form',
+            'type': 'ir.actions.act_window',
+            'domain': [('schedule_id', '=', self.id)],
+            'context': {'default_schedule_id': self.id},
+        }
+
     @api.depends('last_run', 'interval_number', 'interval_type')
     def _compute_next_run(self):
         for schedule in self:
@@ -148,9 +159,12 @@ class FlightDataSyncSchedule(models.Model):
 class FlightDataSyncLog(models.Model):
     _name = "flight.data.sync.log"
     _description = "Flight Data Sync Log"
+    _order = "timestamp desc"
 
     timestamp = fields.Datetime(default=fields.Datetime.now, required=True)
     schedule_id = fields.Many2one('flight.data.sync.schedule', string='Sync Schedule', required=True)
     direction = fields.Selection([('inbound', 'Inbound'), ('outbound', 'Outbound')], required=True)
     headers = fields.Text(string='Headers')
     body = fields.Text(string='Body')
+
+    schedule_name = fields.Char(related='schedule_id.name', string='Schedule Name', store=False, readonly=True)

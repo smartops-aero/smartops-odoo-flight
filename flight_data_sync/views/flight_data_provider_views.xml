@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Tree View -->
+    <!-- Tree View for Flight Data Provider -->
     <record id="view_flight_data_provider_tree" model="ir.ui.view">
         <field name="name">flight.data.provider.tree</field>
         <field name="model">flight.data.provider</field>
@@ -15,7 +15,7 @@
         </field>
     </record>
 
-    <!-- Form View -->
+    <!-- Form View for Flight Data Provider -->
     <record id="view_flight_data_provider_form" model="ir.ui.view">
         <field name="name">flight.data.provider.form</field>
         <field name="model">flight.data.provider</field>
@@ -36,7 +36,7 @@
                     <group>
                         <group>
                             <field name="company_id" groups="base.group_multi_company"/>
-                            <field name="service" />
+                            <field name="service"/>
                         </group>
                         <group>
                             <field name="api_base"/>
@@ -55,6 +55,7 @@
                                     <field name="last_run"/>
                                     <field name="next_run"/>
                                     <field name="active" widget="boolean_toggle"/>
+                                    <button name="action_view_logs" string="View Logs" type="object" icon="fa-list"/>
                                 </tree>
                             </field>
                         </page>
@@ -68,7 +69,7 @@
         </field>
     </record>
 
-    <!-- Search View -->
+    <!-- Search View for Flight Data Provider -->
     <record id="view_flight_data_provider_search" model="ir.ui.view">
         <field name="name">flight.data.provider.search</field>
         <field name="model">flight.data.provider</field>
@@ -85,7 +86,7 @@
         </field>
     </record>
 
-    <!-- Action -->
+    <!-- Action for Flight Data Provider -->
     <record id="action_flight_data_provider" model="ir.actions.act_window">
         <field name="name">Flight Data Providers</field>
         <field name="res_model">flight.data.provider</field>
@@ -99,5 +100,47 @@
                 Flight data providers allow you to sync flight information from external sources.
             </p>
         </field>
+    </record>
+
+    <!-- Tree View for Flight Data Sync Logs -->
+    <record id="view_flight_data_sync_log_tree" model="ir.ui.view">
+        <field name="name">flight.data.sync.log.tree</field>
+        <field name="model">flight.data.sync.log</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="schedule_name"/>
+                <field name="timestamp"/>
+                <field name="direction"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View for Flight Data Sync Logs -->
+    <record id="view_flight_data_sync_log_form" model="ir.ui.view">
+        <field name="name">flight.data.sync.log.form</field>
+        <field name="model">flight.data.sync.log</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="schedule_id"/>
+                        <field name="timestamp"/>
+                        <field name="direction"/>
+                        <field name="headers"/>
+                        <field name="body"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for Flight Data Sync Logs -->
+    <record id="action_flight_data_sync_log" model="ir.actions.act_window">
+        <field name="name">Sync Logs</field>
+        <field name="res_model">flight.data.sync.log</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_flight_data_sync_log_tree"/>
+        <field name="domain">[('schedule_id', '=', active_id)]</field>
+        <field name="context">{'default_schedule_id': active_id}</field>
     </record>
 </odoo>
