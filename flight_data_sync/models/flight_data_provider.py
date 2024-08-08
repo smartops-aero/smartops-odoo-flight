@@ -78,9 +78,10 @@ class FlightDataProvider(models.Model):
 
     def process_data(self, schedule, data):
         Model = self.env[schedule.model]
+        id_fields = [Model._rec_name]
         for item in data:
-            # Assume each item has a unique identifier field 'external_id'
-            existing = Model.search([('external_id', '=', item['external_id'])])
+            search_domain = [(f, '=', item.get(f, False)) for f in item.pop('_id_fields', False) or id_fields]
+            existing = Model.search(search_domain, limit=1)
             if existing:
                 existing.write(item)
             else:
