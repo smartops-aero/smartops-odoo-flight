@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_flight_data_sync_wizard" model="ir.actions.act_window">
+        <field name="name">Sync Flight Data</field>
+        <field name="res_model">flight.data.sync.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
