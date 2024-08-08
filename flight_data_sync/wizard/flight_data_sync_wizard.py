@@ -7,7 +7,7 @@ class FlightDataSyncWizard(models.TransientModel):
 
     provider_id = fields.Many2one('flight.data.provider', string="Provider", required=True)
     schedule_ids = fields.Many2many('flight.data.sync.schedule', string="Schedules to Sync",
-                                    required=True, domain=['|', ('active', '=', True), ('active', '=', False)])
+                                    required=True, context={'active_test': False})
 
     @api.onchange('provider_id')
     def _onchange_provider_id(self):
