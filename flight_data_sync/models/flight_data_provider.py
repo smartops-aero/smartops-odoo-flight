@@ -56,12 +56,12 @@ class FlightDataProvider(models.Model):
             kwargs = safe_eval(schedule.kwargs or "{}")
 
             # Receive data
-            received_data = self._receive_flight_data(schedule, **kwargs)
-            self._process_received_flight_data(schedule, received_data)
+            received_data = self.receive_data(schedule, **kwargs)
+            self.process_data(schedule, received_data)
 
             # Send data
-            data_to_send = self._prepare_data_to_send(schedule, **kwargs)
-            self._send_flight_data(schedule, data_to_send, **kwargs)
+            data_to_send = self.prepare_data(schedule, **kwargs)
+            self.send_data(schedule, data_to_send, **kwargs)
 
             schedule.write({
                 'last_run': fields.Datetime.now(),
@@ -72,11 +72,11 @@ class FlightDataProvider(models.Model):
             schedule.write({'last_run': fields.Datetime.now()})
             self.message_post(body=_("Error in schedule %s: %s") % (schedule.name, str(e)))
 
-    def _receive_flight_data(self, schedule, **kwargs):
+    def receive_data(self, schedule, **kwargs):
         # This method should be implemented in provider-specific subclasses
         return []
 
-    def _process_received_flight_data(self, schedule, data):
+    def process_data(self, schedule, data):
         Model = self.env[schedule.model]
         for item in data:
             # Assume each item has a unique identifier field 'external_id'
@@ -86,11 +86,11 @@ class FlightDataProvider(models.Model):
             else:
                 Model.create(item)
 
-    def _prepare_data_to_send(self, schedule, **kwargs):
+    def prepare_data(self, schedule, **kwargs):
         # This method should be implemented in provider-specific subclasses
         return []
 
-    def _send_flight_data(self, schedule, data, **kwargs):
+    def send_data(self, schedule, data, **kwargs):
         # This method should be implemented in provider-specific subclasses
         pass
 
