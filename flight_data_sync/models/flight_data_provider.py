@@ -143,3 +143,14 @@ class FlightDataSyncSchedule(models.Model):
     def _onchange_model(self):
         if self.model:
             self.name = dict(self.env['flight.data.provider']._selection_sync_model())[self.model]
+
+
+class FlightDataSyncLog(models.Model):
+    _name = "flight.data.sync.log"
+    _description = "Flight Data Sync Log"
+
+    timestamp = fields.Datetime(default=fields.Datetime.now, required=True)
+    schedule_id = fields.Many2one('flight.data.sync.schedule', string='Sync Schedule', required=True)
+    direction = fields.Selection([('inbound', 'Inbound'), ('outbound', 'Outbound')], required=True)
+    headers = fields.Text(string='Headers')
+    body = fields.Text(string='Body')
