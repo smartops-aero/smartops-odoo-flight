@@ -3,7 +3,7 @@
     "version": "16.0.0.1",
     "author": "Apexive Solutions LLC",
     "website": "https://apexive.com",
-    "license": "AGPL-3",
+    'license': "Other OSI approved licence",
     "category": "Industries",
     "summary": "Flight data synchronization from various providers",
     "depends": [
