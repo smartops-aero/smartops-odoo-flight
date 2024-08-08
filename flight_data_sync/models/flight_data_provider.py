@@ -6,18 +6,11 @@ from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
 from dateutil.relativedelta import relativedelta
 
+
 class FlightDataProvider(models.Model):
     _name = "flight.data.provider"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _description = "Flight Data Provider"
-
-    SUPPORTED_SYNC_MODELS = {
-        'flight.flight': 'Flights',
-        'flight.crew': 'Crew',
-        'flight.aerodrome': 'Aerodromes',
-        'flight.aircraft': 'Aircraft',
-        # Add more models as needed
-    }
 
     name = fields.Char(required=True)
     service = fields.Selection(
@@ -29,7 +22,10 @@ class FlightDataProvider(models.Model):
     api_base = fields.Char()
     username = fields.Char()
     password = fields.Char()
-    schedule_ids = fields.One2many('flight.data.sync.schedule', 'provider_id', string='Sync Schedules')
+    schedule_ids = fields.One2many(
+        'flight.data.sync.schedule', 'provider_id',
+        string='Sync Schedules', context={'active_test': False},
+    )
 
     @api.model
     def _get_available_services(self):
@@ -39,6 +35,20 @@ class FlightDataProvider(models.Model):
     @api.model
     def _selection_service(self):
         return self._get_available_services() + [("dummy", "Dummy")]
+
+    @api.model
+    def _get_available_sync_models(self):
+        """Hook for extension"""
+        return [
+            ('flight.flight', 'Flights'),
+            ('flight.crew', 'Crew'),
+            ('flight.aerodrome', 'Aerodromes'),
+            ('flight.aircraft', 'Aircraft'),
+        ]
+
+    @api.model
+    def _selection_sync_model(self):
+        return self._get_available_sync_models()
 
     def _sync(self, schedule):
         self.ensure_one()
@@ -67,7 +77,7 @@ class FlightDataProvider(models.Model):
         return []
 
     def _process_received_flight_data(self, schedule, data):
-        Model = self.env[schedule.model_id.model]
+        Model = self.env[schedule.model]
         for item in data:
             # Assume each item has a unique identifier field 'external_id'
             existing = Model.search([('external_id', '=', item['external_id'])])
@@ -91,10 +101,11 @@ class FlightDataSyncSchedule(models.Model):
 
     name = fields.Char(required=True)
     provider_id = fields.Many2one('flight.data.provider', string='Provider', required=True, ondelete='cascade')
-    model_id = fields.Many2one('ir.model', string='Flight Data Model', required=True,
-                               domain="[('model', 'in', parent.SUPPORTED_SYNC_MODELS.keys())]",
-                               ondelete='cascade')
-    model_name = fields.Char(related='model_id.model', string='Model Name', readonly=True)
+    model = fields.Selection(
+        selection=lambda self: self.env['flight.data.provider']._selection_sync_model(),
+        string='Flight Data Model',
+        required=True
+    )
     active = fields.Boolean(default=True)
     interval_number = fields.Integer(string="Run every", default=1, required=True)
     interval_type = fields.Selection([
@@ -127,15 +138,7 @@ class FlightDataSyncSchedule(models.Model):
                 except Exception as e:
                     raise ValidationError(_("Invalid kwargs: %s") % str(e))
 
-    @api.onchange('model_id')
-    def _onchange_model_id(self):
-        if self.model_id and self.model_id.model not in self.provider_id.SUPPORTED_SYNC_MODELS:
-            return {'warning': {
-                'title': _("Warning"),
-                'message': _("The selected model is not supported for flight data synchronization.")
-            }}
-
-    @api.model
-    def get_supported_models(self):
-        provider = self.env['flight.data.provider'].search([], limit=1)
-        return [(model, name) for model, name in provider.SUPPORTED_SYNC_MODELS.items()]
+    @api.onchange('model')
+    def _onchange_model(self):
+        if self.model:
+            self.name = dict(self.env['flight.data.provider']._selection_sync_model())[self.model]

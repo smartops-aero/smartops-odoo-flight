@@ -47,14 +47,14 @@
                     <notebook>
                         <page string="Sync Schedules">
                             <field name="schedule_ids">
-                                <tree>
+                                <tree decoration-muted="not active">
                                     <field name="name"/>
-                                    <field name="model_id"/>
+                                    <field name="model"/>
                                     <field name="interval_number"/>
                                     <field name="interval_type"/>
                                     <field name="last_run"/>
                                     <field name="next_run"/>
-                                    <field name="active"/>
+                                    <field name="active" widget="boolean_toggle"/>
                                 </tree>
                             </field>
                         </page>

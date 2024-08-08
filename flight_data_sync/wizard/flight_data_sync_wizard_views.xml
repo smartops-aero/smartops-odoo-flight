@@ -6,7 +6,12 @@
             <form>
                 <group>
                     <field name="provider_id"/>
-                    <field name="schedule_ids" widget="many2many_tags"/>
+                    <field name="schedule_ids" widget="many2many_tags" options="{'no_create': True}" context="{'active_test': False}">
+                        <tree>
+                            <field name="name"/>
+                            <field name="active" invisible="1"/>
+                        </tree>
+                    </field>
                 </group>
                 <footer>
                     <button name="action_sync" string="Sync Data" type="object" class="btn-primary"/>
@@ -15,5 +20,4 @@
             </form>
         </field>
     </record>
-
 </odoo>
