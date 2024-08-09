@@ -9,7 +9,7 @@
             Adds a flight number and flight prefix fields to Flight module.""",
 
     'author': "Apexive Solutions LLC",
-    'website': "https://apexive.com",
+    'website': "https://github.com/smartops-aero/smartops-odoo-flight",
     'license': "Other OSI approved licence",
     'category': 'Industries',
     'version': '16.0.0.3',
