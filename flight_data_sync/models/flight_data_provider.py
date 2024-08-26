@@ -35,6 +35,9 @@ class FlightDataProvider(models.Model):
         string='Sync Schedules', context={'active_test': False},
     )
 
+    user_id = fields.Many2one('res.users', string='Run As User',
+                              help="If set, schedules will run as this user. Otherwise, they will run as the current user.")
+
     @api.model
     def _get_available_services(self):
         """Hook for extension"""
@@ -71,13 +74,18 @@ class FlightDataProvider(models.Model):
         try:
             kwargs = safe_eval(schedule.kwargs or "{}")
 
+            # Determine which environment to use
+            env = self.env
+            if self.user_id:
+                env = self.with_user(self.user_id).env
+
             # Receive data
-            received_data = self.receive_data(schedule, **kwargs)
-            self.process_data(schedule, received_data)
+            received_data = env['flight.data.provider'].receive_data(schedule, **kwargs)
+            env['flight.data.provider'].process_data(schedule, received_data)
 
             # Send data
-            data_to_send = self.prepare_data(schedule, **kwargs)
-            self.send_data(schedule, data_to_send, **kwargs)
+            data_to_send = env['flight.data.provider'].prepare_data(schedule, **kwargs)
+            env['flight.data.provider'].send_data(schedule, data_to_send, **kwargs)
 
             schedule.write({
                 'last_run': fields.Datetime.now(),
@@ -87,6 +95,7 @@ class FlightDataProvider(models.Model):
         except Exception as e:
             schedule.write({'last_run': fields.Datetime.now()})
             self.message_post(body=_("Error in schedule %s: %s") % (schedule.name, str(e)))
+
 
     def _dispatch(self, schedule, operation, *args, **kwargs):
         method_name = f"_{operation}_{schedule.model.replace('flight.', '')}_data"
