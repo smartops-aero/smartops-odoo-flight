@@ -6,11 +6,9 @@ from functools import partial
 import logging
 import traceback
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from odoo.tools.safe_eval import safe_eval
 from dateutil.relativedelta import relativedelta
-
-from src.odoo.odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
