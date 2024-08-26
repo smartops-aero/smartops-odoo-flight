@@ -73,8 +73,9 @@ class FlightAircraftModel(models.Model):
 class FlightAircraft(models.Model):
     _name = 'flight.aircraft'
     _description = 'Aircraft'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'avatar.mixin']
     _rec_name = 'registration'
+    _avatar_name_field = 'registration'
 
     registration = fields.Char("Aircraft registration", tracking=True)
     model_id = fields.Many2one("flight.aircraft.model", tracking=True)
@@ -92,4 +93,3 @@ class FlightAircraft(models.Model):
     _sql_constraints = [
         ("registration_unique", "unique(registration)", "Aircraft with this registration number already exists!")
     ]
-
