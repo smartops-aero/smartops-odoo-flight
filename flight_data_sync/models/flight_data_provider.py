@@ -1,10 +1,18 @@
 # Copyright 2023 Apexive Solutions LLC
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+from functools import partial
+
+import logging
+import traceback
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
 from dateutil.relativedelta import relativedelta
+
+from src.odoo.odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class FlightDataProvider(models.Model):
@@ -47,8 +55,16 @@ class FlightDataProvider(models.Model):
         ]
 
     @api.model
+    def _get_available_sync_operations(self):
+        """Hook for extension"""
+        return ['receive', 'process', 'prepare', 'send']
+
+    @api.model
     def _selection_sync_model(self):
         return self._get_available_sync_models()
+
+    def get_client(self, schedule):
+        return self._raise_not_implemented("get_client")
 
     def _sync(self, schedule):
         self.ensure_one()
@@ -72,28 +88,93 @@ class FlightDataProvider(models.Model):
             schedule.write({'last_run': fields.Datetime.now()})
             self.message_post(body=_("Error in schedule %s: %s") % (schedule.name, str(e)))
 
+    def _dispatch(self, schedule, operation, *args, **kwargs):
+        method_name = f"_{operation}_{schedule.model.replace('flight.', '')}_data"
+        method = getattr(self, method_name, False)
+
+        if not method:
+            raise NotImplementedError(f"Method '{method_name}' not implemented")
+
+        self.ensure_one()
+        client = self.get_client(schedule)
+
+        try:
+            return partial(method, client, schedule, *args, **kwargs)()
+        except Exception as e:
+            print(traceback.format_exc())
+            _logger.error(f"Error trying to {operation} {schedule.model} data for {self.service}: %s", e)
+            raise UserError(_(f"Error trying to {operation} {schedule.model} data for {self.service}: %s") % e)
+
     def receive_data(self, schedule, **kwargs):
-        # This method should be implemented in provider-specific subclasses
-        return []
+        return self._dispatch(schedule, "receive", **kwargs)
 
     def process_data(self, schedule, data):
-        Model = self.env[schedule.model]
-        id_fields = [Model._rec_name]
-        for item in data:
-            search_domain = [(f, '=', item.get(f, False)) for f in item.pop('_id_fields', False) or id_fields]
-            existing = Model.search(search_domain, limit=1)
-            if existing:
-                existing.write(item)
-            else:
-                Model.create(item)
+        return self._dispatch(schedule, "process", data)
 
     def prepare_data(self, schedule, **kwargs):
-        # This method should be implemented in provider-specific subclasses
-        return []
+        return self._dispatch(schedule, "prepare", **kwargs)
 
     def send_data(self, schedule, data, **kwargs):
-        # This method should be implemented in provider-specific subclasses
-        pass
+        return self._dispatch(schedule, "send", data, **kwargs)
+
+    def _update_or_create(self, model, search_domain, values):
+        record = model.search(search_domain, limit=1)
+        if not record:
+            return model.create(values)
+        record.ensure_one()
+        record.write(values)
+        return record
+
+    def _raise_not_implemented(self, method_name):
+        raise NotImplementedError(f"Method '{method_name}' not implemented for service {self.service[1]}")
+
+    def _receive_flight_data(self, client, schedule, *args, **kwargs):
+        self._raise_not_implemented("_receive_flight_data")
+
+    def _process_flight_data(self, client, schedule, data, *args, **kwargs):
+        self._raise_not_implemented("_process_flight_data")
+
+    def _prepare_flight_data(self, client, schedule, *args, **kwargs):
+        self._raise_not_implemented("_prepare_flight_data")
+
+    def _send_flight_data(self, client, schedule, data, *args, **kwargs):
+        self._raise_not_implemented("_send_flight_data")
+
+    def _receive_aerodrome_data(self, client, schedule, *args, **kwargs):
+        self._raise_not_implemented("_receive_aerodrome_data")
+
+    def _process_aerodrome_data(self, client, schedule, data, *args, **kwargs):
+        self._raise_not_implemented("_process_aerodrome_data")
+
+    def _prepare_aerodrome_data(self, client, schedule, *args, **kwargs):
+        self._raise_not_implemented("_prepare_aerodrome_data")
+
+    def _send_aerodrome_data(self, client, schedule, data, *args, **kwargs):
+        self._raise_not_implemented("_send_aerodrome_data")
+
+    def _receive_crew_data(self, client, schedule, *args, **kwargs):
+        self._raise_not_implemented("_receive_crew_data")
+
+    def _process_crew_data(self, client, schedule, data, *args, **kwargs):
+        self._raise_not_implemented("_process_crew_data")
+
+    def _prepare_crew_data(self, client, schedule, *args, **kwargs):
+        self._raise_not_implemented("_prepare_crew_data")
+
+    def _send_crew_data(self, client, schedule, data, *args, **kwargs):
+        self._raise_not_implemented("_send_crew_data")
+
+    def _receive_aircraft_data(self, client, schedule, *args, **kwargs):
+        self._raise_not_implemented("_receive_aircraft_data")
+
+    def _process_aircraft_data(self, client, schedule, data, *args, **kwargs):
+        self._raise_not_implemented("_process_aircraft_data")
+
+    def _prepare_aircraft_data(self, client, schedule, *args, **kwargs):
+        self._raise_not_implemented("_prepare_aircraft_data")
+
+    def _send_aircraft_data(self, client, schedule, data, *args, **kwargs):
+        self._raise_not_implemented("_send_aircraft_data")
 
 
 class FlightDataSyncSchedule(models.Model):
