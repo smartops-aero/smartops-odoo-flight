@@ -10,7 +10,7 @@
 
     'author': "Apexive Solutions LLC",
     'website': "https://github.com/smartops-aero/smartops-odoo-flight",
-    'license': "Other OSI approved licence",
+    'license': "LGPLv3",
     'category': 'Industries',
     'version': '16.0.0.3',
 
