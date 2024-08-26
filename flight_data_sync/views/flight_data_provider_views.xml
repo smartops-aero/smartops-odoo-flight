@@ -37,6 +37,7 @@
                         <group>
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="service"/>
+                            <field name="user_id"/>
                         </group>
                         <group>
                             <field name="api_base"/>

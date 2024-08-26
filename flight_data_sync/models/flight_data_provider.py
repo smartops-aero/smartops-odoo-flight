@@ -70,29 +70,32 @@ class FlightDataProvider(models.Model):
         return self._raise_not_implemented("get_client")
 
     def _sync(self, schedule):
+        _logger.info(f"Starting _sync for provider: {self.name}")
         self.ensure_one()
+
         try:
             kwargs = safe_eval(schedule.kwargs or "{}")
 
-            # Determine which environment to use
-            env = self.env
+            # Use sudo() if user_id is set, otherwise use self
+            provider = self
             if self.user_id:
-                env = self.with_user(self.user_id).env
+                provider = provider.sudo().with_user(self.user_id)
 
             # Receive data
-            received_data = env['flight.data.provider'].receive_data(schedule, **kwargs)
-            env['flight.data.provider'].process_data(schedule, received_data)
+            received_data = provider.receive_data(schedule, **kwargs)
+            provider.process_data(schedule, received_data)
 
             # Send data
-            data_to_send = env['flight.data.provider'].prepare_data(schedule, **kwargs)
-            env['flight.data.provider'].send_data(schedule, data_to_send, **kwargs)
+            data_to_send = provider.prepare_data(schedule, **kwargs)
+            provider.send_data(schedule, data_to_send, **kwargs)
 
             schedule.write({
                 'last_run': fields.Datetime.now(),
                 'last_success': fields.Datetime.now(),
             })
-            self.message_post(body=_("Data sync successful for schedule: %s") % schedule.name)
+            provider.message_post(body=_("Data sync successful for schedule: %s") % schedule.name)
         except Exception as e:
+            _logger.exception(f"Error in _sync method: {str(e)}")
             schedule.write({'last_run': fields.Datetime.now()})
             self.message_post(body=_("Error in schedule %s: %s") % (schedule.name, str(e)))
 
