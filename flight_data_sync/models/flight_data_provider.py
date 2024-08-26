@@ -213,6 +213,13 @@ class FlightDataSyncSchedule(models.Model):
     last_success = fields.Datetime(string='Last Successful Run')
     next_run = fields.Datetime(string='Next Run', compute='_compute_next_run')
 
+    def name_get(self):
+        result = []
+        for record in self:
+            name = f"{record.provider_id.name} ({record.provider_id.service}): {record.name}"
+            result.append((record.id, name))
+        return result
+
     def action_view_logs(self):
         self.ensure_one()
         return {
