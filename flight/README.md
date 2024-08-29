@@ -48,7 +48,7 @@ The module provides tree, form, and search views for flights, aircraft, and aero
 
 ## Extending the Module
 
-This base module is designed to be extended. See the Flight Operations Management (`flight_ops`) module for an example of how to add more advanced functionality.
+This base module is designed to be extended. See the Flight Events (`flight_event`) and Flight Operations Management (`flight_ops`) modules for an example of how to add more advanced functionality.
 
 ## Support
 
