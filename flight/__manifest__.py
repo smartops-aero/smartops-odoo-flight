@@ -21,7 +21,9 @@
     'license': "LGPL-3",
     'category': 'Industries',
     'version': '16.0.1.0',
-
+    'images': [
+        'static/description/banner.jpeg',
+    ],
     'depends': [
         'base',
         'mail',

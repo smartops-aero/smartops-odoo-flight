@@ -41,6 +41,9 @@
         'data/flight.phase.csv',
         'views/menu.xml',
     ],
+    'images': [
+        'static/description/banner.jpeg',
+    ],
 
     'application': False,
     'installable': True,
