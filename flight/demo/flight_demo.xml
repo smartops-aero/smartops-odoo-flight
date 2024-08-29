@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Aircraft Makes -->
+        <record id="aircraft_make_boeing" model="flight.aircraft.make">
+            <field name="name">Boeing</field>
+        </record>
+        <record id="aircraft_make_airbus" model="flight.aircraft.make">
+            <field name="name">Airbus</field>
+        </record>
+
+        <!-- Aircraft Models -->
+        <record id="aircraft_model_b737" model="flight.aircraft.model">
+            <field name="name">Boeing 737</field>
+            <field name="make_id" ref="aircraft_make_boeing"/>
+            <field name="engine_type">turbofan</field>
+            <field name="gear_type">retractable_tricycle</field>
+            <field name="code">B737</field>
+        </record>
+        <record id="aircraft_model_a320" model="flight.aircraft.model">
+            <field name="name">Airbus A320</field>
+            <field name="make_id" ref="aircraft_make_airbus"/>
+            <field name="engine_type">turbofan</field>
+            <field name="gear_type">retractable_tricycle</field>
+            <field name="code">A320</field>
+        </record>
+
+        <!-- Aircraft -->
+        <record id="aircraft_b737_1" model="flight.aircraft">
+            <field name="registration">N12345</field>
+            <field name="model_id" ref="aircraft_model_b737"/>
+            <field name="sn">12345</field>
+            <field name="dom">2015-01-01</field>
+            <field name="mtow_lb">174200</field>
+        </record>
+        <record id="aircraft_a320_1" model="flight.aircraft">
+            <field name="registration">G-ABCD</field>
+            <field name="model_id" ref="aircraft_model_a320"/>
+            <field name="sn">54321</field>
+            <field name="dom">2018-06-15</field>
+            <field name="mtow_lb">172000</field>
+        </record>
+
+        <!-- Aerodromes -->
+        <record id="aerodrome_jfk" model="flight.aerodrome">
+            <field name="name">John F. Kennedy International Airport</field>
+            <field name="icao">KJFK</field>
+            <field name="iata">JFK</field>
+            <field name="city">New York</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="tz">America/New_York</field>
+            <field name="latitude">40.6413</field>
+            <field name="longitude">-73.7781</field>
+        </record>
+        <record id="aerodrome_lhr" model="flight.aerodrome">
+            <field name="name">London Heathrow Airport</field>
+            <field name="icao">EGLL</field>
+            <field name="iata">LHR</field>
+            <field name="city">London</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="tz">Europe/London</field>
+            <field name="latitude">51.4700</field>
+            <field name="longitude">-0.4543</field>
+        </record>
+
+        <!-- Flights -->
+        <record id="flight_1" model="flight.flight">
+            <field name="date" eval="(DateTime.today() + relativedelta(days=1)).strftime('%Y-%m-%d')"/>
+            <field name="aircraft_id" ref="aircraft_b737_1"/>
+            <field name="departure_id" ref="aerodrome_jfk"/>
+            <field name="arrival_id" ref="aerodrome_lhr"/>
+        </record>
+        <record id="flight_2" model="flight.flight">
+            <field name="date" eval="(DateTime.today() + relativedelta(days=2)).strftime('%Y-%m-%d')"/>
+            <field name="aircraft_id" ref="aircraft_a320_1"/>
+            <field name="departure_id" ref="aerodrome_lhr"/>
+            <field name="arrival_id" ref="aerodrome_jfk"/>
+        </record>
+    </data>
+</odoo>

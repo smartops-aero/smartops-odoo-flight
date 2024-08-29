@@ -20,11 +20,14 @@
     'website': "https://github.com/smartops-aero/smartops-odoo-flight",
     'license': "LGPL-3",
     'category': 'Industries',
-    'version': '16.0.0.3',
+    'version': '16.0.1.0',
 
     'depends': [
         'base',
         'mail',
+    ],
+    'demo': [
+        'demo/flight_demo.xml',
     ],
 
     'data': [

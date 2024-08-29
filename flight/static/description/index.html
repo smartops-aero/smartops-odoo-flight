@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Management Module</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #00529b;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li:before {
+            content: "✈️ ";
+        }
+        .note {
+            background-color: #f0f0f0;
+            border-left: 5px solid #00529b;
+            padding: 10px;
+            margin: 20px 0;
+        }
+        .logo {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+        .project-info {
+            background-color: #e6f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Flight Management Module</h1>
+
+<div class="project-info">
+    <p><strong>This module is part of the smartops.aero project developed by Apexive.</strong></p>
+</div>
+
+<p>The Flight Management module provides a comprehensive solution for managing flights, aircraft, and aerodromes in Odoo. This base module offers essential models and views that serve as a foundation for more advanced flight management functionality.</p>
+
+<h2>Key Features</h2>
+<ul class="feature-list">
+    <li>Flight management with departure and arrival information</li>
+    <li>Aircraft registration and model tracking</li>
+    <li>Aerodrome (airport) management with detailed information</li>
+    <li>Integration with Odoo's messaging system for collaborative management</li>
+</ul>
+
+<h2>Module Components</h2>
+<h3>Flights</h3>
+<p>Manage individual flights with details such as:</p>
+<ul>
+    <li>Flight date</li>
+    <li>Aircraft assignment</li>
+    <li>Departure and arrival aerodromes</li>
+</ul>
+
+<h3>Aircraft</h3>
+<p>Keep track of your fleet with information including:</p>
+<ul>
+    <li>Registration number</li>
+    <li>Aircraft model</li>
+    <li>Manufacturing details</li>
+    <li>Equipment type classification</li>
+</ul>
+
+<h3>Aerodromes</h3>
+<p>Maintain a database of airports with details such as:</p>
+<ul>
+    <li>ICAO and IATA codes</li>
+    <li>Geographic location (latitude and longitude)</li>
+    <li>Time zone information</li>
+</ul>
+
+<div class="note">
+    <strong>Note:</strong> The aerodrome data is not loaded by default due to its large size. To populate your aerodrome database, please follow the instructions in the module's README file.
+</div>
+
+<h2>Integration and Extensibility</h2>
+<p>This module is designed to integrate seamlessly with other Odoo modules and can be extended to include more advanced features such as:</p>
+<ul>
+    <li>Flight scheduling and operations management</li>
+    <li>Crew management and assignment</li>
+    <li>Maintenance tracking for aircraft</li>
+    <li>Financial aspects of flight operations</li>
+</ul>
+
+<p>For more advanced functionality, please check out our Flight Operations Management (flight_ops) module.</p>
+
+<h2>About smartops.aero</h2>
+<p>smartops.aero is a comprehensive aviation management solution developed by Apexive. It aims to streamline and optimize various aspects of flight operations, maintenance, and management for aviation businesses.</p>
+
+<h2>Support</h2>
+<p>For any questions or support needs, please contact our support team or visit our GitHub repository at:</p>
+<p><a href="https://github.com/smartops-aero/smartops-odoo-flight">https://github.com/smartops-aero/smartops-odoo-flight</a></p>
+
+<p>For more information about Apexive and our other projects, visit:</p>
+<p><a href="https://apexive.com">https://apexive.com</a></p>
+</body>
+</html>
