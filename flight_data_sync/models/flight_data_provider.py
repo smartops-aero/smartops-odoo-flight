@@ -97,7 +97,6 @@ class FlightDataProvider(models.Model):
             schedule.write({'last_run': fields.Datetime.now()})
             self.message_post(body=_("Error in schedule %s: %s") % (schedule.name, str(e)))
 
-
     def _dispatch(self, schedule, operation, *args, **kwargs):
         method_name = f"_{operation}_{schedule.model.replace('flight.', '')}_data"
         method = getattr(self, method_name, False)
@@ -185,6 +184,16 @@ class FlightDataProvider(models.Model):
 
     def _send_aircraft_data(self, client, schedule, data, *args, **kwargs):
         self._raise_not_implemented("_send_aircraft_data")
+
+    @api.model
+    def run_scheduled_syncs(self):
+        Schedule = self.env['flight.data.sync.schedule']
+        schedules = Schedule.search([
+            ('active', '=', True),
+            ('next_run', '<=', fields.Datetime.now())
+        ])
+        for schedule in schedules:
+            schedule.provider_id._sync(schedule)
 
 
 class FlightDataSyncSchedule(models.Model):
