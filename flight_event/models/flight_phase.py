@@ -11,4 +11,3 @@ class FlightPhase(models.Model):
     sequence = fields.Integer()
     start_event_code_id = fields.Many2one("flight.event.code")
     end_event_code_id = fields.Many2one("flight.event.code")
-
