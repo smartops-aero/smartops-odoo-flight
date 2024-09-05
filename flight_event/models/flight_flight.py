@@ -1,39 +1,59 @@
-from odoo import models, fields, api
+from odoo import api, models, fields
 from odoo.exceptions import UserError
 
 
 class FlightFlight(models.Model):
     _inherit = 'flight.flight'
 
-    event_time_ids = fields.One2many('flight.event.time', 'flight_id', string='Event Times', tracking=True)
-    phase_duration_ids = fields.One2many('flight.phase.duration', 'flight_id', string='Phase Durations')
+    event_time_ids = fields.One2many('flight.event.time', 'flight_id', string='Event Times',
+                                     tracking=True,
+                                     copy=True)
+    phase_duration_ids = fields.One2many('flight.phase.duration', 'flight_id',
+                                          compute='_compute_phase_durations', store=True,
+                                          string='Phase Durations')
 
+    block_duration = fields.Float(string='Block Time',
+                                   compute='_compute_block_flight_durations',
+                                   help="Duration of the Block phase in hours", store=True,)
+    flight_duration = fields.Float(string='Flight Time',
+                                    compute='_compute_block_flight_durations',
+                                    help="Duration of the Flight phase in hours",store=True,)
 
-class FlightFlight(models.Model):
-    _inherit = 'flight.flight'
+    @api.depends('event_time_ids', 'event_time_ids.time', 'event_time_ids.time_kind', 'event_time_ids.code_id')
+    def _compute_phase_durations(self):
+        PhaseDuration = self.env['flight.phase.duration']
 
-    event_time_ids = fields.One2many('flight.event.time', 'flight_id', string='Event Times', tracking=True)
-    phase_duration_ids = fields.One2many('flight.phase.duration', 'flight_id', string='Phase Durations')
+        for flight in self:
+            phases = self.env['flight.phase'].search([])
+            phase_durations = PhaseDuration
 
-    block_duration = fields.Float(string='Block Time', compute='_compute_phase_durations', store=True, help="Duration of the Block phase in hours")
-    flight_duration = fields.Float(string='Flight Time', compute='_compute_phase_durations', store=True, help="Duration of the Flight phase in hours")
+            for phase in phases:
+                start_event = flight.event_time_ids.filtered(
+                    lambda
+                        e: e.code_id == phase.start_event_code_id and e.time_kind == 'A'
+                )
+                end_event = flight.event_time_ids.filtered(
+                    lambda
+                        e: e.code_id == phase.end_event_code_id and e.time_kind == 'A'
+                )
+
+                if start_event and end_event and start_event.time and end_event.time:
+                    phase_durations |= PhaseDuration.create({
+                        'flight_id': flight.id,
+                        'phase_id': phase.id,
+                        'start_time': start_event.time,
+                        'end_time': end_event.time,
+                    })
+            flight.phase_duration_ids = phase_durations
 
     @api.depends('phase_duration_ids.duration', 'phase_duration_ids.phase_id.name')
-    def _compute_phase_durations(self):
+    def _compute_block_flight_durations(self):
         for flight in self:
             block_phase = flight.phase_duration_ids.filtered(lambda p: p.phase_id.name == 'Block')
             flight_phase = flight.phase_duration_ids.filtered(lambda p: p.phase_id.name == 'Flight')
 
             flight.block_duration = block_phase[0].duration if block_phase else 0.0
             flight.flight_duration = flight_phase[0].duration if flight_phase else 0.0
-
-    def write(self, vals):
-        if 'event_time_ids' in vals:
-            self._track_event_time_changes(vals['event_time_ids'])
-        result = super(FlightFlight, self).write(vals)
-        if 'event_time_ids' in vals:
-            self.env['flight.phase.duration'].refresh_view()
-        return result
 
     def _track_event_time_changes(self, event_time_vals):
         for record in self:
@@ -60,3 +80,10 @@ class FlightFlight(models.Model):
             if changes:
                 message = "Event Times Updated:<br>" + "<br>".join(changes)
                 record.message_post(body=message)
+
+    def write(self, vals):
+        print('vals ', vals)
+        if 'event_time_ids' in vals:
+            self._track_event_time_changes(vals['event_time_ids'])
+        return super(FlightFlight, self).write(vals)
+
