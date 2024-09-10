@@ -1,6 +1,3 @@
-from odoo import models, fields, api
-import json
-
 from odoo import api, models, fields, _
 from odoo.exceptions import UserError, ValidationError
 
@@ -103,6 +100,7 @@ class FlightFlight(models.Model):
         """
         PhaseDuration = self.env['flight.phase.duration']
 
+
         # Search for all existing phase durations for this flight
         existing_durations = PhaseDuration.search([('flight_id', '=', self.id)])
 
@@ -167,3 +165,4 @@ class FlightFlight(models.Model):
         if 'event_time_ids' in vals:
             self._track_event_time_changes(vals['event_time_ids'])
         return super(FlightFlight, self).write(vals)
+    

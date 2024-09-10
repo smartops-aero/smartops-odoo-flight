@@ -17,6 +17,19 @@
                                 <field name="time"/>
                             </tree>
                         </field>
+                        <field name="phase_duration_ids" readonly="1">
+                            <tree>
+                                <field name="phase_id"/>
+                                <field name="time_kind"/>
+                                <field name="start_time"/>
+                                <field name="end_time"/>
+                                <field name="duration" widget="float_time"/>
+                            </tree>
+                        </field>
+                        <group>
+                            <field name="flight_duration" widget="float_time"/>
+                            <field name="block_duration" widget="float_time"/>
+                        </group>
                     </page>
                     <page string="Phase Durations">
                         <group>
@@ -38,4 +51,5 @@
         </field>
 
     </record>
+
 </odoo>

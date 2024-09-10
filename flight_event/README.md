@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Flight Event module is an extension for the Flight Management system in Odoo. It provides functionality for tracking flight events and phases, enhancing the capabilities of flight operations management.
+The Flight Event module is an extension for the Flight Management system in Odoo. 
+It provides functionality for tracking flight events, phases and durations, enhancing the capabilities of flight operations management.
 
 ## Features
 
@@ -45,6 +46,7 @@ This flexible system allows for precise and convenient time entry across differe
 2. In the "Times" tab, you'll see a matrix of event times.
 3. Enter the times for various events using the format described above.
 4. The system will automatically calculate flight phases based on these events.
+5. View the calculated phase durations in the "Phase Durations" tab.
 
 ## Models
 
@@ -56,6 +58,25 @@ This flexible system allows for precise and convenient time entry across differe
 ## Views
 
 The module adds new views to the flight form, including a matrix view for easily entering and viewing flight event times.
+
+## Key Features
+
+### Event Sequence Constraint
+
+The module enforces a constraint to ensure that event times are in the correct sequence for each time kind. This helps maintain data integrity and prevents logical errors in event recording.
+
+### Dynamic Event Time Matrix
+
+A custom widget (`FlightEventTimeMatrixField`) provides an intuitive interface for entering and viewing event times. It dynamically fetches time kinds and event codes, making it flexible and easy to use.
+
+### Automatic Phase Duration Calculation
+
+Phase durations are automatically calculated based on the recorded event times. This eliminates manual calculations and ensures accuracy.
+
+## Technical Notes
+
+- The module uses computed fields and constraints to ensure data consistency.
+- Custom JavaScript widgets are used for the event time matrix interface.
 
 ## Extending the Module
 
