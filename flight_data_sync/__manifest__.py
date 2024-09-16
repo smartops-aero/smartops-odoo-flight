@@ -15,6 +15,7 @@
         "data/ir_cron_data.xml",
         "views/actions.xml",
         "views/flight_data_provider_views.xml",
+        "views/flight_data_registry_views.xml",
         "views/menu.xml",
         "wizard/flight_data_sync_wizard_views.xml",
     ],
