@@ -13,8 +13,3 @@ access_flight_phase_manager,flight.phase.manager,model_flight_phase,flight.group
 access_flight_phase_dispatcher,flight.phase.dispatcher,model_flight_phase,flight.group_flight_dispatcher,1,1,1,1
 access_flight_phase_crew,flight.phase.crew,model_flight_phase,flight.group_flight_crew,1,0,0,0
 access_flight_phase_user,flight.phase.user,model_flight_phase,flight.group_flight_user,1,0,0,0
-
-access_flight_phase_duration_manager,flight.phase.duration.manager,model_flight_phase_duration,flight.group_flight_manager,1,1,1,1
-access_flight_phase_duration_dispatcher,flight.phase.duration.dispatcher,model_flight_phase_duration,flight.group_flight_dispatcher,1,1,1,0
-access_flight_phase_duration_crew,flight.phase.duration.crew,model_flight_phase_duration,flight.group_flight_crew,1,0,0,0
-access_flight_phase_duration_user,flight.phase.duration.user,model_flight_phase_duration,flight.group_flight_user,1,0,0,0
