@@ -10,6 +10,7 @@
                 <field name="time_kind"/>
                 <field name="code_id"/>
                 <field name="time"/>
+                <field name="user_id"/>
             </tree>
         </field>
     </record>

@@ -16,6 +16,8 @@ class FlightEventTime(models.Model):
     code_id = fields.Many2one('flight.event.code', 'Flight Event Code', required=True, index=True)
     code_name = fields.Char(string='Code Name', related='code_id.name')
 
+    user_id = fields.Many2one('res.users', compute='_compute_user_id', store=True, readonly=False)
+
     time_kind = fields.Selection([
         ("A", "Actual"),
         ("S", "Scheduled"),
@@ -74,6 +76,11 @@ class FlightEventTime(models.Model):
                 'views': [(False, 'form')],
                 'target': 'new',
             }
+
+    @api.depends()
+    def _compute_user_id(self):
+        for record in self:
+            record.user_id = self.env.context.get('user_id', self.env.user.id)
 
 
 class FlightEventCode(models.Model):
