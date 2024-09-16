@@ -5,4 +5,9 @@
               parent="flight.menu_flight_configuration"
               sequence="100"/>
     <menuitem id="menu_flight_data_provider" name="Providers" parent="menu_flight_sync_configuration" action="action_flight_data_provider" sequence="10"/>
+    <menuitem id="menu_flight_data_registry"
+              name="Registry"
+              parent="menu_flight_sync_configuration"
+              action="action_flight_data_registry"
+              sequence="20"/>
 </odoo>

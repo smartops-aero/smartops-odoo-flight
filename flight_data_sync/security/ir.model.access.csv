@@ -16,3 +16,6 @@ access_flight_data_sync_log_manager,flight.data.sync.log manager,model_flight_da
 access_flight_data_sync_log_dispatcher,flight.data.sync.log dispatcher,model_flight_data_sync_log,flight.group_flight_dispatcher,1,1,1,0
 access_flight_data_sync_log_crew,flight.data.sync.log crew,model_flight_data_sync_log,flight.group_flight_crew,1,0,0,0
 access_flight_data_sync_log_user,flight.data.sync.log user,model_flight_data_sync_log,flight.group_flight_user,1,0,0,0
+
+access_flight_data_registry_manager,flight.data.registry manager,model_flight_data_registry,flight.group_flight_manager,1,1,1,1
+access_flight_data_registry_user,flight.data.registry user,model_flight_data_registry,flight.group_flight_user,1,0,0,0

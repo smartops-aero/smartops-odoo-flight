@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_flight_data_registry_tree" model="ir.ui.view">
+        <field name="name">flight.data.registry.tree</field>
+        <field name="model">flight.data.registry</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="provider_id"/>
+                <field name="model"/>
+                <field name="local_id"/>
+                <field name="external_id"/>
+                <field name="external_provider_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_flight_data_registry" model="ir.actions.act_window">
+        <field name="name">Data Registry</field>
+        <field name="res_model">flight.data.registry</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
