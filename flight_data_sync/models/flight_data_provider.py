@@ -53,6 +53,7 @@ class FlightDataProvider(models.Model):
             ('flight.crew', 'Crew'),
             ('flight.aerodrome', 'Aerodromes'),
             ('flight.aircraft', 'Aircraft'),
+            ('hr.employee', 'Employees'),
         ]
 
     @api.model
