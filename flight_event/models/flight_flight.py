@@ -165,4 +165,3 @@ class FlightFlight(models.Model):
         if 'event_time_ids' in vals:
             self._track_event_time_changes(vals['event_time_ids'])
         return super(FlightFlight, self).write(vals)
-    
