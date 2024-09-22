@@ -13,7 +13,7 @@
     'website': "https://github.com/smartops-aero/smartops-odoo-flight",
     'license': "LGPL-3",
     'category': 'Industries',
-    'version': '16.0.0.5',
+    'version': '16.0.1.1.0',
 
     'depends': [
         'base',
@@ -37,6 +37,7 @@
         'views/flight_event_time_views.xml',
         'views/flight_phase_views.xml',
         'views/flight_views.xml',
+        'views/flight_phase_duration_views.xml',
         'data/flight.event.code.csv',
         'data/flight.phase.csv',
         'views/menu.xml',

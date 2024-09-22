@@ -1,7 +1,7 @@
 # Copyright 2024 Apexive <https://apexive.com/>
 # License MIT (https://opensource.org/licenses/MIT).
 from datetime import datetime
-from odoo import fields, models, api
+from odoo import api, fields, models
 
 
 class FlightEventTime(models.Model):
@@ -12,11 +12,11 @@ class FlightEventTime(models.Model):
     _description = 'Flight Event Time'
     _order = 'code_id, time_kind'
 
-    flight_id = fields.Many2one('flight.flight', required=True, index=True, ondelete='cascade')
-    code_id = fields.Many2one('flight.event.code', 'Flight Event Code', required=True, index=True)
+    flight_id = fields.Many2one('flight.flight', required=True, index=True,
+                                ondelete='cascade')
+    code_id = fields.Many2one('flight.event.code', 'Flight Event Code', required=True,
+                              index=True)
     code_name = fields.Char(string='Code Name', related='code_id.name')
-
-    user_id = fields.Many2one('res.users', compute='_compute_user_id', store=True, readonly=False)
 
     time_kind = fields.Selection([
         ("A", "Actual"),
@@ -77,23 +77,12 @@ class FlightEventTime(models.Model):
                 'target': 'new',
             }
 
-    @api.depends()
-    def _compute_user_id(self):
-        for record in self:
-            record.user_id = self.env.context.get('user_id', self.env.user.id)
-
-
-class FlightEventCode(models.Model):
-    _name = 'flight.event.code'
-    _description = 'Flight Event Code'
-    _rec_name = 'code'
-    _order = 'sequence, id'
-
-    code = fields.Char(required=True)
-    name = fields.Char(required=True)
-    description = fields.Char()
-    sequence = fields.Integer(default=10)
-
-    _sql_constraints = [
-        ('code_unique', 'unique(code)', "The event code must be unique!"),
-    ]
+    @api.model
+    def filter_event_time(self, code_id, time_kind):
+        """
+        Filter event times based on the given code ID and time kind.
+        Returns:
+        recordset: A recordset of `flight.event.time` records that match the given code ID and time kind.
+        """
+        return self.filtered(lambda e: e.code_id == code_id and
+                                       e.time_kind == time_kind)
