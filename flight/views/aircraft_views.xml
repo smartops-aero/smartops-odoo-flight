@@ -21,6 +21,7 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
+                    <div name="button_box" class="oe_button_box" />
                     <field
             name="image_1920"
             widget="image"
@@ -40,6 +41,7 @@
                         <field name="mtow_lb" />
                         <field name="equipment_type" />
                     </group>
+                    <notebook />
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" />
