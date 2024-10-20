@@ -16,10 +16,10 @@
     ],
     "assets": {
         "web.assets_backend": [
-            "flight_event/static/src/components/relative_datetimepicker/relative_datetimepicker.js",
+            "flight_event/static/src/components/relative_datetimepicker/relative_datetimepicker.esm.js",
             "flight_event/static/src/scss/flight_event_time_matrix.scss",
-            "flight_event/static/src/components/flight_event_time_matrix_field/flight_event_time_matrix_field.js",
-            "flight_event/static/src/components/flight_event_time_matrix_renderer/flight_event_time_matrix_renderer.js",
+            "flight_event/static/src/components/flight_event_time_matrix_field/flight_event_time_matrix_field.esm.js",
+            "flight_event/static/src/components/flight_event_time_matrix_renderer/flight_event_time_matrix_renderer.esm.js",
             "flight_event/static/src/components/flight_event_time_matrix_field/flight_event_time_matrix_field.xml",
             "flight_event/static/src/components/flight_event_time_matrix_renderer/flight_event_time_matrix_renderer.xml",
         ],
