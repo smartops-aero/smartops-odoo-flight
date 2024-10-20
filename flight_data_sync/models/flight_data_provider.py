@@ -1,14 +1,15 @@
 # Copyright 2023 Apexive Solutions LLC
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from functools import partial
-
 import logging
 import traceback
-from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError, UserError
-from odoo.tools.safe_eval import safe_eval
+from functools import partial
+
 from dateutil.relativedelta import relativedelta
+
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools.safe_eval import safe_eval
 
 _logger = logging.getLogger(__name__)
 
@@ -24,17 +25,27 @@ class FlightDataProvider(models.Model):
         required=True,
     )
     active = fields.Boolean(default=True)
-    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company)
+    company_id = fields.Many2one(
+        "res.company",
+        string="Company",
+        required=True,
+        default=lambda self: self.env.company,
+    )
     api_base = fields.Char()
     username = fields.Char()
     password = fields.Char()
     schedule_ids = fields.One2many(
-        'flight.data.sync.schedule', 'provider_id',
-        string='Sync Schedules', context={'active_test': False},
+        "flight.data.sync.schedule",
+        "provider_id",
+        string="Sync Schedules",
+        context={"active_test": False},
     )
 
-    user_id = fields.Many2one('res.users', string='Run As User',
-                              help="If set, schedules will run as this user. Otherwise, they will run as the current user.")
+    user_id = fields.Many2one(
+        "res.users",
+        string="Run As User",
+        help="If set, schedules will run as this user. Otherwise, they will run as the current user.",
+    )
 
     @api.model
     def _get_available_services(self):
@@ -49,17 +60,17 @@ class FlightDataProvider(models.Model):
     def _get_available_sync_models(self):
         """Hook for extension"""
         return [
-            ('flight.flight', 'Flights'),
-            ('flight.crew', 'Crew'),
-            ('flight.aerodrome', 'Aerodromes'),
-            ('flight.aircraft', 'Aircraft'),
-            ('hr.employee', 'Employees'),
+            ("flight.flight", "Flights"),
+            ("flight.crew", "Crew"),
+            ("flight.aerodrome", "Aerodromes"),
+            ("flight.aircraft", "Aircraft"),
+            ("hr.employee", "Employees"),
         ]
 
     @api.model
     def _get_available_sync_operations(self):
         """Hook for extension"""
-        return ['receive', 'process', 'prepare', 'send']
+        return ["receive", "process", "prepare", "send"]
 
     @api.model
     def _selection_sync_model(self):
@@ -88,15 +99,21 @@ class FlightDataProvider(models.Model):
             data_to_send = provider.prepare_data(schedule, **kwargs)
             provider.send_data(schedule, data_to_send, **kwargs)
 
-            schedule.write({
-                'last_run': fields.Datetime.now(),
-                'last_success': fields.Datetime.now(),
-            })
-            provider.message_post(body=_("Data sync successful for schedule: %s") % schedule.name)
+            schedule.write(
+                {
+                    "last_run": fields.Datetime.now(),
+                    "last_success": fields.Datetime.now(),
+                }
+            )
+            provider.message_post(
+                body=_("Data sync successful for schedule: %s") % schedule.name
+            )
         except Exception as e:
             _logger.exception(f"Error in _sync method: {str(e)}")
-            schedule.write({'last_run': fields.Datetime.now()})
-            self.message_post(body=_("Error in schedule %s: %s") % (schedule.name, str(e)))
+            schedule.write({"last_run": fields.Datetime.now()})
+            self.message_post(
+                body=_("Error in schedule %s: %s") % (schedule.name, str(e))
+            )
 
     def _dispatch(self, schedule, operation, *args, **kwargs):
         method_name = f"_{operation}_{schedule.model.replace('flight.', '')}_data"
@@ -112,8 +129,16 @@ class FlightDataProvider(models.Model):
             return partial(method, client, schedule, *args, **kwargs)()
         except Exception as e:
             print(traceback.format_exc())
-            _logger.error(f"Error trying to {operation} {schedule.model} data for {self.service}: %s", e)
-            raise UserError(_(f"Error trying to {operation} {schedule.model} data for {self.service}: %s") % e)
+            _logger.error(
+                f"Error trying to {operation} {schedule.model} data for {self.service}: %s",
+                e,
+            )
+            raise UserError(
+                _(
+                    f"Error trying to {operation} {schedule.model} data for {self.service}: %s"
+                )
+                % e
+            ) from e
 
     def receive_data(self, schedule, **kwargs):
         return self._dispatch(schedule, "receive", **kwargs)
@@ -136,7 +161,9 @@ class FlightDataProvider(models.Model):
         return record
 
     def _raise_not_implemented(self, method_name):
-        raise NotImplementedError(f"Method '{method_name}' not implemented for service {self.service[1]}")
+        raise NotImplementedError(
+            f"Method '{method_name}' not implemented for service {self.service[1]}"
+        )
 
     def _receive_flight_data(self, client, schedule, *args, **kwargs):
         self._raise_not_implemented("_receive_flight_data")
@@ -188,11 +215,10 @@ class FlightDataProvider(models.Model):
 
     @api.model
     def run_scheduled_syncs(self):
-        Schedule = self.env['flight.data.sync.schedule']
-        schedules = Schedule.search([
-            ('active', '=', True),
-            ('next_run', '<=', fields.Datetime.now())
-        ])
+        Schedule = self.env["flight.data.sync.schedule"]
+        schedules = Schedule.search(
+            [("active", "=", True), ("next_run", "<=", fields.Datetime.now())]
+        )
         for schedule in schedules:
             schedule.provider_id._sync(schedule)
 
@@ -202,24 +228,34 @@ class FlightDataSyncSchedule(models.Model):
     _description = "Flight Data Sync Schedule"
 
     name = fields.Char(required=True)
-    provider_id = fields.Many2one('flight.data.provider', string='Provider', required=True, ondelete='cascade')
+    provider_id = fields.Many2one(
+        "flight.data.provider", string="Provider", required=True, ondelete="cascade"
+    )
     model = fields.Selection(
-        selection=lambda self: self.env['flight.data.provider']._selection_sync_model(),
-        string='Flight Data Model',
-        required=True
+        selection=lambda self: self.env["flight.data.provider"]._selection_sync_model(),
+        string="Flight Data Model",
+        required=True,
     )
     active = fields.Boolean(default=True)
     interval_number = fields.Integer(string="Run every", default=1, required=True)
-    interval_type = fields.Selection([
-        ('minutes', 'Minutes'),
-        ('hours', 'Hours'),
-        ('days', 'Days'),
-        ('weeks', 'Weeks')
-    ], string='Interval Unit', default='hours', required=True)
-    kwargs = fields.Text(string='Additional Parameters', help="Python dictionary stored as a string. These parameters will be passed to the data sync methods.")
-    last_run = fields.Datetime(string='Last Run')
-    last_success = fields.Datetime(string='Last Successful Run')
-    next_run = fields.Datetime(string='Next Run', compute='_compute_next_run')
+    interval_type = fields.Selection(
+        [
+            ("minutes", "Minutes"),
+            ("hours", "Hours"),
+            ("days", "Days"),
+            ("weeks", "Weeks"),
+        ],
+        string="Interval Unit",
+        default="hours",
+        required=True,
+    )
+    kwargs = fields.Text(
+        string="Additional Parameters",
+        help="Python dictionary stored as a string. These parameters will be passed to the data sync methods.",
+    )
+    last_run = fields.Datetime(string="Last Run")
+    last_success = fields.Datetime(string="Last Successful Run")
+    next_run = fields.Datetime(string="Next Run", compute="_compute_next_run")
 
     def name_get(self):
         result = []
@@ -231,15 +267,15 @@ class FlightDataSyncSchedule(models.Model):
     def action_view_logs(self):
         self.ensure_one()
         return {
-            'name': _('Sync Logs'),
-            'res_model': 'flight.data.sync.log',
-            'view_mode': 'tree,form',
-            'type': 'ir.actions.act_window',
-            'domain': [('schedule_id', '=', self.id)],
-            'context': {'default_schedule_id': self.id},
+            "name": _("Sync Logs"),
+            "res_model": "flight.data.sync.log",
+            "view_mode": "tree,form",
+            "type": "ir.actions.act_window",
+            "domain": [("schedule_id", "=", self.id)],
+            "context": {"default_schedule_id": self.id},
         }
 
-    @api.depends('last_run', 'interval_number', 'interval_type')
+    @api.depends("last_run", "interval_number", "interval_type")
     def _compute_next_run(self):
         for schedule in self:
             if schedule.last_run:
@@ -249,19 +285,21 @@ class FlightDataSyncSchedule(models.Model):
             else:
                 schedule.next_run = fields.Datetime.now()
 
-    @api.constrains('kwargs')
+    @api.constrains("kwargs")
     def _check_kwargs(self):
         for record in self:
             if record.kwargs:
                 try:
                     safe_eval(record.kwargs)
                 except Exception as e:
-                    raise ValidationError(_("Invalid kwargs: %s") % str(e))
+                    raise ValidationError(_("Invalid kwargs: %s") % str(e)) from e
 
-    @api.onchange('model')
+    @api.onchange("model")
     def _onchange_model(self):
         if self.model:
-            self.name = dict(self.env['flight.data.provider']._selection_sync_model())[self.model]
+            self.name = dict(self.env["flight.data.provider"]._selection_sync_model())[
+                self.model
+            ]
 
 
 class FlightDataSyncLog(models.Model):
@@ -270,9 +308,15 @@ class FlightDataSyncLog(models.Model):
     _order = "timestamp desc"
 
     timestamp = fields.Datetime(default=fields.Datetime.now, required=True)
-    schedule_id = fields.Many2one('flight.data.sync.schedule', string='Sync Schedule', required=True)
-    direction = fields.Selection([('inbound', 'Inbound'), ('outbound', 'Outbound')], required=True)
-    headers = fields.Text(string='Headers')
-    body = fields.Text(string='Body')
+    schedule_id = fields.Many2one(
+        "flight.data.sync.schedule", string="Sync Schedule", required=True
+    )
+    direction = fields.Selection(
+        [("inbound", "Inbound"), ("outbound", "Outbound")], required=True
+    )
+    headers = fields.Text(string="Headers")
+    body = fields.Text(string="Body")
 
-    schedule_name = fields.Char(related='schedule_id.name', string='Schedule Name', store=False, readonly=True)
+    schedule_name = fields.Char(
+        related="schedule_id.name", string="Schedule Name", store=False, readonly=True
+    )

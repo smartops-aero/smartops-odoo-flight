@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Flight Phase Tree View -->
     <record id="view_flight_phase_tree" model="ir.ui.view">
@@ -6,10 +6,10 @@
         <field name="model">flight.phase</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="sequence" widget="handle"/>
-                <field name="name"/>
-                <field name="start_event_code_id"/>
-                <field name="end_event_code_id"/>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="start_event_code_id" />
+                <field name="end_event_code_id" />
             </tree>
         </field>
     </record>
@@ -22,10 +22,10 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="name"/>
-                        <field name="sequence"/>
-                        <field name="start_event_code_id"/>
-                        <field name="end_event_code_id"/>
+                        <field name="name" />
+                        <field name="sequence" />
+                        <field name="start_event_code_id" />
+                        <field name="end_event_code_id" />
                     </group>
                 </sheet>
             </form>

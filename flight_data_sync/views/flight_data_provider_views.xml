@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Tree View for Flight Data Provider -->
     <record id="view_flight_data_provider_tree" model="ir.ui.view">
@@ -6,11 +6,11 @@
         <field name="model">flight.data.provider</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="name"/>
-                <field name="service"/>
-                <field name="company_id" groups="base.group_multi_company"/>
-                <field name="api_base"/>
-                <field name="active"/>
+                <field name="name" />
+                <field name="service" />
+                <field name="company_id" groups="base.group_multi_company" />
+                <field name="api_base" />
+                <field name="active" />
             </tree>
         </field>
     </record>
@@ -22,49 +22,80 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="%(flight_data_sync.action_flight_data_sync_wizard)d" string="Sync Data" type="action" class="oe_highlight"/>
+                    <button
+            name="%(flight_data_sync.action_flight_data_sync_wizard)d"
+            string="Sync Data"
+            type="action"
+            class="oe_highlight"
+          />
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
-                            <field name="active" widget="boolean_button" options="{'terminology': 'archive'}"/>
+                        <button
+              name="toggle_active"
+              type="object"
+              class="oe_stat_button"
+              icon="fa-archive"
+            >
+                            <field
+                name="active"
+                widget="boolean_button"
+                options="{'terminology': 'archive'}"
+              />
                         </button>
                     </div>
                     <div class="oe_title">
-                        <h1><field name="name" placeholder="e.g. FlightAware API"/></h1>
+                        <h1><field
+                name="name"
+                placeholder="e.g. FlightAware API"
+              /></h1>
                     </div>
                     <group>
                         <group>
-                            <field name="company_id" groups="base.group_multi_company"/>
-                            <field name="service"/>
-                            <field name="user_id"/>
+                            <field
+                name="company_id"
+                groups="base.group_multi_company"
+              />
+                            <field name="service" />
+                            <field name="user_id" />
                         </group>
                         <group>
-                            <field name="api_base"/>
-                            <field name="username"/>
-                            <field name="password" password="True"/>
+                            <field name="api_base" />
+                            <field name="username" />
+                            <field name="password" password="True" />
                         </group>
                     </group>
                     <notebook>
                         <page string="Sync Schedules">
                             <field name="schedule_ids">
                                 <tree decoration-muted="not active">
-                                    <field name="name"/>
-                                    <field name="model"/>
-                                    <field name="interval_number"/>
-                                    <field name="interval_type"/>
-                                    <field name="last_run"/>
-                                    <field name="next_run"/>
-                                    <field name="active" widget="boolean_toggle"/>
-                                    <button name="action_view_logs" string="View Logs" type="object" icon="fa-list"/>
+                                    <field name="name" />
+                                    <field name="model" />
+                                    <field name="interval_number" />
+                                    <field name="interval_type" />
+                                    <field name="last_run" />
+                                    <field name="next_run" />
+                                    <field
+                    name="active"
+                    widget="boolean_toggle"
+                  />
+                                    <button
+                    name="action_view_logs"
+                    string="View Logs"
+                    type="object"
+                    icon="fa-list"
+                  />
                                 </tree>
                             </field>
                         </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"/>
-                    <field name="message_ids" widget="mail_thread"/>
+                    <field
+            name="message_follower_ids"
+            widget="mail_followers"
+          />
+                    <field name="message_ids" widget="mail_thread" />
                 </div>
             </form>
         </field>
@@ -76,12 +107,21 @@
         <field name="model">flight.data.provider</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name"/>
-                <field name="company_id" groups="base.group_multi_company"/>
-                <field name="api_base"/>
-                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <field name="name" />
+                <field name="company_id" groups="base.group_multi_company" />
+                <field name="api_base" />
+                <filter
+          string="Archived"
+          name="inactive"
+          domain="[('active', '=', False)]"
+        />
                 <group expand="0" string="Group By">
-                    <filter string="Company" name="company" domain="[]" context="{'group_by': 'company_id'}"/>
+                    <filter
+            string="Company"
+            name="company"
+            domain="[]"
+            context="{'group_by': 'company_id'}"
+          />
                 </group>
             </search>
         </field>
@@ -92,7 +132,7 @@
         <field name="name">Flight Data Providers</field>
         <field name="res_model">flight.data.provider</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="view_flight_data_provider_search"/>
+        <field name="search_view_id" ref="view_flight_data_provider_search" />
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a new flight data provider
@@ -109,9 +149,9 @@
         <field name="model">flight.data.sync.log</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="schedule_name"/>
-                <field name="timestamp"/>
-                <field name="direction"/>
+                <field name="schedule_name" />
+                <field name="timestamp" />
+                <field name="direction" />
             </tree>
         </field>
     </record>
@@ -124,11 +164,11 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="schedule_id"/>
-                        <field name="timestamp"/>
-                        <field name="direction"/>
-                        <field name="headers"/>
-                        <field name="body"/>
+                        <field name="schedule_id" />
+                        <field name="timestamp" />
+                        <field name="direction" />
+                        <field name="headers" />
+                        <field name="body" />
                     </group>
                 </sheet>
             </form>
@@ -140,7 +180,7 @@
         <field name="name">Sync Logs</field>
         <field name="res_model">flight.data.sync.log</field>
         <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_flight_data_sync_log_tree"/>
+        <field name="view_id" ref="view_flight_data_sync_log_tree" />
         <field name="domain">[('schedule_id', '=', active_id)]</field>
         <field name="context">{'default_schedule_id': active_id}</field>
     </record>
