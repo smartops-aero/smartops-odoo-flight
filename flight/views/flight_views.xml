@@ -10,6 +10,7 @@
                 <field name="aircraft_id" />
                 <field name="departure_id" />
                 <field name="arrival_id" />
+                <field name="locked" />
             </tree>
         </field>
     </record>
@@ -20,6 +21,22 @@
         <field name="model">flight.flight</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button
+            name="toggle_locked"
+            type="object"
+            string="Lock"
+            attrs="{'invisible': [('locked', '=', True)]}"
+            groups="flight.group_flight_manager"
+          />
+                    <button
+            name="toggle_locked"
+            type="object"
+            string="Unlock"
+            attrs="{'invisible': [('locked', '=', False)]}"
+            groups="flight.group_flight_manager"
+          />
+                </header>
                 <sheet>
                     <div name="button_box" class="oe_button_box" />
                     <group>
@@ -27,6 +44,7 @@
                         <field name="aircraft_id" />
                         <field name="departure_id" />
                         <field name="arrival_id" />
+                        <field name="locked" />
                     </group>
                 </sheet>
                 <div class="oe_chatter">
@@ -48,6 +66,16 @@
                 <field name="aircraft_id" />
                 <field name="departure_id" />
                 <field name="arrival_id" />
+                <filter
+          string="Locked"
+          name="locked"
+          domain="[('locked', '=', True)]"
+        />
+                <filter
+          string="Unlocked"
+          name="unlocked"
+          domain="[('locked', '=', False)]"
+        />
                 <group expand="0" string="Group By">
                     <filter
             string="Aircraft"

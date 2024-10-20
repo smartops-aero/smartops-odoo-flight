@@ -1,12 +1,10 @@
-# Copyright 2024 Apexive <https://apexive.com/>
-# License MIT (https://opensource.org/licenses/MIT).
 from odoo import fields, models
 
 
 class FlightFlight(models.Model):
     _name = "flight.flight"
     _description = "Flight"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin", "flight.lock.mixin"]
     _order = "date desc, id desc"
 
     date = fields.Date(
@@ -15,6 +13,7 @@ class FlightFlight(models.Model):
     aircraft_id = fields.Many2one("flight.aircraft", required=True, tracking=True)
     departure_id = fields.Many2one("flight.aerodrome", required=True, tracking=True)
     arrival_id = fields.Many2one("flight.aerodrome", required=True, tracking=True)
+    locked = fields.Boolean(default=False, tracking=True)
 
     def name_get(self):
         result = []
@@ -22,3 +21,7 @@ class FlightFlight(models.Model):
             name = f"{record.date} / {record.aircraft_id.registration}: {record.departure_id.icao} - {record.arrival_id.icao}"
             result.append((record.id, name))
         return result
+
+    def toggle_locked(self):
+        for record in self:
+            record.locked = not record.locked
