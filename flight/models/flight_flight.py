@@ -7,6 +7,7 @@ class FlightFlight(models.Model):
     _name = 'flight.flight'
     _description = 'Flight'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'date desc, id desc'
 
     date = fields.Date("Flight Date", help="Scheduled date of flight", required=True, tracking=True)
     aircraft_id = fields.Many2one('flight.aircraft', required=True, tracking=True)

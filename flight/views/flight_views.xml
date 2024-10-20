@@ -38,10 +38,31 @@
         </field>
     </record>
 
+    <!-- Flight Search View -->
+    <record id="view_flight_search" model="ir.ui.view">
+        <field name="name">flight.flight.search</field>
+        <field name="model">flight.flight</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="date"/>
+                <field name="aircraft_id"/>
+                <field name="departure_id"/>
+                <field name="arrival_id"/>
+                <group expand="0" string="Group By">
+                    <filter string="Aircraft" name="group_by_aircraft" context="{'group_by': 'aircraft_id'}"/>
+                    <filter string="Departure" name="group_by_departure" context="{'group_by': 'departure_id'}"/>
+                    <filter string="Arrival" name="group_by_arrival" context="{'group_by': 'arrival_id'}"/>
+                    <filter string="Date" name="group_by_date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <!-- Flight Action Window -->
     <record id="action_flight_flight_list" model="ir.actions.act_window">
         <field name="name">Flights</field>
         <field name="res_model">flight.flight</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_flight_search"/>
     </record>
 </odoo>
