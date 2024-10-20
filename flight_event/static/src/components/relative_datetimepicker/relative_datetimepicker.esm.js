@@ -1,8 +1,11 @@
 /** @odoo-module **/
 
+import {
+  formatDateTime,
+  luxonToMoment,
+  parseDateTime,
+} from "@web/core/l10n/dates";
 import { DateTimePicker } from "@web/core/datepicker/datepicker";
-import { luxonToMoment } from "@web/core/l10n/dates";
-import { formatDateTime, parseDateTime } from "@web/core/l10n/dates";
 
 const { DateTime } = luxon;
 
@@ -99,7 +102,7 @@ export class RelativeDateTimePicker extends DateTimePicker {
       }
 
       if (deltaDays) {
-        parsedDate = parsedDate.plus({ days: parseInt(deltaDays) });
+        parsedDate = parsedDate.plus({ days: parseInt(deltaDays, 10) });
       }
     } else {
       return wrapError(parseDateTime, false)(value, options);

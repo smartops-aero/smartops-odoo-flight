@@ -1,8 +1,8 @@
 /** @odoo-module **/
 
-import { Component, onWillUpdateProps } from "@odoo/owl";
+import { areDateEquals } from "@web/core/l10n/dates";
 import { RelativeDateTimePicker } from "@flight_event/components/relative_datetimepicker/relative_datetimepicker";
-import { areDateEquals, formatDateTime } from "@web/core/l10n/dates";
+import { Component, onWillUpdateProps } from "@odoo/owl";
 
 const { DateTime } = luxon;
 
@@ -31,7 +31,7 @@ export class FlightEventTimeMatrixRenderer extends Component {
 
     // Fill the matrix with actual values from records
     records.forEach((record) => {
-      // data.code_id[1] is the event code
+      // Data.code_id[1] is the event code
       const eventCode = record.data.code_id[1];
       const timeKind = record.data.time_kind;
       if (matrix[eventCode] && matrix[eventCode][timeKind] !== undefined) {

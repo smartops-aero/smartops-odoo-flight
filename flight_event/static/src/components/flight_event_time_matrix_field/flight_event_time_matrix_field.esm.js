@@ -1,9 +1,9 @@
 /** @odoo-module **/
 
-import { Component, onWillStart, useState, onWillUpdateProps } from "@odoo/owl";
-import { standardFieldProps } from "@web/views/fields/standard_field_props";
-import { registry } from "@web/core/registry";
+import { Component, onWillStart, onWillUpdateProps, useState } from "@odoo/owl";
 import { FlightEventTimeMatrixRenderer } from "@flight_event/components/flight_event_time_matrix_renderer/flight_event_time_matrix_renderer";
+import { registry } from "@web/core/registry";
+import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { useService } from "@web/core/utils/hooks";
 
 export class FlightEventTimeMatrixField extends Component {
@@ -48,8 +48,8 @@ export class FlightEventTimeMatrixField extends Component {
 
     const matchingRecords = this.list.records.filter(
       (record) =>
-        record.data["time_kind"] === timeKind.key &&
-        record.data["code_id"][0] === eventCode.id
+        record.data.time_kind === timeKind.key &&
+        record.data.code_id[0] === eventCode.id
     );
     if (matchingRecords.length === 1) {
       await matchingRecords[0].update({ time: value });

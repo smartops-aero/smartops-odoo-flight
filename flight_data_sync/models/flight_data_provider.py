@@ -138,7 +138,7 @@ class FlightDataProvider(models.Model):
                     f"Error trying to {operation} {schedule.model} data for {self.service}: %s"
                 )
                 % e
-            )
+            ) from e
 
     def receive_data(self, schedule, **kwargs):
         return self._dispatch(schedule, "receive", **kwargs)
@@ -292,7 +292,7 @@ class FlightDataSyncSchedule(models.Model):
                 try:
                     safe_eval(record.kwargs)
                 except Exception as e:
-                    raise ValidationError(_("Invalid kwargs: %s") % str(e))
+                    raise ValidationError(_("Invalid kwargs: %s") % str(e)) from e
 
     @api.onchange("model")
     def _onchange_model(self):
