@@ -17,7 +17,7 @@
     "website": "https://github.com/OCA/server-env",
     "license": "LGPL-3",
     "category": "Industries",
-    "version": "16.0.1.0",
+    "version": "16.0.1.1",
     "images": [
         "static/description/banner.jpeg",
     ],

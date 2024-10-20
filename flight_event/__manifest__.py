@@ -9,7 +9,7 @@
     "website": "https://github.com/OCA/server-env",
     "license": "LGPL-3",
     "category": "Industries",
-    "version": "16.0.0.5",
+    "version": "16.0.1.0",
     "depends": [
         "base",
         "flight",

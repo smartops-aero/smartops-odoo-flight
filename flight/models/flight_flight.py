@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.exceptions import AccessError
 
 
 class FlightFlight(models.Model):
@@ -23,13 +24,19 @@ class FlightFlight(models.Model):
         return result
 
     def toggle_locked(self):
-        for record in self:
-            record.locked = not record.locked
+        self.ensure_one()
+        if not self.env.user.has_group("flight.group_flight_manager"):
+            raise AccessError("Only flight managers can lock or unlock flights.")
+        self.write({"locked": not self.locked})
 
     @api.model
     def action_lock_flights(self):
-        self.write({"locked": True})
+        if not self.env.user.has_group("flight.group_flight_manager"):
+            raise AccessError("Only flight managers can lock flights.")
+        return self.write({"locked": True})
 
     @api.model
     def action_unlock_flights(self):
-        self.write({"locked": False})
+        if not self.env.user.has_group("flight.group_flight_manager"):
+            raise AccessError("Only flight managers can unlock flights.")
+        return self.write({"locked": False})

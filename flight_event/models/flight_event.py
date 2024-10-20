@@ -13,7 +13,7 @@ class FlightEventTime(models.Model):
     _name = "flight.event.time"
     _description = "Flight Event Time"
     _order = "code_id, time_kind"
-    _inherit = ["flight.related.mixin"]
+    _inherit = ["flight.lock.mixin"]
 
     flight_id = fields.Many2one(
         "flight.flight", required=True, index=True, ondelete="cascade"

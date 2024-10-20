@@ -1,5 +1,3 @@
-# flight/flight/models/flight_lock_mixin.py
-
 from odoo import _, api, models
 from odoo.exceptions import UserError
 
@@ -21,13 +19,15 @@ class FlightLockMixin(models.AbstractModel):
             raise UserError(_("You cannot create records for a locked flight."))
         return super().create(vals)
 
-    def write(self, vals):
-        for record in self:
-            if record._check_flight_locked():
-                raise UserError(
-                    _("You cannot modify records or fields of a locked flight.")
-                )
-        return super().write(vals)
+    @api.model
+    def _write(self, vals):
+        if set(vals.keys()) == {"locked", "write_date"}:
+            return super()._write(vals)
+
+        if any(self._check_flight_locked() for record in self):
+            raise UserError(_("You cannot modify locked flights."))
+
+        return super()._write(vals)
 
     def unlink(self):
         for record in self:
