@@ -26,18 +26,16 @@ class FlightFlight(models.Model):
                     field_name = (
                         f"{phase.name.lower().replace(' ', '_')}_{time_kind.lower()}"
                     )
-                    start_time = flight.event_time_ids.filtered(
-                        lambda et: et.code_id == phase.start_event_code_id
-                        and et.time_kind == time_kind
+                    start_time = flight._get_event_time(
+                        phase.start_event_code_id, time_kind
                     )
-                    end_time = flight.event_time_ids.filtered(
-                        lambda et: et.code_id == phase.end_event_code_id
-                        and et.time_kind == time_kind
+                    end_time = flight._get_event_time(
+                        phase.end_event_code_id, time_kind
                     )
+
                     if start_time and end_time:
-                        # Take the first record if multiple exist
                         duration = (
-                            end_time[0].time - start_time[0].time
+                            end_time.time - start_time.time
                         ).total_seconds() / 3600
                         durations[field_name] = duration
                     else:
@@ -52,6 +50,12 @@ class FlightFlight(models.Model):
             )
 
             flight.durations = json.dumps(durations)
+
+    def _get_event_time(self, code_id, time_kind):
+        event_times = self.event_time_ids.filtered(
+            lambda et: et.code_id == code_id and et.time_kind == time_kind
+        )
+        return event_times[0] if event_times else None
 
     # Helper method to get duration values
     def get_duration(self, duration_name):
@@ -79,7 +83,7 @@ class FlightFlight(models.Model):
     def write(self, vals):
         if "event_time_ids" in vals:
             self._track_event_time_changes(vals["event_time_ids"])
-        result = super(FlightFlight, self).write(vals)
+        result = super().write(vals)
         return result
 
     def _track_event_time_changes(self, event_time_vals):
