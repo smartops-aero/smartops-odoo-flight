@@ -1,15 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
-        <menuitem id="menu_flight_prefix"
-                  name="Flight Prefixes"
-                  parent="flight.menu_flight_flight_configuration"
-                  action="action_flight_prefix_list"
-                  sequence="10"/>
-        <menuitem id="menu_flight_number"
-                  name="Flight Numbers"
-                  parent="flight.menu_flight_flight_configuration"
-                  action="action_flight_number_list"
-                  sequence="20"/>
+        <menuitem
+      id="menu_flight_prefix"
+      name="Flight Prefixes"
+      parent="flight.menu_flight_flight_configuration"
+      action="action_flight_prefix_list"
+      sequence="10"
+    />
+        <menuitem
+      id="menu_flight_number"
+      name="Flight Numbers"
+      parent="flight.menu_flight_flight_configuration"
+      action="action_flight_number_list"
+      sequence="20"
+    />
     </data>
 </odoo>

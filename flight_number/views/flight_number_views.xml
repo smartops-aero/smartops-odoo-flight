@@ -5,9 +5,9 @@
         <field name="model">flight.number</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="display_name" string="Flight Number"/>
-                <field name="prefix_id"/>
-                <field name="number"/>
+                <field name="display_name" string="Flight Number" />
+                <field name="prefix_id" />
+                <field name="number" />
             </tree>
         </field>
     </record>
@@ -20,8 +20,8 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="prefix_id"/>
-                        <field name="number"/>
+                        <field name="prefix_id" />
+                        <field name="number" />
                     </group>
                 </sheet>
             </form>
@@ -34,9 +34,9 @@
         <field name="model">flight.number</field>
         <field name="arch" type="xml">
             <search>
-                <field name="display_name" string="Flight Number"/>
-                <field name="prefix_id"/>
-                <field name="number"/>
+                <field name="display_name" string="Flight Number" />
+                <field name="prefix_id" />
+                <field name="number" />
             </search>
         </field>
     </record>

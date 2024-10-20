@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Flight Event Code Tree View -->
     <record id="view_flight_event_code_tree" model="ir.ui.view">
@@ -6,9 +6,9 @@
         <field name="model">flight.event.code</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="code"/>
-                <field name="name"/>
-                <field name="sequence" widget="handle"/>
+                <field name="code" />
+                <field name="name" />
+                <field name="sequence" widget="handle" />
             </tree>
         </field>
     </record>
@@ -21,10 +21,10 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="code"/>
-                        <field name="sequence"/>
-                        <field name="name"/>
-                        <field name="description"/>
+                        <field name="code" />
+                        <field name="sequence" />
+                        <field name="name" />
+                        <field name="description" />
                     </group>
                 </sheet>
             </form>

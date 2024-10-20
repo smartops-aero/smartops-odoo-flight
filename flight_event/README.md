@@ -30,12 +30,12 @@ The Flight Event module uses a sophisticated time input system:
 
 - Times are displayed in the user's time zone but stored as UTC in the database.
 - The input widget accepts times with additional timezone information. For example:
-    - `10:00 UTC` will be converted from UTC to your local time zone.
+  - `10:00 UTC` will be converted from UTC to your local time zone.
 - You can enter times relative to the flight date using the `+` or `-` notation:
-    - `10:00+1` means 10:00 AM on the day after the flight date.
-    - `23:00-1` means 11:00 PM on the day before the flight date.
+  - `10:00+1` means 10:00 AM on the day after the flight date.
+  - `23:00-1` means 11:00 PM on the day before the flight date.
 - Combining relative days and timezones is also possible:
-    - `10:00+1 UTC` means 10:00 AM UTC on the day after the flight date.
+  - `10:00+1 UTC` means 10:00 AM UTC on the day after the flight date.
 
 This flexible system allows for precise and convenient time entry across different time zones and flight schedules.
 

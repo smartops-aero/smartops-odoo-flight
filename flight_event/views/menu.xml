@@ -1,22 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Flight Event Time menu item under Flight/Flight submenu -->
-    <menuitem id="menu_flight_event_time"
-              name="Flight Events"
-              action="action_flight_event_time_list"
-              parent="flight.menu_flight"
-              sequence="20"/>
+    <menuitem
+    id="menu_flight_event_time"
+    name="Flight Events"
+    action="action_flight_event_time_list"
+    parent="flight.menu_flight"
+    sequence="20"
+  />
 
     <!-- Configuration menu items -->
-    <menuitem id="menu_flight_event_code"
-              name="Flight Event Codes"
-              action="action_flight_event_code_list"
-              parent="flight.menu_flight_flight_configuration"
-              sequence="10"/>
+    <menuitem
+    id="menu_flight_event_code"
+    name="Flight Event Codes"
+    action="action_flight_event_code_list"
+    parent="flight.menu_flight_flight_configuration"
+    sequence="10"
+  />
 
-    <menuitem id="menu_flight_phase"
-              name="Flight Phases"
-              action="action_flight_phase_list"
-              parent="flight.menu_flight_flight_configuration"
-              sequence="20"/>
+    <menuitem
+    id="menu_flight_phase"
+    name="Flight Phases"
+    action="action_flight_phase_list"
+    parent="flight.menu_flight_flight_configuration"
+    sequence="20"
+  />
 </odoo>

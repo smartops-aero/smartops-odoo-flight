@@ -1,48 +1,62 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
         <!-- Flight Module Category -->
         <record id="module_category_flight" model="ir.module.category">
             <field name="name">Flight Management</field>
-            <field name="description">User access level for the Flight module</field>
+            <field
+        name="description"
+      >User access level for the Flight module</field>
             <field name="sequence">20</field>
         </record>
 
         <!-- Flight User Group -->
         <record id="group_flight_user" model="res.groups">
             <field name="name">User</field>
-            <field name="category_id" ref="module_category_flight"/>
+            <field name="category_id" ref="module_category_flight" />
             <field name="comment">Read-only access to flight information</field>
         </record>
 
         <!-- Flight Crew Group -->
         <record id="group_flight_crew" model="res.groups">
             <field name="name">Crew</field>
-            <field name="category_id" ref="module_category_flight"/>
-            <field name="implied_ids" eval="[(4, ref('group_flight_user'))]"/>
-            <field name="comment">Access to update flight-related information</field>
+            <field name="category_id" ref="module_category_flight" />
+            <field name="implied_ids" eval="[(4, ref('group_flight_user'))]" />
+            <field
+        name="comment"
+      >Access to update flight-related information</field>
         </record>
 
         <!-- Flight Dispatcher Group -->
         <record id="group_flight_dispatcher" model="res.groups">
             <field name="name">Dispatcher</field>
-            <field name="category_id" ref="module_category_flight"/>
-            <field name="implied_ids" eval="[(4, ref('group_flight_crew'))]"/>
-            <field name="comment">Full access to manage flights and related data</field>
+            <field name="category_id" ref="module_category_flight" />
+            <field name="implied_ids" eval="[(4, ref('group_flight_crew'))]" />
+            <field
+        name="comment"
+      >Full access to manage flights and related data</field>
         </record>
 
         <!-- Flight Manager Group -->
         <record id="group_flight_manager" model="res.groups">
             <field name="name">Manager</field>
-            <field name="category_id" ref="module_category_flight"/>
-            <field name="implied_ids" eval="[(4, ref('group_flight_dispatcher'))]"/>
-            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
-            <field name="comment">Full access to all flight module features and configuration</field>
+            <field name="category_id" ref="module_category_flight" />
+            <field
+        name="implied_ids"
+        eval="[(4, ref('group_flight_dispatcher'))]"
+      />
+            <field
+        name="users"
+        eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+      />
+            <field
+        name="comment"
+      >Full access to all flight module features and configuration</field>
         </record>
 
         <!-- Make groups visible in user form -->
         <record id="base.user_admin" model="res.users">
-            <field name="groups_id" eval="[(4,ref('group_flight_manager'))]"/>
+            <field name="groups_id" eval="[(4,ref('group_flight_manager'))]" />
         </record>
 
         <!-- Add Flight groups to 'Access Rights' group category -->

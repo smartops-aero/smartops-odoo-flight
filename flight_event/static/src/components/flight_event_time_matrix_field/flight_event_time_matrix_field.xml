@@ -1,19 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
     <t t-name="flight_event.FlightEventTimeMatrixField" owl="1">
         <div class="table-responsive">
             <t t-if="state.date">
                 <FlightEventTimeMatrixRenderer
-                        list="list"
-                        date="state.date"
-                        onUpdate="(timeKind, eventCodeId, value) => this.commitChange(timeKind, eventCodeId, value)"
-                        eventCodes="this.eventCodes"
-                        timeKinds="this.timeKinds"
-                        readonly="props.readonly"
-                />
+          list="list"
+          date="state.date"
+          onUpdate="(timeKind, eventCodeId, value) => this.commitChange(timeKind, eventCodeId, value)"
+          eventCodes="this.eventCodes"
+          timeKinds="this.timeKinds"
+          readonly="props.readonly"
+        />
             </t>
             <t t-else="">
-                <p class="text-muted">Choose a flight date to start adding events</p>
+                <p
+          class="text-muted"
+        >Choose a flight date to start adding events</p>
             </t>
         </div>
     </t>

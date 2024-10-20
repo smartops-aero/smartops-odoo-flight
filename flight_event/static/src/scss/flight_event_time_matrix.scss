@@ -1,59 +1,63 @@
 .o_field_flight_event_time_matrix {
-    @extend .o_field_widget;
-    @extend .o_field_many2many;
+  @extend .o_field_widget;
+  @extend .o_field_many2many;
 
-    .table-responsive {
-        max-height: 450px;
-        overflow: auto;
+  .table-responsive {
+    max-height: 450px;
+    overflow: auto;
+  }
+
+  table.o_list_table {
+    @extend .table-sm;
+    width: 100%;
+
+    thead {
+      tr th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background-color: $o-list-footer-bg-color;
+
+        &:first-child {
+          left: 0;
+          z-index: 2;
+        }
+      }
     }
 
-    table.o_list_table {
-        @extend .table-sm;
-        width: 100%;
-
-        thead {
-            tr th {
-                position: sticky;
-                top: 0;
-                z-index: 1;
-                background-color: $o-list-footer-bg-color;
-
-                &:first-child {
-                    left: 0;
-                    z-index: 2;
-                }
-            }
+    tbody {
+      tr {
+        td:first-child {
+          position: sticky;
+          left: 0;
+          background-color: $o-view-background-color;
+          z-index: 1;
+          width: 200px;
+          text-align: left;
+          font-weight: $font-weight-bold;
+          box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
         }
 
-        tbody {
-            tr {
-                td:first-child {
-                    position: sticky;
-                    left: 0;
-                    background-color: $o-view-background-color;
-                    z-index: 1;
-                    width: 200px;
-                    text-align: left;
-                    font-weight: $font-weight-bold;
-                    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-                }
-
-                &:hover {
-                    background-color: mix($o-brand-primary, $o-view-background-color, 10%);
-                }
-            }
+        &:hover {
+          background-color: mix(
+            $o-brand-primary,
+            $o-view-background-color,
+            10%
+          );
         }
+      }
     }
+  }
 
-    // Fade-out effect for bottom of the table
-    &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 30px;
-        background: linear-gradient(to top, $o-view-background-color, transparent);
-        pointer-events: none;
-    }
+  // Fade-out effect for bottom of the table
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(to top, $o-view-background-color, transparent);
+    pointer-events: none;
+  }
 }

@@ -1,12 +1,12 @@
 # Copyright 2024 Apexive <https://apexive.com/>
 # License MIT (https://opensource.org/licenses/MIT).
-from odoo import models, fields, api, _
+from odoo import fields, models
 
 
 class FlightFlight(models.Model):
-    _inherit = 'flight.flight'
-    _rec_name = 'number_id'
-    number_id = fields.Many2one('flight.number', "Flight Number")
+    _inherit = "flight.flight"
+    _rec_name = "number_id"
+    number_id = fields.Many2one("flight.number", "Flight Number")
 
     def name_get(self):
         result = []

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Aircraft Tree View -->
     <record id="view_flight_aircraft_tree" model="ir.ui.view">
@@ -6,10 +6,10 @@
         <field name="model">flight.aircraft</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="registration"/>
-                <field name="model_id"/>
-                <field name="sn"/>
-                <field name="dom"/>
+                <field name="registration" />
+                <field name="model_id" />
+                <field name="sn" />
+                <field name="dom" />
             </tree>
         </field>
     </record>
@@ -21,22 +21,30 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                    <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
+                    <field
+            name="image_1920"
+            widget="image"
+            class="oe_avatar"
+            options="{'preview_image': 'image_128'}"
+          />
                     <div class="oe_title">
-                        <h1><field name="registration" placeholder="Aircraft registration"/></h1>
+                        <h1><field
+                name="registration"
+                placeholder="Aircraft registration"
+              /></h1>
                     </div>
                     <group>
-                        <field name="sn"/>
-                        <field name="model_id"/>
-                        <field name="dom"/>
-                        <field name="mtow_lb"/>
-                        <field name="equipment_type"/>
+                        <field name="sn" />
+                        <field name="model_id" />
+                        <field name="dom" />
+                        <field name="mtow_lb" />
+                        <field name="equipment_type" />
                     </group>
                 </sheet>
                 <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
                 </div>
             </form>
         </field>
@@ -48,11 +56,16 @@
         <field name="model">flight.aircraft</field>
         <field name="arch" type="xml">
             <search>
-                <field name="registration"/>
-                <field name="model_id"/>
-                <field name="sn"/>
+                <field name="registration" />
+                <field name="model_id" />
+                <field name="sn" />
                 <group expand="0" string="Group By">
-                    <filter string="Model" name="groupby_model" domain="[]" context="{'group_by': 'model_id'}"/>
+                    <filter
+            string="Model"
+            name="groupby_model"
+            domain="[]"
+            context="{'group_by': 'model_id'}"
+          />
                 </group>
             </search>
         </field>
@@ -71,8 +84,8 @@
         <field name="model">flight.aircraft.class</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="name"/>
-                <field name="aircraft_category"/>
+                <field name="name" />
+                <field name="aircraft_category" />
             </tree>
         </field>
     </record>
@@ -84,15 +97,18 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="name"/>
-                        <field name="aircraft_category"/>
+                        <field name="name" />
+                        <field name="aircraft_category" />
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <record id="action_flight_aircraft_class_list" model="ir.actions.act_window">
+    <record
+    id="action_flight_aircraft_class_list"
+    model="ir.actions.act_window"
+  >
         <field name="name">Aircraft Classes</field>
         <field name="res_model">flight.aircraft.class</field>
         <field name="view_mode">tree,form</field>
@@ -104,7 +120,7 @@
         <field name="model">flight.aircraft.make</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="name"/>
+                <field name="name" />
             </tree>
         </field>
     </record>
@@ -116,7 +132,7 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="name"/>
+                        <field name="name" />
                     </group>
                 </sheet>
             </form>
@@ -135,12 +151,12 @@
         <field name="model">flight.aircraft.model</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="name"/>
-                <field name="make_id"/>
-                <field name="class_id"/>
-                <field name="engine_type"/>
-                <field name="gear_type"/>
-                <field name="code"/>
+                <field name="name" />
+                <field name="make_id" />
+                <field name="class_id" />
+                <field name="engine_type" />
+                <field name="gear_type" />
+                <field name="code" />
             </tree>
         </field>
     </record>
@@ -152,20 +168,23 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="name"/>
-                        <field name="make_id"/>
-                        <field name="class_id"/>
-                        <field name="engine_type"/>
-                        <field name="gear_type"/>
-                        <field name="code"/>
-                        <field name="tag_ids" widget="many2many_tags"/>
+                        <field name="name" />
+                        <field name="make_id" />
+                        <field name="class_id" />
+                        <field name="engine_type" />
+                        <field name="gear_type" />
+                        <field name="code" />
+                        <field name="tag_ids" widget="many2many_tags" />
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <record id="action_flight_aircraft_model_list" model="ir.actions.act_window">
+    <record
+    id="action_flight_aircraft_model_list"
+    model="ir.actions.act_window"
+  >
         <field name="name">Aircraft Models</field>
         <field name="res_model">flight.aircraft.model</field>
         <field name="view_mode">tree,form</field>
@@ -177,7 +196,7 @@
         <field name="model">flight.aircraft.model.tag</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="name"/>
+                <field name="name" />
             </tree>
         </field>
     </record>
@@ -189,14 +208,17 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="name"/>
+                        <field name="name" />
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <record id="action_flight_aircraft_model_tag_list" model="ir.actions.act_window">
+    <record
+    id="action_flight_aircraft_model_tag_list"
+    model="ir.actions.act_window"
+  >
         <field name="name">Aircraft Model Tags</field>
         <field name="res_model">flight.aircraft.model.tag</field>
         <field name="view_mode">tree,form</field>

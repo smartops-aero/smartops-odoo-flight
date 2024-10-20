@@ -1,71 +1,95 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Top Level App Menu: Flights -->
-    <menuitem id="menu_flight_root"
-              name="Flights"
-              sequence="10"
-              web_icon="flight,static/description/icon.png"/>
+    <menuitem
+    id="menu_flight_root"
+    name="Flights"
+    sequence="10"
+    web_icon="flight,static/description/icon.png"
+  />
 
     <!-- Flights Submenu -->
-    <menuitem id="menu_flight"
-              name="Flights"
-              parent="menu_flight_root"
-              sequence="10"/>
+    <menuitem
+    id="menu_flight"
+    name="Flights"
+    parent="menu_flight_root"
+    sequence="10"
+  />
 
-    <menuitem id="menu_flight_list"
-              name="Flights"
-              parent="menu_flight"
-              action="action_flight_flight_list"
-              sequence="10"/>
+    <menuitem
+    id="menu_flight_list"
+    name="Flights"
+    parent="menu_flight"
+    action="action_flight_flight_list"
+    sequence="10"
+  />
 
     <!-- Aircraft Submenu -->
-    <menuitem id="menu_aircraft"
-              name="Aircraft"
-              parent="menu_flight_root"
-              sequence="20"/>
+    <menuitem
+    id="menu_aircraft"
+    name="Aircraft"
+    parent="menu_flight_root"
+    sequence="20"
+  />
 
-    <menuitem id="menu_aircraft_list"
-              name="Aircraft"
-              parent="menu_aircraft"
-              action="action_flight_aircraft_list"
-              sequence="10"/>
+    <menuitem
+    id="menu_aircraft_list"
+    name="Aircraft"
+    parent="menu_aircraft"
+    action="action_flight_aircraft_list"
+    sequence="10"
+  />
 
     <!-- Configuration Submenu -->
-    <menuitem id="menu_flight_configuration"
-              name="Configuration"
-              parent="menu_flight_root"
-              sequence="100"/>
+    <menuitem
+    id="menu_flight_configuration"
+    name="Configuration"
+    parent="menu_flight_root"
+    sequence="100"
+  />
 
-    <menuitem id="menu_aerodrome"
-              name="Aerodromes"
-              parent="menu_flight_configuration"
-              action="action_flight_aerodrome_list"
-              sequence="10"/>
+    <menuitem
+    id="menu_aerodrome"
+    name="Aerodromes"
+    parent="menu_flight_configuration"
+    action="action_flight_aerodrome_list"
+    sequence="10"
+  />
 
-    <menuitem id="menu_flight_aircraft_configuration"
-              name="Aircraft"
-              parent="menu_flight_configuration"
-              sequence="20"/>
+    <menuitem
+    id="menu_flight_aircraft_configuration"
+    name="Aircraft"
+    parent="menu_flight_configuration"
+    sequence="20"
+  />
 
-    <menuitem id="menu_flight_aircraft_model"
-              name="Aircraft Models"
-              parent="menu_flight_aircraft_configuration"
-              action="action_flight_aircraft_model_list"
-              sequence="10"/>
+    <menuitem
+    id="menu_flight_aircraft_model"
+    name="Aircraft Models"
+    parent="menu_flight_aircraft_configuration"
+    action="action_flight_aircraft_model_list"
+    sequence="10"
+  />
 
-    <menuitem id="menu_flight_aircraft_model_tag"
-              name="Aircraft Model Tags"
-              parent="menu_flight_aircraft_configuration"
-              action="action_flight_aircraft_model_tag_list"
-              sequence="20"/>
+    <menuitem
+    id="menu_flight_aircraft_model_tag"
+    name="Aircraft Model Tags"
+    parent="menu_flight_aircraft_configuration"
+    action="action_flight_aircraft_model_tag_list"
+    sequence="20"
+  />
 
-    <menuitem id="menu_flight_flight_configuration"
-              name="Flights"
-              parent="menu_flight_configuration"
-              sequence="30"/>
+    <menuitem
+    id="menu_flight_flight_configuration"
+    name="Flights"
+    parent="menu_flight_configuration"
+    sequence="30"
+  />
 
-    <menuitem id="menu_flight_crew_configuration"
-              name="Crew"
-              parent="menu_flight_configuration"
-              sequence="40"/>
+    <menuitem
+    id="menu_flight_crew_configuration"
+    name="Crew"
+    parent="menu_flight_configuration"
+    sequence="40"
+  />
 </odoo>
