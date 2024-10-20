@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class FlightFlight(models.Model):
@@ -25,3 +25,11 @@ class FlightFlight(models.Model):
     def toggle_locked(self):
         for record in self:
             record.locked = not record.locked
+
+    @api.model
+    def action_lock_flights(self):
+        self.write({"locked": True})
+
+    @api.model
+    def action_unlock_flights(self):
+        self.write({"locked": False})
