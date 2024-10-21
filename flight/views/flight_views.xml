@@ -58,15 +58,12 @@
 
     <!-- Lock Flights Server Action -->
     <record id="action_lock_flights" model="ir.actions.server">
-        <field name="name">Lock Flights</field>
-        <field name="type">ir.actions.server</field>
+        <field name="name">Lock Selected Flights</field>
         <field name="model_id" ref="model_flight_flight" />
         <field name="binding_model_id" ref="model_flight_flight" />
-        <field name="binding_view_types">list</field>
         <field name="state">code</field>
         <field name="code">
-            if records:
-            action = records.action_lock_flights()
+            records.filtered(lambda r: not r.locked).write({'locked': True})
         </field>
         <field
       name="groups_id"
@@ -76,15 +73,12 @@
 
     <!-- Unlock Flights Server Action -->
     <record id="action_unlock_flights" model="ir.actions.server">
-        <field name="name">Unlock Flights</field>
-        <field name="type">ir.actions.server</field>
+        <field name="name">Unlock Selected Flights</field>
         <field name="model_id" ref="model_flight_flight" />
         <field name="binding_model_id" ref="model_flight_flight" />
-        <field name="binding_view_types">list</field>
         <field name="state">code</field>
         <field name="code">
-            if records:
-            action = records.action_unlock_flights()
+            records.filtered(lambda r: r.locked).write({'locked': False})
         </field>
         <field
       name="groups_id"
