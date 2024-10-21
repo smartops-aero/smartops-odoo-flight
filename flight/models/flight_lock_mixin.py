@@ -13,7 +13,7 @@ class FlightLockMixin(models.AbstractModel):
             return True
         return False
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if self._check_flight_locked():
             raise UserError(_("You cannot create records for a locked flight."))
