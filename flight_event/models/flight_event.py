@@ -85,40 +85,67 @@ class FlightEventTime(models.Model):
 
     def _create_phase_durations(self, new_events):
         FlightPhaseDuration = self.env["flight.phase.duration"]
+        durations_to_create = []
+
+        # Group events by flight to process all events for each flight together
+        events_by_flight = {}
         for event in new_events:
-            flight = event.flight_id
+            events_by_flight.setdefault(event.flight_id, []).append(event)
 
-            # Check for phases that this event starts
-            for phase in event.start_phase_ids:
-                end_event = self._find_matching_end_event(
-                    flight, phase, event.time_kind
-                )
-                if end_event:
-                    FlightPhaseDuration.create(
-                        {
-                            "flight_id": flight.id,
-                            "phase_id": phase.id,
-                            "start_event_id": event.id,
-                            "end_event_id": end_event.id,
-                            "time_kind": event.time_kind,
-                        }
-                    )
+        for flight, flight_events in events_by_flight.items():
+            # Get existing phase durations for this flight to avoid duplicates
+            existing_durations = set(
+                (d.flight_id.id, d.phase_id.id, d.time_kind)
+                for d in flight.phase_duration_ids
+            )
 
-            # Check for phases that this event ends
-            for phase in event.end_phase_ids:
-                start_event = self._find_matching_start_event(
-                    flight, phase, event.time_kind
-                )
-                if start_event:
-                    FlightPhaseDuration.create(
-                        {
-                            "flight_id": flight.id,
-                            "phase_id": phase.id,
-                            "start_event_id": start_event.id,
-                            "end_event_id": event.id,
-                            "time_kind": event.time_kind,
-                        }
+            # Process all new events for this flight
+            for event in flight_events:
+                # Check phases that this event starts
+                for phase in event.start_phase_ids:
+                    end_event = self._find_matching_end_event(
+                        flight, phase, event.time_kind
                     )
+                    if (
+                        end_event
+                        and (flight.id, phase.id, event.time_kind)
+                        not in existing_durations
+                    ):
+                        durations_to_create.append(
+                            {
+                                "flight_id": flight.id,
+                                "phase_id": phase.id,
+                                "start_event_id": event.id,
+                                "end_event_id": end_event.id,
+                                "time_kind": event.time_kind,
+                            }
+                        )
+                        existing_durations.add((flight.id, phase.id, event.time_kind))
+
+                # Check phases that this event ends
+                for phase in event.end_phase_ids:
+                    start_event = self._find_matching_start_event(
+                        flight, phase, event.time_kind
+                    )
+                    if (
+                        start_event
+                        and (flight.id, phase.id, event.time_kind)
+                        not in existing_durations
+                    ):
+                        durations_to_create.append(
+                            {
+                                "flight_id": flight.id,
+                                "phase_id": phase.id,
+                                "start_event_id": start_event.id,
+                                "end_event_id": event.id,
+                                "time_kind": event.time_kind,
+                            }
+                        )
+                        existing_durations.add((flight.id, phase.id, event.time_kind))
+
+        # Create all durations in a single batch operation
+        if durations_to_create:
+            FlightPhaseDuration.create(durations_to_create)
 
     def _find_matching_end_event(self, flight, phase, time_kind):
         return flight.event_time_ids.filtered(
