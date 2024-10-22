@@ -21,10 +21,35 @@
                             </tree>
                         </field>
                     </page>
+                    <page string="Phase Durations">
+                        <field name="phase_duration_ids">
+                            <tree>
+                                <field name="phase_id" />
+                                <field name="time_kind" />
+                                <field name="start_event_id" />
+                                <field name="end_event_id" />
+                                <field name="duration" widget="float_time" />
+                            </tree>
+                        </field>
+                    </page>
                 </notebook>
             </sheet>
         </field>
     </record>
+
+    <record
+    id="action_create_missing_flight_durations"
+    model="ir.actions.server"
+  >
+        <field name="name">Create Missing Flight Durations</field>
+        <field name="model_id" ref="model_flight_flight" />
+        <field name="binding_model_id" ref="model_flight_flight" />
+        <field name="state">code</field>
+        <field name="code">
+            records.create_missing_phase_durations()
+        </field>
+    </record>
+
 
     <record id="view_flight_tree_inherited" model="ir.ui.view">
         <field name="name">flight.flight.tree.inherited</field>
@@ -35,7 +60,16 @@
                 <field name="block_duration" widget="float_time" />
                 <field name="flight_duration" widget="float_time" />
             </xpath>
+            <xpath expr="//tree" position="inside">
+                <header>
+                    <button
+            name="%(action_create_missing_flight_durations)d"
+            type="action"
+            string="Create Missing Durations"
+            class="btn-primary"
+          />
+                </header>
+            </xpath>
         </field>
     </record>
-
 </odoo>

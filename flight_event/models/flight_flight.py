@@ -1,5 +1,3 @@
-import json
-
 from odoo import api, fields, models
 
 
@@ -9,76 +7,46 @@ class FlightFlight(models.Model):
     event_time_ids = fields.One2many(
         "flight.event.time", "flight_id", string="Event Times", tracking=True
     )
-    durations = fields.Json(compute="_compute_durations", store=False)
+
+    phase_duration_ids = fields.One2many(
+        "flight.phase.duration", "flight_id", string="Phase Durations"
+    )
+
+    block_duration = fields.Float(
+        string="Block Duration",
+        compute="_compute_durations",
+        store=True,
+    )
+
+    flight_duration = fields.Float(
+        string="Flight Duration",
+        compute="_compute_durations",
+        store=True,
+    )
 
     @api.depends(
-        "event_time_ids.time", "event_time_ids.code_id", "event_time_ids.time_kind"
+        "phase_duration_ids",
+        "phase_duration_ids.duration",
+        "phase_duration_ids.phase_id",
+        "phase_duration_ids.time_kind",
     )
     def _compute_durations(self):
-        Phase = self.env["flight.phase"]
-        phases = Phase.search([])
-        time_kinds = dict(self.env["flight.event.time"]._fields["time_kind"].selection)
-
         for flight in self:
-            durations = {}
-            for phase in phases:
-                for time_kind in time_kinds:
-                    field_name = (
-                        f"{phase.name.lower().replace(' ', '_')}_{time_kind.lower()}"
-                    )
-                    start_time = flight._get_event_time(
-                        phase.start_event_code_id, time_kind
-                    )
-                    end_time = flight._get_event_time(
-                        phase.end_event_code_id, time_kind
-                    )
-
-                    if start_time and end_time:
-                        duration = (
-                            end_time.time - start_time.time
-                        ).total_seconds() / 3600
-                        durations[field_name] = duration
-                    else:
-                        durations[field_name] = 0.0
-
-            # Set specific durations
-            durations["block"] = durations.get("block_a", 0.0) or durations.get(
-                "block_s", 0.0
+            actual_durations = flight.phase_duration_ids.filtered(
+                lambda d: d.time_kind == "A"
             )
-            durations["flight"] = durations.get("flight_a", 0.0) or durations.get(
-                "flight_s", 0.0
-            )
-
-            flight.durations = json.dumps(durations)
+            flight.block_duration = actual_durations.filtered(
+                lambda d: d.phase_id.name == "Block"
+            ).duration
+            flight.flight_duration = actual_durations.filtered(
+                lambda d: d.phase_id.name == "Flight"
+            ).duration
 
     def _get_event_time(self, code_id, time_kind):
         event_times = self.event_time_ids.filtered(
             lambda et: et.code_id == code_id and et.time_kind == time_kind
         )
         return event_times[0] if event_times else None
-
-    # Helper method to get duration values
-    def get_duration(self, duration_name):
-        self.ensure_one()
-        durations = json.loads(self.durations or "{}")
-        return durations.get(duration_name, 0.0)
-
-    @api.depends("durations")
-    def _compute_block_duration(self):
-        for flight in self:
-            flight.block_duration = flight.get_duration("block")
-
-    @api.depends("durations")
-    def _compute_flight_duration(self):
-        for flight in self:
-            flight.flight_duration = flight.get_duration("flight")
-
-    block_duration = fields.Float(
-        string="Block Duration", compute="_compute_block_duration", store=False
-    )
-    flight_duration = fields.Float(
-        string="Flight Duration", compute="_compute_flight_duration", store=False
-    )
 
     def write(self, vals):
         if "event_time_ids" in vals:
@@ -115,3 +83,38 @@ class FlightFlight(models.Model):
             if changes:
                 message = "Event Times Updated:<br>" + "<br>".join(changes)
                 record.message_post(body=message)
+
+    def create_missing_phase_durations(self):
+        FlightPhaseDuration = self.env["flight.phase.duration"]
+
+        for flight in self:
+            # Get all events for the current flight that start a phase and are not already linked to phase durations
+            start_events = flight.event_time_ids.filtered(
+                lambda e: e.start_phase_ids and not e.start_durations_ids
+            )
+
+            new_durations = []
+            for event in start_events:
+                for phase in event.start_phase_ids:
+                    end_event = self._find_matching_end_event(
+                        flight, phase, event.time_kind
+                    )
+                    if end_event:
+                        new_durations.append(
+                            {
+                                "flight_id": flight.id,
+                                "phase_id": phase.id,
+                                "start_event_id": event.id,
+                                "end_event_id": end_event.id,
+                                "time_kind": event.time_kind,
+                            }
+                        )
+
+            # Create new phase durations in batch
+            if new_durations:
+                FlightPhaseDuration.create(new_durations)
+
+    def _find_matching_end_event(self, flight, phase, time_kind):
+        return flight.event_time_ids.filtered(
+            lambda e: e.code_id == phase.end_event_code_id and e.time_kind == time_kind
+        )

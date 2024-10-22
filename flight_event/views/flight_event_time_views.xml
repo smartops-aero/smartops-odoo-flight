@@ -1,5 +1,67 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <!-- Flight Event Time Search View -->
+    <record id="view_flight_event_time_search" model="ir.ui.view">
+        <field name="name">flight.event.time.search</field>
+        <field name="model">flight.event.time</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="flight_id" />
+                <field name="code_id" />
+                <field name="time" />
+                <field name="time_kind" />
+                <field name="user_id" />
+                <filter
+          string="Actual"
+          name="actual"
+          domain="[('time_kind', '=', 'A')]"
+        />
+                <filter
+          string="Scheduled"
+          name="scheduled"
+          domain="[('time_kind', '=', 'S')]"
+        />
+                <filter
+          string="Today"
+          name="today"
+          domain="[('time', '&gt;=', context_today().strftime('%Y-%m-%d')), ('time', '&lt;', (context_today() + relativedelta(days=1)).strftime('%Y-%m-%d'))]"
+        />
+                <group expand="0" string="Group By">
+                    <filter
+            string="Flight"
+            name="group_by_flight"
+            context="{'group_by': 'flight_id'}"
+          />
+                    <filter
+            string="Aircraft"
+            name="group_by_aircraft"
+            context="{'group_by': 'aircraft_id'}"
+          />
+                    <filter
+            string="Event Code"
+            name="group_by_code"
+            context="{'group_by': 'code_id'}"
+          />
+                    <filter
+            string="Time Kind"
+            name="group_by_time_kind"
+            context="{'group_by': 'time_kind'}"
+          />
+                    <filter
+            string="User"
+            name="group_by_user"
+            context="{'group_by': 'user_id'}"
+          />
+                    <filter
+            string="Date"
+            name="group_by_date"
+            context="{'group_by': 'time:day'}"
+          />
+                </group>
+            </search>
+        </field>
+    </record>
+
     <!-- Flight Event Time Tree View -->
     <record id="view_flight_event_time_tree" model="ir.ui.view">
         <field name="name">flight.event.time.tree</field>
@@ -7,6 +69,11 @@
         <field name="arch" type="xml">
             <tree editable="bottom">
                 <field name="flight_id" />
+                <field
+          name="flight_id"
+          string="Aircraft"
+          widget="many2one_avatar_aircraft"
+        />
                 <field name="time_kind" />
                 <field name="code_id" />
                 <field name="time" />
@@ -15,14 +82,25 @@
         </field>
     </record>
 
+    <!-- Flight Event Time Calendar View -->
+    <record id="view_flight_event_time_calendar" model="ir.ui.view">
+        <field name="name">flight.event.time.calendar</field>
+        <field name="model">flight.event.time</field>
+        <field name="arch" type="xml">
+            <calendar string="Flight Events" date_start="time" color="code_id">
+                <field name="flight_id" />
+                <field name="code_id" />
+                <field name="time_kind" />
+            </calendar>
+        </field>
+    </record>
+
     <!-- Flight Event Time Action Window -->
     <record id="action_flight_event_time_list" model="ir.actions.act_window">
         <field name="name">Flight Event Times</field>
         <field name="res_model">flight.event.time</field>
-        <field name="view_mode">tree</field>
-        <field name="view_id" ref="view_flight_event_time_tree" />
-        <field
-      name="context"
-    >{'search_default_filter_by_aircraft':1, 'search_default_filter_by_date':1, 'search_default_filter_by_flight_number':1}</field>
+        <field name="view_mode">tree,calendar</field>
+        <field name="search_view_id" ref="view_flight_event_time_search" />
+        <field name="context">{'search_default_today': 1}</field>
     </record>
 </odoo>

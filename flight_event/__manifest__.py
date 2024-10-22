@@ -9,7 +9,7 @@
     "website": "https://github.com/OCA/server-env",
     "license": "LGPL-3",
     "category": "Industries",
-    "version": "16.0.1.0",
+    "version": "16.0.1.0.1",
     "depends": [
         "base",
         "flight",
@@ -30,6 +30,7 @@
         "views/flight_event_time_views.xml",
         "views/flight_phase_views.xml",
         "views/flight_views.xml",
+        "views/flight_phase_duration_views.xml",
         "data/flight.event.code.csv",
         "data/flight.phase.csv",
         "views/menu.xml",
