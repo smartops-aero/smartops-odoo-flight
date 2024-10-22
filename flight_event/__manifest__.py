@@ -6,7 +6,7 @@
         This module extends the base Flight module to provide tracking of flight events and phases, e.g. takeoff, landing, etc times
     """,
     "author": "Apexive Solutions LLC",
-    "website": "https://github.com/OCA/server-env",
+    "website": "https://github.com/smartops-aero/flight",
     "license": "LGPL-3",
     "category": "Industries",
     "version": "16.0.1.0.1",

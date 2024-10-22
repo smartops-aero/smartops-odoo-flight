@@ -5,7 +5,7 @@
     "description": """
             Adds a flight number and flight prefix fields to Flight module.""",
     "author": "Apexive Solutions LLC",
-    "website": "https://github.com/OCA/server-env",
+    "website": "https://github.com/smartops-aero/flight",
     "license": "LGPL-3",
     "category": "Industries",
     "version": "16.0.0.3",

@@ -2,7 +2,7 @@
     "name": "Flight Data Sync",
     "version": "16.0.0.1",
     "author": "Apexive Solutions LLC",
-    "website": "https://github.com/OCA/server-env",
+    "website": "https://github.com/smartops-aero/flight",
     "license": "LGPL-3",
     "category": "Industries",
     "summary": "Flight data synchronization from various providers",

@@ -14,7 +14,7 @@
             and import it using the Flights -> Configuration -> Aerodromes -> Favorites -> Import records function.
     """,
     "author": "Apexive Solutions LLC",
-    "website": "https://github.com/OCA/server-env",
+    "website": "https://github.com/smartops-aero/flight",
     "license": "LGPL-3",
     "category": "Industries",
     "version": "16.0.1.1.1",
