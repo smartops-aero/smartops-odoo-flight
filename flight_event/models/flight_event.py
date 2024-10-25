@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 
 class FlightEventCode(models.Model):
@@ -11,7 +12,7 @@ class FlightEventCode(models.Model):
 
     code = fields.Char(required=True)
     name = fields.Char(required=True)
-    description = fields.Char()
+    description = fields.Char(track=True)
     sequence = fields.Integer(default=10)
 
     start_phase_ids = fields.One2many(
@@ -35,6 +36,23 @@ EVENT_TIME_KINDS = [
 ]
 
 
+class FlightEventTimeHistory(models.Model):
+    _name = "flight.event.time.history"
+    _description = "Flight Event Time Change History"
+    _order = "write_date DESC"
+    _log_access = False
+
+    event_id = fields.Many2one(
+        "flight.event.time",
+        required=True,
+        ondelete="cascade",
+        index=True,
+    )
+    time = fields.Datetime()
+    write_uid = fields.Many2one("res.users", required=True, index=True)
+    write_date = fields.Datetime(required=True)
+
+
 class FlightEventTime(models.Model):
     _name = "flight.event.time"
     _description = "Flight Event Time"
@@ -48,12 +66,15 @@ class FlightEventTime(models.Model):
         "flight.aircraft",
         related="flight_id.aircraft_id",
         string="Aircraft",
+        index=True,
     )
     code_id = fields.Many2one(
-        "flight.event.code", "Flight Event Code", required=True, index=True
+        "flight.event.code",
+        "Flight Event Code",
+        required=True,
+        index=True,
     )
     code_name = fields.Char(string="Code Name", related="code_id.name")
-    user_id = fields.Many2one("res.users", default=lambda self: self.env.user.id)
     time_kind = fields.Selection(
         EVENT_TIME_KINDS,
         "Time Kind",
@@ -76,6 +97,24 @@ class FlightEventTime(models.Model):
     end_durations_ids = fields.One2many(
         "flight.phase.duration", "end_event_id", string="Ends Durations"
     )
+
+    def write(self, vals):
+        # Only allow updating the 'time' field
+        if set(vals.keys()) - {"time"}:
+            raise UserError("Only the time field can be modified after creation")
+        if self.time != vals["time"]:
+            self.env["flight.event.time.history"].sudo().create(
+                [
+                    {
+                        "event_id": self.id,
+                        "time": self.time,
+                        "write_uid": self.write_uid.id,
+                        "write_date": self.write_date,
+                    }
+                ]
+            )
+
+        return super().write(vals)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -181,3 +220,16 @@ class FlightEventTime(models.Model):
     def _compute_display_name(self):
         for record in self:
             record.display_name = f"{record.time_kind}{record.code_id.code}T {record.display_time}".upper()
+
+    def action_view_time_changes(self):
+        self.ensure_one()
+        return {
+            "name": f"Time Changes - {self.display_name}",
+            "type": "ir.actions.act_window",
+            "res_model": "flight.event.time.history",
+            "view_mode": "tree",
+            "views": [[False, "tree"]],
+            "domain": [("event_id", "=", self.id)],
+            "target": "new",
+            "context": {"create": False},
+        }
