@@ -78,6 +78,7 @@
                 <field name="code_id" />
                 <field name="time" />
                 <field name="write_uid" />
+                <field name="has_history" invisible="1" />
                 <button
           name="action_view_time_changes"
           type="object"
@@ -88,7 +89,6 @@
             </tree>
         </field>
     </record>
-
 
     <!-- Flight Event Time Calendar View -->
     <record id="view_flight_event_time_calendar" model="ir.ui.view">
