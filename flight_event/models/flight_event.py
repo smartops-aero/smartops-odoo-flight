@@ -103,7 +103,7 @@ class FlightEventTime(models.Model):
         if set(vals.keys()) - {"time"}:
             raise UserError("Only the time field can be modified after creation")
         if self.time != vals["time"]:
-            self.env["flight.event.time.history"].sudo().create(
+            self.env["flight.event.time.history"].create(
                 [
                     {
                         "event_id": self.id,

@@ -48,41 +48,10 @@ class FlightFlight(models.Model):
         )
         return event_times[0] if event_times else None
 
-    def write(self, vals):
-        if "event_time_ids" in vals:
-            self._track_event_time_changes(vals["event_time_ids"])
-        result = super().write(vals)
-        return result
-
-    def _track_event_time_changes(self, event_time_vals):
-        for record in self:
-            changes = []
-            for command in event_time_vals:
-                if command[0] == 1:  # Update existing record
-                    event_time_id = command[1]
-                    new_values = command[2]
-                    old_event_time = self.env["flight.event.time"].browse(event_time_id)
-
-                    for field, new_value in new_values.items():
-                        old_value = old_event_time[field]
-                        if old_value != new_value:
-                            changes.append(
-                                f"{old_event_time.display_name}: {field} changed from {old_value} to {new_value or 'None'}"
-                            )
-
-                elif command[0] == 0:  # Create new record
-                    new_values = command[2]
-                    changes.append(f"Added: {new_values}")
-
-                elif command[0] == 2:  # Delete record
-                    deleted_event_time = self.env["flight.event.time"].browse(
-                        command[1]
-                    )
-                    changes.append(f"Removed: {deleted_event_time.display_name}")
-
-            if changes:
-                message = "Event Times Updated:<br>" + "<br>".join(changes)
-                record.message_post(body=message)
+    def _find_matching_end_event(self, flight, phase, time_kind):
+        return flight.event_time_ids.filtered(
+            lambda e: e.code_id == phase.end_event_code_id and e.time_kind == time_kind
+        )
 
     def create_missing_phase_durations(self):
         FlightPhaseDuration = self.env["flight.phase.duration"]
@@ -114,7 +83,129 @@ class FlightFlight(models.Model):
             if new_durations:
                 FlightPhaseDuration.create(new_durations)
 
-    def _find_matching_end_event(self, flight, phase, time_kind):
-        return flight.event_time_ids.filtered(
-            lambda e: e.code_id == phase.end_event_code_id and e.time_kind == time_kind
-        )
+    def write(self, vals):
+        result = super().write(vals)
+
+        if "event_time_ids" in vals:
+            self._log_event_time_changes(vals["event_time_ids"])
+        return result
+
+    def _format_display_time(self, time_value, flight_date):
+        """Format time value with day offset relative to flight date."""
+        if not time_value:
+            return ""
+
+        time_str = time_value.strftime("%H:%M")
+        days = (time_value.date() - flight_date).days
+        if days > 0:
+            time_str += f" (+{days})"
+        elif days < 0:
+            time_str += f" ({days})"
+        return time_str
+
+    def _log_event_time_changes(self, event_time_vals):
+        """Log changes to event times using a single optimized query."""
+        for record in self:
+            tracking = []
+
+            # Extract IDs and new values from commands
+            updates = {}
+            deletes = []
+
+            for command in event_time_vals:
+                if command[0] == 1 and "time" in command[2]:  # Update
+                    updates[command[1]] = command[2]["time"]
+                elif command[0] == 2:  # Delete
+                    deletes.append(command[1])
+                elif command[0] == 0:  # Create
+                    new_time = fields.Datetime.from_string(command[2].get("time"))
+                    new_display = self._format_display_time(new_time, record.date)
+                    event_code = f"{command[2].get('time_kind')}{self.env['flight.event.code'].browse(command[2].get('code_id')).code}"
+                    tracking.append(f"* → {new_display} ({event_code})")
+
+            # Process updates and deletes if any exist
+            event_ids = list(updates.keys()) + deletes
+            if event_ids:
+                query = """
+                    WITH event_changes AS (
+                        SELECT
+                            fet.id as event_id,
+                            fet.time_kind,
+                            fec.code as event_code,
+                            COALESCE(feth.time, fet.time) as old_time,
+                            CASE
+                                WHEN fet.id = ANY(%(delete_ids)s) THEN NULL
+                                ELSE COALESCE(%(updates)s::jsonb->fet.id::text->>0, fet.time::text)::timestamp
+                            END as new_time
+                        FROM
+                            flight_event_time fet
+                            JOIN flight_event_code fec ON fet.code_id = fec.id
+                            LEFT JOIN LATERAL (
+                                SELECT time
+                                FROM flight_event_time_history feth
+                                WHERE feth.event_id = fet.id
+                                ORDER BY write_date DESC
+                                LIMIT 1
+                            ) feth ON true
+                        WHERE
+                            fet.id = ANY(%(event_ids)s)
+                    )
+                    SELECT
+                        event_id,
+                        time_kind,
+                        event_code,
+                        old_time,
+                        new_time
+                    FROM
+                        event_changes
+                    WHERE
+                        old_time IS DISTINCT FROM new_time
+                    ORDER BY
+                        event_id
+                """
+
+                self.env.cr.execute(
+                    query,
+                    {
+                        "event_ids": event_ids,
+                        "delete_ids": deletes,
+                        "updates": {str(k): [v] for k, v in updates.items()}
+                        if updates
+                        else None,
+                    },
+                )
+
+                # Process existing events (updates and deletes)
+                for (
+                    event_id,
+                    time_kind,
+                    event_code,
+                    old_time,
+                    new_time,
+                ) in self.env.cr.fetchall():
+                    if event_id:
+                        old_display = (
+                            self._format_display_time(old_time, record.date)
+                            if old_time
+                            else ""
+                        )
+                        new_display = (
+                            self._format_display_time(new_time, record.date)
+                            if new_time
+                            else ""
+                        )
+                        event_code_display = f"{time_kind}{event_code}"
+
+                        if new_time is None:  # Delete
+                            tracking.append(f"* {old_display} → ({event_code_display})")
+                        else:  # Update
+                            tracking.append(
+                                f"* {old_display} → {new_display} ({event_code_display})"
+                            )
+
+            if tracking:
+                body = "\n".join(tracking)
+                self.message_post(
+                    body=body,
+                    message_type="mail.mt_note",
+                )
