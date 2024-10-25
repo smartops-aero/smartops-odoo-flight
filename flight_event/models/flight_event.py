@@ -12,7 +12,7 @@ class FlightEventCode(models.Model):
 
     code = fields.Char(required=True)
     name = fields.Char(required=True)
-    description = fields.Char(track=True)
+    description = fields.Char()
     sequence = fields.Integer(default=10)
 
     start_phase_ids = fields.One2many(
@@ -97,6 +97,16 @@ class FlightEventTime(models.Model):
     end_durations_ids = fields.One2many(
         "flight.phase.duration", "end_event_id", string="Ends Durations"
     )
+
+    history_ids = fields.One2many(
+        "flight.event.time.history", "event_id", string="History Records"
+    )
+    has_history = fields.Boolean(compute="_compute_has_history")
+
+    @api.depends("history_ids")
+    def _compute_has_history(self):
+        for record in self:
+            record.has_history = bool(record.history_ids)
 
     def write(self, vals):
         # Only allow updating the 'time' field
