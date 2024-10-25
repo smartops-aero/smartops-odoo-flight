@@ -1,3 +1,5 @@
+import json
+
 from odoo import api, fields, models
 
 
@@ -114,17 +116,17 @@ class FlightFlight(models.Model):
 
             for command in event_time_vals:
                 if command[0] == 1 and "time" in command[2]:  # Update
-                    updates[command[1]] = command[2]["time"]
+                    updates[str(command[1])] = command[2]["time"]
                 elif command[0] == 2:  # Delete
                     deletes.append(command[1])
                 elif command[0] == 0:  # Create
                     new_time = fields.Datetime.from_string(command[2].get("time"))
                     new_display = self._format_display_time(new_time, record.date)
-                    event_code = f"{command[2].get('time_kind')}{self.env['flight.event.code'].browse(command[2].get('code_id')).code}"
-                    tracking.append(f"* → {new_display} ({event_code})")
+                    event_code_display = f"{command[2].get('time_kind')}{self.env['flight.event.code'].browse(command[2].get('code_id')).code}T"
+                    tracking.append(f"* → {new_display} ({event_code_display})")
 
             # Process updates and deletes if any exist
-            event_ids = list(updates.keys()) + deletes
+            event_ids = list(map(int, updates.keys())) + deletes
             if event_ids:
                 query = """
                     WITH event_changes AS (
@@ -135,7 +137,7 @@ class FlightFlight(models.Model):
                             COALESCE(feth.time, fet.time) as old_time,
                             CASE
                                 WHEN fet.id = ANY(%(delete_ids)s) THEN NULL
-                                ELSE COALESCE(%(updates)s::jsonb->fet.id::text->>0, fet.time::text)::timestamp
+                                ELSE (%(updates)s::jsonb->>fet.id::text)::timestamp
                             END as new_time
                         FROM
                             flight_event_time fet
@@ -169,9 +171,7 @@ class FlightFlight(models.Model):
                     {
                         "event_ids": event_ids,
                         "delete_ids": deletes,
-                        "updates": {str(k): [v] for k, v in updates.items()}
-                        if updates
-                        else None,
+                        "updates": json.dumps(updates),
                     },
                 )
 
@@ -194,7 +194,7 @@ class FlightFlight(models.Model):
                             if new_time
                             else ""
                         )
-                        event_code_display = f"{time_kind}{event_code}"
+                        event_code_display = f"{time_kind}{event_code}T"
 
                         if new_time is None:  # Delete
                             tracking.append(f"* {old_display} → ({event_code_display})")
@@ -207,5 +207,4 @@ class FlightFlight(models.Model):
                 body = "\n".join(tracking)
                 self.message_post(
                     body=body,
-                    message_type="mail.mt_note",
                 )
