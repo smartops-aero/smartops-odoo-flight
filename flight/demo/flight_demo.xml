@@ -30,14 +30,14 @@
         <field name="model_id" ref="aircraft_model_b737" />
         <field name="sn">12345</field>
         <field name="dom">2015-01-01</field>
-        <field name="mtow_lb">174200</field>
+        <field name="mtow">174200</field>
     </record>
     <record id="aircraft_a320_1" model="flight.aircraft">
         <field name="registration">G-ABCD</field>
         <field name="model_id" ref="aircraft_model_a320" />
         <field name="sn">54321</field>
         <field name="dom">2018-06-15</field>
-        <field name="mtow_lb">172000</field>
+        <field name="mtow">172000</field>
     </record>
 
     <!-- Aerodromes -->

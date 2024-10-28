@@ -8,6 +8,7 @@
             <tree>
                 <field name="registration" />
                 <field name="model_id" />
+                <field name="operator_id" />
                 <field name="sn" />
                 <field name="dom" />
             </tree>
@@ -29,17 +30,31 @@
             options="{'preview_image': 'image_128'}"
           />
                     <div class="oe_title">
-                        <h1><field
+                        <h1>
+                            <field
                 name="registration"
                 placeholder="Aircraft registration"
-              /></h1>
+              />
+                        </h1>
                     </div>
                     <group>
-                        <field name="sn" />
-                        <field name="model_id" />
-                        <field name="dom" />
-                        <field name="mtow_lb" />
-                        <field name="equipment_type" />
+                        <group>
+                            <field name="sn" />
+                            <field name="model_id" />
+                            <field name="operator_id" />
+                            <field name="dom" />
+                            <field name="equipment_type" />
+                        </group>
+                        <group>
+                            <label for="mtow" />
+                            <div class="o_row">
+                                <field name="mtow" />
+                                <field
+                  name="weight_uom_id"
+                  options="{'no_create': True}"
+                />
+                            </div>
+                        </group>
                     </group>
                     <notebook />
                 </sheet>
@@ -60,6 +75,7 @@
             <search>
                 <field name="registration" />
                 <field name="model_id" />
+                <field name="operator_id" />
                 <field name="sn" />
                 <group expand="0" string="Group By">
                     <filter
@@ -68,10 +84,17 @@
             domain="[]"
             context="{'group_by': 'model_id'}"
           />
+                    <filter
+            string="Operator"
+            name="groupby_operator"
+            domain="[]"
+            context="{'group_by': 'operator_id'}"
+          />
                 </group>
             </search>
         </field>
     </record>
+
 
     <!-- Aircraft Action Window -->
     <record id="action_flight_aircraft_list" model="ir.actions.act_window">

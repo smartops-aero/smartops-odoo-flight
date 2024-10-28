@@ -91,6 +91,12 @@ class FlightAircraft(models.Model):
 
     registration = fields.Char("Aircraft registration", tracking=True)
     model_id = fields.Many2one("flight.aircraft.model", tracking=True)
+    operator_id = fields.Many2one(
+        "res.partner",
+        string="Operator",
+        tracking=True,
+        help="The company or individual operating this aircraft",
+    )
     sn = fields.Char("Aircraft serial number", tracking=True)
     dom = fields.Date("Date/year of manufacture", tracking=True)
     equipment_type = fields.Selection(
@@ -105,7 +111,21 @@ class FlightAircraft(models.Model):
         default="aircraft",
         tracking=True,
     )
-    mtow_lb = fields.Integer("Maximum take-off weight in pounds", tracking=True)
+    mtow = fields.Float(
+        "Maximum take-off weight",
+        tracking=True,
+        help="Maximum take-off weight of the aircraft",
+    )
+    weight_uom_id = fields.Many2one(
+        "uom.uom",
+        string="Weight Unit of Measure",
+        domain=lambda self: [
+            ("category_id", "=", self.env.ref("uom.product_uom_categ_kgm").id)
+        ],
+        default=lambda self: self.env.ref("uom.product_uom_lb"),
+        required=True,
+        tracking=True,
+    )
 
     _sql_constraints = [
         (
