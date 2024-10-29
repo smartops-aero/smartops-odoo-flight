@@ -9,7 +9,7 @@
                 <field name="access_token" invisible="1" />
                 <field name="access_url" invisible="1" />
                 <button
-          name="get_portal_url"
+          name="action_share"
           type="object"
           class="oe_stat_button"
           icon="fa-share-alt"
