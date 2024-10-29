@@ -116,7 +116,7 @@ class FlightDataProvider(models.Model):
             )
 
     def _dispatch(self, schedule, operation, *args, **kwargs):
-        method_name = f"_{operation}_{schedule.model.replace('flight.', '')}_data"
+        method_name = f"_{operation}_{schedule.model.replace('flight.', '').replace('.','_')}_data"
         method = getattr(self, method_name, False)
 
         if not method:
