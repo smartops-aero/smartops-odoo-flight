@@ -74,3 +74,4 @@ docs/_build/
 !static/lib/
 
 .ruff_cache
+.claudesync
