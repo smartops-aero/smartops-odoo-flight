@@ -1,24 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="view_flight_form_inherit_portal" model="ir.ui.view">
-        <field name="name">flight.flight.form.inherit.portal</field>
-        <field name="model">flight.flight</field>
-        <field name="inherit_id" ref="flight.view_flight_form" />
-        <field name="arch" type="xml">
-            <xpath expr="//div[@name='button_box']" position="inside">
-                <field name="access_token" invisible="1" />
-                <field name="access_url" invisible="1" />
-                <button
-          name="action_share"
-          type="object"
-          class="oe_stat_button"
-          icon="fa-share-alt"
-        >
-                    <div class="o_stat_info">
-                        <span class="o_stat_text">Share</span>
-                    </div>
-                </button>
-            </xpath>
-        </field>
+    <record id="model_flight_action_share" model="ir.actions.server">
+        <field name="name">Share</field>
+        <field name="model_id" ref="flight.model_flight_flight" />
+        <field name="binding_model_id" ref="flight.model_flight_flight" />
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_share()</field>
     </record>
 </odoo>
