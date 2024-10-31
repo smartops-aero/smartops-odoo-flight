@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="flight_phase_timeline_view" model="ir.ui.view">
+        <field name="name">flight.phase.duration.timeline</field>
+        <field name="model">flight.phase.duration</field>
+        <field name="type">timeline</field>
+        <field name="arch" type="xml">
+            <timeline
+        date_start="start_time"
+        date_stop="end_time"
+        default_group_by="aircraft_id"
+        colors="#2ecb71: time_kind == 'A'; #ec7063: time_kind == 'S'"
+        string="Aircraft Phase Timeline"
+        event_open_popup="true"
+      >
+                <field name="duration" widget="float_time" />
+                <field name="flight_id" />
+                <field name="aircraft_id" />
+                <field name="phase_id" />
+                <field name="time_kind" />
+                <templates>
+                    <t t-name="timeline-item">
+                        <div class="o_timeline_item">
+                            <div
+                t-attf-class="text-#{record.time_kind == 'A' ? 'success' : 'danger'} font-weight-bold"
+              >
+                                <t t-esc="record.aircraft_id.display_name" />
+                            </div>
+                            <div class="mt-1">
+                                <span class="text-muted">Phase:</span>
+                                <t t-esc="record.phase_id.display_name" />
+                                (<t t-esc="record.time_kind" />)
+                            </div>
+                            <small
+                name="duration"
+                class="text-info d-block mt-1"
+                t-if="record.duration"
+              >
+                                Duration: <t
+                  t-esc="field_utils.format.float_time(record.duration)"
+                />
+                            </small>
+                        </div>
+                    </t>
+                </templates>
+            </timeline>
+        </field>
+    </record>
+
+    <record id="view_flight_phase_duration_search" model="ir.ui.view">
+        <field name="name">flight.phase.duration.search</field>
+        <field name="model">flight.phase.duration</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="aircraft_id" />
+                <field name="phase_id" />
+                <field name="time_kind" />
+                <group expand="0" string="Group By">
+                    <filter
+            string="Aircraft"
+            name="group_aircraft"
+            context="{'group_by': 'aircraft_id'}"
+          />
+                    <filter
+            string="Phase"
+            name="group_phase"
+            context="{'group_by': 'phase_id'}"
+          />
+                    <filter
+            string="Time Kind"
+            name="group_time_kind"
+            context="{'group_by': 'time_kind'}"
+          />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_flight_phase_timeline" model="ir.actions.act_window">
+        <field name="name">Aircraft Phase Timeline</field>
+        <field name="res_model">flight.phase.duration</field>
+        <field name="view_mode">timeline,tree,form</field>
+        <field name="view_id" ref="flight_phase_timeline_view" />
+        <field name="search_view_id" ref="view_flight_phase_duration_search" />
+        <field name="context">{'search_default_group_aircraft': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No flight phases found
+            </p>
+            <p>
+                Flight phases will appear here once they are logged through flight events.
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+    id="menu_flight_phase_timeline"
+    name="Phase Timeline"
+    parent="flight.menu_flight"
+    action="action_flight_phase_timeline"
+    sequence="30"
+  />
+</odoo>
