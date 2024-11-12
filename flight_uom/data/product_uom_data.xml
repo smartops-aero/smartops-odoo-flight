@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Distance Category -->
+    <record id="product_uom_categ_distance" model="uom.category">
+        <field name="name">Distance</field>
+    </record>
+
+    <!-- Nautical Mile (nm) as reference unit -->
+    <record id="product_uom_nm" model="uom.uom">
+        <field name="category_id" ref="product_uom_categ_distance" />
+        <field name="name">nm</field>
+        <field name="display_name">Nautical Miles</field>
+        <field name="uom_type">reference</field>
+        <field name="rounding">0.00001</field>
+        <!-- No factor needed as this is the reference unit -->
+    </record>
+
+    <!-- Statute Mile (mi) -->
+    <record id="product_uom_sm" model="uom.uom">
+        <field name="category_id" ref="product_uom_categ_distance" />
+        <field name="name">mi</field>
+        <field name="display_name">Statute Miles</field>
+        <field name="uom_type">smaller</field>
+        <field name="rounding">0.00001</field>
+        <!-- 1 nm = 1.15078 statute miles -->
+        <field name="factor">1.15078</field>
+    </record>
+
+    <!-- Kilometers (km) -->
+    <record id="product_uom_km" model="uom.uom">
+        <field name="category_id" ref="product_uom_categ_distance" />
+        <field name="name">km</field>
+        <field name="display_name">Kilometers</field>
+        <field name="uom_type">smaller</field>
+        <field name="rounding">0.00001</field>
+        <!-- 1 nm = 1.852 km -->
+        <field name="factor">1.852</field>
+    </record>
+
+    <!-- Speed Category -->
+    <record id="product_uom_categ_speed" model="uom.category">
+        <field name="name">Speed</field>
+    </record>
+
+    <!-- Knots (kt) as reference unit -->
+    <record id="product_uom_kt" model="uom.uom">
+        <field name="category_id" ref="product_uom_categ_speed" />
+        <field name="name">kt</field>
+        <field name="display_name">Knots</field>
+        <field name="uom_type">reference</field>
+        <field name="rounding">0.00001</field>
+        <!-- No factor needed as this is the reference unit -->
+    </record>
+
+    <!-- Kilometers per hour (kph) -->
+    <record id="product_uom_kph" model="uom.uom">
+        <field name="category_id" ref="product_uom_categ_speed" />
+        <field name="name">kph</field>
+        <field name="display_name">Kilometers per hour</field>
+        <field name="uom_type">smaller</field>
+        <field name="rounding">0.00001</field>
+        <!-- 1 knot = 1.852 kph -->
+        <field name="factor">1.852</field>
+    </record>
+
+    <!-- Feet per second (fps) -->
+    <record id="product_uom_fps" model="uom.uom">
+        <field name="category_id" ref="product_uom_categ_speed" />
+        <field name="name">fps</field>
+        <field name="display_name">Feet per second</field>
+        <field name="uom_type">smaller</field>
+        <field name="rounding">0.00001</field>
+        <!-- 1 knot = 1.68781 fps -->
+        <field name="factor">1.68781</field>
+    </record>
+</odoo>
