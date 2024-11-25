@@ -1,0 +1,134 @@
+.s_website_flight_fleet_multiple_carousel {
+  .multiple-cards-carousel {
+    position: relative;
+    padding: 1em;
+    overflow: visible;
+
+    .carousel-inner {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: calc(100% / 3.5);
+      gap: 1rem;
+      overflow-x: scroll;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none; // Firefox
+      -ms-overflow-style: none; // IE and Edge
+
+      &::-webkit-scrollbar {
+        display: none; // Chrome, Safari, Opera
+      }
+
+      // Show multiple items
+      .carousel-item {
+        scroll-snap-align: start;
+        display: block; // Override Bootstrap's display: none
+        margin-right: 0;
+        flex-shrink: 0;
+
+        &.active {
+          // Reset Bootstrap's transform
+          transform: none;
+        }
+
+        .card {
+          background: transparent;
+
+          .img-wrapper {
+            position: relative;
+            padding-bottom: 100%; // 1:1 Aspect ratio
+            overflow: hidden;
+            border-radius: 1rem;
+
+            img {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              transition: transform 0.3s ease;
+
+              &:hover {
+                transform: scale(1.05);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // New indicators styles
+    .carousel-indicators {
+      position: absolute;
+      bottom: -2rem; // Position below the carousel
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 15;
+
+      li {
+        width: 8px;
+        height: 8px;
+        border-radius: 100%;
+        background-color: rgba(0, 0, 0, 0.3);
+        border: none;
+        margin: 0;
+        padding: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+
+        &.active {
+          background-color: rgba(0, 0, 0, 0.8);
+          transform: scale(1.2);
+        }
+      }
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+      background-color: var(--o-color-3);
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.7;
+      z-index: 10;
+
+      &:hover {
+        opacity: 1;
+      }
+
+      &-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    }
+
+    .carousel-control-prev {
+      left: 0;
+    }
+
+    .carousel-control-next {
+      right: 0;
+    }
+  }
+
+  // Tablet responsiveness
+  @media (max-width: 991px) {
+    .multiple-cards-carousel .carousel-inner {
+      grid-auto-columns: calc(100% / 2.5); // 2 items per view
+    }
+  }
+
+  // Mobile responsiveness
+  @media (max-width: 767px) {
+    .multiple-cards-carousel .carousel-inner {
+      grid-auto-columns: 100%; // 1 item per view
+    }
+  }
+}
