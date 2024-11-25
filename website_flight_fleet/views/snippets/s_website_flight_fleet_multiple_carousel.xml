@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+    id="s_website_flight_fleet_multiple_carousel"
+    name="Website Flight Fleet Multiple Coursel"
+  >
+        <section
+      class="s_website_flight_fleet_multiple_carousel py-7"
+      data-snippet="s_website_flight_fleet_multiple_carousel"
+      data-name="Website Flight Fleet Multiple Coursel"
+    >
+            <div class="container">
+                <t t-set="uniq" t-value="datetime.datetime.now().microsecond" />
+                <div
+          t-attf-id="myCarousel{{uniq}}"
+          class="multiple-cards-carousel"
+          data-interval="5"
+        >
+                    <!-- Add carousel indicators with correct dynamic ID -->
+                    <ol class="carousel-indicators">
+                        <li
+              t-attf-data-bs-target="#myCarousel{{uniq}}"
+              data-bs-slide-to="0"
+              class="active"
+            />
+                        <li
+              t-attf-data-bs-target="#myCarousel{{uniq}}"
+              data-bs-slide-to="1"
+            />
+                        <li
+              t-attf-data-bs-target="#myCarousel{{uniq}}"
+              data-bs-slide-to="2"
+            />
+                    </ol>
+
+                    <div class="carousel-inner">
+                        <!-- Default first slide -->
+                        <div class="carousel-item active">
+                            <div class="card border-0">
+                                <div class="img-wrapper">
+                                    <img
+                    src="/web/image/website.s_carousel_default_image_1"
+                    class="d-block w-100"
+                    alt="Slide 1"
+                  />
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Default second slide -->
+                        <div class="carousel-item">
+                            <div class="card border-0">
+                                <div class="img-wrapper">
+                                    <img
+                    src="/web/image/website.s_carousel_default_image_2"
+                    class="d-block w-100"
+                    alt="Slide 2"
+                  />
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Default third slide -->
+                        <div class="carousel-item">
+                            <div class="card border-0">
+                                <div class="img-wrapper">
+                                    <img
+                    src="/web/image/website.s_carousel_default_image_3"
+                    class="d-block w-100"
+                    alt="Slide 3"
+                  />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button
+            class="carousel-control-prev o_not_editable"
+            type="button"
+            data-slide="prev"
+          >
+                        <span class="carousel-control-prev-icon" />
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button
+            class="carousel-control-next o_not_editable"
+            type="button"
+            data-slide="next"
+          >
+                        <span class="carousel-control-next-icon" />
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </template>
+</odoo>
