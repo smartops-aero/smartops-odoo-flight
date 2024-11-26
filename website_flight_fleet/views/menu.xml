@@ -1,6 +1,6 @@
 <odoo>
-    <!-- Add menu item -->
-    <menuitem
+  <!-- Add menu item -->
+  <menuitem
     id="menu_flight_aircraft_amenity"
     name="Amenities"
     parent="flight.menu_flight_aircraft_configuration"

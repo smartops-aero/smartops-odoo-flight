@@ -19,6 +19,8 @@
         "views/snippets/snippets.xml",
         "views/pages/page_fleet.xml",
         "views/pages/page_aircraft_detail.xml",
+        "views/flight_aircraft_views.xml",
+        "views/menu.xml",
         "views/website_flight_fleet_views.xml",
     ],
     "assets": {
