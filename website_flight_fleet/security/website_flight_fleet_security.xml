@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data noupdate="1">
-        <!-- Existing rule -->
-        <record id="flight_aircraft_public" model="ir.rule">
-            <field name="name">Public Aircraft</field>
+    <data>
+        <!-- Website Aircraft Access Rules -->
+        <record id="website_aircraft_public" model="ir.rule">
+            <field name="name">Public Website Aircraft</field>
             <field name="model_id" ref="flight.model_flight_aircraft" />
             <field
         name="domain_force"
@@ -11,47 +11,55 @@
             <field name="groups" eval="[(4, ref('base.group_public'))]" />
         </record>
 
-        <!-- Aircraft Model -->
-        <record id="flight_aircraft_model_public" model="ir.rule">
-            <field name="name">Public Aircraft Model</field>
-            <field name="model_id" ref="flight.model_flight_aircraft_model" />
-            <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="groups" eval="[(4, ref('base.group_public'))]" />
-        </record>
-
-        <!-- Aircraft Make -->
-        <record id="flight_aircraft_make_public" model="ir.rule">
-            <field name="name">Public Aircraft Make</field>
-            <field name="model_id" ref="flight.model_flight_aircraft_make" />
-            <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="groups" eval="[(4, ref('base.group_public'))]" />
-        </record>
-
-        <!-- Aircraft Class -->
-        <record id="flight_aircraft_class_public" model="ir.rule">
-            <field name="name">Public Aircraft Class</field>
-            <field name="model_id" ref="flight.model_flight_aircraft_class" />
-            <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="groups" eval="[(4, ref('base.group_public'))]" />
-        </record>
-
-        <!-- Aircraft Model Tag -->
-        <record id="flight_aircraft_model_tag_public" model="ir.rule">
-            <field name="name">Public Aircraft Model Tag</field>
+        <record id="website_aircraft_user" model="ir.rule">
+            <field name="name">User Website Aircraft</field>
+            <field name="model_id" ref="flight.model_flight_aircraft" />
             <field
-        name="model_id"
-        ref="flight.model_flight_aircraft_model_tag"
+        name="domain_force"
+      >['|', ('website_published', '=', True), ('create_uid', '=',
+                user.id)]</field>
+            <field
+        name="groups"
+        eval="[(4, ref('flight.group_flight_user'))]"
       />
-            <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="groups" eval="[(4, ref('base.group_public'))]" />
         </record>
 
-        <!-- Aircraft Amenity -->
-        <record id="flight_aircraft_amenity_public" model="ir.rule">
+        <record id="website_aircraft_crew" model="ir.rule">
+            <field name="name">Crew Website Aircraft</field>
+            <field name="model_id" ref="flight.model_flight_aircraft" />
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field
+        name="groups"
+        eval="[(4, ref('flight.group_flight_crew'))]"
+      />
+        </record>
+
+        <!-- Amenity Access Rules -->
+        <record id="website_aircraft_amenity_public" model="ir.rule">
             <field name="name">Public Aircraft Amenity</field>
             <field name="model_id" ref="model_flight_aircraft_amenity" />
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('base.group_public'))]" />
+        </record>
+
+        <record id="website_aircraft_amenity_crew" model="ir.rule">
+            <field name="name">Crew Aircraft Amenity</field>
+            <field name="model_id" ref="model_flight_aircraft_amenity" />
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field
+        name="groups"
+        eval="[(4, ref('flight.group_flight_crew'))]"
+      />
+        </record>
+
+        <record id="website_aircraft_amenity_manager" model="ir.rule">
+            <field name="name">Manager Aircraft Amenity</field>
+            <field name="model_id" ref="model_flight_aircraft_amenity" />
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field
+        name="groups"
+        eval="[(4, ref('flight.group_flight_manager'))]"
+      />
         </record>
     </data>
 </odoo>
