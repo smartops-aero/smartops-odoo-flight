@@ -1,4 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_flight_aircraft_public,flight.aircraft.public,flight.model_flight_aircraft,base.group_public,1,0,0,0
+access_flight_aircraft_model_public,flight.aircraft.model.public,flight.model_flight_aircraft_model,base.group_public,1,0,0,0
+access_flight_aircraft_make_public,flight.aircraft.make.public,flight.model_flight_aircraft_make,base.group_public,1,0,0,0
+access_flight_aircraft_class_public,flight.aircraft.class.public,flight.model_flight_aircraft_class,base.group_public,1,0,0,0
+access_flight_aircraft_model_tag_public,flight.aircraft.model.tag.public,flight.model_flight_aircraft_model_tag,base.group_public,1,0,0,0
 access_flight_aircraft_amenity_public,flight.aircraft.amenity.public,model_flight_aircraft_amenity,base.group_public,1,0,0,0
-access_flight_aircraft_amenity_manager,flight.aircraft.amenity.manager,model_flight_aircraft_amenity,flight.group_flight_manager,1,1,1,1
