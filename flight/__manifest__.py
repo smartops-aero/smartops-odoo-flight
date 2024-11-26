@@ -24,6 +24,7 @@
     "depends": [
         "base",
         "mail",
+        "uom",
     ],
     "demo": [
         "demo/flight_demo.xml",
