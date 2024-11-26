@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <!-- ====== Aircraft Form Views ====== -->
     <record id="aircraft_view_form_add" model="ir.ui.view">
         <field name="name">flight.aircraft.view.form.add</field>
         <field name="model">flight.aircraft</field>
@@ -125,7 +126,6 @@
         </field>
     </record>
 
-
     <record id="aircraft_new_action" model="ir.actions.act_window">
         <field name="name">New Aircraft</field>
         <field name="res_model">flight.aircraft</field>
@@ -133,7 +133,55 @@
         <field name="view_id" ref="aircraft_view_form_add" />
         <field name="target">new</field>
     </record>
-    <!-- Add website-specific fields to aircraft form view -->
+
+    <!-- ====== Amenity Views ====== -->
+    <!-- Amenity Tree View -->
+    <record id="view_flight_aircraft_amenity_tree" model="ir.ui.view">
+        <field name="name">flight.aircraft.amenity.tree</field>
+        <field name="model">flight.aircraft.amenity</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Amenity Form View -->
+    <record id="view_flight_aircraft_amenity_form" model="ir.ui.view">
+        <field name="name">flight.aircraft.amenity.form</field>
+        <field name="model">flight.aircraft.amenity</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="sequence" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Amenity Search View -->
+    <record id="view_flight_aircraft_amenity_search" model="ir.ui.view">
+        <field name="name">flight.aircraft.amenity.search</field>
+        <field name="model">flight.aircraft.amenity</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+            </search>
+        </field>
+    </record>
+
+    <!-- Amenity Action Window -->
+    <record id="action_flight_aircraft_amenity" model="ir.actions.act_window">
+        <field name="name">Aircraft Amenities</field>
+        <field name="res_model">flight.aircraft.amenity</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ====== Website Inherited Views ====== -->
     <record id="view_flight_aircraft_form_inherit_website" model="ir.ui.view">
         <field name="name">flight.aircraft.form.inherit.website</field>
         <field name="model">flight.aircraft</field>
@@ -203,4 +251,14 @@
             </sheet>
         </field>
     </record>
+
+    <!-- Add menu item -->
+    <menuitem
+    id="menu_flight_aircraft_amenity"
+    name="Amenities"
+    parent="flight.menu_flight_aircraft_configuration"
+    action="action_flight_aircraft_amenity"
+    sequence="30"
+  />
+
 </odoo>
