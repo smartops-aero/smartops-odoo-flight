@@ -14,7 +14,7 @@ class FlightAircraft(models.Model):
     # Aircraft specifications
     passenger_capacity = fields.Integer("Passenger Capacity")
     
-    range_nm = fields.Float("Range", required=True)
+    range = fields.Float("Range", required=True)
     range_uom_id = fields.Many2one('uom.uom', string='Range Unit of Measure', 
         domain=lambda self: [('category_id', '=', self.env.ref('flight_uom.product_uom_categ_distance').id)],
         default=lambda self: self.env.ref('flight_uom.product_uom_nm'),

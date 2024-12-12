@@ -437,7 +437,7 @@ class FlightAircraft(models.Model):
         values.update(
             {
                 "passenger_capacity": self.passenger_capacity,
-                "range_nm": self.range_nm,
+                "range": self.range,
                 "cruise_speed": self.cruise_speed,
                 "cabin_dimensions": {
                     "length": self.cabin_length,

@@ -183,7 +183,7 @@
                       />
                       <div class="border-top border-secondary my-4" />
                       <p class="card-text text-black mb-4"> Range: <t
-                          t-esc="aircraft.range_nm"
+                          t-esc="aircraft.range"
                         /> nm <t t-if="aircraft.cruise_speed"> | <t
                             t-esc="aircraft.cruise_speed"
                           /> kts</t>

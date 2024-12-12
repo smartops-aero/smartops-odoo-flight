@@ -57,9 +57,9 @@
                   </div>
                 </group>
                 <group string="Performance">
-                  <label for="range_nm" string="Range"/>
+                  <label for="range" string="Range"/>
                   <div class="o_row">
-                    <field name="range_nm" class="oe_inline"/>
+                    <field name="range" class="oe_inline"/>
                     <field name="range_uom_id" class="oe_inline"/>
                   </div>
                   <label for="cruise_speed" string="Cruise Speed"/>
