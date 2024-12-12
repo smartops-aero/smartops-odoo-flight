@@ -31,13 +31,13 @@
         <field name="model">flight.aircraft</field>
         <field name="inherit_id" ref="flight.view_flight_aircraft_form"/>
         <field name="arch" type="xml">
-            <notebook position="inside">
+            <xpath expr="//notebook" position="inside">
                 <page string="Amenities" name="amenities">
                     <group>
                         <field name="amenity_ids" widget="many2many_tags" placeholder="Select amenities"/>
                     </group>
                 </page>
-            </notebook>
+            </xpath>
         </field>
     </record>
 

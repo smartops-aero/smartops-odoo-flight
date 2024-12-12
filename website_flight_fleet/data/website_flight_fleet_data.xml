@@ -1,78 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data noupdate="1">
-        <!-- Connectivity -->
-        <record id="amenity_wifi" model="flight.aircraft.amenity">
-            <field name="name">Starlink WiFi</field>
-            <field name="sequence">10</field>
-        </record>
-        <record id="amenity_power" model="flight.aircraft.amenity">
-            <field name="name">Power Outlets</field>
-            <field name="sequence">20</field>
-        </record>
-
-        <!-- Comfort -->
-        <record id="amenity_quiet_cabin" model="flight.aircraft.amenity">
-            <field name="name">Quiet Cabin</field>
-            <field name="sequence">30</field>
-        </record>
-        <record id="amenity_lavatory" model="flight.aircraft.amenity">
-            <field name="name">Enclosed Aft Lavatory</field>
-            <field name="sequence">40</field>
-        </record>
-        <record id="amenity_air_conditioning" model="flight.aircraft.amenity">
-            <field name="name">Air Conditioning</field>
-            <field name="sequence">50</field>
-        </record>
-        <record id="amenity_leather_seats" model="flight.aircraft.amenity">
-            <field name="name">Leather Seats</field>
-            <field name="sequence">60</field>
-        </record>
-
-        <!-- Entertainment -->
-        <record id="amenity_entertainment" model="flight.aircraft.amenity">
-            <field name="name">Entertainment System</field>
-            <field name="sequence">70</field>
-        </record>
-
-        <!-- Refreshments -->
-        <record id="amenity_refreshments" model="flight.aircraft.amenity">
-            <field name="name">Refreshment Center</field>
-            <field name="sequence">80</field>
-        </record>
-
-        <!-- Storage -->
-        <record id="amenity_cargo_door" model="flight.aircraft.amenity">
-            <field name="name">Cargo Door</field>
-            <field name="sequence">90</field>
-        </record>
         <!-- Website menu item configurations -->
         <record id="menu_fleet" model="website.menu">
             <field name="name">Fleet</field>
             <field name="url">/fleet</field>
             <field name="parent_id" ref="website.main_menu" />
             <field name="sequence">50</field>
-        </record>
-
-        <!-- Amenities -->
-        <record id="amenity_wifi" model="flight.aircraft.amenity">
-            <field name="name">Starlink WiFi</field>
-            <field name="sequence">10</field>
-        </record>
-
-        <record id="amenity_power" model="flight.aircraft.amenity">
-            <field name="name">Power Outlets</field>
-            <field name="sequence">20</field>
-        </record>
-
-        <record id="amenity_lavatory" model="flight.aircraft.amenity">
-            <field name="name">Enclosed Aft Lavatory</field>
-            <field name="sequence">30</field>
-        </record>
-
-        <record id="amenity_quiet_cabin" model="flight.aircraft.amenity">
-            <field name="name">Quiet Cabin</field>
-            <field name="sequence">40</field>
         </record>
     </data>
 </odoo>

@@ -5,7 +5,12 @@
     "website": "https://github.com/smartops-aero/flight",
     "summary": "Publish aircraft details and fleet information online",
     "version": "16.0.1.0.0",
-    "depends": ["website", "flight"],
+    "depends": [
+        "website", 
+        "flight",
+        "flight_aircraft_specifications",  
+        "flight_aircraft_amenities",  
+    ],
     "data": [
         "security/ir.model.access.csv",
         "security/website_flight_fleet_security.xml",
@@ -20,7 +25,6 @@
         "views/pages/page_fleet.xml",
         "views/pages/page_aircraft_detail.xml",
         "views/flight_aircraft_views.xml",
-        "views/menu.xml",
         "views/website_flight_fleet_views.xml",
     ],
     "assets": {

@@ -99,18 +99,6 @@
                 />
               </group>
             </page>
-
-            <!-- Additional Information Tab -->
-            <page string="Additional Information" name="additional_info">
-              <group>
-                <field name="is_available_for_lease" />
-                <field
-                  name="lease_terms"
-                  attrs="{'invisible': [('is_available_for_lease', '=', False)]}"
-                />
-                <field name="regional_operations" />
-              </group>
-            </page>
           </notebook>
         </sheet>
       </form>
