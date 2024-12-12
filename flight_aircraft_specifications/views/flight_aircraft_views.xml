@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_flight_aircraft_form_inherit_specifications" model="ir.ui.view">
+        <field name="name">flight.aircraft.form.inherit.specifications</field>
+        <field name="model">flight.aircraft</field>
+        <field name="inherit_id" ref="flight.view_flight_aircraft_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Specifications" name="specifications">
+                    <group>
+                        <group string="Capacity">
+                            <field name="passenger_capacity" placeholder="Number of passengers"/>
+                            <field name="luggage_capacity" placeholder="Luggage capacity in cubic feet"/>
+                            <field name="useful_load" placeholder="Maximum useful load in pounds"/>
+                        </group>
+                        <group string="Performance">
+                            <field name="range_nm" placeholder="Range in nautical miles"/>
+                            <field name="cruise_speed" placeholder="Cruise speed in knots"/>
+                        </group>
+                        <group string="Cabin Dimensions">
+                            <label for="cabin_length" string="Dimensions (ft)"/>
+                            <div class="o_row">
+                                <field name="cabin_length" class="oe_inline" placeholder="Length"/> x 
+                                <field name="cabin_width" class="oe_inline" placeholder="Width"/> x 
+                                <field name="cabin_height" class="oe_inline" placeholder="Height"/>
+                                <span> (L x W x H)</span>
+                            </div>
+                        </group>
+                        <group string="Seat Map">
+                            <field name="seat_map_1920" widget="image"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
