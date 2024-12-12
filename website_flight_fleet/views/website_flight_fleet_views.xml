@@ -45,42 +45,44 @@
                     name="passenger_capacity"
                     placeholder="Number of passengers"
                   />
-                  <field
-                    name="luggage_capacity"
-                    placeholder="Luggage capacity in cubic feet"
-                  />
-                  <field
-                    name="useful_load"
-                    placeholder="Maximum useful load in pounds"
-                  />
+                  <label for="luggage_capacity" string="Luggage Capacity"/>
+                  <div class="o_row">
+                    <field name="luggage_capacity" class="oe_inline"/>
+                    <field name="luggage_capacity_uom_id" class="oe_inline"/>
+                  </div>
+                  <label for="useful_load" string="Useful Load"/>
+                  <div class="o_row">
+                    <field name="useful_load" class="oe_inline"/>
+                    <field name="useful_load_uom_id" class="oe_inline"/>
+                  </div>
                 </group>
                 <group string="Performance">
-                  <field
-                    name="range_nm"
-                    placeholder="Range in nautical miles"
-                  />
-                  <field
-                    name="cruise_speed"
-                    placeholder="Cruise speed in knots"
-                  />
+                  <label for="range_nm" string="Range"/>
+                  <div class="o_row">
+                    <field name="range_nm" class="oe_inline"/>
+                    <field name="range_uom_id" class="oe_inline"/>
+                  </div>
+                  <label for="cruise_speed" string="Cruise Speed"/>
+                  <div class="o_row">
+                    <field name="cruise_speed" class="oe_inline"/>
+                    <field name="cruise_speed_uom_id" class="oe_inline"/>
+                  </div>
                 </group>
                 <group string="Cabin Dimensions">
-                  <label for="cabin_length" string="Dimensions (ft)" />
+                  <label for="cabin_length" string="Length"/>
                   <div class="o_row">
-                    <field
-                      name="cabin_length"
-                      class="oe_inline"
-                      placeholder="Length"
-                    /> x <field
-                      name="cabin_width"
-                      class="oe_inline"
-                      placeholder="Width"
-                    /> x <field
-                      name="cabin_height"
-                      class="oe_inline"
-                      placeholder="Height"
-                    />
-                                        <span> (L x W x H)</span>
+                    <field name="cabin_length" class="oe_inline"/>
+                    <field name="cabin_length_uom_id" class="oe_inline"/>
+                  </div>
+                  <label for="cabin_width" string="Width"/>
+                  <div class="o_row">
+                    <field name="cabin_width" class="oe_inline"/>
+                    <field name="cabin_width_uom_id" class="oe_inline"/>
+                  </div>
+                  <label for="cabin_height" string="Height"/>
+                  <div class="o_row">
+                    <field name="cabin_height" class="oe_inline"/>
+                    <field name="cabin_height_uom_id" class="oe_inline"/>
                   </div>
                 </group>
                 <group string="Seat Map" name="seat_map_group">
