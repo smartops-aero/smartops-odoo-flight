@@ -182,15 +182,15 @@
                         t-field="aircraft.website_short_description"
                       />
                       <div class="border-top border-secondary my-4" />
-                      <p class="card-text text-black mb-4"> Range: <t
-                          t-esc="aircraft.range"
-                        /> nm <t t-if="aircraft.cruise_speed"> | <t
-                            t-esc="aircraft.cruise_speed"
-                          /> kts</t>
-                                                <br />
-                        Passenger capacity: <t
-                          t-esc="aircraft.passenger_capacity"
-                        />
+                      <p class="card-text text-black mb-4"> Range: 
+                        <t t-esc="aircraft.range"/> 
+                        <t t-esc="aircraft.range_uom_id.name"/>
+                        <t t-if="aircraft.cruise_speed"> | 
+                          <t t-esc="aircraft.cruise_speed"/>
+                          <t t-esc="aircraft.cruise_speed_uom_id.name"/>
+                        </t>
+                        <br />
+                        Passenger capacity: <t t-esc="aircraft.passenger_capacity"/>
                       </p>
                       <a
                         t-att-href="'/aircraft/%s' % slug(aircraft)"
