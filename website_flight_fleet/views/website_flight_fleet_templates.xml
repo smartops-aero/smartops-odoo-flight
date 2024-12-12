@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Hero Content Template -->
-    <template id="aircraft_hero_content" name="Aircraft Hero Content">
+    <template id="default_aircraft_hero_content" name="Aircraft Hero Content">
         <p class="lead mb-2">This aircraft is a versatile light jet, offering a perfect combination
             of comfort, performance, and reliability. Designed for both regional and cross-country
             travel,
@@ -11,7 +11,7 @@
     </template>
 
     <!-- Main Carousel Template -->
-    <template id="aircraft_main_carousel_content" name="Aircraft Main Carousel">
+    <template id="default_aircraft_main_carousel_content" name="Aircraft Main Carousel">
         <section class="s_carousel_wrapper">
             <div
                 class="s_website_flight_fleet_carousel s_carousel s_carousel_default carousel slide"
@@ -92,13 +92,13 @@
     </template>
 
     <!-- Spec Header Template -->
-    <template id="aircraft_spec_header_content" name="Aircraft Specifications Header">
+    <template id="default_aircraft_spec_header_content" name="Aircraft Specifications Header">
         <h3 class="text-black fw-bold">
             Aircraft Specificiations Header Can be edited here
         </h3>
     </template>
 
-    <template id="interior_gallery_header_content" name="Interior Gallery Header">
+    <template id="default_interior_gallery_header_content" name="Interior Gallery Header">
         <section class="container mt-7 mb-2 text-center">
             <div class="mw-100 mw-lg-50 mx-auto">
                 <div
@@ -112,7 +112,7 @@
         </section>
     </template>
 
-    <template id="interior_gallery_carousel_content" name="Interior Gallery Carousel">
+    <template id="default_interior_gallery_carousel_content" name="Interior Gallery Carousel">
         <section class="s_website_flight_fleet_multiple_carousel mb-7">
             <div class="container">
                 <div
@@ -195,7 +195,7 @@
         </section>
     </template>
 
-    <template id="benefits_content" name="Benefits Content">
+    <template id="default_benefits_content" name="Benefits Content">
         <section class="py-7">
             <div class="container">
                 <div class="row g-5">
@@ -245,7 +245,7 @@
         </section>
     </template>
 
-    <template id="faq_header_content" name="FAQ Header Content">
+    <template id="default_faq_header_content" name="FAQ Header Content">
         <section class="pt-7">
             <div class="container">
                 <div class="mb-5">
@@ -259,7 +259,7 @@
         </section>
     </template>
 
-    <template id="faq_content" name="FAQ Content">
+    <template id="default_faq_content" name="FAQ Content">
         <section class="s_website_flight_fleet_accordion pb-7">
             <div class="container">
                 <div
@@ -317,7 +317,7 @@
         </section>
     </template>
 
-    <template id="cta_content" name="CTA Content">
+    <template id="default_cta_content" name="CTA Content">
         <section class="container s_allow_columns text-start py-7">
             <div class="row">
                 <div class="col-lg-7">

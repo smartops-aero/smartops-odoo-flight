@@ -14,31 +14,31 @@ class FlightAircraft(models.Model):
     ]
 
     def _get_default_hero_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.aircraft_hero_content", raise_if_not_found=False)
+        return self.env['ir.qweb']._render("website_flight_fleet.default_aircraft_hero_content", raise_if_not_found=False)
 
     def _get_default_main_carousel_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.aircraft_main_carousel_content", raise_if_not_found=False)
+        return self.env['ir.qweb']._render("website_flight_fleet.default_aircraft_main_carousel_content", raise_if_not_found=False)
 
     def _get_default_spec_header_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.aircraft_spec_header_content", raise_if_not_found=False)
+        return self.env['ir.qweb']._render("website_flight_fleet.default_aircraft_spec_header_content", raise_if_not_found=False)
 
     def _get_default_interior_gallery_header_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.aircraft_interior_gallery_header_content", raise_if_not_found=False)
+        return self.env['ir.qweb']._render("website_flight_fleet.default_interior_gallery_header_content", raise_if_not_found=False)
 
     def _get_default_interior_gallery_carousel_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.aircraft_interior_gallery_carousel_content", raise_if_not_found=False)
+        return self.env['ir.qweb']._render("website_flight_fleet.default_interior_gallery_carousel_content", raise_if_not_found=False)
 
     def _get_default_benefits_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.aircraft_benefits_content", raise_if_not_found=False)
+        return self.env['ir.qweb']._render("website_flight_fleet.default_benefits_content", raise_if_not_found=False)
 
     def _get_default_faq_header_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.aircraft_faq_header_content", raise_if_not_found=False)
+        return self.env['ir.qweb']._render("website_flight_fleet.default_faq_header_content", raise_if_not_found=False)
 
     def _get_default_faq_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.aircraft_faq_content", raise_if_not_found=False)
+        return self.env['ir.qweb']._render("website_flight_fleet.default_faq_content", raise_if_not_found=False)
 
     def _get_default_cta_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.aircraft_cta_content", raise_if_not_found=False)
+        return self.env['ir.qweb']._render("website_flight_fleet.default_cta_content", raise_if_not_found=False)
 
     # Existing fields
     website_published = fields.Boolean("Visible on Website", copy=False)
@@ -51,62 +51,89 @@ class FlightAircraft(models.Model):
 
     # Editable Content Fields
     hero_content = fields.Html(
-        "Hero Content",
+        'Hero Content',
         translate=html_translate,
-        sanitize=False,
         default=_get_default_hero_content,
+        prefetch=False,
+        sanitize_overridable=True,
+        sanitize_attributes=False,
+        sanitize_form=False
     )
 
     spec_header_content = fields.Html(
-        "Specifications Header",
+        'Specifications Header Content',
         translate=html_translate,
-        sanitize=False,
         default=_get_default_spec_header_content,
+        prefetch=False,
+        sanitize_overridable=True,
+        sanitize_attributes=False,
+        sanitize_form=False
     )
 
     interior_gallery_header_content = fields.Html(
-        "Interior Gallery Header",
+        'Interior Gallery Header Content',
         translate=html_translate,
-        sanitize=False,
         default=_get_default_interior_gallery_header_content,
+        prefetch=False,
+        sanitize_overridable=True,
+        sanitize_attributes=False,
+        sanitize_form=False
     )
 
     benefits_content = fields.Html(
-        "Benefits Section",
+        'Benefits Content',
         translate=html_translate,
-        sanitize=False,
         default=_get_default_benefits_content,
+        prefetch=False,
+        sanitize_overridable=True,
+        sanitize_attributes=False,
+        sanitize_form=False
     )
     faq_header_content = fields.Html(
-        "FAQ Header",
+        'FAQ Header Content',
         translate=html_translate,
-        sanitize=False,
         default=_get_default_faq_header_content,
+        prefetch=False,
+        sanitize_overridable=True,
+        sanitize_attributes=False,
+        sanitize_form=False
     )
 
     faq_content = fields.Html(
-        "FAQ Section",
+        'FAQ Content',
         translate=html_translate,
-        sanitize=False,
         default=_get_default_faq_content,
+        prefetch=False,
+        sanitize_overridable=True,
+        sanitize_attributes=False,
+        sanitize_form=False
     )
     main_carousel_content = fields.Html(
-        "Main Carousel Content",
+        'Main Carousel Content',
         translate=html_translate,
-        sanitize=False,
         default=_get_default_main_carousel_content,
+        prefetch=False,
+        sanitize_overridable=True,
+        sanitize_attributes=False,
+        sanitize_form=False
     )
     interior_gallery_carousel_content = fields.Html(
-        "Gallery Carousel Content",
+        'Interior Gallery Carousel Content',
         translate=html_translate,
-        sanitize=False,
         default=_get_default_interior_gallery_carousel_content,
+        prefetch=False,
+        sanitize_overridable=True,
+        sanitize_attributes=False,
+        sanitize_form=False
     )
     cta_content = fields.Html(
-        "Call to Action Section",
+        'CTA Content',
         translate=html_translate,
-        sanitize=False,
         default=_get_default_cta_content,
+        prefetch=False,
+        sanitize_overridable=True,
+        sanitize_attributes=False,
+        sanitize_form=False
     )
 
     def _compute_website_url(self):
