@@ -1,9 +1,22 @@
 {
     "name": "Aircraft Fleet Website",
-    "category": "Website/Website",
+    "category": "Industries",
     "sequence": 200,
+    "summary": """Publish aircraft details and fleet information online""",
+    "description": """
+        This module provides website integration for displaying aircraft fleet information.
+        It allows you to showcase your aircraft fleet online with detailed specifications
+        and amenities information using beautiful and responsive website snippets.
+
+        Features:
+        - Beautiful website snippets for fleet display
+        - Accordion and carousel display options
+        - Integration with specifications and amenities modules
+        - Responsive design for all devices
+        - Customizable display options
+    """,
+    "author": "Apexive Solutions LLC",
     "website": "https://github.com/smartops-aero/flight",
-    "summary": "Publish aircraft details and fleet information online",
     "version": "16.0.1.0.0",
     "depends": [
         "website", 
@@ -43,6 +56,9 @@
             "website_flight_fleet/static/src/js/systray_items/new_content.js",
         ],
     },
+    "images": [
+        "static/description/banner.png",
+    ],
     "application": False,
     "installable": True,
     "auto_install": False,
