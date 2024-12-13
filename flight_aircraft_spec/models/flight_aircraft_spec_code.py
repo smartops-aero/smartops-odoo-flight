@@ -17,22 +17,16 @@ class FlightAircraftSpecCode(models.Model):
     description = fields.Text(translate=True)
     type = fields.Selection(
         [
-            ("bool", "Boolean"),
+            ("numeric", "Numeric"),
             ("text", "Text"),
-            ("float", "Numeric"),
+            ("bool", "Boolean")
         ],
+        string="Value Type",
         required=True,
         default="text",
     )
     sequence = fields.Integer(default=10)
-    default_value = fields.Char(
-        help="Default value for the specification. Must match the selected type."
-    )
-    default_uom_id = fields.Many2one(
-        'uom.uom',
-        string='Default Unit of Measure',
-        help="Default unit of measure for numeric specifications"
-    )
+    
 
     _sql_constraints = [
         (
