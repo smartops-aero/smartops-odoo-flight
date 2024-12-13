@@ -115,36 +115,47 @@
         <!-- Cabin Specifications -->
         <record id="spec_cabin_length" model="flight.aircraft.spec.code">
             <field name="category_id" ref="category_cabin"/>
+            <field name="code">cabin.length</field>
             <field name="name">Cabin Length</field>
+            <field name="description">Length of the aircraft cabin</field>
             <field name="type">numeric</field>
             <field name="sequence">10</field>
         </record>
 
         <record id="spec_cabin_width" model="flight.aircraft.spec.code">
             <field name="category_id" ref="category_cabin"/>
+            <field name="code">cabin.width</field>
             <field name="name">Cabin Width</field>
+            <field name="description">Width of the aircraft cabin</field>
             <field name="type">numeric</field>
             <field name="sequence">20</field>
         </record>
 
         <record id="spec_cabin_height" model="flight.aircraft.spec.code">
             <field name="category_id" ref="category_cabin"/>
+            <field name="code">cabin.height</field>
             <field name="name">Cabin Height</field>
+            <field name="description">Height of the aircraft cabin</field>
             <field name="type">numeric</field>
             <field name="sequence">30</field>
         </record>
 
+
         <!-- Performance Specifications -->
         <record id="spec_range" model="flight.aircraft.spec.code">
             <field name="category_id" ref="category_performance"/>
+            <field name="code">performance.range</field>
             <field name="name">Range</field>
+            <field name="description">Maximum flight range of the aircraft</field>
             <field name="type">numeric</field>
             <field name="sequence">10</field>
         </record>
 
         <record id="spec_cruise_speed" model="flight.aircraft.spec.code">
             <field name="category_id" ref="category_performance"/>
+            <field name="code">performance.cruise_speed</field>
             <field name="name">Cruise Speed</field>
+            <field name="description">Normal cruising speed of the aircraft</field>
             <field name="type">numeric</field>
             <field name="sequence">20</field>
         </record>
@@ -152,28 +163,36 @@
         <!-- Capacity Specifications -->
         <record id="spec_passenger_capacity" model="flight.aircraft.spec.code">
             <field name="category_id" ref="category_capacity"/>
+            <field name="code">capacity.passengers</field>
             <field name="name">Passenger Capacity</field>
+            <field name="description">Maximum number of passengers the aircraft can accommodate</field>
             <field name="type">numeric</field>
             <field name="sequence">10</field>
         </record>
 
         <record id="spec_luggage_capacity" model="flight.aircraft.spec.code">
             <field name="category_id" ref="category_capacity"/>
+            <field name="code">capacity.luggage</field>
             <field name="name">Luggage Capacity</field>
+            <field name="description">Maximum luggage volume capacity</field>
             <field name="type">numeric</field>
             <field name="sequence">20</field>
         </record>
 
         <record id="spec_useful_load" model="flight.aircraft.spec.code">
             <field name="category_id" ref="category_capacity"/>
+            <field name="code">capacity.useful_load</field>
             <field name="name">Useful Load</field>
+            <field name="description">Maximum useful load capacity including passengers, cargo, and fuel</field>
             <field name="type">numeric</field>
             <field name="sequence">30</field>
         </record>
 
         <record id="spec_seat_map" model="flight.aircraft.spec.code">
             <field name="category_id" ref="category_cabin"/>
+            <field name="code">cabin.seat_map</field>
             <field name="name">Seat Map</field>
+            <field name="description">Seating configuration diagram of the aircraft</field>
             <field name="type">text</field>
             <field name="sequence">40</field>
         </record>
