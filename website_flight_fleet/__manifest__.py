@@ -21,8 +21,7 @@
     "depends": [
         "website", 
         "flight",
-        "flight_aircraft_specifications",  
-        "flight_aircraft_amenities",  
+        "flight_aircraft_spec",  
     ],
     "data": [
         "security/ir.model.access.csv",
