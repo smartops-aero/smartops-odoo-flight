@@ -84,6 +84,7 @@
         <field name="model">flight.aircraft.spec</field>
         <field name="arch" type="xml">
             <tree string="Aircraft Specifications">
+                <field name="sequence" widget="handle"/>
                 <field name="aircraft_id"/>
                 <field name="code_id"/>
                 <field name="display_name"/>
@@ -100,6 +101,7 @@
                     <group>
                         <group>
                             <field name="aircraft_id"/>
+                            <field name="sequence"/>
                             <field name="code_id"/>
                             <field name="code_type" invisible="1"/>
                         </group>

@@ -5,6 +5,9 @@ class FlightAircraftSpec(models.Model):
     _name = "flight.aircraft.spec"
     _description = "Aircraft Specification"
     _rec_name = "display_name"
+    _order = "sequence, id"
+
+    sequence = fields.Integer(string='Sequence', default=10)
 
     code_id = fields.Many2one(
         'flight.aircraft.spec.code',
@@ -27,6 +30,7 @@ class FlightAircraftSpec(models.Model):
     value_bool = fields.Boolean(string="Boolean Value")
     value_text = fields.Text(string="Text Value")
     value_float = fields.Float(string="Float Value")
+
     uom_id = fields.Many2one(
         'uom.uom',
         string='Unit of Measure'
