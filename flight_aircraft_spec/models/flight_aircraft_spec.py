@@ -68,15 +68,3 @@ class FlightAircraftSpec(models.Model):
             self.value_text = False
             self.value_numeric = 0.0
             self.uom_id = False
-
-            # Set default value if specified
-            if self.code_id.default_value:
-                if self.code_id.type == "bool":
-                    self.value_bool = self.code_id.default_value.lower() in ("true", "1", "yes")
-                elif self.code_id.type == "text":
-                    self.value_text = self.code_id.default_value
-                else:  # numeric
-                    try:
-                        self.value_numeric = float(self.code_id.default_value)
-                    except (ValueError, TypeError):
-                        pass
