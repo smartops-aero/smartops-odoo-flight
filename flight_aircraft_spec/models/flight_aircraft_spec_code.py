@@ -15,9 +15,9 @@ class FlightAircraftSpecCode(models.Model):
     code = fields.Char(required=True)
     name = fields.Char(required=True, translate=True)
     description = fields.Text(translate=True)
-    type = fields.Selection(
+    code_type = fields.Selection(
         [
-            ("numeric", "Numeric"),
+            ("float", "Float"),
             ("text", "Text"),
             ("bool", "Boolean")
         ],

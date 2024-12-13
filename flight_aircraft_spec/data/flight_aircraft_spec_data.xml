@@ -36,7 +36,7 @@
             <field name="code">amenity.wifi</field>
             <field name="name">Starlink WiFi</field>
             <field name="description">Aircraft is equipped with Starlink WiFi</field>
-            <field name="type">bool</field>
+            <field name="code_type">bool</field>
             <field name="sequence">10</field>
         </record>
 
@@ -45,7 +45,7 @@
             <field name="code">amenity.power</field>
             <field name="name">Power Outlets</field>
             <field name="description">Aircraft is equipped with power outlets</field>
-            <field name="type">bool</field>
+            <field name="code_type">bool</field>
             <field name="sequence">20</field>
         </record>
 
@@ -54,7 +54,7 @@
             <field name="code">amenity.quiet_cabin</field>
             <field name="name">Quiet Cabin</field>
             <field name="description">Aircraft features a quiet cabin</field>
-            <field name="type">bool</field>
+            <field name="code_type">bool</field>
             <field name="sequence">30</field>
         </record>
 
@@ -63,7 +63,7 @@
             <field name="code">amenity.lavatory</field>
             <field name="name">Enclosed Aft Lavatory</field>
             <field name="description">Aircraft features an enclosed aft lavatory</field>
-            <field name="type">bool</field>
+            <field name="code_type">bool</field>
             <field name="sequence">40</field>
         </record>
 
@@ -72,7 +72,7 @@
             <field name="code">amenity.air_conditioning</field>
             <field name="name">Air Conditioning</field>
             <field name="description">Aircraft is equipped with air conditioning</field>
-            <field name="type">bool</field>
+            <field name="code_type">bool</field>
             <field name="sequence">50</field>
         </record>
 
@@ -81,7 +81,7 @@
             <field name="code">amenity.leather_seats</field>
             <field name="name">Leather Seats</field>
             <field name="description">Aircraft features leather seats</field>
-            <field name="type">bool</field>
+            <field name="code_type">bool</field>
             <field name="sequence">60</field>
         </record>
 
@@ -90,7 +90,7 @@
             <field name="code">amenity.entertainment</field>
             <field name="name">Entertainment System</field>
             <field name="description">Aircraft is equipped with an entertainment system</field>
-            <field name="type">bool</field>
+            <field name="code_type">bool</field>
             <field name="sequence">70</field>
         </record>
 
@@ -99,7 +99,7 @@
             <field name="code">amenity.refreshments</field>
             <field name="name">Refreshment Center</field>
             <field name="description">Aircraft features a refreshment center</field>
-            <field name="type">bool</field>
+            <field name="code_type">bool</field>
             <field name="sequence">80</field>
         </record>
 
@@ -108,7 +108,7 @@
             <field name="code">amenity.cargo_door</field>
             <field name="name">Cargo Door</field>
             <field name="description">Aircraft features a cargo door</field>
-            <field name="type">bool</field>
+            <field name="code_type">bool</field>
             <field name="sequence">90</field>
         </record>
 
@@ -118,7 +118,7 @@
             <field name="code">cabin.length</field>
             <field name="name">Cabin Length</field>
             <field name="description">Length of the aircraft cabin</field>
-            <field name="type">numeric</field>
+            <field name="code_type">float</field>
             <field name="sequence">10</field>
         </record>
 
@@ -127,7 +127,7 @@
             <field name="code">cabin.width</field>
             <field name="name">Cabin Width</field>
             <field name="description">Width of the aircraft cabin</field>
-            <field name="type">numeric</field>
+            <field name="code_type">float</field>
             <field name="sequence">20</field>
         </record>
 
@@ -136,7 +136,7 @@
             <field name="code">cabin.height</field>
             <field name="name">Cabin Height</field>
             <field name="description">Height of the aircraft cabin</field>
-            <field name="type">numeric</field>
+            <field name="code_type">float</field>
             <field name="sequence">30</field>
         </record>
 
@@ -147,7 +147,7 @@
             <field name="code">performance.range</field>
             <field name="name">Range</field>
             <field name="description">Maximum flight range of the aircraft</field>
-            <field name="type">numeric</field>
+            <field name="code_type">float</field>
             <field name="sequence">10</field>
         </record>
 
@@ -156,7 +156,7 @@
             <field name="code">performance.cruise_speed</field>
             <field name="name">Cruise Speed</field>
             <field name="description">Normal cruising speed of the aircraft</field>
-            <field name="type">numeric</field>
+            <field name="code_type">float</field>
             <field name="sequence">20</field>
         </record>
 
@@ -166,7 +166,7 @@
             <field name="code">capacity.passengers</field>
             <field name="name">Passenger Capacity</field>
             <field name="description">Maximum number of passengers the aircraft can accommodate</field>
-            <field name="type">numeric</field>
+            <field name="code_type">float</field>
             <field name="sequence">10</field>
         </record>
 
@@ -175,7 +175,7 @@
             <field name="code">capacity.luggage</field>
             <field name="name">Luggage Capacity</field>
             <field name="description">Maximum luggage volume capacity</field>
-            <field name="type">numeric</field>
+            <field name="code_type">float</field>
             <field name="sequence">20</field>
         </record>
 
@@ -184,7 +184,7 @@
             <field name="code">capacity.useful_load</field>
             <field name="name">Useful Load</field>
             <field name="description">Maximum useful load capacity including passengers, cargo, and fuel</field>
-            <field name="type">numeric</field>
+            <field name="code_type">float</field>
             <field name="sequence">30</field>
         </record>
 
@@ -193,7 +193,7 @@
             <field name="code">cabin.seat_map</field>
             <field name="name">Seat Map</field>
             <field name="description">Seating configuration diagram of the aircraft</field>
-            <field name="type">text</field>
+            <field name="code_type">text</field>
             <field name="sequence">40</field>
         </record>
     </data>

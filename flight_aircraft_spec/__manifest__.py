@@ -14,6 +14,7 @@
     ],
     "data": [
         "security/ir.model.access.csv",
+        "views/flight_aircraft_views.xml",
         "views/flight_aircraft_spec_views.xml",
         "views/menus.xml",
         "data/flight_aircraft_spec_data.xml",
