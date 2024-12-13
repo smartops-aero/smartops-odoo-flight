@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Aircraft Form View -->
+    <record id="view_flight_aircraft_form_inherit_spec" model="ir.ui.view">
+        <field name="name">flight.aircraft.form.inherit.spec</field>
+        <field name="model">flight.aircraft</field>
+        <field name="inherit_id" ref="flight.view_flight_aircraft_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Specifications" name="specifications">
+                    <field name="spec_ids" context="{'default_aircraft_id': active_id}">
+                        <tree>
+                            <field name="code_id"/>
+                            <field name="display_name"/>
+                            <field name="code_type" invisible="1"/>
+                            <field name="value_bool" attrs="{'invisible': [('code_type', '!=', 'bool')]}"/>
+                            <field name="value_text" attrs="{'invisible': [('code_type', '!=', 'text')]}"/>
+                            <field name="value_float" attrs="{'invisible': [('code_type', '!=', 'float')]}"/>
+                            <field name="uom_id" attrs="{'invisible': [('code_type', '!=', 'float')]}"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
