@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Categories -->
+        <record id="category_amenity" model="flight.aircraft.spec.category">
+            <field name="name">Amenities</field>
+            <field name="code">amenity</field>
+            <field name="sequence">10</field>
+            <field name="description">Aircraft amenities and features</field>
+        </record>
+
+        <record id="category_cabin" model="flight.aircraft.spec.category">
+            <field name="name">Cabin</field>
+            <field name="code">cabin</field>
+            <field name="sequence">20</field>
+            <field name="description">Cabin specifications and measurements</field>
+        </record>
+
+        <!-- Specification Codes -->
+        <record id="spec_wifi" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_amenity"/>
+            <field name="code">amenity.wifi</field>
+            <field name="name">Starlink WiFi</field>
+            <field name="description">Aircraft is equipped with Starlink WiFi</field>
+            <field name="type">bool</field>
+            <field name="sequence">10</field>
+            <field name="default_value">false</field>
+        </record>
+
+        <record id="spec_power" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_amenity"/>
+            <field name="code">amenity.power</field>
+            <field name="name">Power Outlets</field>
+            <field name="description">Aircraft is equipped with power outlets</field>
+            <field name="type">bool</field>
+            <field name="sequence">20</field>
+            <field name="default_value">false</field>
+        </record>
+
+        <record id="spec_quiet_cabin" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_amenity"/>
+            <field name="code">amenity.quiet_cabin</field>
+            <field name="name">Quiet Cabin</field>
+            <field name="description">Aircraft features a quiet cabin</field>
+            <field name="type">bool</field>
+            <field name="sequence">30</field>
+            <field name="default_value">false</field>
+        </record>
+
+        <record id="spec_lavatory" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_amenity"/>
+            <field name="code">amenity.lavatory</field>
+            <field name="name">Enclosed Aft Lavatory</field>
+            <field name="description">Aircraft features an enclosed aft lavatory</field>
+            <field name="type">bool</field>
+            <field name="sequence">40</field>
+            <field name="default_value">false</field>
+        </record>
+
+        <record id="spec_air_conditioning" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_amenity"/>
+            <field name="code">amenity.air_conditioning</field>
+            <field name="name">Air Conditioning</field>
+            <field name="description">Aircraft is equipped with air conditioning</field>
+            <field name="type">bool</field>
+            <field name="sequence">50</field>
+            <field name="default_value">false</field>
+        </record>
+
+        <record id="spec_leather_seats" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_amenity"/>
+            <field name="code">amenity.leather_seats</field>
+            <field name="name">Leather Seats</field>
+            <field name="description">Aircraft features leather seats</field>
+            <field name="type">bool</field>
+            <field name="sequence">60</field>
+            <field name="default_value">false</field>
+        </record>
+
+        <record id="spec_entertainment" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_amenity"/>
+            <field name="code">amenity.entertainment</field>
+            <field name="name">Entertainment System</field>
+            <field name="description">Aircraft is equipped with an entertainment system</field>
+            <field name="type">bool</field>
+            <field name="sequence">70</field>
+            <field name="default_value">false</field>
+        </record>
+
+        <record id="spec_refreshments" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_amenity"/>
+            <field name="code">amenity.refreshments</field>
+            <field name="name">Refreshment Center</field>
+            <field name="description">Aircraft features a refreshment center</field>
+            <field name="type">bool</field>
+            <field name="sequence">80</field>
+            <field name="default_value">false</field>
+        </record>
+
+        <record id="spec_cargo_door" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_amenity"/>
+            <field name="code">amenity.cargo_door</field>
+            <field name="name">Cargo Door</field>
+            <field name="description">Aircraft features a cargo door</field>
+            <field name="type">bool</field>
+            <field name="sequence">90</field>
+            <field name="default_value">false</field>
+        </record>
+
+        <!-- Cabin Specifications -->
+        <record id="spec_cabin_height" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_cabin"/>
+            <field name="code">cabin.height</field>
+            <field name="name">Cabin Height</field>
+            <field name="description">The height of this aircraft cabin</field>
+            <field name="type">float</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="spec_cabin_width" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_cabin"/>
+            <field name="code">cabin.width</field>
+            <field name="name">Cabin Width</field>
+            <field name="description">The width of this aircraft cabin</field>
+            <field name="type">float</field>
+            <field name="sequence">20</field>
+        </record>
+    </data>
+</odoo>
