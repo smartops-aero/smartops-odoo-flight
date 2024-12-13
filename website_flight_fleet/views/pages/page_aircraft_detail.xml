@@ -57,30 +57,12 @@
                                                 class="fw-bold"
                                             >Specifications</h6>
                                         </div>
-                                        <p class="mb-0">
-                                            <strong>Seats:</strong> <t
-                                                t-esc="aircraft.passenger_capacity"
-                                            /> passengers<br />
-                                            <strong>Range:</strong> 
-                                            <t t-esc="aircraft.range"/> 
-                                            <t t-esc="aircraft.range_uom_id.name"/><br />
-                                            <strong>Cruise Speed:</strong> 
-                                            <t t-esc="aircraft.cruise_speed"/> 
-                                            <t t-esc="aircraft.cruise_speed_uom_id.name"/><br />
-                                            <strong>Useful Load:</strong> 
-                                            <t t-esc="aircraft.useful_load"/> 
-                                            <t t-esc="aircraft.useful_load_uom_id.name"/><br />
-                                            <strong>Cabin Dimensions:</strong>
-                                            <t t-esc="aircraft.cabin_length"/> 
-                                            <t t-esc="aircraft.cabin_length_uom_id.name"/> (length) x 
-                                            <t t-esc="aircraft.cabin_width"/> 
-                                            <t t-esc="aircraft.cabin_width_uom_id.name"/> (width) x 
-                                            <t t-esc="aircraft.cabin_height"/> 
-                                            <t t-esc="aircraft.cabin_height_uom_id.name"/> (height)<br />
-                                            <strong>Luggage Capacity:</strong> 
-                                            <t t-esc="aircraft.luggage_capacity"/> 
-                                            <t t-esc="aircraft.luggage_capacity_uom_id.name"/>
-                                        </p>
+                                        <t t-foreach="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id.code != 'amenity')" t-as="spec">
+                                            <p class="mb-3">
+                                                <strong><t t-esc="spec.code_id.category_id.name"/>:</strong>
+                                                <t t-esc="spec.display_name"/>
+                                            </p>
+                                        </t>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-4">
@@ -89,13 +71,8 @@
                                             >Aircraft Highlights</h6>
                                         </div>
                                         <ul class="list-unstyled mb-0">
-                                            <t
-                                                t-foreach="aircraft.amenity_ids"
-                                                t-as="amenity"
-                                            >
-                                                <li>- <t
-                                                        t-esc="amenity.name"
-                                                    /></li>
+                                            <t t-foreach="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id.code == 'amenity' and s.value_bool)" t-as="amenity">
+                                                <li>- <t t-esc="amenity.code_id.name"/></li>
                                             </t>
                                         </ul>
                                     </div>

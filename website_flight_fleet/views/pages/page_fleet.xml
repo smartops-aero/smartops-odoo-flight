@@ -182,15 +182,17 @@
                         t-field="aircraft.website_short_description"
                       />
                       <div class="border-top border-secondary my-4" />
-                      <p class="card-text text-black mb-4"> Range: 
-                        <t t-esc="aircraft.range"/> 
-                        <t t-esc="aircraft.range_uom_id.name"/>
-                        <t t-if="aircraft.cruise_speed"> | 
-                          <t t-esc="aircraft.cruise_speed"/>
-                          <t t-esc="aircraft.cruise_speed_uom_id.name"/>
+                      <p class="card-text text-black mb-4">
+                        <t t-set="performance_specs" t-value="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id.code == 'performance')"/>
+                        <t t-set="passenger_spec" t-value="aircraft.spec_ids.filtered(lambda s: s.code_id.code == 'capacity.passengers')"/>
+                        <t t-foreach="performance_specs" t-as="spec">
+                            <t t-esc="spec.display_name"/>
+                            <t t-if="not spec_last"> | </t>
                         </t>
-                        <br />
-                        Passenger capacity: <t t-esc="aircraft.passenger_capacity"/>
+                        <t t-if="passenger_spec">
+                            <br/>
+                            <t t-esc="passenger_spec.display_name"/>
+                        </t>
                       </p>
                       <a
                         t-att-href="'/aircraft/%s' % slug(aircraft)"
