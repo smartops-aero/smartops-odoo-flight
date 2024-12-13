@@ -68,7 +68,6 @@
                         <group>
                             <field name="type"/>
                             <field name="sequence"/>
-                            <field name="default_value"/>
                         </group>
                     </group>
                     <group>
