@@ -6,5 +6,6 @@ class FlightAircraft(models.Model):
     spec_ids = fields.One2many(
         'flight.aircraft.spec',
         'aircraft_id',
-        string='Specifications'
+        string='Specifications',
+        tracking=True
     )
