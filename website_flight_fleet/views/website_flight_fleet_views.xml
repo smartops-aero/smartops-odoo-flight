@@ -39,67 +39,16 @@
           <notebook>
             <!-- Specifications Tab -->
             <page string="Specifications" name="specifications">
-              <group>
-                <group string="Capacity">
-                  <field
-                    name="passenger_capacity"
-                    placeholder="Number of passengers"
-                  />
-                  <label for="luggage_capacity" string="Luggage Capacity"/>
-                  <div class="o_row">
-                    <field name="luggage_capacity" class="oe_inline"/>
-                    <field name="luggage_capacity_uom_id" class="oe_inline"/>
-                  </div>
-                  <label for="useful_load" string="Useful Load"/>
-                  <div class="o_row">
-                    <field name="useful_load" class="oe_inline"/>
-                    <field name="useful_load_uom_id" class="oe_inline"/>
-                  </div>
+                <group>
+                    <field name="seat_map_1920" widget="image"/>
                 </group>
-                <group string="Performance">
-                  <label for="range" string="Range"/>
-                  <div class="o_row">
-                    <field name="range" class="oe_inline"/>
-                    <field name="range_uom_id" class="oe_inline"/>
-                  </div>
-                  <label for="cruise_speed" string="Cruise Speed"/>
-                  <div class="o_row">
-                    <field name="cruise_speed" class="oe_inline"/>
-                    <field name="cruise_speed_uom_id" class="oe_inline"/>
-                  </div>
-                </group>
-                <group string="Cabin Dimensions">
-                  <label for="cabin_length" string="Length"/>
-                  <div class="o_row">
-                    <field name="cabin_length" class="oe_inline"/>
-                    <field name="cabin_length_uom_id" class="oe_inline"/>
-                  </div>
-                  <label for="cabin_width" string="Width"/>
-                  <div class="o_row">
-                    <field name="cabin_width" class="oe_inline"/>
-                    <field name="cabin_width_uom_id" class="oe_inline"/>
-                  </div>
-                  <label for="cabin_height" string="Height"/>
-                  <div class="o_row">
-                    <field name="cabin_height" class="oe_inline"/>
-                    <field name="cabin_height_uom_id" class="oe_inline"/>
-                  </div>
-                </group>
-                <group string="Seat Map" name="seat_map_group">
-                  <field name="seat_map_1920" widget="image" />
-                </group>
-              </group>
-            </page>
-
-            <!-- Features & Amenities Tab -->
-            <page string="Features &amp; Amenities" name="features">
-              <group>
-                <field
-                  name="amenity_ids"
-                  widget="many2many_tags"
-                  placeholder="Select amenities"
-                />
-              </group>
+                <field name="spec_ids" context="{'default_aircraft_id': active_id}">
+                    <tree inherit_id="flight_aircraft_spec.view_flight_aircraft_spec_tree_base">
+                        <control>
+                            <create string="Add a Specification"/>
+                        </control>
+                    </tree>
+                </field>
             </page>
           </notebook>
         </sheet>
