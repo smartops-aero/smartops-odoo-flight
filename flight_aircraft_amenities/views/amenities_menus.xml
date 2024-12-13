@@ -1,9 +1,0 @@
-<odoo>
-  <menuitem
-    id="menu_flight_aircraft_amenity"
-    name="Amenities"
-    parent="flight.menu_flight_aircraft_configuration"
-    action="action_flight_aircraft_amenity"
-    sequence="30"
-  />
-</odoo>
