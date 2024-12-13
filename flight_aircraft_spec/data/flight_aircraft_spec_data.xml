@@ -187,14 +187,5 @@
             <field name="code_type">float</field>
             <field name="sequence">30</field>
         </record>
-
-        <record id="spec_seat_map" model="flight.aircraft.spec.code">
-            <field name="category_id" ref="category_cabin"/>
-            <field name="code">cabin.seat_map</field>
-            <field name="name">Seat Map</field>
-            <field name="description">Seating configuration diagram of the aircraft</field>
-            <field name="code_type">text</field>
-            <field name="sequence">40</field>
-        </record>
     </data>
 </odoo>
