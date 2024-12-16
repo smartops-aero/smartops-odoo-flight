@@ -112,6 +112,33 @@
             <field name="sequence">90</field>
         </record>
 
+        <record id="spec_ice_maker" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_amenity"/>
+            <field name="code">amenity.ice_maker</field>
+            <field name="name">Ice Maker</field>
+            <field name="description">Aircraft is equipped with an ice maker</field>
+            <field name="code_type">bool</field>
+            <field name="sequence">100</field>
+        </record>
+
+        <record id="spec_ice_drawer" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_amenity"/>
+            <field name="code">amenity.ice_drawer</field>
+            <field name="name">Ice Drawer</field>
+            <field name="description">Aircraft features an ice storage drawer</field>
+            <field name="code_type">bool</field>
+            <field name="sequence">110</field>
+        </record>
+
+        <record id="spec_microwave_oven" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_amenity"/>
+            <field name="code">amenity.microwave_oven</field>
+            <field name="name">Microwave &amp; Oven</field>
+            <field name="description">Aircraft is equipped with a microwave and oven combination</field>
+            <field name="code_type">bool</field>
+            <field name="sequence">120</field>
+        </record>
+
         <!-- Cabin Specifications -->
         <record id="spec_cabin_length" model="flight.aircraft.spec.code">
             <field name="category_id" ref="category_cabin"/>
@@ -181,7 +208,7 @@
             <field name="description">Maximum luggage volume capacity</field>
             <field name="code_type">float</field>
             <field name="sequence">20</field>
-            <field name="default_uom_id" ref="uom.product_uom_ft3"/>
+            <field name="default_uom_id" ref="uom.product_uom_cubic_meter"/>
         </record>
 
         <record id="spec_useful_load" model="flight.aircraft.spec.code">
