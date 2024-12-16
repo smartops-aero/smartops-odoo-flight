@@ -184,7 +184,7 @@
                       <div class="border-top border-secondary my-4" />
                       <p class="card-text text-black mb-4">
                         <t t-set="performance_specs" t-value="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id.code == 'performance')"/>
-                        <t t-set="passenger_spec" t-value="aircraft.spec_ids.filtered(lambda s: s.code_id.code == 'capacity.passengers')"/>
+                        <t t-set="passenger_spec" t-value="aircraft.spec_ids.filtered(lambda s: s.code_id.code == 'load.passengers')"/>
                         <t t-foreach="performance_specs" t-as="spec">
                             <t t-esc="spec.display_name"/>
                             <t t-if="not spec_last"> | </t>

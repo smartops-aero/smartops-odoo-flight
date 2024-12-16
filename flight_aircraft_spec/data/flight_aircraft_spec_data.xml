@@ -16,11 +16,11 @@
             <field name="description">Cabin specifications and measurements</field>
         </record>
 
-        <record id="category_capacity" model="flight.aircraft.spec.category">
-            <field name="name">Capacity</field>
-            <field name="code">capacity</field>
+        <record id="category_load" model="flight.aircraft.spec.category">
+            <field name="name">Load</field>
+            <field name="code">load</field>
             <field name="sequence">30</field>
-            <field name="description">Passenger and cargo capacity</field>  
+            <field name="description">Passenger and cargo load</field>  
         </record>
 
         <record id="category_performance" model="flight.aircraft.spec.category">
@@ -193,8 +193,8 @@
 
         <!-- Capacity Specifications -->
         <record id="spec_passenger_capacity" model="flight.aircraft.spec.code">
-            <field name="category_id" ref="category_capacity"/>
-            <field name="code">capacity.passengers</field>
+            <field name="category_id" ref="category_load"/>
+            <field name="code">load.passengers</field>
             <field name="name">Passenger Capacity</field>
             <field name="description">Maximum number of passengers the aircraft can accommodate</field>
             <field name="code_type">float</field>
@@ -202,20 +202,20 @@
         </record>
 
         <record id="spec_luggage_capacity" model="flight.aircraft.spec.code">
-            <field name="category_id" ref="category_capacity"/>
-            <field name="code">capacity.luggage</field>
+            <field name="category_id" ref="category_load"/>
+            <field name="code">load.luggage</field>
             <field name="name">Luggage Capacity</field>
-            <field name="description">Maximum luggage volume capacity</field>
+            <field name="description">Maximum luggage volume load</field>
             <field name="code_type">float</field>
             <field name="sequence">20</field>
             <field name="default_uom_id" ref="uom.product_uom_cubic_meter"/>
         </record>
 
         <record id="spec_useful_load" model="flight.aircraft.spec.code">
-            <field name="category_id" ref="category_capacity"/>
-            <field name="code">capacity.useful_load</field>
+            <field name="category_id" ref="category_load"/>
+            <field name="code">load.useful_load</field>
             <field name="name">Useful Load</field>
-            <field name="description">Maximum useful load capacity including passengers, cargo, and fuel</field>
+            <field name="description">Maximum useful load load including passengers, cargo, and fuel</field>
             <field name="code_type">float</field>
             <field name="sequence">30</field>
             <field name="default_uom_id" ref="uom.product_uom_lb"/>
