@@ -5,3 +5,9 @@ access_flight_aircraft_spec_code_user,flight.aircraft.spec.code user,model_fligh
 access_flight_aircraft_spec_code_manager,flight.aircraft.spec.code manager,model_flight_aircraft_spec_code,base.group_system,1,1,1,1
 access_flight_aircraft_spec_user,flight.aircraft.spec user,model_flight_aircraft_spec,base.group_user,1,1,1,0
 access_flight_aircraft_spec_manager,flight.aircraft.spec manager,model_flight_aircraft_spec,base.group_system,1,1,1,1
+access_flight_aircraft_spec_category_public,flight.aircraft.spec.category public,model_flight_aircraft_spec_category,base.group_public,1,0,0,0
+access_flight_aircraft_spec_code_public,flight.aircraft.spec.code public,model_flight_aircraft_spec_code,base.group_public,1,0,0,0
+access_flight_aircraft_spec_public,flight.aircraft.spec public,model_flight_aircraft_spec,base.group_public,1,0,0,0
+access_flight_aircraft_spec_category_portal,flight.aircraft.spec.category portal,model_flight_aircraft_spec_category,base.group_portal,1,0,0,0
+access_flight_aircraft_spec_code_portal,flight.aircraft.spec.code portal,model_flight_aircraft_spec_code,base.group_portal,1,0,0,0
+access_flight_aircraft_spec_portal,flight.aircraft.spec portal,model_flight_aircraft_spec,base.group_portal,1,0,0,0
