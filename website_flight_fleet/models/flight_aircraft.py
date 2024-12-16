@@ -29,12 +29,12 @@ class FlightAircraft(models.Model):
     def _get_website_page(self):
         self.ensure_one()
         domain = [('url', '=', self.website_url)]
-        return self.env['website.page'].search(domain, limit=1)
+        return self.env['website.page'].sudo().search(domain, limit=1)
 
     def _get_website_view(self):
         self.ensure_one()
         view_key = f'website_flight_fleet.aircraft_page_{self.id}'
-        return self.env['ir.ui.view'].search([('key', '=', view_key)], limit=1)
+        return self.env['ir.ui.view'].sudo().search([('key', '=', view_key)], limit=1)
 
     def _create_website_page(self):
         self.ensure_one()
