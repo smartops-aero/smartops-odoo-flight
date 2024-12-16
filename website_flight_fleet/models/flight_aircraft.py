@@ -38,58 +38,47 @@ class FlightAircraft(models.Model):
 
     def _create_website_page(self):
         self.ensure_one()
-        template_view = self.env.ref('website_flight_fleet.page_aircraft_detail')
-        
-        if not template_view:
-            raise ValueError("Template view 'website_flight_fleet.page_aircraft_detail' not found")
-        
         _logger = logging.getLogger(__name__)
-        
-        # Get the template's arch and extract the content
-        arch_content = template_view.arch
-        import re
-        
-        # We only want the inner content of the website.layout t-call
-        layout_content = re.search(r't t-call="website\.layout">(.*?)</t>(?=[^<]*$)', 
-                                arch_content, re.DOTALL)
-        
-        if not layout_content:
-            _logger.error("Failed to extract layout content. arch_content was:")
-            _logger.error(arch_content)
-            raise ValueError("Could not extract layout content")
-        
-        _logger.info("Successfully extracted layout content:")
-        _logger.info(layout_content.group(1))
-        
-        # Create a unique key for the new view
-        view_key = f'website_flight_fleet.aircraft_page_{self.id}'
-        
-        # Replace static sections with oe_structure for customization
-        content = layout_content.group(1)
-        # Create the new view with copied content and proper customization attributes
-        view_values = {
-            'name': self.website_display_name or self.name,
-            'type': 'qweb',
-            'mode': 'primary',
-            'arch': f'''<?xml version="1.0"?>
-                <template id="{view_key}" name="{self.website_display_name or self.name}" 
-                        customize_show="True" track="1">
-                    <t t-call="website.layout">
-                        {content}
-                    </t>
-                </template>
-            ''',
-            'key': view_key,
-            'website_id': self.website_id.id if self.website_id else None,
-            'active': True,
-        }
-        
+        view = None
         try:
-            # Create view with proper context
+            template_view = self.env.ref('website_flight_fleet.page_aircraft_detail')
+        
+            if not template_view:
+                raise ValueError("Template view 'website_flight_fleet.page_aircraft_detail' not found")
+            
+            
+            
+            # Create a unique key for the new view
+            view_key = f'website_flight_fleet.aircraft_page_{self.id}'
+            
+            # Get the template's arch and replace the template id and name
+            arch = template_view.arch.replace(
+                'id="page_aircraft_detail"', 
+                f'id="{view_key}"'
+            ).replace(
+                'name="Aircraft Detail"',
+                f'name="{self.website_display_name or self.name}"'
+            )
+
+            _logger.info("Arch:")
+            _logger.info(arch)
+            
+            view_values = {
+                'name': self.website_display_name or self.name,
+                'type': 'qweb',
+                'mode': 'primary',
+                'arch': f'''
+                <t t-call="website.layout">
+                    {arch}
+                </t>
+                ''',
+                'key': view_key,
+                'website_id': self.website_id.id if self.website_id else None,
+                'active': True,
+            }
             View = self.env['ir.ui.view']
             view = View.with_context(website_id=self.website_id.id).sudo().create(view_values)
             
-            # Create website page
             page_values = {
                 'url': self.website_url,
                 'website_published': self.website_published,
@@ -105,8 +94,7 @@ class FlightAircraft(models.Model):
             
         except Exception as e:
             _logger.error("Error creating view. view_values:")
-            _logger.error(view_values)
-            # Clean up view if creation fails
+            
             if 'view' in locals() and view:
                 view.sudo().unlink()
             raise e
