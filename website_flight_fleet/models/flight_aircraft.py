@@ -1,5 +1,6 @@
 from odoo import api, fields, models
 from odoo.addons.http_routing.models.ir_http import slug
+import logging
 
 class FlightAircraft(models.Model):
     _name = "flight.aircraft"
@@ -39,33 +40,76 @@ class FlightAircraft(models.Model):
         self.ensure_one()
         template_view = self.env.ref('website_flight_fleet.page_aircraft_detail')
         
-        # Create view using template's arch
+        if not template_view:
+            raise ValueError("Template view 'website_flight_fleet.page_aircraft_detail' not found")
+        
+        _logger = logging.getLogger(__name__)
+        
+        # Get the template's arch and extract the content
+        arch_content = template_view.arch
+        import re
+        
+        # We only want the inner content of the website.layout t-call
+        layout_content = re.search(r't t-call="website\.layout">(.*?)</t>(?=[^<]*$)', 
+                                arch_content, re.DOTALL)
+        
+        if not layout_content:
+            _logger.error("Failed to extract layout content. arch_content was:")
+            _logger.error(arch_content)
+            raise ValueError("Could not extract layout content")
+        
+        _logger.info("Successfully extracted layout content:")
+        _logger.info(layout_content.group(1))
+        
+        # Create a unique key for the new view
+        view_key = f'website_flight_fleet.aircraft_page_{self.id}'
+        
+        # Replace static sections with oe_structure for customization
+        content = layout_content.group(1)
+        # Create the new view with copied content and proper customization attributes
         view_values = {
             'name': self.website_display_name or self.name,
             'type': 'qweb',
-            'arch': '''
-                <t t-name="website_flight_fleet.aircraft_page_%d">
-                    <t t-call="website_flight_fleet.page_aircraft_detail">
-                        <t t-set="aircraft" t-value="aircraft"/>
+            'mode': 'primary',
+            'arch': f'''<?xml version="1.0"?>
+                <template id="{view_key}" name="{self.website_display_name or self.name}" 
+                        customize_show="True" track="1">
+                    <t t-call="website.layout">
+                        {content}
                     </t>
-                </t>
-            ''' % self.id,
-            'key': f'website_flight_fleet.aircraft_page_{self.id}',
-            'website_id': self.website_id.id,
+                </template>
+            ''',
+            'key': view_key,
+            'website_id': self.website_id.id if self.website_id else None,
+            'active': True,
         }
-        view = self.env['ir.ui.view'].sudo().create(view_values)
-
-        # Create website page
-        page_values = {
-            'url': self.website_url,
-            'website_published': self.website_published,
-            'view_id': view.id,
-            'website_indexed': True,
-            'name': self.website_display_name or self.name,
-            'website_id': self.website_id.id,
-            'is_published': self.website_published,
-        }
-        return self.env['website.page'].sudo().create(page_values)
+        
+        try:
+            # Create view with proper context
+            View = self.env['ir.ui.view']
+            view = View.with_context(website_id=self.website_id.id).sudo().create(view_values)
+            
+            # Create website page
+            page_values = {
+                'url': self.website_url,
+                'website_published': self.website_published,
+                'view_id': view.id,
+                'website_indexed': True,
+                'name': self.website_display_name or self.name,
+                'website_id': self.website_id.id,
+                'is_published': self.website_published,
+                'track': True,
+            }
+            
+            return self.env['website.page'].sudo().create(page_values)
+            
+        except Exception as e:
+            _logger.error("Error creating view. view_values:")
+            _logger.error(view_values)
+            # Clean up view if creation fails
+            if 'view' in locals() and view:
+                view.sudo().unlink()
+            raise e
 
     @api.model_create_multi
     def create(self, vals_list):
