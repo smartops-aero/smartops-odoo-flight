@@ -79,59 +79,18 @@ class WebsiteFlight(http.Controller):
 
         return request.render("website_flight_fleet.page_fleet", values)
 
-    @http.route(
-        [
-            """/aircraft/<model("flight.aircraft"):aircraft>""",
-        ],
-        type="http",
-        auth="public",
-        website=True,
-        sitemap=True,
-    )
-    def aircraft(self, aircraft, **kwargs):
-        if not aircraft.can_access_from_current_website():
-            raise werkzeug.exceptions.NotFound()
-
-        # Get the previous and next aircraft based on registration
-        Aircraft = request.env["flight.aircraft"]
-        domain = self._get_aircraft_domain()
-
-        # Get neighbor aircrafts for navigation
-        all_aircraft_ids = Aircraft.search(domain).ids
-        current_aircraft_index = all_aircraft_ids.index(aircraft.id)
-        prev_aircraft = None
-        next_aircraft = None
-
-        if current_aircraft_index > 0:
-            prev_aircraft = Aircraft.browse(
-                all_aircraft_ids[current_aircraft_index - 1]
-            )
-        if current_aircraft_index < len(all_aircraft_ids) - 1:
-            next_aircraft = Aircraft.browse(
-                all_aircraft_ids[current_aircraft_index + 1]
-            )
-
-        # Get related aircrafts (same model)
-        related_aircraft_domain = expression.AND(
-            [
-                domain,
-                [("model_id", "=", aircraft.model_id.id), ("id", "!=", aircraft.id)],
-            ]
-        )
-        related_aircrafts = Aircraft.search(related_aircraft_domain, limit=4)
-
-        values = {
-            "main_object": aircraft,
-            "aircraft": aircraft,
-            "prev_aircraft": prev_aircraft,
-            "next_aircraft": next_aircraft,
-            "related_aircrafts": related_aircrafts,
-        }
-
-        if aircraft.env.context.get("enable_editor"):
-            values.update(enable_editor=True)
-
-        return request.render("website_flight_fleet.page_aircraft_detail", values)
+    @http.route(['/aircraft/<model("flight.aircraft"):aircraft>'], type='http', auth="public", website=True)
+    def aircraft_detail(self, aircraft, **kwargs):
+        # Get or create the page
+        page = aircraft._get_website_page()
+        if not page:
+            page = aircraft._create_website_page()
+            
+        return request.render(page.view_id.key, {
+            'aircraft': aircraft,
+            'main_object': aircraft,
+            'edit_page': request.env.user.has_group('website.group_website_publisher'),
+        })
 
     @http.route(
         '/fleet/aircraft/json/<model("flight.aircraft"):aircraft>',
