@@ -49,6 +49,7 @@
                 <field name="code"/>
                 <field name="code_type"/>
                 <field name="description"/>
+                <field name="default_uom_id"/>
             </tree>
         </field>
     </record>
@@ -68,6 +69,7 @@
                         <group>
                             <field name="code_type"/>
                             <field name="sequence"/>
+                            <field name="default_uom_id" attrs="{'invisible': [('code_type', '!=', 'float')]}"/>
                         </group>
                     </group>
                     <group>

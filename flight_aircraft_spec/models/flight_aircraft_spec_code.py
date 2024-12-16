@@ -26,7 +26,11 @@ class FlightAircraftSpecCode(models.Model):
         default="text",
     )
     sequence = fields.Integer(default=10)
-    
+    default_uom_id = fields.Many2one(
+        'uom.uom',
+        string='Default Unit of Measure',
+        help="Default unit of measure for this specification code"
+    )    
 
     _sql_constraints = [
         (

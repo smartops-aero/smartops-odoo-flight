@@ -120,6 +120,7 @@
             <field name="description">Length of the aircraft cabin</field>
             <field name="code_type">float</field>
             <field name="sequence">10</field>
+            <field name="default_uom_id" ref="uom.product_uom_foot"/>
         </record>
 
         <record id="spec_cabin_width" model="flight.aircraft.spec.code">
@@ -129,6 +130,7 @@
             <field name="description">Width of the aircraft cabin</field>
             <field name="code_type">float</field>
             <field name="sequence">20</field>
+            <field name="default_uom_id" ref="uom.product_uom_foot"/>
         </record>
 
         <record id="spec_cabin_height" model="flight.aircraft.spec.code">
@@ -138,8 +140,8 @@
             <field name="description">Height of the aircraft cabin</field>
             <field name="code_type">float</field>
             <field name="sequence">30</field>
+            <field name="default_uom_id" ref="uom.product_uom_foot"/>
         </record>
-
 
         <!-- Performance Specifications -->
         <record id="spec_range" model="flight.aircraft.spec.code">
@@ -149,6 +151,7 @@
             <field name="description">Maximum flight range of the aircraft</field>
             <field name="code_type">float</field>
             <field name="sequence">10</field>
+            <field name="default_uom_id" ref="flight_uom.product_uom_nm"/>
         </record>
 
         <record id="spec_cruise_speed" model="flight.aircraft.spec.code">
@@ -158,6 +161,7 @@
             <field name="description">Normal cruising speed of the aircraft</field>
             <field name="code_type">float</field>
             <field name="sequence">20</field>
+            <field name="default_uom_id" ref="flight_uom.product_uom_kt"/>
         </record>
 
         <!-- Capacity Specifications -->
@@ -177,6 +181,7 @@
             <field name="description">Maximum luggage volume capacity</field>
             <field name="code_type">float</field>
             <field name="sequence">20</field>
+            <field name="default_uom_id" ref="uom.product_uom_ft3"/>
         </record>
 
         <record id="spec_useful_load" model="flight.aircraft.spec.code">
@@ -186,6 +191,7 @@
             <field name="description">Maximum useful load capacity including passengers, cargo, and fuel</field>
             <field name="code_type">float</field>
             <field name="sequence">30</field>
+            <field name="default_uom_id" ref="uom.product_uom_lb"/>
         </record>
     </data>
 </odoo>

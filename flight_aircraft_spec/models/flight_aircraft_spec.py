@@ -67,4 +67,4 @@ class FlightAircraftSpec(models.Model):
             self.value_bool = False
             self.value_text = False
             self.value_float = 0.0
-            self.uom_id = False
+            self.uom_id = self.code_id.default_uom_id
