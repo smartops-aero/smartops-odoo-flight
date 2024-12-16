@@ -57,11 +57,15 @@
                                                 class="fw-bold"
                                             >Specifications</h6>
                                         </div>
-                                        <t t-foreach="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id.code != 'amenity')" t-as="spec">
-                                            <p class="mb-3">
-                                                <strong><t t-esc="spec.code_id.category_id.name"/>:</strong>
-                                                <t t-esc="spec.display_name"/>
-                                            </p>
+                                        <t t-foreach="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id.code != 'amenity').mapped('code_id.category_id')" t-as="category">
+                                            <div class="mb-3">
+                                                <p class="fw-bold mb-2"><t t-esc="category.name"/></p>
+                                                <ul class="list-unstyled">
+                                                    <t t-foreach="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id == category)" t-as="spec">
+                                                        <li class="mb-1"><t t-esc="spec.display_name"/></li>
+                                                    </t>
+                                                </ul>
+                                            </div>
                                         </t>
                                     </div>
                                     <div class="col-md-6">
