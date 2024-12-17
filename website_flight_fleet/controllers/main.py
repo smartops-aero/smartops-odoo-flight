@@ -85,10 +85,13 @@ class WebsiteFlight(http.Controller):
 
     @http.route(['/aircraft/<model("flight.aircraft"):aircraft>'], type='http', auth="public", website=True)
     def aircraft_detail(self, aircraft, **kwargs):
-        # Get or create the page
+        """Display aircraft detail page"""
+        if not aircraft.exists():
+            raise werkzeug.exceptions.NotFound()
+
         page = aircraft._get_website_page()
         if not page:
-            page = aircraft._create_website_page()
+            raise werkzeug.exceptions.NotFound()
             
         return request.render(page.view_id.key, {
             'aircraft': aircraft,
