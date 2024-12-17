@@ -139,6 +139,15 @@
             <field name="sequence">120</field>
         </record>
 
+        <record id="spec_cabin_environment_control" model="flight.aircraft.spec.code">
+            <field name="category_id" ref="category_amenity"/>
+            <field name="code">amenity.cabin_environment_control</field>
+            <field name="name">Cabin Environment Control</field>
+            <field name="description">Aircraft features environment control in the cabin</field>
+            <field name="code_type">bool</field>
+            <field name="sequence">130</field>
+        </record>
+
         <!-- Cabin Specifications -->
         <record id="spec_cabin_length" model="flight.aircraft.spec.code">
             <field name="category_id" ref="category_cabin"/>
