@@ -1,7 +1,6 @@
 import logging
 from odoo import api, fields, models
 from odoo.addons.http_routing.models.ir_http import slug
-from odoo.tools.translate import html_translate
 
 _logger = logging.getLogger(__name__)
 
@@ -49,18 +48,19 @@ class FlightAircraft(models.Model):
     def create(self, vals_list):
         records = super().create(vals_list)
         for record in records:
-            # Create a new template for each new aircraft
-            template = record._create_description_template()
-            record.website_description_view_id = template.id
+            # Create a new template for each new aircraft once
+            if not record.website_description_view_id:
+                template = record._create_description_template()
+                record.write({'website_description_view_id': template.id})
         return records
 
-    def write(self, values):
-        # If registration changes, update the template name
-        if 'registration' in values:
-            for record in self:
-                if record.website_description_view_id:
-                    record.website_description_view_id.name = f'Aircraft Description: {values["registration"]}'
-        return super().write(values)
+    def copy(self, default=None):
+        """When duplicating an aircraft, ensure it gets its own template"""
+        self.ensure_one()
+        default = dict(default or {})
+        # Don't copy the template reference - a new one will be created
+        default['website_description_view_id'] = False
+        return super().copy(default)
 
     def unlink(self):
         # Clean up custom templates when aircraft is deleted
@@ -76,7 +76,10 @@ class FlightAircraft(models.Model):
             templates.unlink()
         return res
 
-    website_published = fields.Boolean("Aircraft Visible on Website", copy=False)
+    website_published = fields.Boolean(
+        "Aircraft Visible on Website", 
+        copy=False
+    )
     website_short_description = fields.Text(
         "Website Short Description", 
         help="A short description of the aircraft that will be displayed on the website",
@@ -86,13 +89,17 @@ class FlightAircraft(models.Model):
         "Website Display Name",
         help="The name that will be displayed on the website (e.g., 'Citation Bravo N550RM')",
     )
-    website_aircraft_slogan = fields.Char("Slogan for the aircraft", translate=True)
+    website_aircraft_slogan = fields.Char(
+        "Slogan for the aircraft", 
+        translate=True
+    )
     
     website_description_view_id = fields.Many2one(
         'ir.ui.view',
         string='Website Description Template',
         ondelete='cascade',
         copy=False,
+        readonly=True,  # Make it readonly since it should only be set during creation
     )
 
     def _compute_website_url(self):
