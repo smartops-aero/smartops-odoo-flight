@@ -1,6 +1,9 @@
+import logging
 from odoo import api, fields, models
 from odoo.addons.http_routing.models.ir_http import slug
-import logging
+from odoo.tools.translate import html_translate
+
+_logger = logging.getLogger(__name__)
 
 class FlightAircraft(models.Model):
     _name = "flight.aircraft"
@@ -12,125 +15,86 @@ class FlightAircraft(models.Model):
         "website.cover_properties.mixin",
     ]
 
-    # Website Fields
-    website_published = fields.Boolean("Aircraft Visible on Website", copy=False)
-    website_short_description = fields.Text("Website Short Description", 
-    help="A short description of the aircraft that will be displayed on the website",
-    translate=True)
-    website_display_name = fields.Char(
-        "Website Display Name",
-        help="The name that will be displayed on the website (e.g., 'Citation Bravo N550RM')",
-    )
-    website_aircraft_slogan = fields.Char("Slogan for the aircraft", translate=True)
-
-    def _get_view_key(self):
-        """Generate the unique view key for this aircraft"""
+    def _create_description_template(self):
+        """Create a new ir.ui.view record for this aircraft's description"""
         self.ensure_one()
-        return f'website_flight_fleet.aircraft_page_{self.id}'
-
-    def _get_page_name(self):
-        """Get display name for website page"""
-        self.ensure_one()
-        return self.website_display_name or self.name
-
-    def _compute_website_url(self):
-        for aircraft in self:
-            aircraft.website_url = f"/aircraft/{slug(aircraft)}"
-
-    def _get_website_page(self):
-        self.ensure_one()
-        domain = [('url', '=', self.website_url)]
-        return self.env['website.page'].sudo().search(domain, limit=1)
-
-    def _get_website_view(self):
-        self.ensure_one()
-        view_key = self._get_view_key()
-        return self.env['ir.ui.view'].sudo().search([('key', '=', view_key)], limit=1)
-
-    def _create_website_page(self):
-        self.ensure_one()
-        View = self.env['ir.ui.view'].sudo()
-        Page = self.env['website.page'].sudo()
-        view = None
-        try:
-            template_view = self.env.ref('website_flight_fleet.page_aircraft_detail')
-            view_key = self._get_view_key()
-            page_name = self._get_page_name()
+        default_template = self.env.ref('website_flight_fleet.default_website_description')
         
-            if not template_view:
-                raise ValueError("Template view 'website_flight_fleet.page_aircraft_detail' not found")
-            
-            # Get the template's arch and replace the template id and name
-            arch = template_view.arch.replace(
-                'id="page_aircraft_detail"', 
-                f'id="{view_key}"'
-            ).replace(
-                'name="Aircraft Detail"',
-                f'name="{page_name}"'
-            )
-            
-            view_values = {
-                'name': page_name,
-                'type': 'qweb',
-                'mode': 'primary',
-                'arch': arch,
-                'key': view_key,
-                'website_id': self.website_id.id if self.website_id else None,
-                'active': True,
-            }
-
-            view = View.with_context(website_id=self.website_id.id).sudo().create(view_values)
-            published_state = self.website_published
-            page_values = {
-                'url': self.website_url,
-                'website_published': published_state,
-                'view_id': view.id,
-                'website_indexed': True,
-                'name': page_name,
-                'website_id': self.website_id.id,
-                'is_published': published_state,
-                'track': True,
-            }
-            
-            return self.env['website.page'].sudo().create(page_values)
-            
-        except Exception as e:
-            if view:
-                view.sudo().unlink()
-            raise e
+        View = self.env['ir.ui.view']
+        key = f'website_flight_fleet.aircraft_description_{self.id}'
+        
+        # Create the view
+        new_view = View.create({
+            'name': f'Aircraft Description: {self.registration or "New"}',
+            'type': 'qweb',
+            'mode': 'primary',
+            'arch_db': default_template.arch,
+            'key': key,
+            'website_id': self.env['website'].get_current_website().id,
+            'priority': 16,
+        })
+        
+        # Create XML ID for the view
+        self.env['ir.model.data'].create({
+            'module': 'website_flight_fleet',
+            'name': f'aircraft_description_{self.id}',
+            'model': 'ir.ui.view',
+            'res_id': new_view.id,
+            'noupdate': True,
+        })
+        
+        return new_view
 
     @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)
         for record in records:
-            if not record._get_website_page():
-                record._create_website_page()
+            # Create a new template for each new aircraft
+            template = record._create_description_template()
+            record.website_description_view_id = template.id
         return records
 
-    def write(self, vals):
-        res = super().write(vals)
-        for record in self:
-            page = record._get_website_page()
-            if not page:
-                record._create_website_page()
-            elif 'website_published' in vals:
-                published_state = vals['website_published']
-                page.write({
-                    'is_published': published_state,
-                    'website_published': published_state,
-                })
-        return res
+    def write(self, values):
+        # If registration changes, update the template name
+        if 'registration' in values:
+            for record in self:
+                if record.website_description_view_id:
+                    record.website_description_view_id.name = f'Aircraft Description: {values["registration"]}'
+        return super().write(values)
 
     def unlink(self):
-        # Get pages and views before deletion
-        pages = self.mapped(lambda r: r._get_website_page())
-        views = self.mapped(lambda r: r._get_website_view())
-        
+        # Clean up custom templates when aircraft is deleted
+        templates = self.mapped('website_description_view_id')
+        xml_ids = self.env['ir.model.data'].search([
+            ('model', '=', 'ir.ui.view'),
+            ('res_id', 'in', templates.ids)
+        ])
         res = super().unlink()
-        
-        # Clean up pages and views
-        if pages:
-            pages.unlink()
-        if views:
-            views.unlink()
+        if xml_ids:
+            xml_ids.unlink()
+        if templates:
+            templates.unlink()
         return res
+
+    website_published = fields.Boolean("Aircraft Visible on Website", copy=False)
+    website_short_description = fields.Text(
+        "Website Short Description", 
+        help="A short description of the aircraft that will be displayed on the website",
+        translate=True
+    )
+    website_display_name = fields.Char(
+        "Website Display Name",
+        help="The name that will be displayed on the website (e.g., 'Citation Bravo N550RM')",
+    )
+    website_aircraft_slogan = fields.Char("Slogan for the aircraft", translate=True)
+    
+    website_description_view_id = fields.Many2one(
+        'ir.ui.view',
+        string='Website Description Template',
+        ondelete='cascade',
+        copy=False,
+    )
+
+    def _compute_website_url(self):
+        for aircraft in self:
+            aircraft.website_url = f"/aircraft/{slug(aircraft)}"

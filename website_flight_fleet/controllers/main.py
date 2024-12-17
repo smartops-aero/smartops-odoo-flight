@@ -1,9 +1,10 @@
 import werkzeug
+import logging
 from odoo import http
 from odoo.http import request
 from odoo.addons.website.controllers.main import QueryURL
 from odoo.osv import expression
-
+_logger = logging.getLogger(__name__)
 
 class WebsiteFlight(http.Controller):
     def _get_base_domain(self):
@@ -84,20 +85,15 @@ class WebsiteFlight(http.Controller):
         return request.render("website_flight_fleet.page_fleet", values)
 
     @http.route(['/aircraft/<model("flight.aircraft"):aircraft>'], type='http', auth="public", website=True)
-    def aircraft_detail(self, aircraft, **kwargs):
-        """Display aircraft detail page"""
-        if not aircraft.exists():
-            raise werkzeug.exceptions.NotFound()
-
-        page = aircraft._get_website_page()
-        if not page:
-            raise werkzeug.exceptions.NotFound()
-            
-        return request.render(page.view_id.key, {
+    def aircraft_detail(self, aircraft, **kwargs):        
+        values = {
             'aircraft': aircraft,
             'main_object': aircraft,
-            'edit_page': request.env.user.has_group('website.group_website_publisher'),
-        })
+            'is_website_editor': request.env.user.has_group('website.group_website_publisher'),
+        }
+        
+        response = request.render("website_flight_fleet.page_aircraft_detail", values)
+        return response
 
     @http.route(
         '/fleet/aircraft/json/<model("flight.aircraft"):aircraft>',
