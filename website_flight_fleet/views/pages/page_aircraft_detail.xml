@@ -23,7 +23,16 @@
                                                 t-field="aircraft.website_display_name"
                                             />
                                         </div>
-                                        <div t-field="aircraft.hero_content" />
+                                        <p class="lead mb-2">This aircraft is a versatile light jet,
+                                            offering a perfect combination
+                                            of comfort, performance, and reliability. Designed for
+                                            both regional and cross-country
+                                            travel,
+                                            it delivers an exceptional experience with its
+                                            impressive mileage, speed, and spacious
+                                            interior.
+                                            Whether for business or leisure, this aircraft ensures a
+                                            seamless and enjoyable journey.</p>
                                     </div>
                                 </div>
                             </div>
@@ -32,14 +41,92 @@
                 </section>
 
                 <!-- Main Carousel -->
-                <div t-field="aircraft.main_carousel_content" />
+                <section class="s_carousel_wrapper">
+                    <div
+                        class="s_website_flight_fleet_carousel s_carousel s_carousel_default carousel slide"
+                        id="aircraftCarousel"
+                        data-bs-interval="10000"
+                    >
+                        <!-- Indicators -->
+                        <ol
+                            class="carousel-indicators website-flight-carousel-indicators"
+                        >
+                            <li
+                                data-bs-target="#aircraftCarousel"
+                                data-bs-slide-to="0"
+                                class="active"
+                            />
+                            <li
+                                data-bs-target="#aircraftCarousel"
+                                data-bs-slide-to="1"
+                            />
+                            <li
+                                data-bs-target="#aircraftCarousel"
+                                data-bs-slide-to="2"
+                            />
+                        </ol>
+
+                        <div class="carousel-inner">
+                            <!-- Default items that can be edited -->
+                            <div
+                                class="carousel-item oe_img_bg o_bg_img_center active"
+                                data-name="Slide"
+                                style="background-image: url('/web/image/website.s_carousel_default_image_1');"
+                            >
+
+                            </div>
+                            <div
+                                class="carousel-item oe_img_bg o_bg_img_center"
+                                data-name="Slide"
+                                style="background-image: url('/web/image/website.s_carousel_default_image_2');"
+                            >
+
+                            </div>
+                            <div
+                                class="carousel-item oe_img_bg o_bg_img_center"
+                                data-name="Slide"
+                                style="background-image: url('/web/image/website.s_carousel_default_image_3');"
+                            >
+
+                            </div>
+                        </div>
+
+                        <!-- Controls -->
+                        <button
+                            class="carousel-control-prev"
+                            type="button"
+                            data-bs-target="#aircraftCarousel"
+                            data-bs-slide="prev"
+                        >
+                            <span
+                                class="carousel-control-prev-icon"
+                                aria-hidden="true"
+                            />
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button
+                            class="carousel-control-next"
+                            type="button"
+                            data-bs-target="#aircraftCarousel"
+                            data-bs-slide="next"
+                        >
+                            <span
+                                class="carousel-control-next-icon"
+                                aria-hidden="true"
+                            />
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </section>
 
                 <!-- Specifications Section -->
                 <section class="py-7">
                     <div class="container">
                         <!-- Heading Section -->
                         <div class="mb-4">
-                            <div t-field="aircraft.spec_header_content" />
+                            <h3 class="text-black fw-bold">
+                                Aircraft Specificiations Header Can be edited here
+                            </h3>
                         </div>
                         <div class="row align-items-center g-5">
                             <div class="col-lg-6">
@@ -57,12 +144,20 @@
                                                 class="fw-bold"
                                             >Specifications</h6>
                                         </div>
-                                        <t t-foreach="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id.code != 'amenity').mapped('code_id.category_id')" t-as="category">
+                                        <t
+                                            t-foreach="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id.code != 'amenity').mapped('code_id.category_id')"
+                                            t-as="category">
                                             <div class="mb-3">
-                                                <p class="fw-bold mb-2"><t t-esc="category.name"/></p>
+                                                <p class="fw-bold mb-2">
+                                                    <t t-esc="category.name" />
+                                                </p>
                                                 <ul class="list-unstyled">
-                                                    <t t-foreach="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id == category)" t-as="spec">
-                                                        <li class="mb-1"><t t-esc="spec.display_name"/></li>
+                                                    <t
+                                                        t-foreach="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id == category)"
+                                                        t-as="spec">
+                                                        <li class="mb-1">
+                                                            <t t-esc="spec.display_name" />
+                                                        </li>
                                                     </t>
                                                 </ul>
                                             </div>
@@ -75,8 +170,10 @@
                                             >Aircraft Highlights</h6>
                                         </div>
                                         <ul class="list-unstyled mb-0">
-                                            <t t-foreach="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id.code == 'amenity' and s.value_bool)" t-as="amenity">
-                                                <li>- <t t-esc="amenity.code_id.name"/></li>
+                                            <t
+                                                t-foreach="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id.code == 'amenity' and s.value_bool)"
+                                                t-as="amenity">
+                                                <li>- <t t-esc="amenity.code_id.name" /></li>
                                             </t>
                                         </ul>
                                     </div>
@@ -105,23 +202,236 @@
                         </div>
                     </div>
                 </section>
-                <div t-field="aircraft.interior_gallery_header_content" />
+                <section class="container mt-7 mb-2 text-center">
+                    <div class="mw-100 mw-lg-50 mx-auto">
+                        <div
+                            class="o_animate o_anim_slide_in o_anim_from_bottom"
+                            style="--wanim-intensity: 20; animation-duration: 0.4s;"
+                        >
+                            <h2 class="fw-bold text-black text-center mb-4">Aircraft Showcase</h2>
+                            <p class="lead text-black">Explore our stunning aircraft interiors.</p>
+                        </div>
+                    </div>
+                </section>
                 <!-- Interior Gallery -->
 
-                <div t-field="aircraft.interior_gallery_carousel_content" />
+                <section class="s_website_flight_fleet_multiple_carousel mb-7">
+                    <div class="container">
+                        <div
+                            class="multiple-cards-carousel"
+                            id="interiorGallery"
+                        >
+                            <!-- Default indicators -->
+                            <ol class="carousel-indicators">
+                                <li
+                                    data-bs-target="#interiorGallery"
+                                    data-bs-slide-to="0"
+                                    class="active"
+                                />
+                                <li
+                                    data-bs-target="#interiorGallery"
+                                    data-bs-slide-to="1"
+                                />
+                                <li
+                                    data-bs-target="#interiorGallery"
+                                    data-bs-slide-to="2"
+                                />
+                            </ol>
+
+                            <div class="carousel-inner">
+                                <!-- Default items that can be edited -->
+                                <div class="carousel-item active">
+                                    <div class="card border-0">
+                                        <div class="img-wrapper">
+                                            <img
+                                                src="/web/image/website.s_carousel_default_image_1"
+                                                class="d-block w-100"
+                                                alt="Gallery Image"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="card border-0">
+                                        <div class="img-wrapper">
+                                            <img
+                                                src="/web/image/website.s_carousel_default_image_2"
+                                                class="d-block w-100"
+                                                alt="Gallery Image"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="card border-0">
+                                        <div class="img-wrapper">
+                                            <img
+                                                src="/web/image/website.s_carousel_default_image_3"
+                                                class="d-block w-100"
+                                                alt="Gallery Image"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <button
+                                class="carousel-control-prev"
+                                type="button"
+                                data-slide="prev"
+                            >
+                                <span class="carousel-control-prev-icon" />
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button
+                                class="carousel-control-next"
+                                type="button"
+                                data-slide="next"
+                            >
+                                <span class="carousel-control-next-icon" />
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
 
 
-                <div t-field="aircraft.benefits_content" />
+                <section class="py-7">
+                    <div class="container">
+                        <div class="row g-5">
+                            <!-- First Benefit Item -->
+                            <div class="col-lg-6">
+                                <div class="benefit-item">
+                                    <div class="mb-4">
+                                        <h4
+                                            class="fw-bold"
+                                        >Unlock Freedom with a Dry Lease</h4>
+                                    </div>
+                                    <p>Experience the freedom of aircraft ownership with our
+                                        tailored dry lease program. Take full control of your
+                                        operations with the flexibility to manage your own crew
+                                        and flight logistics. Our comprehensive leasing solutions
+                                        adapt to your specific requirements, whether for corporate
+                                        travel, leisure flights, or specialized operations.
+                                    </p>
+                                </div>
+                            </div>
+                            <!-- Second Benefit Item -->
+                            <div class="col-lg-6">
+                                <div class="benefit-item">
+                                    <div class="mb-4">
+                                        <h4
+                                            class="fw-bold"
+                                        >Enhanced Performance and Versatility</h4>
+                                    </div>
+                                    <p>Discover exceptional versatility with advanced avionics
+                                        and proven reliability. This aircraft delivers outstanding
+                                        performance across various mission profiles, from short
+                                        regional flights to extended journeys. With its optimal
+                                        balance of comfort and capability, every flight promises
+                                        a seamless experience for both business and leisure
+                                        travelers, ensuring safe and efficient travel to your
+                                        chosen destinations.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
                 <!-- FAQs -->
 
-                <div t-field="aircraft.faq_header_content" />
+                <section class="pt-7">
+                    <div class="container">
+                        <div class="mb-5">
+                            <h2 class="fw-bold text-black">FAQs</h2>
+                            <p
+                                class="lead text-black"
+                            >Find answers to your most pressing
+                                questions about this aircraft.</p>
+                        </div>
+                    </div>
+                </section>
                 <!-- FAQS -->
-                <div t-field="aircraft.faq_content" />
+                <section class="s_website_flight_fleet_accordion pb-7">
+                    <div class="container">
+                        <div
+                            id="myCollapse"
+                            class="accordion ps-4"
+                            role="tablist"
+                        >
+                            <!-- Default accordion item - can be duplicated -->
+                            <div class="accordion-item border-0">
+                                <h2 class="accordion-header">
+                                    <button
+                                        data-bs-target="#myCollapseTab_1"
+                                        role="tab"
+                                        data-bs-toggle="collapse"
+                                        aria-expanded="true"
+                                        class="accordion-button lead text-black fw-bold bg-transparent"
+                                    >
+                                        Question Title <span
+                                            class="transition-icon ms-auto"
+                                        >
+                                            <div class="embed-icon">
+                                                <svg
+                                                    width="100%"
+                                                    height="100%"
+                                                    viewBox="0 0 32 32"
+                                                    fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <path
+                                                        d="M25.3333 15.667V16.3336C25.3333 16.7018 25.0349 17.0003 24.6667 17.0003H17V24.667C17 25.0351 16.7015 25.3336 16.3333 25.3336H15.6667C15.2985 25.3336 15 25.0351 15 24.667V17.0003H7.3333C6.96511 17.0003 6.66663 16.7018 6.66663 16.3336V15.667C6.66663 15.2988 6.96511 15.0003 7.3333 15.0003H15V7.33365C15 6.96546 15.2985 6.66699 15.6667 6.66699H16.3333C16.7015 6.66699 17 6.96546 17 7.33365V15.0003H24.6667C25.0349 15.0003 25.3333 15.2988 25.3333 15.667Z"
+                                                        fill="currentColor"
+                                                    />
+                                                </svg>
+                                            </div>
+                                        </span>
+                                    </button>
+                                </h2>
+                                <div
+                                    id="myCollapseTab_1"
+                                    class="accordion-collapse collapse show"
+                                    data-bs-parent="#myCollapse"
+                                    role="tabpanel"
+                                >
+                                    <div
+                                        class="accordion-body pt-0 max-width-large"
+                                    >
+                                        <p
+                                            class="text-black"
+                                        >Answer text goes here</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
 
                 <!-- Contact CTA -->
-                <div t-field="aircraft.cta_content" />
+                <section class="container s_allow_columns text-start py-7">
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <h2
+                                class="fw-bold mb-4 text-black"
+                            >Ready to Explore the
+                                Caribbean with Ease?</h2>
+                            <p
+                                class="lead fw-normal text-black"
+                            >Whether you're interested
+                                in dry leasing or fractional ownership, this aircraft
+                                offers unmatched flexibility and practicality for regional
+                                travel. Take the first step toward seamless private aviation
+                                today.</p>
+                            <a
+                                href="#contact_us"
+                                class="btn btn-secondary mt-3"
+                            >Contact</a>
+                        </div>
+                    </div>
+                </section>
             </div>
         </t>
     </template>

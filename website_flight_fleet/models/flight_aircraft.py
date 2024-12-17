@@ -1,7 +1,6 @@
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.addons.http_routing.models.ir_http import slug
-from odoo.tools.translate import html_translate
-
+import logging
 
 class FlightAircraft(models.Model):
     _name = "flight.aircraft"
@@ -13,148 +12,125 @@ class FlightAircraft(models.Model):
         "website.cover_properties.mixin",
     ]
 
-    def _get_default_hero_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.default_aircraft_hero_content", raise_if_not_found=False)
-
-    def _get_default_main_carousel_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.default_aircraft_main_carousel_content", raise_if_not_found=False)
-
-    def _get_default_spec_header_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.default_aircraft_spec_header_content", raise_if_not_found=False)
-
-    def _get_default_interior_gallery_header_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.default_interior_gallery_header_content", raise_if_not_found=False)
-
-    def _get_default_interior_gallery_carousel_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.default_interior_gallery_carousel_content", raise_if_not_found=False)
-
-    def _get_default_benefits_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.default_benefits_content", raise_if_not_found=False)
-
-    def _get_default_faq_header_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.default_faq_header_content", raise_if_not_found=False)
-
-    def _get_default_faq_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.default_faq_content", raise_if_not_found=False)
-
-    def _get_default_cta_content(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.default_cta_content", raise_if_not_found=False)
-
-    # Existing fields
-    website_published = fields.Boolean("Visible on Website", copy=False)
-    website_short_description = fields.Text("Website Short Description", translate=True)
+    # Website Fields
+    website_published = fields.Boolean("Aircraft Visible on Website", copy=False)
+    website_short_description = fields.Text("Website Short Description", 
+    help="A short description of the aircraft that will be displayed on the website",
+    translate=True)
     website_display_name = fields.Char(
         "Website Display Name",
         help="The name that will be displayed on the website (e.g., 'Citation Bravo N550RM')",
     )
     website_aircraft_slogan = fields.Char("Slogan for the aircraft", translate=True)
 
-    # Editable Content Fields
-    hero_content = fields.Html(
-        'Hero Content',
-        translate=html_translate,
-        default=_get_default_hero_content,
-        prefetch=False,
-        sanitize_overridable=True,
-        sanitize_attributes=False,
-        sanitize_form=False
-    )
+    def _get_view_key(self):
+        """Generate the unique view key for this aircraft"""
+        self.ensure_one()
+        return f'website_flight_fleet.aircraft_page_{self.id}'
 
-    spec_header_content = fields.Html(
-        'Specifications Header Content',
-        translate=html_translate,
-        default=_get_default_spec_header_content,
-        prefetch=False,
-        sanitize_overridable=True,
-        sanitize_attributes=False,
-        sanitize_form=False
-    )
-
-    interior_gallery_header_content = fields.Html(
-        'Interior Gallery Header Content',
-        translate=html_translate,
-        default=_get_default_interior_gallery_header_content,
-        prefetch=False,
-        sanitize_overridable=True,
-        sanitize_attributes=False,
-        sanitize_form=False
-    )
-
-    benefits_content = fields.Html(
-        'Benefits Content',
-        translate=html_translate,
-        default=_get_default_benefits_content,
-        prefetch=False,
-        sanitize_overridable=True,
-        sanitize_attributes=False,
-        sanitize_form=False
-    )
-    faq_header_content = fields.Html(
-        'FAQ Header Content',
-        translate=html_translate,
-        default=_get_default_faq_header_content,
-        prefetch=False,
-        sanitize_overridable=True,
-        sanitize_attributes=False,
-        sanitize_form=False
-    )
-
-    faq_content = fields.Html(
-        'FAQ Content',
-        translate=html_translate,
-        default=_get_default_faq_content,
-        prefetch=False,
-        sanitize_overridable=True,
-        sanitize_attributes=False,
-        sanitize_form=False
-    )
-    main_carousel_content = fields.Html(
-        'Main Carousel Content',
-        translate=html_translate,
-        default=_get_default_main_carousel_content,
-        prefetch=False,
-        sanitize_overridable=True,
-        sanitize_attributes=False,
-        sanitize_form=False
-    )
-    interior_gallery_carousel_content = fields.Html(
-        'Interior Gallery Carousel Content',
-        translate=html_translate,
-        default=_get_default_interior_gallery_carousel_content,
-        prefetch=False,
-        sanitize_overridable=True,
-        sanitize_attributes=False,
-        sanitize_form=False
-    )
-    cta_content = fields.Html(
-        'CTA Content',
-        translate=html_translate,
-        default=_get_default_cta_content,
-        prefetch=False,
-        sanitize_overridable=True,
-        sanitize_attributes=False,
-        sanitize_form=False
-    )
+    def _get_page_name(self):
+        """Get display name for website page"""
+        self.ensure_one()
+        return self.website_display_name or self.name
 
     def _compute_website_url(self):
-        super()._compute_website_url()
         for aircraft in self:
             aircraft.website_url = f"/aircraft/{slug(aircraft)}"
 
-    def _get_page_view_values(self, add_menu=False):
-        values = super()._get_page_view_values(add_menu=add_menu)
-        values.update(
-            {
-                "passenger_capacity": self.passenger_capacity,
-                "range": self.range,
-                "cruise_speed": self.cruise_speed,
-                "cabin_dimensions": {
-                    "length": self.cabin_length,
-                    "width": self.cabin_width,
-                    "height": self.cabin_height,
-                },
-                "luggage_capacity": self.luggage_capacity,
-                "amenities": self.amenity_ids,
+    def _get_website_page(self):
+        self.ensure_one()
+        domain = [('url', '=', self.website_url)]
+        return self.env['website.page'].sudo().search(domain, limit=1)
+
+    def _get_website_view(self):
+        self.ensure_one()
+        view_key = self._get_view_key()
+        return self.env['ir.ui.view'].sudo().search([('key', '=', view_key)], limit=1)
+
+    def _create_website_page(self):
+        self.ensure_one()
+        View = self.env['ir.ui.view'].sudo()
+        Page = self.env['website.page'].sudo()
+        view = None
+        try:
+            template_view = self.env.ref('website_flight_fleet.page_aircraft_detail')
+            view_key = self._get_view_key()
+            page_name = self._get_page_name()
+        
+            if not template_view:
+                raise ValueError("Template view 'website_flight_fleet.page_aircraft_detail' not found")
+            
+            # Get the template's arch and replace the template id and name
+            arch = template_view.arch.replace(
+                'id="page_aircraft_detail"', 
+                f'id="{view_key}"'
+            ).replace(
+                'name="Aircraft Detail"',
+                f'name="{page_name}"'
+            )
+            
+            view_values = {
+                'name': page_name,
+                'type': 'qweb',
+                'mode': 'primary',
+                'arch': arch,
+                'key': view_key,
+                'website_id': self.website_id.id if self.website_id else None,
+                'active': True,
             }
-        )
-        return values
+
+            view = View.with_context(website_id=self.website_id.id).sudo().create(view_values)
+            published_state = self.website_published
+            page_values = {
+                'url': self.website_url,
+                'website_published': published_state,
+                'view_id': view.id,
+                'website_indexed': True,
+                'name': page_name,
+                'website_id': self.website_id.id,
+                'is_published': published_state,
+                'track': True,
+            }
+            
+            return self.env['website.page'].sudo().create(page_values)
+            
+        except Exception as e:
+            if view:
+                view.sudo().unlink()
+            raise e
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        for record in records:
+            if not record._get_website_page():
+                record._create_website_page()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        for record in self:
+            page = record._get_website_page()
+            if not page:
+                record._create_website_page()
+            elif 'website_published' in vals:
+                published_state = vals['website_published']
+                page.write({
+                    'is_published': published_state,
+                    'website_published': published_state,
+                })
+        return res
+
+    def unlink(self):
+        # Get pages and views before deletion
+        pages = self.mapped(lambda r: r._get_website_page())
+        views = self.mapped(lambda r: r._get_website_view())
+        
+        res = super().unlink()
+        
+        # Clean up pages and views
+        if pages:
+            pages.unlink()
+        if views:
+            views.unlink()
+        return res

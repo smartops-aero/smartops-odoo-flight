@@ -3,3 +3,5 @@ access_flight_aircraft_public,flight.aircraft.public,flight.model_flight_aircraf
 access_flight_aircraft_portal,flight.aircraft.portal,flight.model_flight_aircraft,base.group_portal,1,0,0,0
 access_flight_aircraft_model_public,flight.aircraft.model.public,flight.model_flight_aircraft_model,base.group_public,1,0,0,0
 access_flight_aircraft_model_portal,flight.aircraft.model.portal,flight.model_flight_aircraft_model,base.group_portal,1,0,0,0
+access_uom_uom_public,uom.uom.public,uom.model_uom_uom,base.group_public,1,0,0,0
+access_uom_category_public,uom.category.public,uom.model_uom_category,base.group_public,1,0,0,0
