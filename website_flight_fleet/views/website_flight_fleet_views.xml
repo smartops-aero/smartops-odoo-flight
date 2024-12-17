@@ -36,21 +36,12 @@
             </group>
           </group>
 
-          <notebook>
-            <!-- Specifications Tab -->
-            <page string="Specifications" name="specifications">
-                <group>
-                    <field name="seat_map_1920" widget="image"/>
-                </group>
-                <field name="spec_ids" context="{'default_aircraft_id': active_id}">
-                    <tree inherit_id="flight_aircraft_spec.view_flight_aircraft_spec_tree_base">
-                        <control>
-                            <create string="Add a Specification"/>
-                        </control>
-                    </tree>
-                </field>
-            </page>
-          </notebook>
+          <group name="initial_specs" string="Basic Specifications">
+              <field name="seat_map_1920" widget="image"/>
+              <div colspan="2" class="alert alert-info text-center" role="alert">
+                  Additional specifications can be added after creating the aircraft record.
+              </div>
+          </group>
         </sheet>
       </form>
     </field>
