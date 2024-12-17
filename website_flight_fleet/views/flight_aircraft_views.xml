@@ -19,7 +19,10 @@
                                 name="website_aircraft_slogan"
                                 placeholder="Aircraft slogan or tagline"
                             />
-                            <field name="website_short_description" />
+                            <field
+                                name="website_short_description"
+                                placeholder="Short description displayed on cards and detail page"
+                            />
                         </group>
                     </group>
                 </page>

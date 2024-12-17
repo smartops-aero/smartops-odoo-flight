@@ -13,16 +13,27 @@ class FlightAircraft(models.Model):
     ]
 
     # Website Fields
-    website_published = fields.Boolean("Visible on Website", copy=False)
-    website_short_description = fields.Text("Website Short Description", translate=True)
+    website_published = fields.Boolean("Aircraft Visible on Website", copy=False)
+    website_short_description = fields.Text("Website Short Description", 
+    help="A short description of the aircraft that will be displayed on the website",
+    translate=True)
     website_display_name = fields.Char(
         "Website Display Name",
         help="The name that will be displayed on the website (e.g., 'Citation Bravo N550RM')",
     )
     website_aircraft_slogan = fields.Char("Slogan for the aircraft", translate=True)
 
+    def _get_view_key(self):
+        """Generate the unique view key for this aircraft"""
+        self.ensure_one()
+        return f'website_flight_fleet.aircraft_page_{self.id}'
+
+    def _get_page_name(self):
+        """Get display name for website page"""
+        self.ensure_one()
+        return self.website_display_name or self.name
+
     def _compute_website_url(self):
-        super()._compute_website_url()
         for aircraft in self:
             aircraft.website_url = f"/aircraft/{slug(aircraft)}"
 
@@ -33,23 +44,21 @@ class FlightAircraft(models.Model):
 
     def _get_website_view(self):
         self.ensure_one()
-        view_key = f'website_flight_fleet.aircraft_page_{self.id}'
+        view_key = self._get_view_key()
         return self.env['ir.ui.view'].sudo().search([('key', '=', view_key)], limit=1)
 
     def _create_website_page(self):
         self.ensure_one()
-        _logger = logging.getLogger(__name__)
+        View = self.env['ir.ui.view'].sudo()
+        Page = self.env['website.page'].sudo()
         view = None
         try:
             template_view = self.env.ref('website_flight_fleet.page_aircraft_detail')
+            view_key = self._get_view_key()
+            page_name = self._get_page_name()
         
             if not template_view:
                 raise ValueError("Template view 'website_flight_fleet.page_aircraft_detail' not found")
-            
-            
-            
-            # Create a unique key for the new view
-            view_key = f'website_flight_fleet.aircraft_page_{self.id}'
             
             # Get the template's arch and replace the template id and name
             arch = template_view.arch.replace(
@@ -57,45 +66,36 @@ class FlightAircraft(models.Model):
                 f'id="{view_key}"'
             ).replace(
                 'name="Aircraft Detail"',
-                f'name="{self.website_display_name or self.name}"'
+                f'name="{page_name}"'
             )
-
-            _logger.info("Arch:")
-            _logger.info(arch)
             
             view_values = {
-                'name': self.website_display_name or self.name,
+                'name': page_name,
                 'type': 'qweb',
                 'mode': 'primary',
-                'arch': f'''
-                <t t-call="website.layout">
-                    {arch}
-                </t>
-                ''',
+                'arch': arch,
                 'key': view_key,
                 'website_id': self.website_id.id if self.website_id else None,
                 'active': True,
             }
-            View = self.env['ir.ui.view']
+
             view = View.with_context(website_id=self.website_id.id).sudo().create(view_values)
-            
+            published_state = self.website_published
             page_values = {
                 'url': self.website_url,
-                'website_published': self.website_published,
+                'website_published': published_state,
                 'view_id': view.id,
                 'website_indexed': True,
-                'name': self.website_display_name or self.name,
+                'name': page_name,
                 'website_id': self.website_id.id,
-                'is_published': self.website_published,
+                'is_published': published_state,
                 'track': True,
             }
             
             return self.env['website.page'].sudo().create(page_values)
             
         except Exception as e:
-            _logger.error("Error creating view. view_values:")
-            
-            if 'view' in locals() and view:
+            if view:
                 view.sudo().unlink()
             raise e
 
@@ -114,9 +114,10 @@ class FlightAircraft(models.Model):
             if not page:
                 record._create_website_page()
             elif 'website_published' in vals:
+                published_state = vals['website_published']
                 page.write({
-                    'is_published': vals['website_published'],
-                    'website_published': vals['website_published'],
+                    'is_published': published_state,
+                    'website_published': published_state,
                 })
         return res
 

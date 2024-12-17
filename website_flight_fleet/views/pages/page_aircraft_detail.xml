@@ -2,6 +2,7 @@
 <odoo>
     <!-- Aircraft Detail Page -->
     <template id="page_aircraft_detail" name="Aircraft Detail">
+        <t t-call="website.layout">
             <div id="wrap" class="oe_structure">
                 <!-- Hero Section -->
                 <section
@@ -432,5 +433,6 @@
                     </div>
                 </section>
             </div>
+        </t>
     </template>
 </odoo>
