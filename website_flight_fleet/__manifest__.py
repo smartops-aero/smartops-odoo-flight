@@ -38,7 +38,6 @@
         "views/pages/page_aircraft_detail.xml",
         "views/flight_aircraft_views.xml",
         "views/website_flight_fleet_views.xml",
-        "views/website_flight_fleet_templates.xml",
     ],
     "assets": {
         "website.assets_wysiwyg": [
