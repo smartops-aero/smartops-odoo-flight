@@ -112,11 +112,11 @@
             <field name="sequence">90</field>
         </record>
 
-        <record id="spec_ice_maker" model="flight.aircraft.spec.code">
+        <record id="spec_coffee_maker" model="flight.aircraft.spec.code">
             <field name="category_id" ref="category_amenity"/>
-            <field name="code">amenity.ice_maker</field>
-            <field name="name">Ice Maker</field>
-            <field name="description">Aircraft is equipped with an ice maker</field>
+            <field name="code">amenity.coffee_maker</field>
+            <field name="name">Coffee Maker</field>
+            <field name="description">Aircraft is equipped with a coffee maker</field>
             <field name="code_type">bool</field>
             <field name="sequence">100</field>
         </record>
