@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="page_aircraft_detail" name="Aircraft Detail">
+    <template id="page_aircraft_detail" name="Aircraft Detail" track="1">
         <t t-call="website.layout">
-            <div id="wrap" class="oe_structure">
+            <div id="wrap">
                 <t t-if="aircraft.website_description_view_id">
                     <t t-call="{{aircraft.website_description_view_id.key}}">
                         <t t-set="aircraft" t-value="aircraft"/>
                     </t>
+                </t>
+                <t t-else="">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h1 class="text-center mb-4"><t t-esc="aircraft.website_display_name"/></h1>
+                                <p class="text-center"><t t-esc="aircraft.website_aircraft_slogan"/></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h3>Aircraft Details</h3>
+                                        <div class="mt-3">
+                                            <div t-field="aircraft.website_short_description"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </t>
             </div>
         </t>
