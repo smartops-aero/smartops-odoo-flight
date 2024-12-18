@@ -3,7 +3,11 @@ from odoo import http
 from odoo.http import request
 from odoo.addons.website.controllers.main import QueryURL
 from odoo.osv import expression
+
 _logger = logging.getLogger(__name__)
+
+# Constants
+AIRCRAFT_PER_PAGE = 12  # Number of aircraft to display per page
 
 class WebsiteFlight(http.Controller):
     def _get_base_domain(self):
@@ -28,7 +32,6 @@ class WebsiteFlight(http.Controller):
             domain = expression.AND([domain, search_domain])
         return domain
 
-
     def _prepare_fleet_values(self, page=1, model=None, search=None, **post):
         """Prepare values for fleet page rendering"""
         Aircraft = request.env["flight.aircraft"]
@@ -37,22 +40,23 @@ class WebsiteFlight(http.Controller):
         if model:
             domain = expression.AND([domain, [("model_id", "=", model.id)]])
 
-        # Search configuration
         url = "/fleet"
         aircraft_url = QueryURL(url, ["model", "search"])
         aircraft_count = Aircraft.search_count(domain)
 
-        # Pager setup
         pager = request.website.pager(
             url=url,
             total=aircraft_count,
             page=page,
-            step=12,
+            step=AIRCRAFT_PER_PAGE,
             url_args=post,
         )
 
-        # Get aircrafts
-        aircrafts = Aircraft.search(domain, limit=12, offset=pager["offset"])
+        aircrafts = Aircraft.search(
+            domain, 
+            limit=AIRCRAFT_PER_PAGE, 
+            offset=pager["offset"]
+        )
         models = request.env["flight.aircraft.model"].search([])
 
         return {
@@ -63,7 +67,6 @@ class WebsiteFlight(http.Controller):
             "search_count": aircraft_count,
             "models": models,
             "selected_model": model,
-            "bins": [],
         }
 
     @http.route(
@@ -90,6 +93,4 @@ class WebsiteFlight(http.Controller):
             'main_object': aircraft,
             'is_website_editor': request.env.user.has_group('website.group_website_publisher'),
         }
-        
-        response = request.render("website_flight_fleet.page_aircraft_detail", values)
-        return response
+        return request.render("website_flight_fleet.page_aircraft_detail", values)
