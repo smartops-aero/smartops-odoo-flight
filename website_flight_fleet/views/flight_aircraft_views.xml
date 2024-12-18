@@ -23,7 +23,46 @@
                                 name="website_short_description"
                                 placeholder="Short description displayed on cards and detail page"
                             />
+                            <field
+                                name="website_spec_header"
+                                placeholder="Header displayed on specifications section"
+                            />
+                            <field
+                                name="website_spec_description"
+                                placeholder="Description displayed on specifications section"
+                            />
                         </group>
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h3 class="mb-3">Carousel Images</h3>
+                                <field
+                                    name="carousel_image_ids"
+                                    widget="image_gallery"
+                                    class="o_website_gallery"
+                                    options="{
+                                    'size': [1024, 512],
+                                    'sequence_field': 'sequence'
+                                }"
+                                >
+                                    <tree>
+                                        <field name="sequence" widget="handle" />
+                                        <field name="name" />
+                                        <field name="description" />
+                                        <field name="image" widget="image" />
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <field name="name" />
+                                            <field name="description" />
+                                            <field name="image" widget="image" />
+                                        </group>
+                                    </form>
+                                </field>
+                                <div class="alert alert-info mt-3" role="alert">
+                                    <i class="fa fa-info-circle" /> Drag images to reorder them.
+                                    Click on an image to edit its details. </div>
+                            </div>
+                        </div>
                     </group>
                 </page>
             </xpath>

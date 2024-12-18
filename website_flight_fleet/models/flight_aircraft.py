@@ -1,6 +1,7 @@
 import logging
-from odoo import api, fields, models
+from odoo import fields, models
 from odoo.addons.http_routing.models.ir_http import slug
+from odoo.tools.translate import html_translate
 
 _logger = logging.getLogger(__name__)
 
@@ -14,67 +15,8 @@ class FlightAircraft(models.Model):
         "website.cover_properties.mixin",
     ]
 
-    def _create_description_template(self):
-        """Create a new ir.ui.view record for this aircraft's description"""
-        self.ensure_one()
-        default_template = self.env.ref('website_flight_fleet.default_website_description')
-        
-        View = self.env['ir.ui.view']
-        key = f'website_flight_fleet.aircraft_description_{self.id}'
-        
-        # Create the view
-        new_view = View.create({
-            'name': f'Aircraft Description: {self.registration or "New"}',
-            'type': 'qweb',
-            'mode': 'primary',
-            'arch_db': default_template.arch,
-            'key': key,
-            'website_id': self.env['website'].get_current_website().id,
-            'priority': 16,
-        })
-        
-        # Create XML ID for the view
-        self.env['ir.model.data'].create({
-            'module': 'website_flight_fleet',
-            'name': f'aircraft_description_{self.id}',
-            'model': 'ir.ui.view',
-            'res_id': new_view.id,
-            'noupdate': True,
-        })
-        
-        return new_view
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        records = super().create(vals_list)
-        for record in records:
-            # Create a new template for each new aircraft once
-            if not record.website_description_view_id:
-                template = record._create_description_template()
-                record.write({'website_description_view_id': template.id})
-        return records
-
-    def copy(self, default=None):
-        """When duplicating an aircraft, ensure it gets its own template"""
-        self.ensure_one()
-        default = dict(default or {})
-        # Don't copy the template reference - a new one will be created
-        default['website_description_view_id'] = False
-        return super().copy(default)
-
-    def unlink(self):
-        # Clean up custom templates when aircraft is deleted
-        templates = self.mapped('website_description_view_id')
-        xml_ids = self.env['ir.model.data'].search([
-            ('model', '=', 'ir.ui.view'),
-            ('res_id', 'in', templates.ids)
-        ])
-        res = super().unlink()
-        if xml_ids:
-            xml_ids.unlink()
-        if templates:
-            templates.unlink()
-        return res
+    def _get_default_website_description(self):
+        return self.env['ir.qweb']._render("website_flight_fleet.default_website_description", raise_if_not_found=False)
 
     website_published = fields.Boolean(
         "Aircraft Visible on Website", 
@@ -82,7 +24,7 @@ class FlightAircraft(models.Model):
     )
     website_short_description = fields.Text(
         "Website Short Description", 
-        help="A short description of the aircraft that will be displayed on the website",
+        help="A short description of the aircraft that will be displayed on the website and cards",
         translate=True
     )
     website_display_name = fields.Char(
@@ -91,15 +33,33 @@ class FlightAircraft(models.Model):
     )
     website_aircraft_slogan = fields.Char(
         "Slogan for the aircraft", 
-        translate=True
+        translate=True,
+        help="The slogan or tagline that will be displayed on the website (e.g., 'Fast and reliable')",
+    )
+
+    website_spec_header = fields.Char(
+        "Website Specification Header", 
+        default="Specifications",
+        help="The header that will be displayed on the website for the specifications",
     )
     
-    website_description_view_id = fields.Many2one(
-        'ir.ui.view',
-        string='Website Description Template',
-        ondelete='cascade',
-        copy=False,
-        readonly=True,  # Make it readonly since it should only be set during creation
+    website_spec_description = fields.Text(
+        "Website Specification Description", 
+        translate=True,
+        help="The description that will be displayed on the website for the specifications",
+    )
+
+    website_description = fields.Html(
+        'Website description, static content of the aircraft', translate=html_translate,
+        default=_get_default_website_description, prefetch=False,
+        sanitize_overridable=True,
+        sanitize_attributes=False, sanitize_form=False)
+
+    carousel_image_ids = fields.One2many(
+        'flight.aircraft.carousel.image',
+        'aircraft_id',
+        string='Carousel Images',
+        help='Images to be displayed in the aircraft detail page carousel'
     )
 
     def _compute_website_url(self):
