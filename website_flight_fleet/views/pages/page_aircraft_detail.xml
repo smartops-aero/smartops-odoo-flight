@@ -32,63 +32,51 @@
                 </section>
 
                 <!-- Main Carousel -->
-                <section class="s_carousel_wrapper">
-                    <div
-                        class="s_website_flight_fleet_carousel s_carousel s_carousel_default carousel slide"
-                        id="aircraftCarousel"
-                        data-bs-interval="10000">
-                        <!-- Indicators -->
-                        <ol class="carousel-indicators website-flight-carousel-indicators">
-                            <t t-foreach="aircraft.carousel_image_ids" t-as="image">
-                                <li t-att-data-bs-target="'#aircraftCarousel'"
-                                    t-att-data-bs-slide-to="image_index"
-                                    t-att-class="'active' if image_index == 0 else ''" />
-                            </t>
-                        </ol>
-
-                        <div class="carousel-inner">
-                            <t t-if="aircraft.carousel_image_ids">
+                <t t-if="aircraft.carousel_image_ids">
+                    <section class="s_carousel_wrapper">
+                        <div
+                            class="s_website_flight_fleet_carousel s_carousel s_carousel_default carousel slide"
+                            id="aircraftCarousel"
+                            data-bs-interval="10000">
+                            <!-- Indicators -->
+                            <ol class="carousel-indicators website-flight-carousel-indicators">
                                 <t t-foreach="aircraft.carousel_image_ids" t-as="image">
-                                    <div
-                                        t-att-class="'carousel-item oe_img_bg o_bg_img_center%s' % (' active' if image_index == 0 else '')"
-                                        data-name="Slide"
-                                        t-att-style="'background-image: url(/web/image/flight.aircraft.carousel.image/%s/image)' % image.id">
-                                        <div t-if="image.description" class="carousel-caption">
-                                            <p t-field="image.description" />
-                                        </div>
-                                    </div>
+                                    <li t-att-data-bs-target="'#aircraftCarousel'"
+                                        t-attf-data-bs-slide-to="{{image_index}}"
+                                        t-att-class="'active' if image_index == 0 else ''" />
                                 </t>
-                            </t>
-                            <t t-else="">
-                                <!-- Default items when no images are uploaded -->
-                                <div class="carousel-item oe_img_bg o_bg_img_center active"
-                                    data-name="Slide"
-                                    style="background-image: url('/web/image/website.s_carousel_default_image_1');">
-                                </div>
-                                <div class="carousel-item oe_img_bg o_bg_img_center"
-                                    data-name="Slide"
-                                    style="background-image: url('/web/image/website.s_carousel_default_image_2');">
-                                </div>
-                                <div class="carousel-item oe_img_bg o_bg_img_center"
-                                    data-name="Slide"
-                                    style="background-image: url('/web/image/website.s_carousel_default_image_3');">
-                                </div>
-                            </t>
-                        </div>
+                            </ol>
 
-                        <!-- Controls -->
-                        <button class="carousel-control-prev" type="button"
-                            data-bs-target="#aircraftCarousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true" />
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button"
-                            data-bs-target="#aircraftCarousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true" />
-                            <span class="visually-hidden">Next</span>
-                        </button>
-                    </div>
-                </section>
+                            <div class="carousel-inner">
+                                <t t-if="aircraft.carousel_image_ids">
+                                    <t t-foreach="aircraft.carousel_image_ids" t-as="image">
+                                        <div
+                                            t-att-class="'carousel-item oe_img_bg o_bg_img_center%s' % (' active' if image_index == 0 else '')"
+                                            data-name="Slide"
+                                            t-att-style="'background-image: url(/web/image/flight.aircraft.carousel.image/%s/image)' % image.id">
+                                            <div t-if="image.description" class="carousel-caption">
+                                                <p t-field="image.description" />
+                                            </div>
+                                        </div>
+                                    </t>
+                                </t>
+                            </div>
+
+                            <!-- Controls -->
+                            <button class="carousel-control-prev" type="button"
+                                data-bs-target="#aircraftCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true" />
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button"
+                                data-bs-target="#aircraftCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true" />
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    </section>
+                </t>
+
 
                 <!-- Specifications Section -->
                 <section class="py-7">
