@@ -1,4 +1,3 @@
-import werkzeug
 import logging
 from odoo import http
 from odoo.http import request
@@ -94,33 +93,3 @@ class WebsiteFlight(http.Controller):
         
         response = request.render("website_flight_fleet.page_aircraft_detail", values)
         return response
-
-    @http.route(
-        '/fleet/aircraft/json/<model("flight.aircraft"):aircraft>',
-        type="json",
-        auth="public",
-        website=True,
-    )
-    def aircraft_json(self, aircraft, **kw):
-        """Return specific aircraft data in JSON format"""
-        return {
-            "registration": aircraft.registration,
-            "model": aircraft.model_id.name if aircraft.model_id else False,
-            "website_published": aircraft.website_published,
-            "website_url": aircraft.website_url,
-        }
-
-    @http.route("/fleet/search", type="json", auth="public", website=True)
-    def fleet_search(self, term, **kwargs):
-        """Return search suggestions for aircraft"""
-        domain = self._get_search_domain(term)
-        Aircraft = request.env["flight.aircraft"]
-        aircrafts = Aircraft.search(domain, limit=5)
-
-        results = [{
-            "id": aircraft.id,
-            "name": aircraft.registration,
-            "model": aircraft.model_id.name if aircraft.model_id else "",
-            "url": aircraft.website_url,
-        } for aircraft in aircrafts]
-        return results
