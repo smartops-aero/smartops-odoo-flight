@@ -30,6 +30,8 @@ class FlightAircraft(models.Model):
     website_display_name = fields.Char(
         "Website Display Name",
         help="The name that will be displayed on the website (e.g., 'Citation Bravo N550RM')",
+        index=True,
+        copy=False
     )
     website_aircraft_slogan = fields.Char(
         "Slogan for the aircraft", 
@@ -61,6 +63,12 @@ class FlightAircraft(models.Model):
         string='Carousel Images',
         help='Images to be displayed in the aircraft detail page carousel'
     )
+
+    _sql_constraints = [
+        ('unique_website_display_name', 
+         'unique(website_display_name)', 
+         'Aircraft display name must be unique!')
+    ]
 
     def _compute_website_url(self):
         for aircraft in self:
