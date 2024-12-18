@@ -9,8 +9,14 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Website" name="website">
                     <group>
-                        <group string="Publishing">
+                        <group string="Publishing" colspan="2">
                             <field name="website_published" />
+                            <field 
+                                name="website_url" 
+                                readonly="1" 
+                                widget="url"
+                                text="View on Website"
+                            />
                             <field
                                 name="website_display_name"
                                 placeholder="Name displayed on website (e.g. Citation Bravo N550RM)"
@@ -36,7 +42,8 @@
                     <group string="Carousel Images">
                         <div colspan="2" class="alert alert-info mb-3" role="alert">
                             <i class="fa fa-info-circle me-2" /> Use the drag handle (☰) on the left
-                            of each row to reorder images. Click Add a line to upload new images. </div>
+                            of each row to reorder images. Click Add a line to upload new images.
+                        </div>
                         <field name="carousel_image_ids" colspan="2" nolabel="1">
                             <tree editable="bottom">
                                 <field name="sequence" widget="handle" />
