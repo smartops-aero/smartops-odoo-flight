@@ -38,7 +38,7 @@ odoo.define('website_flight_fleet.dynamic_aircraft_images_options', function (re
                 const result = await this._rpc({
                     model: 'flight.aircraft',
                     method: 'search_read',
-                    fields: ['id', 'display_name'],
+                    fields: ['id', 'website_display_name'],
                     domain: [],
                 });
                 this.aircrafts = result.reduce((acc, aircraft) => {
