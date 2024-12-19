@@ -2,16 +2,15 @@
 <odoo>
     <!-- Main Snippet Template -->
     <template id="s_website_flight_fleet_dynamic_aircraft_images" name="Aircraft Images">
-        <section class="s_website_flight_fleet_dynamic_aircraft_images"
-            data-snippet="s_dynamic_snippet">
-            <div class="container">
-                <div class="dynamic_snippet_template" />
-            </div>
-        </section>
+        <t t-call="website.s_dynamic_snippet_template">
+            <t t-set="snippet_name" t-value="'s_website_flight_fleet_dynamic_aircraft_images'" />
+            <t t-set="snippet_classes" t-value="'s_dynamic_snippet_aircraft_images'" />
+        </t>
     </template>
 
     <!-- Dynamic Filter Template -->
-    <template id="dynamic_filter_template_flight_aircraft_image_carousel" name="Aircraft Image Carousel">
+    <template id="dynamic_filter_template_flight_aircraft_image_carousel"
+        name="Aircraft Image Carousel">
         <div t-foreach="records" t-as="data" class="carousel slide" data-bs-ride="carousel"
             data-number-of-elements="1"
             data-number-of-elements-sm="1"
@@ -44,15 +43,26 @@
     <template id="s_website_flight_fleet_dynamic_aircraft_images_options"
         inherit_id="website.snippet_options">
         <xpath expr="." position="inside">
-            <div data-js="s_website_flight_fleet_dynamic_aircraft_images"
-                data-selector=".s_website_flight_fleet_dynamic_aircraft_images">
-                <t t-call="website.s_dynamic_snippet_options_template">
-                    <t t-set="snippet_name"
-                        t-value="'dynamic_website_flight_fleet_dynamic_aircraft_images'" />
-                    <t t-set="snippet_selector"
-                        t-value="'.s_website_flight_fleet_dynamic_aircraft_images'" />
-                </t>
-            </div>
+            <t t-call="website.s_dynamic_snippet_options_template">
+                <t t-set="snippet_name" t-value="'dynamic_snippet_aircraft_images'" />
+                <t t-set="snippet_selector" t-value="'.s_dynamic_snippet_aircraft_images'" />
+            </t>
+        </xpath>
+    </template>
+
+    <template id="s_dynamic_snippet_options_template"
+        inherit_id="website.s_dynamic_snippet_options_template">
+        <xpath expr="//we-select[@data-name='filter_opt']" position="after">
+            <we-select t-if="snippet_name == 'dynamic_snippet_aircraft_images'" string="Aircraft"
+                data-no-preview="true" data-name="aircraft_opt"
+                data-attribute-name="filterByAircraftId">
+                <we-button data-select-data-attribute="-1">All Aircraft</we-button>
+            </we-select>
+            <we-select t-if="snippet_name == 'dynamic_snippet_aircraft_images'" string="Category"
+                data-no-preview="true" data-name="category_opt"
+                data-attribute-name="filterByCategoryId">
+                <we-button data-select-data-attribute="-1">All Categories</we-button>
+            </we-select>
         </xpath>
     </template>
 </odoo>

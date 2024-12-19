@@ -110,6 +110,6 @@ odoo.define('website_flight_fleet.dynamic_aircraft_images_options', function (re
         },
     });
 
-    options.registry.dynamic_website_flight_fleet_dynamic_aircraft_images = dynamicSnippetAircraftImagesOptions;
+    options.registry.dynamic_snippet_aircraft_images = dynamicSnippetAircraftImagesOptions;
     return dynamicSnippetAircraftImagesOptions;
 });
