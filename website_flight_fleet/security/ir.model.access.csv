@@ -7,3 +7,5 @@ access_uom_uom_public,uom.uom.public,uom.model_uom_uom,base.group_public,1,0,0,0
 access_uom_category_public,uom.category.public,uom.model_uom_category,base.group_public,1,0,0,0
 access_flight_aircraft_image_public,flight.aircraft.image.public,model_flight_aircraft_image,base.group_public,1,0,0,0
 access_flight_aircraft_image_user,flight.aircraft.image.user,model_flight_aircraft_image,flight.group_flight_user,1,1,1,1
+access_flight_aircraft_image_category_public,flight.aircraft.image.category.public,model_flight_aircraft_image_category,base.group_public,1,0,0,0
+access_flight_aircraft_image_category_user,flight.aircraft.image.category.user,model_flight_aircraft_image_category,flight.group_flight_user,1,1,1,1
