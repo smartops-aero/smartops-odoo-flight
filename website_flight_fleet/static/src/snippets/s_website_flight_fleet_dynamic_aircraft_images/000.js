@@ -1,4 +1,4 @@
-odoo.define('website_flight_fleet.s_website_flight_fleet_dynamic_aircraft_images', function (require) {
+odoo.define('website_flight_fleet.dynamic_aircraft_images', function (require) {
     'use strict';
 
     const publicWidget = require('web.public.widget');

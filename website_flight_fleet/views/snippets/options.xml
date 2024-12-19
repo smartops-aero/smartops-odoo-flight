@@ -62,30 +62,4 @@
             </div>
         </xpath>
     </template>
-
-    <template id="s_website_flight_fleet_dynamic_carousel_options" inherit_id="website.snippet_options">
-        <xpath expr="." position="inside">
-            <div data-js="WebsiteFlightFleetDynamicCarousel" data-selector=".s_website_flight_fleet_dynamic_carousel">
-                <!-- Aircraft Selection -->
-                <we-select string="Aircraft" data-name="aircraft_opt">
-                    <we-button data-select-dataset="0" data-name="aircraft">All Aircraft</we-button>
-                    <t t-foreach="request.env['flight.aircraft'].search([])" t-as="aircraft">
-                        <we-button t-att-data-select-dataset="aircraft.id" data-name="aircraft">
-                            <t t-esc="aircraft.website_display_name"/>
-                        </we-button>
-                    </t>
-                </we-select>
-
-                <!-- Category Selection -->
-                <we-select string="Image Category" data-name="category_opt">
-                    <we-button data-select-dataset="0" data-name="category">All Categories</we-button>
-                    <t t-foreach="request.env['flight.aircraft.image.category'].search([('active', '=', True)])" t-as="category">
-                        <we-button t-att-data-select-dataset="category.id" data-name="category">
-                            <t t-esc="category.name"/>
-                        </we-button>
-                    </t>
-                </we-select>
-            </div>
-        </xpath>
-    </template>
 </odoo>

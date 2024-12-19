@@ -31,7 +31,7 @@
         "views/snippets/s_website_flight_fleet_accordion.xml",
         "views/snippets/s_website_flight_fleet_carousel.xml",
         "views/snippets/s_website_flight_fleet_multiple_carousel.xml",
-        "views/snippets/s_website_flight_fleet_dynamic_carousel.xml",
+        "views/snippets/s_website_flight_fleet_dynamic_aircraft_images.xml",
         # Snippets Registration and options
         "views/snippets/options.xml",
         "views/snippets/snippets.xml",

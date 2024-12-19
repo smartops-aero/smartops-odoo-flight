@@ -24,9 +24,14 @@
         t-snippet="website_flight_fleet.s_website_flight_fleet_multiple_carousel"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_multiple_carousel.png"
       />
+    </xpath>
+    <xpath
+      expr="//div[@id='snippet_effect']/div[hasclass('o_panel_body')]"
+      position="inside"
+    >
       <t
-        t-snippet="website_flight_fleet.s_website_flight_fleet_dynamic_carousel"
-        t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_dynamic_carousel.png"
+        t-snippet="website_flight_fleet.s_website_flight_fleet_dynamic_aircraft_images"
+        t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_accordion.png"
       />
     </xpath>
   </template>
