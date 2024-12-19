@@ -4,7 +4,6 @@ import logging
 _logger = logging.getLogger(__name__)
 
 def create_spec(cr, aircraft_id, code, value, user_id):
-    """Create a new specification record"""
     try:
         # Check if spec already exists
         cr.execute("""
@@ -49,11 +48,11 @@ def migrate(cr, version):
         _logger.error("Migration table not found, skipping post-migration")
         return
 
-    # Get admin user
-    cr.execute("SELECT res_users.id FROM res_users WHERE login='admin' LIMIT 1")
+    # Get superuser/admin ID - more reliable method
+    cr.execute("SELECT MIN(id) FROM res_users WHERE id = 1")
     user_id = cr.fetchone()
     if not user_id:
-        _logger.error("Admin user not found, aborting migration")
+        _logger.error("Could not determine admin user ID, aborting migration")
         return
     user_id = user_id[0]
 
@@ -89,6 +88,24 @@ def migrate(cr, version):
     for aircraft_id, amenity_name in cr.fetchall():
         if amenity_name in amenity_codes:
             create_spec(cr, aircraft_id, amenity_codes[amenity_name], True, user_id)
+
+    # Set default website description if empty
+    _logger.info("Setting default website description")
+    cr.execute("""
+        WITH RECURSIVE defaults AS (
+          SELECT id, website_description 
+          FROM flight_aircraft 
+          WHERE website_description IS NULL
+        )
+        UPDATE flight_aircraft fa
+        SET website_description = (
+          SELECT value FROM ir_config_parameter 
+          WHERE key = 'website_flight_fleet.default_website_description'
+          LIMIT 1
+        )
+        FROM defaults d
+        WHERE fa.id = d.id
+    """)
 
     # Drop temporary table
     _logger.info("Cleaning up migration table")
