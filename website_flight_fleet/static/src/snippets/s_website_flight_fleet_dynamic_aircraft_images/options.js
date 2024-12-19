@@ -73,7 +73,7 @@ odoo.define('website_flight_fleet.dynamic_aircraft_images_options', function (re
                 for (const [id, aircraft] of Object.entries(this.aircrafts)) {
                     const button = document.createElement('we-button');
                     button.dataset.selectDataAttribute = id;
-                    button.textContent = aircraft.name;
+                    button.textContent = aircraft.website_display_name;
                     aircraftSelect.appendChild(button);
                 }
             }
@@ -94,19 +94,10 @@ odoo.define('website_flight_fleet.dynamic_aircraft_images_options', function (re
         /**
          * @override
          */
-        _getSearchDomain() {
-            const domain = this._super.apply(this, arguments) || [];
-            const aircraftId = parseInt(this.$target[0].dataset.aircraftId);
-            const categoryId = parseInt(this.$target[0].dataset.categoryId);
-
-            if (aircraftId) {
-                domain.push(['aircraft_id', '=', aircraftId]);
-            }
-            if (categoryId) {
-                domain.push(['category_id', '=', categoryId]);
-            }
-
-            return domain;
+        _setOptionsDefaultValues: function () {
+            this._setOptionValue('filterByAircraftId', -1);
+            this._setOptionValue('filterByCategoryId', -1);
+            this._super.apply(this, arguments);
         },
     });
 
