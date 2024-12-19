@@ -48,7 +48,7 @@
                 data-selector=".s_website_flight_fleet_dynamic_aircraft_images">
                 <t t-call="website.s_dynamic_snippet_options_template">
                     <t t-set="snippet_name"
-                        t-value="'s_website_flight_fleet_dynamic_aircraft_images'" />
+                        t-value="'dynamic_website_flight_fleet_dynamic_aircraft_images'" />
                     <t t-set="snippet_selector"
                         t-value="'.s_website_flight_fleet_dynamic_aircraft_images'" />
                 </t>
