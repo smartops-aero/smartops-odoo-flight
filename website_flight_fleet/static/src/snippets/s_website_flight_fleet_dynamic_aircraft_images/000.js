@@ -23,6 +23,6 @@ odoo.define('website_flight_fleet.s_website_flight_fleet_dynamic_aircraft_images
         },
     });
 
-    publicWidget.registry.website_flight_fleet_carousel = DynamicSnippetAircraftImages;
+    publicWidget.registry.dynamic_aircraft_images = DynamicSnippetAircraftImages;
     return DynamicSnippetAircraftImages;
 });
