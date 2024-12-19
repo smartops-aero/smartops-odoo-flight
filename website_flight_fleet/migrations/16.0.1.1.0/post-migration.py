@@ -89,24 +89,6 @@ def migrate(cr, version):
         if amenity_name in amenity_codes:
             create_spec(cr, aircraft_id, amenity_codes[amenity_name], True, user_id)
 
-    # Set default website description if empty
-    _logger.info("Setting default website description")
-    cr.execute("""
-        WITH RECURSIVE defaults AS (
-          SELECT id, website_description 
-          FROM flight_aircraft 
-          WHERE website_description IS NULL
-        )
-        UPDATE flight_aircraft fa
-        SET website_description = (
-          SELECT value FROM ir_config_parameter 
-          WHERE key = 'website_flight_fleet.default_website_description'
-          LIMIT 1
-        )
-        FROM defaults d
-        WHERE fa.id = d.id
-    """)
-
     # Drop temporary table
     _logger.info("Cleaning up migration table")
     cr.execute("DROP TABLE IF EXISTS website_fleet_migration")
