@@ -11,7 +11,7 @@
     </template>
 
     <!-- Dynamic Filter Template -->
-    <template id="dynamic_filter_template_flight_aircraft_image" name="Aircraft Image Carousel">
+    <template id="dynamic_filter_template_flight_aircraft_image_carousel" name="Aircraft Image Carousel">
         <div t-foreach="records" t-as="data" class="carousel slide" data-bs-ride="carousel"
             data-number-of-elements="1"
             data-number-of-elements-sm="1"
