@@ -3,7 +3,6 @@ odoo.define('website_flight_fleet.dynamic_aircraft_images_options', function (re
 
     const options = require('web_editor.snippets.options');
     const dynamicSnippetOptions = require('website.s_dynamic_snippet_options');
-    const wUtils = require('website.utils');
 
     const dynamicSnippetAircraftImagesOptions = dynamicSnippetOptions.extend({
         init() {
@@ -11,8 +10,22 @@ odoo.define('website_flight_fleet.dynamic_aircraft_images_options', function (re
             this.modelNameFilter = 'flight.aircraft.image';
             this.aircrafts = {};
             this.categories = {};
+            
+            console.log("Initializing dynamic aircraft images snippet options");
         },
 
+        /**
+         * @override
+         */
+        async _fetchDynamicFilters() {
+            await this._super.apply(this, arguments);
+            await this._fetchAircrafts();
+            await this._fetchCategories();
+        },
+
+        /**
+         * @override
+         */
         async _renderCustomXML(uiFragment) {
             await this._super.apply(this, arguments);
             await this._renderAircraftSelector(uiFragment);
@@ -20,54 +33,83 @@ odoo.define('website_flight_fleet.dynamic_aircraft_images_options', function (re
         },
 
         async _fetchAircrafts() {
-            return this._rpc({
-                model: 'flight.aircraft',
-                method: 'search_read',
-                kwargs: {
-                    domain: wUtils.websiteDomain(this),
-                    fields: ['id', 'website_display_name'],
-                },
-            });
+            try {
+                console.log('Fetching aircrafts...');
+                const result = await this._rpc({
+                    model: 'flight.aircraft',
+                    method: 'search_read',
+                    fields: ['id', 'display_name'],
+                    domain: [],
+                });
+                this.aircrafts = result.reduce((acc, aircraft) => {
+                    acc[aircraft.id] = aircraft;
+                    return acc;
+                }, {});
+            } catch (error) {
+                console.error('Error fetching aircrafts:', error);
+            }
         },
 
         async _fetchCategories() {
-            return this._rpc({
-                model: 'flight.aircraft.image.category',
-                method: 'search_read',
-                kwargs: {
-                    domain: [['active', '=', true]],
+            try {
+                const result = await this._rpc({
+                    model: 'flight.aircraft.image.category',
+                    method: 'search_read',
                     fields: ['id', 'name'],
-                },
-            });
+                    domain: [],
+                });
+                this.categories = result.reduce((acc, category) => {
+                    acc[category.id] = category;
+                    return acc;
+                }, {});
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
         },
 
         async _renderAircraftSelector(uiFragment) {
-            const aircraftsList = await this._fetchAircrafts();
-            this.aircrafts = {};
-            for (const aircraft of aircraftsList) {
-                this.aircrafts[aircraft.id] = aircraft;
+            const aircraftSelect = uiFragment.querySelector('[data-name="aircraft_opt"]');
+            if (aircraftSelect && Object.keys(this.aircrafts).length) {
+                for (const [id, aircraft] of Object.entries(this.aircrafts)) {
+                    const button = document.createElement('we-button');
+                    button.dataset.selectDataAttribute = id;
+                    button.textContent = aircraft.name;
+                    aircraftSelect.appendChild(button);
+                }
             }
-            const selector = uiFragment.querySelector('[data-name="aircraft_opt"]');
-            return this._renderSelectUserValueWidgetButtons(selector, this.aircrafts);
         },
 
         async _renderCategorySelector(uiFragment) {
-            const categoriesList = await this._fetchCategories();
-            this.categories = {};
-            for (const category of categoriesList) {
-                this.categories[category.id] = category;
+            const categorySelect = uiFragment.querySelector('[data-name="category_opt"]');
+            if (categorySelect && Object.keys(this.categories).length) {
+                for (const [id, category] of Object.entries(this.categories)) {
+                    const button = document.createElement('we-button');
+                    button.dataset.selectDataAttribute = id;
+                    button.textContent = category.name;
+                    categorySelect.appendChild(button);
+                }
             }
-            const selector = uiFragment.querySelector('[data-name="category_opt"]');
-            return this._renderSelectUserValueWidgetButtons(selector, this.categories);
         },
 
-        _setOptionsDefaultValues() {
-            this._setOptionValue('aircraftId', 0);
-            this._setOptionValue('categoryId', 0);
-            this._super.apply(this, arguments);
+        /**
+         * @override
+         */
+        _getSearchDomain() {
+            const domain = this._super.apply(this, arguments) || [];
+            const aircraftId = parseInt(this.$target[0].dataset.aircraftId);
+            const categoryId = parseInt(this.$target[0].dataset.categoryId);
+
+            if (aircraftId) {
+                domain.push(['aircraft_id', '=', aircraftId]);
+            }
+            if (categoryId) {
+                domain.push(['category_id', '=', categoryId]);
+            }
+
+            return domain;
         },
     });
 
-    options.registry.dynamic_snippet_aircraft_images = dynamicSnippetAircraftImagesOptions;
+    options.registry.s_website_flight_fleet_dynamic_aircraft_images = dynamicSnippetAircraftImagesOptions;
     return dynamicSnippetAircraftImagesOptions;
 });

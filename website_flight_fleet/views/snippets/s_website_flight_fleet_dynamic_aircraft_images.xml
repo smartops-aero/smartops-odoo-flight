@@ -2,60 +2,57 @@
 <odoo>
     <!-- Main Snippet Template -->
     <template id="s_website_flight_fleet_dynamic_aircraft_images" name="Aircraft Images">
-        <t t-call="website.s_dynamic_snippet_template">
-            <t t-set="snippet_name" t-value="'s_website_flight_fleet_dynamic_aircraft_images'"/>
-            <t t-set="snippet_classes" t-value="'s_website_flight_fleet_dynamic_aircraft_images s_website_flight_fleet_carousel'"/>
-        </t>
+        <section class="s_website_flight_fleet_dynamic_aircraft_images"
+            data-snippet="s_dynamic_snippet">
+            <div class="container">
+                <div class="dynamic_snippet_template" />
+            </div>
+        </section>
     </template>
 
     <!-- Dynamic Filter Template -->
-    <template id="dynamic_filter_template_aircraft_image" name="Aircraft Image Carousel">
-        <div t-foreach="records" t-as="data" class="carousel slide" data-bs-ride="carousel" data-number-of-records="1" data-number-of-records-fetched="16">
-            <t t-set="record" t-value="data['_record']"/>
+    <template id="dynamic_filter_template_flight_aircraft_image" name="Aircraft Image Carousel">
+        <div t-foreach="records" t-as="data" class="carousel slide" data-bs-ride="carousel"
+            data-number-of-elements="1"
+            data-number-of-elements-sm="1"
+            data-number-of-elements-fetch="16">
+            <t t-set="record" t-value="data['_record']" />
             <div class="carousel-inner">
                 <div t-attf-class="carousel-item #{data_index == 0 and 'active'}">
-                    <img t-att-src="website.image_url(record, 'image')" class="d-block w-100" t-att-alt="record.name"/>
+                    <img t-att-src="website.image_url(record, 'image')" class="d-block w-100"
+                        t-att-alt="record.name" />
                     <div class="carousel-caption d-none d-md-block">
-                        <h5 t-field="record.name"/>
-                        <p t-field="record.description"/>
+                        <h5 t-field="record.name" />
+                        <p t-field="record.description" />
                     </div>
                 </div>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon"/>
+            <button class="carousel-control-prev" type="button"
+                t-attf-data-bs-target="#carousel{{data_index}}"
+                data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" />
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon"/>
+            <button class="carousel-control-next" type="button"
+                t-attf-data-bs-target="#carousel{{data_index}}"
+                data-bs-slide="next">
+                <span class="carousel-control-next-icon" />
             </button>
         </div>
     </template>
 
     <!-- Snippet Options -->
-    <template id="s_website_flight_fleet_dynamic_aircraft_images_options" inherit_id="website.snippet_options">
+    <template id="s_website_flight_fleet_dynamic_aircraft_images_options"
+        inherit_id="website.snippet_options">
         <xpath expr="." position="inside">
-            <t t-call="website.s_dynamic_snippet_options_template">
-                <t t-set="snippet_name" t-value="'s_website_flight_fleet_dynamic_aircraft_images'"/>
-                <t t-set="snippet_selector" t-value="'.s_website_flight_fleet_dynamic_aircraft_images'"/>
-            </t>
-        </xpath>
-    </template>
-
-    <template id="options" inherit_id="website.s_dynamic_snippet_options_template">
-        <xpath expr="//we-select[@data-name='filter_opt']" position="after">
-            <we-select t-if="snippet_name == 's_website_flight_fleet_dynamic_aircraft_images'" 
-                      string="Aircraft" 
-                      data-no-preview="true" 
-                      data-name="aircraft_opt" 
-                      data-attribute-name="aircraftId">
-                <we-button data-select-data-attribute="0">All Aircraft</we-button>
-            </we-select>
-            <we-select t-if="snippet_name == 's_website_flight_fleet_dynamic_aircraft_images'" 
-                      string="Category" 
-                      data-no-preview="true" 
-                      data-name="category_opt" 
-                      data-attribute-name="categoryId">
-                <we-button data-select-data-attribute="0">All Categories</we-button>
-            </we-select>
+            <div data-js="s_website_flight_fleet_dynamic_aircraft_images"
+                data-selector=".s_website_flight_fleet_dynamic_aircraft_images">
+                <t t-call="website.s_dynamic_snippet_options_template">
+                    <t t-set="snippet_name"
+                        t-value="'s_website_flight_fleet_dynamic_aircraft_images'" />
+                    <t t-set="snippet_selector"
+                        t-value="'.s_website_flight_fleet_dynamic_aircraft_images'" />
+                </t>
+            </div>
         </xpath>
     </template>
 </odoo>

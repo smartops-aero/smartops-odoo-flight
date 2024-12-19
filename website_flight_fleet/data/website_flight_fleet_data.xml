@@ -54,7 +54,7 @@
 
         <!-- Dynamic Filter -->
         <record id="dynamic_filter_aircraft_images" model="website.snippet.filter">
-            <field name="name">Aircraft Images</field>
+            <field name="name">flight_aircraft_image</field>
             <field name="filter_id" ref="website_flight_fleet.dynamic_snippet_aircraft_images_filter" />
             <field name="field_names">name,description,sequence</field>
             <field name="limit" eval="16" />
