@@ -31,6 +31,7 @@
         "views/snippets/s_website_flight_fleet_accordion.xml",
         "views/snippets/s_website_flight_fleet_carousel.xml",
         "views/snippets/s_website_flight_fleet_multiple_carousel.xml",
+        "views/snippets/s_website_flight_fleet_dynamic_carousel.xml",
         # Snippets Registration and options
         "views/snippets/options.xml",
         "views/snippets/snippets.xml",
@@ -43,6 +44,7 @@
     "assets": {
         "website.assets_wysiwyg": [
             "website_flight_fleet/static/src/snippets/s_website_flight_fleet_multiple_carousel/options.js",
+            "website_flight_fleet/static/src/snippets/s_website_flight_fleet_dynamic_carousel/options.js",
         ],
         "web.assets_frontend": [
             "website_flight_fleet/static/src/scss/website_flight_fleet.scss",

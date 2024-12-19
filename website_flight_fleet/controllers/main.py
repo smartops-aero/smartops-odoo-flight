@@ -94,3 +94,25 @@ class WebsiteFlight(http.Controller):
             'is_website_editor': request.env.user.has_group('website.group_website_publisher'),
         }
         return request.render("website_flight_fleet.page_aircraft_detail", values)
+
+    @http.route(['/flight/aircraft/images'], type='json', auth="public", website=True)
+    def get_aircraft_images(self, category_id=None, aircraft_id=None):
+        """Fetch aircraft images based on category and aircraft selection"""
+        domain = [('aircraft_id.website_published', '=', True)]
+        
+        if category_id:
+            domain.append(('category_id', '=', int(category_id)))
+        if aircraft_id:
+            domain.append(('aircraft_id', '=', int(aircraft_id)))
+            
+        images = request.env['flight.aircraft.image'].sudo().search(domain)
+        
+        return {
+            'images': [{
+                'id': img.id,
+                'name': img.name,
+                'description': img.description,
+                'category': img.category_id.name,
+                'aircraft': img.aircraft_id.website_display_name,
+            } for img in images]
+        }

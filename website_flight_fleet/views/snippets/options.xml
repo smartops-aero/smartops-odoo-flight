@@ -1,30 +1,30 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template
-    id="s_website_flight_fleet_accordion_options"
-    inherit_id="website.snippet_options"
-  >
+        id="s_website_flight_fleet_accordion_options"
+        inherit_id="website.snippet_options"
+    >
         <xpath expr="." position="inside">
             <!-- Collapsible Items Options -->
             <div
-        data-js="collapse"
-        data-selector=".s_website_flight_fleet_accordion .accordion-item"
-        data-drop-in=".s_website_flight_fleet_accordion .accordion"
-      />
+                data-js="collapse"
+                data-selector=".s_website_flight_fleet_accordion .accordion-item"
+                data-drop-in=".s_website_flight_fleet_accordion .accordion"
+            />
 
             <!-- Multiple Items Control -->
             <div
-        data-js="MultipleItems"
-        data-selector=".s_website_flight_fleet_accordion"
-      >
+                data-js="MultipleItems"
+                data-selector=".s_website_flight_fleet_accordion"
+            >
                 <we-row string="Item">
                     <we-button
-            data-add-item=""
-            data-item=".accordion > .accordion-item:last"
-            data-select-item="true"
-            data-no-preview="true"
-            class="o_we_bg_brand_primary"
-          >
+                        data-add-item=""
+                        data-item=".accordion > .accordion-item:last"
+                        data-select-item="true"
+                        data-no-preview="true"
+                        class="o_we_bg_brand_primary"
+                    >
                         Add Item
                     </we-button>
                 </we-row>
@@ -32,23 +32,23 @@
         </xpath>
     </template>
     <template
-    id="s_website_flight_fleet_multiple_carousel_options"
-    inherit_id="website.snippet_options"
-  >
+        id="s_website_flight_fleet_multiple_carousel_options"
+        inherit_id="website.snippet_options"
+    >
         <xpath expr="." position="inside">
             <div
-        data-js="WebsiteFlightFleetMultipleCarousel"
-        data-selector=".s_website_flight_fleet_multiple_carousel"
-        data-target=".multiple-cards-carousel"
-      >
+                data-js="WebsiteFlightFleetMultipleCarousel"
+                data-selector=".s_website_flight_fleet_multiple_carousel"
+                data-target=".multiple-cards-carousel"
+            >
 
                 <!-- Slide Management -->
                 <we-row string="Slide">
                     <we-button
-            data-add-slide="true"
-            data-no-preview="true"
-            class="o_we_bg_brand_primary"
-          >Add Slide</we-button>
+                        data-add-slide="true"
+                        data-no-preview="true"
+                        class="o_we_bg_brand_primary"
+                    >Add Slide</we-button>
                 </we-row>
 
 
@@ -58,6 +58,32 @@
                     <we-button data-update-interval="5">5s</we-button>
                     <we-button data-update-interval="7">7s</we-button>
                     <we-button data-update-interval="10">10s</we-button>
+                </we-select>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="s_website_flight_fleet_dynamic_carousel_options" inherit_id="website.snippet_options">
+        <xpath expr="." position="inside">
+            <div data-js="WebsiteFlightFleetDynamicCarousel" data-selector=".s_website_flight_fleet_dynamic_carousel">
+                <!-- Aircraft Selection -->
+                <we-select string="Aircraft" data-name="aircraft_opt">
+                    <we-button data-select-dataset="0" data-name="aircraft">All Aircraft</we-button>
+                    <t t-foreach="request.env['flight.aircraft'].search([])" t-as="aircraft">
+                        <we-button t-att-data-select-dataset="aircraft.id" data-name="aircraft">
+                            <t t-esc="aircraft.website_display_name"/>
+                        </we-button>
+                    </t>
+                </we-select>
+
+                <!-- Category Selection -->
+                <we-select string="Image Category" data-name="category_opt">
+                    <we-button data-select-dataset="0" data-name="category">All Categories</we-button>
+                    <t t-foreach="request.env['flight.aircraft.image.category'].search([('active', '=', True)])" t-as="category">
+                        <we-button t-att-data-select-dataset="category.id" data-name="category">
+                            <t t-esc="category.name"/>
+                        </we-button>
+                    </t>
                 </we-select>
             </div>
         </xpath>
