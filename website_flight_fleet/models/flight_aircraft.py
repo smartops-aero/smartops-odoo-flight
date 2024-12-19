@@ -57,10 +57,10 @@ class FlightAircraft(models.Model):
         sanitize_overridable=True,
         sanitize_attributes=False, sanitize_form=False)
 
-    carousel_image_ids = fields.One2many(
-        'flight.aircraft.carousel.image',
+    aircraft_image_ids = fields.One2many(
+        'flight.aircraft.image',
         'aircraft_id',
-        string='Carousel Images',
+        string='Aircraft Images',
         help='Images to be displayed in the aircraft detail page carousel'
     )
 

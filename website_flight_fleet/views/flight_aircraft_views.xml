@@ -39,12 +39,12 @@
                             />
                         </group>
                     </group>
-                    <group string="Carousel Images">
+                    <group string="Aircraft Images">
                         <div colspan="2" class="alert alert-info mb-3" role="alert">
                             <i class="fa fa-info-circle me-2" /> Use the drag handle (☰) on the left
                             of each row to reorder images. Click Add a line to upload new images.
                         </div>
-                        <field name="carousel_image_ids" colspan="2" nolabel="1">
+                        <field name="aircraft_image_ids" colspan="2" nolabel="1">
                             <tree editable="bottom">
                                 <field name="sequence" widget="handle" />
                                 <field

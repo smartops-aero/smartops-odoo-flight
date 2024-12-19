@@ -47,7 +47,7 @@
           <group name="initial_specs" string="Basic Specifications">
             <field name="seat_map_1920" widget="image" />
             <div colspan="2" class="alert alert-info text-center" role="alert">
-              Additional specifications and carousel images can be added after creating the aircraft record.
+              Additional specifications and aircraft images can be added after creating the aircraft record.
             </div>
           </group>
         </sheet>

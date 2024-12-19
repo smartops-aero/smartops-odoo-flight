@@ -1,8 +1,8 @@
 from odoo import fields, models, api, _
 
-class FlightAircraftCarouselImage(models.Model):
-    _name = 'flight.aircraft.carousel.image'
-    _description = 'Aircraft Carousel Image'
+class FlightAircraftImage(models.Model):
+    _name = 'flight.aircraft.image'
+    _description = 'Aircraft Image'
     _order = 'sequence, id'
 
     name = fields.Char('Name')

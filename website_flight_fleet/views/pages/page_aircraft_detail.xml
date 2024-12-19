@@ -32,7 +32,7 @@
                 </section>
 
                 <!-- Main Carousel -->
-                <t t-if="aircraft.carousel_image_ids">
+                <t t-if="aircraft.aircraft_image_ids">
                     <section class="s_carousel_wrapper">
                         <div
                             class="s_website_flight_fleet_carousel s_carousel s_carousel_default carousel slide"
@@ -40,7 +40,7 @@
                             data-bs-interval="10000">
                             <!-- Indicators -->
                             <ol class="carousel-indicators website-flight-carousel-indicators">
-                                <t t-foreach="aircraft.carousel_image_ids" t-as="image">
+                                <t t-foreach="aircraft.aircraft_image_ids" t-as="image">
                                     <li t-att-data-bs-target="'#aircraftCarousel'"
                                         t-attf-data-bs-slide-to="{{image_index}}"
                                         t-att-class="'active' if image_index == 0 else ''" />
@@ -48,12 +48,12 @@
                             </ol>
 
                             <div class="carousel-inner">
-                                <t t-if="aircraft.carousel_image_ids">
-                                    <t t-foreach="aircraft.carousel_image_ids" t-as="image">
+                                <t t-if="aircraft.aircraft_image_ids">
+                                    <t t-foreach="aircraft.aircraft_image_ids" t-as="image">
                                         <div
                                             t-att-class="'carousel-item oe_img_bg o_bg_img_center%s' % (' active' if image_index == 0 else '')"
                                             data-name="Slide"
-                                            t-att-style="'background-image: url(/web/image/flight.aircraft.carousel.image/%s/image)' % image.id">
+                                            t-att-style="'background-image: url(/web/image/flight.aircraft.image/%s/image)' % image.id">
                                             <div t-if="image.description" class="carousel-caption">
                                                 <p t-field="image.description" />
                                             </div>
