@@ -44,7 +44,7 @@
     "assets": {
         "website.assets_wysiwyg": [
             "website_flight_fleet/static/src/snippets/s_website_flight_fleet_multiple_carousel/options.js",
-            "website_flight_fleet/static/src/snippets/s_website_flight_fleet_dynamic_carousel/options.js",
+            "website_flight_fleet/static/src/snippets/s_website_flight_fleet_dynamic_aircraft_images/options.js",
         ],
         "web.assets_frontend": [
             "website_flight_fleet/static/src/scss/website_flight_fleet.scss",
@@ -53,6 +53,7 @@
             "website_flight_fleet/static/src/snippets/s_website_flight_fleet_multiple_carousel/000.scss",
             "website_flight_fleet/static/src/snippets/s_website_flight_fleet_multiple_carousel/000.js",
             "website_flight_fleet/static/src/snippets/s_website_flight_fleet_accordion/000.scss",
+            "website_flight_fleet/static/src/snippets/s_website_flight_fleet_dynamic_aircraft_images/000.js",
         ],
         "website.assets_editor": [
             "website_flight_fleet/static/src/js/systray_items/new_content.js",

@@ -41,5 +41,23 @@
             <field name="sequence">40</field>
             <field name="description">Aircraft in flight and aerial photography</field>
         </record>
+
+        <!-- Filter for Aircraft Images -->
+        <record id="dynamic_snippet_aircraft_images_filter" model="ir.filters">
+            <field name="name">Aircraft Images</field>
+            <field name="model_id">flight.aircraft.image</field>
+            <field name="user_id" eval="False"/>
+            <field name="domain">[]</field>
+            <field name="sort">["sequence asc"]</field>
+            <field name="action_id" ref="website.action_website"/>
+        </record>
+
+        <!-- Dynamic Filter -->
+        <record id="dynamic_filter_aircraft_images" model="website.snippet.filter">
+            <field name="name">Aircraft Images</field>
+            <field name="filter_id" ref="dynamic_snippet_aircraft_images_filter"/>
+            <field name="field_names">name,description</field>
+            <field name="limit" eval="8"/>
+        </record>
     </data>
 </odoo>
