@@ -68,7 +68,7 @@ def migrate(cr, version):
         _logger.error(f"Failed to create migration table: {str(e)}")
         return
 
-    # Store amenity data if tables exist
+    # 1. First migrate all amenity data
     rel_table = 'flight_aircraft_amenity_rel'
     amenity_table = 'flight_aircraft_amenity'
 
@@ -128,10 +128,11 @@ def migrate(cr, version):
             _logger.warning(f"Failed to store amenity data: {str(e)}")
             cr.execute("ROLLBACK")
             cr.execute("BEGIN")
+            return  # Stop migration if we can't store amenity data
     else:
         _logger.warning("Amenity tables not found, skipping amenity migration")
 
-    # Store specifications
+    # 2. Then migrate all specification data
     specs_to_store = {
         'passenger_capacity': {'code': 'load.passengers', 'category': 'load'},
         'range_nm': {'code': 'performance.range', 'category': 'performance'},
@@ -168,13 +169,19 @@ def migrate(cr, version):
                 _logger.warning(f"Failed to store {old_field} data: {str(e)}")
                 cr.execute("ROLLBACK")
                 cr.execute("BEGIN")
+                return  # Stop migration if we can't store spec data
 
+    # Verify all data is migrated
+    cr.execute("SELECT data_type, COUNT(*) FROM website_fleet_migration GROUP BY data_type")
+    counts = cr.fetchall()
+    _logger.info(f"Migration table contents: {counts}")
+
+    # 3. Only after successful migration, drop old data
     # Drop old columns safely
     old_fields = [
         'passenger_capacity', 'range_nm', 'cruise_speed', 
         'cabin_length', 'cabin_width', 'cabin_height',
         'luggage_capacity', 'useful_load',
-        # Content fields that will be replaced by website_description
         'hero_content', 'spec_header_content', 'interior_gallery_header_content',
         'benefits_content', 'faq_header_content', 'faq_content',
         'main_carousel_content', 'interior_gallery_carousel_content', 'cta_content'
@@ -190,7 +197,7 @@ def migrate(cr, version):
                 cr.execute("ROLLBACK")
                 cr.execute("BEGIN")
 
-    # Drop amenity tables safely in correct order
+    # Finally drop amenity tables
     for table in [rel_table, amenity_table]:
         if table_exists(cr, table):
             _logger.info(f"Dropping table {table}")
