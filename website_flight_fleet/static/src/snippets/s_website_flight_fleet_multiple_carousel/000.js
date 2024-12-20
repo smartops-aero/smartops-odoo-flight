@@ -1,6 +1,4 @@
 odoo.define("website_flight_fleet.multiple_carousel", function (require) {
-  "use strict";
-
   const publicWidget = require("web.public.widget");
 
   publicWidget.registry.WebsiteFlightFleetMultipleCarousel =
@@ -19,13 +17,13 @@ odoo.define("website_flight_fleet.multiple_carousel", function (require) {
       },
 
       _initializeCarousel: function () {
-        const self = this;
         const carousel = this.el.querySelector(".multiple-cards-carousel");
         const carouselInner = carousel.querySelector(".carousel-inner");
         const items = carousel.querySelectorAll(".carousel-item");
 
         this.carousel = carousel;
-        this.carouselId = carousel.id; // Store the carousel ID
+        // Store the carousel ID
+        this.carouselId = carousel.id;
         this.carouselInner = carouselInner;
         this.items = items;
         this.currentIndex = 0;
@@ -87,8 +85,10 @@ odoo.define("website_flight_fleet.multiple_carousel", function (require) {
         });
 
         observer.observe(this.carouselInner, {
-          childList: true, // Watch for changes to child elements
-          subtree: true, // Watch for changes in descendants
+          // Watch for changes to child elements
+          childList: true,
+          // Watch for changes in descendants
+          subtree: true,
         });
       },
 
@@ -155,7 +155,7 @@ odoo.define("website_flight_fleet.multiple_carousel", function (require) {
 
       _updateItemWidth: function () {
         const viewportWidth = window.innerWidth;
-        let itemsPerView =
+        const itemsPerView =
           viewportWidth >= 992 ? 3 : viewportWidth >= 768 ? 2 : 1;
         this.itemWidth = this.carouselInner.offsetWidth / itemsPerView;
       },
@@ -199,7 +199,8 @@ odoo.define("website_flight_fleet.multiple_carousel", function (require) {
         setTimeout(() => {
           this.isAnimating = false;
           this._updateNavigationButtons();
-        }, 500); // Match transition duration from CSS
+          // Match transition duration from CSS
+        }, 500);
       },
 
       _updateNavigationButtons: function () {

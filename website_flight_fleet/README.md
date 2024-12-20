@@ -42,7 +42,7 @@ In case of trouble, please check there if your issue has already been reported.
 
 ## Credits
 
-* Apexive Solutions LLC
+- Apexive Solutions LLC
 
 ## License
 

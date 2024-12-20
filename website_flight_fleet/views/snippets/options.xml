@@ -1,30 +1,30 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <template
-        id="s_website_flight_fleet_accordion_options"
-        inherit_id="website.snippet_options"
-    >
+    id="s_website_flight_fleet_accordion_options"
+    inherit_id="website.snippet_options"
+  >
         <xpath expr="." position="inside">
             <!-- Collapsible Items Options -->
             <div
-                data-js="collapse"
-                data-selector=".s_website_flight_fleet_accordion .accordion-item"
-                data-drop-in=".s_website_flight_fleet_accordion .accordion"
-            />
+        data-js="collapse"
+        data-selector=".s_website_flight_fleet_accordion .accordion-item"
+        data-drop-in=".s_website_flight_fleet_accordion .accordion"
+      />
 
             <!-- Multiple Items Control -->
             <div
-                data-js="MultipleItems"
-                data-selector=".s_website_flight_fleet_accordion"
-            >
+        data-js="MultipleItems"
+        data-selector=".s_website_flight_fleet_accordion"
+      >
                 <we-row string="Item">
                     <we-button
-                        data-add-item=""
-                        data-item=".accordion > .accordion-item:last"
-                        data-select-item="true"
-                        data-no-preview="true"
-                        class="o_we_bg_brand_primary"
-                    >
+            data-add-item=""
+            data-item=".accordion > .accordion-item:last"
+            data-select-item="true"
+            data-no-preview="true"
+            class="o_we_bg_brand_primary"
+          >
                         Add Item
                     </we-button>
                 </we-row>
@@ -32,23 +32,23 @@
         </xpath>
     </template>
     <template
-        id="s_website_flight_fleet_multiple_carousel_options"
-        inherit_id="website.snippet_options"
-    >
+    id="s_website_flight_fleet_multiple_carousel_options"
+    inherit_id="website.snippet_options"
+  >
         <xpath expr="." position="inside">
             <div
-                data-js="WebsiteFlightFleetMultipleCarousel"
-                data-selector=".s_website_flight_fleet_multiple_carousel"
-                data-target=".multiple-cards-carousel"
-            >
+        data-js="WebsiteFlightFleetMultipleCarousel"
+        data-selector=".s_website_flight_fleet_multiple_carousel"
+        data-target=".multiple-cards-carousel"
+      >
 
                 <!-- Slide Management -->
                 <we-row string="Slide">
                     <we-button
-                        data-add-slide="true"
-                        data-no-preview="true"
-                        class="o_we_bg_brand_primary"
-                    >Add Slide</we-button>
+            data-add-slide="true"
+            data-no-preview="true"
+            class="o_we_bg_brand_primary"
+          >Add Slide</we-button>
                 </we-row>
 
 

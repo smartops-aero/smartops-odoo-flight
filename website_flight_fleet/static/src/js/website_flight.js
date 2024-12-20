@@ -1,6 +1,4 @@
 odoo.define("website_flight_fleet.fleet", function (require) {
-  "use strict";
-
   var publicWidget = require("web.public.widget");
 
   publicWidget.registry.websiteFleet = publicWidget.Widget.extend({

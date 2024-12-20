@@ -2,6 +2,8 @@
     "name": "Flight Aircraft Specifications",
     "version": "16.0.1.0.0",
     "category": "Flight",
+    "author": "Apexive Solutions LLC",
+    "website": "https://github.com/smartops-aero/flight",
     "summary": "Manage aircraft specifications and amenities",
     "description": """
         This module provides a unified way to manage aircraft specifications and amenities.
