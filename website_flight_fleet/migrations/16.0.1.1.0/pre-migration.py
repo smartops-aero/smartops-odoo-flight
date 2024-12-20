@@ -72,8 +72,20 @@ def migrate(cr, version):
     rel_table = 'flight_aircraft_amenity_rel'
     amenity_table = 'flight_aircraft_amenity'
 
-    if table_exists(cr, rel_table) and table_exists(cr, amenity_table):
+    # Check tables existence with logging
+    rel_exists = table_exists(cr, rel_table)
+    amenity_exists = table_exists(cr, amenity_table)
+    _logger.info(f"Checking amenity tables: rel_table exists: {rel_exists}, amenity_table exists: {amenity_exists}")
+
+    if rel_exists and amenity_exists:
         _logger.info("Found amenity tables, checking columns")
+        
+        # Check if tables have data
+        cr.execute(f"SELECT COUNT(*) FROM {amenity_table}")
+        amenity_count = cr.fetchone()[0]
+        cr.execute(f"SELECT COUNT(*) FROM {rel_table}")
+        rel_count = cr.fetchone()[0]
+        _logger.info(f"Found {amenity_count} amenities and {rel_count} relationships")
         
         try:
             # Extract and store amenity relationships
@@ -102,11 +114,22 @@ def migrate(cr, version):
                     AND t.state = 'translated'
                 )
             """)
-            _logger.info("Successfully stored amenity data")
+            
+            # Verify data was inserted
+            cr.execute("""
+                SELECT COUNT(*) 
+                FROM website_fleet_migration 
+                WHERE data_type = 'amenity'
+            """)
+            migrated_count = cr.fetchone()[0]
+            _logger.info(f"Successfully stored {migrated_count} amenity records")
+            
         except Exception as e:
             _logger.warning(f"Failed to store amenity data: {str(e)}")
             cr.execute("ROLLBACK")
             cr.execute("BEGIN")
+    else:
+        _logger.warning("Amenity tables not found, skipping amenity migration")
 
     # Store specifications
     specs_to_store = {
