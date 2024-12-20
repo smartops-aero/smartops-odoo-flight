@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- This is still WIP but we have some basic features working
+    and noted down how it works -->
     <!-- Main Snippet Template -->
     <template id="s_website_flight_fleet_dynamic_aircraft_images" name="Aircraft Images">
         <t t-call="website.s_dynamic_snippet_template">
