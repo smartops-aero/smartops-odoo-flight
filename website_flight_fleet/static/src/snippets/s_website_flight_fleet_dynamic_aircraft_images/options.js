@@ -2,9 +2,9 @@ odoo.define('website_flight_fleet.dynamic_aircraft_images_options', function (re
     'use strict';
 
     const options = require('web_editor.snippets.options');
-    const dynamicSnippetOptions = require('website.s_dynamic_snippet_options');
+    const s_dynamic_snippet_carousel_options = require('website.s_dynamic_snippet_carousel_options');
 
-    const dynamicSnippetAircraftImagesOptions = dynamicSnippetOptions.extend({
+    const dynamicSnippetAircraftImagesOptions = s_dynamic_snippet_carousel_options.extend({
         init() {
             this._super.apply(this, arguments);
             this.modelNameFilter = 'flight.aircraft.image';

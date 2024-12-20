@@ -14,13 +14,16 @@
         <t t-set="images" t-value="records" />
         <div t-foreach="images" t-as="data">
             <t t-set="image" t-value="data['_record']" />
-            <div
-                t-att-class="'carousel-item oe_img_bg o_bg_img_center%s' % (' active' if data_index == 0 else '')"
-                data-name="Slide"
-                t-att-style="'background-image: url(/web/image/flight.aircraft.image/%s/image)' % image.id">
-                <div t-if="image.description" class="carousel-caption">
-                    <p t-field="image.description" />
-                </div>
+            <div class="card h-100">
+                <img t-att-src="'/web/image/flight.aircraft.image/%s/image' % image.id" 
+                     t-att-alt="image.name or ''"
+                     class="card-img-top"/>
+                <t t-if="image.name or image.description">
+                    <div class="card-body">
+                        <h5 t-if="image.name" class="card-title" t-esc="image.name"/>
+                        <p t-if="image.description" class="card-text" t-esc="image.description"/>
+                    </div>
+                </t>
             </div>
         </div>
     </template>
@@ -29,7 +32,7 @@
     <template id="s_website_flight_fleet_dynamic_aircraft_images_options"
         inherit_id="website.snippet_options">
         <xpath expr="." position="inside">
-            <t t-call="website.s_dynamic_snippet_options_template">
+            <t t-call="website.dynamic_snippet_carousel_options_template">
                 <t t-set="snippet_name" t-value="'dynamic_snippet_aircraft_images'" />
                 <t t-set="snippet_selector" t-value="'.s_dynamic_snippet_aircraft_images'" />
             </t>
