@@ -17,6 +17,14 @@ odoo.define('website_flight_fleet.dynamic_aircraft_images_options', function (re
         /**
          * @override
          */
+        onBuilt() {
+            this._super(...arguments);
+            this.$target[0].dataset['snippet'] = 's_website_flight_fleet_dynamic_aircraft_images';
+        },
+
+        /**
+         * @override
+         */
         async _fetchDynamicFilters() {
             await this._super.apply(this, arguments);
             await this._fetchAircrafts();
@@ -97,6 +105,7 @@ odoo.define('website_flight_fleet.dynamic_aircraft_images_options', function (re
         _setOptionsDefaultValues: function () {
             this._setOptionValue('filterByAircraftId', -1);
             this._setOptionValue('filterByCategoryId', -1);
+            this._setOptionValue('carouselInterval', '5000');
             this._super.apply(this, arguments);
         },
     });
