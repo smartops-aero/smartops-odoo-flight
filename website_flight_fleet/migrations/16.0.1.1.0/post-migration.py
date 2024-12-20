@@ -123,39 +123,46 @@ def migrate(cr, version):
         category_id = category_ids.get(category)
         create_spec(cr, aircraft_id, code, value, user_id, category_id=category_id)
 
-    # Define amenity mapping with lowercase keys
-    amenity_codes = {
-        'starlink wifi': 'amenity.wifi',
-        'power outlets': 'amenity.power',
-        'quiet cabin': 'amenity.quiet_cabin',
-        'enclosed aft lavatory': 'amenity.lavatory',
-        'air conditioning': 'amenity.air_conditioning',
-        'leather seats': 'amenity.leather_seats',
-        'entertainment system': 'amenity.entertainment',
-        'refreshment center': 'amenity.refreshments',
-        'cargo door': 'amenity.cargo_door',
-        'coffee maker': 'amenity.coffee_maker',
-        'ice drawer': 'amenity.ice_drawer',
-        'microwave & oven': 'amenity.microwave_oven',
-        'cabin environment control': 'amenity.cabin_environment_control'
-    }
-
-    # Migrate amenities
-    _logger.info("Migrating amenities")
+        # First gather all unique amenity names
     cr.execute("""
-        SELECT DISTINCT aircraft_id, name
+        SELECT DISTINCT name 
+        FROM website_fleet_migration 
+        WHERE data_type = 'amenity'
+    """)
+    old_amenity_names = [row[0] for row in cr.fetchall()]
+    _logger.info(f"Found {len(old_amenity_names)} unique amenities to migrate")
+
+    # Get all existing amenity spec codes
+    cr.execute("""
+        SELECT code, id, name 
+        FROM flight_aircraft_spec_code 
+        WHERE code LIKE 'amenity.%'
+    """)
+    spec_codes = {row[2].lower(): (row[0], row[1]) for row in cr.fetchall()}
+
+    # Create mapping and log unmapped amenities
+    amenity_mapping = {}
+    unmapped_amenities = []
+    for old_name in old_amenity_names:
+        old_name_lower = old_name.lower()
+        if old_name_lower in spec_codes:
+            amenity_mapping[old_name] = spec_codes[old_name_lower][0]
+        else:
+            unmapped_amenities.append(old_name)
+            _logger.warning(f"Could not map amenity: {old_name}")
+
+    if unmapped_amenities:
+        _logger.warning(f"The following amenities could not be mapped: {', '.join(unmapped_amenities)}")
+
+    # Migrate amenities using the mapping
+    cr.execute("""
+        SELECT aircraft_id, name
         FROM website_fleet_migration
         WHERE data_type = 'amenity'
     """)
-    amenities = cr.fetchall()
-    _logger.info(f"Found {len(amenities)} amenities to migrate")
-
-    # Create specs for amenities
-    for aircraft_id, amenity_name in amenities:
-        # Convert to lowercase for case-insensitive comparison
-        amenity_name_lower = amenity_name.lower()
-        if amenity_name_lower in amenity_codes:
-            code = amenity_codes[amenity_name_lower]
+    for aircraft_id, amenity_name in cr.fetchall():
+        if amenity_name in amenity_mapping:
+            code = amenity_mapping[amenity_name]
             create_spec(cr, aircraft_id, code, True, user_id, is_bool=True)
 
     # Fix null UOMs
