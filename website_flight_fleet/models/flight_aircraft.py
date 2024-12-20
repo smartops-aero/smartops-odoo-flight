@@ -73,3 +73,8 @@ class FlightAircraft(models.Model):
     def _compute_website_url(self):
         for aircraft in self:
             aircraft.website_url = f"/aircraft/{slug(aircraft)}"
+    
+    def regenerate_website_description(self):
+        for record in self:
+            record.website_description = record._get_default_website_description()
+        return True

@@ -37,6 +37,11 @@
                                 name="website_spec_description"
                                 placeholder="Description displayed on specifications section"
                             />
+                            <field name="website_description" readonly="1"/>
+                            <button string="Regenerate Description" 
+                                type="object" 
+                                name="regenerate_website_description"
+                                class="oe_highlight"/>
                         </group>
                     </group>
                     <group string="Aircraft Images">
