@@ -123,17 +123,21 @@ def migrate(cr, version):
         category_id = category_ids.get(category)
         create_spec(cr, aircraft_id, code, value, user_id, category_id=category_id)
 
-    # Define amenity mapping
+    # Define amenity mapping with lowercase keys
     amenity_codes = {
-        'Starlink WiFi': 'amenity.wifi',
-        'Power Outlets': 'amenity.power',
-        'Quiet Cabin': 'amenity.quiet_cabin',
-        'Enclosed Aft Lavatory': 'amenity.lavatory',
-        'Air Conditioning': 'amenity.air_conditioning',
-        'Leather Seats': 'amenity.leather_seats',
-        'Entertainment System': 'amenity.entertainment',
-        'Refreshment Center': 'amenity.refreshments',
-        'Cargo Door': 'amenity.cargo_door'
+        'starlink wifi': 'amenity.wifi',
+        'power outlets': 'amenity.power',
+        'quiet cabin': 'amenity.quiet_cabin',
+        'enclosed aft lavatory': 'amenity.lavatory',
+        'air conditioning': 'amenity.air_conditioning',
+        'leather seats': 'amenity.leather_seats',
+        'entertainment system': 'amenity.entertainment',
+        'refreshment center': 'amenity.refreshments',
+        'cargo door': 'amenity.cargo_door',
+        'coffee maker': 'amenity.coffee_maker',
+        'ice drawer': 'amenity.ice_drawer',
+        'microwave & oven': 'amenity.microwave_oven',
+        'cabin environment control': 'amenity.cabin_environment_control'
     }
 
     # Migrate amenities
@@ -146,24 +150,12 @@ def migrate(cr, version):
     amenities = cr.fetchall()
     _logger.info(f"Found {len(amenities)} amenities to migrate")
 
-    # Create missing spec codes for amenities
-    for amenity_name, code in amenity_codes.items():
-        cr.execute("""
-            SELECT id FROM flight_aircraft_spec_code WHERE code = %s
-        """, (code,))
-        if not cr.fetchone():
-            _logger.info(f"Creating spec code {code} for amenity {amenity_name}")
-            cr.execute("""
-                INSERT INTO flight_aircraft_spec_code 
-                (code, name, code_type, category_id, create_uid, write_uid)
-                VALUES (%s, %s, 'boolean', %s, %s, %s)
-                RETURNING id
-            """, (code, amenity_name, category_ids['amenity'], user_id, user_id))
-
     # Create specs for amenities
     for aircraft_id, amenity_name in amenities:
-        if amenity_name in amenity_codes:
-            code = amenity_codes[amenity_name]
+        # Convert to lowercase for case-insensitive comparison
+        amenity_name_lower = amenity_name.lower()
+        if amenity_name_lower in amenity_codes:
+            code = amenity_codes[amenity_name_lower]
             create_spec(cr, aircraft_id, code, True, user_id, is_bool=True)
 
     # Fix null UOMs
