@@ -1,27 +1,73 @@
-import werkzeug
+import logging
 from odoo import http
 from odoo.http import request
 from odoo.addons.website.controllers.main import QueryURL
 from odoo.osv import expression
 
+_logger = logging.getLogger(__name__)
+
+# Constants
+AIRCRAFT_PER_PAGE = 12  # Number of aircraft to display per page
 
 class WebsiteFlight(http.Controller):
-    def _get_aircraft_domain(self, search=None):
+    def _get_base_domain(self):
         """Helper to compute domain for aircraft search"""
         domain = request.website.website_domain()
         if not request.env.user.has_group("flight.group_flight_manager"):
             domain = expression.AND([domain, [("website_published", "=", True)]])
+        return domain
 
+    def _get_search_domain(self, search=None):
+        """Build search domain for aircraft with optional search term"""
+        domain = self._get_base_domain()
+        
         if search:
             search_domain = [
-                "|",  # First OR
-                "|",  # Second OR
+                "|",
+                "|",
                 ("registration", "ilike", search),
                 ("model_id.name", "ilike", search),
                 ("website_short_description", "ilike", search),
             ]
             domain = expression.AND([domain, search_domain])
         return domain
+
+    def _prepare_fleet_values(self, page=1, model=None, search=None, **post):
+        """Prepare values for fleet page rendering"""
+        Aircraft = request.env["flight.aircraft"]
+        domain = self._get_search_domain(search)
+        
+        if model:
+            domain = expression.AND([domain, [("model_id", "=", model.id)]])
+
+        url = "/fleet"
+        aircraft_url = QueryURL(url, ["model", "search"])
+        aircraft_count = Aircraft.search_count(domain)
+
+        pager = request.website.pager(
+            url=url,
+            total=aircraft_count,
+            page=page,
+            step=AIRCRAFT_PER_PAGE,
+            url_args=post,
+        )
+
+        aircrafts = Aircraft.search(
+            domain, 
+            limit=AIRCRAFT_PER_PAGE, 
+            offset=pager["offset"]
+        )
+        models = request.env["flight.aircraft.model"].search([])
+
+        return {
+            "aircrafts": aircrafts,
+            "pager": pager,
+            "aircraft_url": aircraft_url,
+            "search": search,
+            "search_count": aircraft_count,
+            "models": models,
+            "selected_model": model,
+        }
 
     @http.route(
         [
@@ -36,133 +82,37 @@ class WebsiteFlight(http.Controller):
         sitemap=True,
     )
     def fleet(self, page=1, model=None, search=None, **post):
-        Aircraft = request.env["flight.aircraft"]
-
-        # Compute domain
-        domain = self._get_aircraft_domain(search)
-        if model:
-            domain = expression.AND([domain, [("model_id", "=", model.id)]])
-
-        # Search aircrafts
-        search_url = "/fleet"
-        aircraft_url = QueryURL(search_url, ["model", "search"])
-        aircraft_count = Aircraft.search_count(domain)
-
-        # Setup pager
-        pager = request.website.pager(
-            url=search_url,
-            total=aircraft_count,
-            page=page,
-            step=12,
-            url_args=post,
-        )
-
-        # Search aircrafts with given criteria
-        aircrafts = Aircraft.search(domain, limit=12, offset=pager["offset"])
-
-        # Get all aircraft models for filtering
-        models = request.env["flight.aircraft.model"].search([])
-
-        values = {
-            "aircrafts": aircrafts,
-            "pager": pager,
-            "aircraft_url": aircraft_url,
-            "search": search,
-            "search_count": aircraft_count,
-            "models": models,
-            "selected_model": model,
-            "bins": [],
-        }
-
-        if not values.get("bins"):
-            values["bins"] = []
-
+        """Display fleet listing page with optional filtering and search"""
+        values = self._prepare_fleet_values(page, model, search, **post)
         return request.render("website_flight_fleet.page_fleet", values)
 
-    @http.route(
-        [
-            """/aircraft/<model("flight.aircraft"):aircraft>""",
-        ],
-        type="http",
-        auth="public",
-        website=True,
-        sitemap=True,
-    )
-    def aircraft(self, aircraft, **kwargs):
-        if not aircraft.can_access_from_current_website():
-            raise werkzeug.exceptions.NotFound()
-
-        # Get the previous and next aircraft based on registration
-        Aircraft = request.env["flight.aircraft"]
-        domain = self._get_aircraft_domain()
-
-        # Get neighbor aircrafts for navigation
-        all_aircraft_ids = Aircraft.search(domain).ids
-        current_aircraft_index = all_aircraft_ids.index(aircraft.id)
-        prev_aircraft = None
-        next_aircraft = None
-
-        if current_aircraft_index > 0:
-            prev_aircraft = Aircraft.browse(
-                all_aircraft_ids[current_aircraft_index - 1]
-            )
-        if current_aircraft_index < len(all_aircraft_ids) - 1:
-            next_aircraft = Aircraft.browse(
-                all_aircraft_ids[current_aircraft_index + 1]
-            )
-
-        # Get related aircrafts (same model)
-        related_aircraft_domain = expression.AND(
-            [
-                domain,
-                [("model_id", "=", aircraft.model_id.id), ("id", "!=", aircraft.id)],
-            ]
-        )
-        related_aircrafts = Aircraft.search(related_aircraft_domain, limit=4)
-
+    @http.route(['/aircraft/<model("flight.aircraft"):aircraft>'], type='http', auth="public", website=True)
+    def aircraft_detail(self, aircraft, **kwargs):        
         values = {
-            "main_object": aircraft,
-            "aircraft": aircraft,
-            "prev_aircraft": prev_aircraft,
-            "next_aircraft": next_aircraft,
-            "related_aircrafts": related_aircrafts,
+            'aircraft': aircraft,
+            'main_object': aircraft,
+            'is_website_editor': request.env.user.has_group('website.group_website_publisher'),
         }
-
-        if aircraft.env.context.get("enable_editor"):
-            values.update(enable_editor=True)
-
         return request.render("website_flight_fleet.page_aircraft_detail", values)
 
-    @http.route(
-        '/fleet/aircraft/json/<model("flight.aircraft"):aircraft>',
-        type="json",
-        auth="public",
-        website=True,
-    )
-    def aircraft_json(self, aircraft, **kw):
-        """Return specific aircraft data in JSON format"""
+    @http.route(['/flight/aircraft/images'], type='json', auth="public", website=True)
+    def get_aircraft_images(self, category_id=None, aircraft_id=None):
+        """Fetch aircraft images based on category and aircraft selection"""
+        domain = [('aircraft_id.website_published', '=', True)]
+        
+        if category_id:
+            domain.append(('category_id', '=', int(category_id)))
+        if aircraft_id:
+            domain.append(('aircraft_id', '=', int(aircraft_id)))
+            
+        images = request.env['flight.aircraft.image'].sudo().search(domain)
+        
         return {
-            "registration": aircraft.registration,
-            "model": aircraft.model_id.name if aircraft.model_id else False,
-            "website_published": aircraft.website_published,
-            "website_url": aircraft.website_url,
+            'images': [{
+                'id': img.id,
+                'name': img.name,
+                'description': img.description,
+                'category': img.category_id.name,
+                'aircraft': img.aircraft_id.website_display_name,
+            } for img in images]
         }
-
-    @http.route("/fleet/search", type="json", auth="public", website=True)
-    def fleet_search(self, term, **kwargs):
-        """Return search suggestions for aircraft"""
-        Aircraft = request.env["flight.aircraft"]
-        domain = self._get_aircraft_domain(term)
-        aircrafts = Aircraft.search(domain, limit=5)
-
-        results = []
-        for aircraft in aircrafts:
-            results.append(
-                {
-                    "id": aircraft.id,
-                    "name": aircraft.registration,
-                    "model": aircraft.model_id.name if aircraft.model_id else "",
-                    "url": aircraft.website_url,
-                }
-            )
-        return results

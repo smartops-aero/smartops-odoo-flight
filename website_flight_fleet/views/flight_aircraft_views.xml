@@ -1,52 +1,5 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- ====== Amenity Views ====== -->
-    <!-- Amenity Tree View -->
-    <record id="view_flight_aircraft_amenity_tree" model="ir.ui.view">
-        <field name="name">flight.aircraft.amenity.tree</field>
-        <field name="model">flight.aircraft.amenity</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="sequence" widget="handle" />
-                <field name="name" />
-            </tree>
-        </field>
-    </record>
-
-    <!-- Amenity Form View -->
-    <record id="view_flight_aircraft_amenity_form" model="ir.ui.view">
-        <field name="name">flight.aircraft.amenity.form</field>
-        <field name="model">flight.aircraft.amenity</field>
-        <field name="arch" type="xml">
-            <form>
-                <sheet>
-                    <group>
-                        <field name="name" />
-                        <field name="sequence" />
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <!-- Amenity Search View -->
-    <record id="view_flight_aircraft_amenity_search" model="ir.ui.view">
-        <field name="name">flight.aircraft.amenity.search</field>
-        <field name="model">flight.aircraft.amenity</field>
-        <field name="arch" type="xml">
-            <search>
-                <field name="name" />
-            </search>
-        </field>
-    </record>
-
-    <!-- Amenity Action Window -->
-    <record id="action_flight_aircraft_amenity" model="ir.actions.act_window">
-        <field name="name">Aircraft Amenities</field>
-        <field name="res_model">flight.aircraft.amenity</field>
-        <field name="view_mode">tree,form</field>
-    </record>
-
     <!-- ====== Website Inherited Views ====== -->
     <record id="view_flight_aircraft_form_inherit_website" model="ir.ui.view">
         <field name="name">flight.aircraft.form.inherit.website</field>
@@ -56,61 +9,64 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Website" name="website">
                     <group>
-                        <group string="Publishing">
+                        <group string="Publishing" colspan="2">
                             <field name="website_published" />
+                            <field 
+                                name="website_url" 
+                                readonly="1" 
+                                widget="url"
+                                text="View on Website"
+                            />
                             <field
-                name="website_display_name"
-                placeholder="Name displayed on website (e.g. Citation Bravo N550RM)"
-              />
+                                name="website_display_name"
+                                placeholder="Name displayed on website (e.g. Citation Bravo N550RM)"
+                            />
                             <field
-                name="website_aircraft_slogan"
-                placeholder="Aircraft slogan or tagline"
-              />
-                            <field name="website_short_description" />
+                                name="website_aircraft_slogan"
+                                placeholder="Aircraft slogan or tagline"
+                            />
+                            <field
+                                name="website_short_description"
+                                placeholder="Short description displayed on cards and detail page"
+                            />
+                            <field
+                                name="website_spec_header"
+                                placeholder="Header displayed on specifications section"
+                            />
+                            <field
+                                name="website_spec_description"
+                                placeholder="Description displayed on specifications section"
+                            />
+                            <field name="website_description" invisible="1"/>
+                            <button string="Generate Static Content" 
+                                type="object" 
+                                name="regenerate_website_description"
+                                attrs="{'invisible': [('website_description', 'not in', ['', False])]}"
+                                class="oe_highlight"/>
                         </group>
-                        <group string="Specifications">
-                            <field name="passenger_capacity" />
-                            <field name="range_nm" />
-                            <field name="cruise_speed" />
-                            <field name="useful_load" />
-                            <field name="luggage_capacity" />
-                            <label
-                for="cabin_length"
-                string="Cabin Dimensions (ft)"
-              />
-                            <div class="o_row" name="cabin_dimensions">
+                    </group>
+                    <group string="Aircraft Images">
+                        <div colspan="2" class="alert alert-info mb-3" role="alert">
+                            <i class="fa fa-info-circle me-2" /> Use the drag handle (☰) on the left
+                            of each row to reorder images. Click Add a line to upload new images.
+                        </div>
+                        <field name="aircraft_image_ids" colspan="2" nolabel="1">
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle" />
+                                <field name="category_id" required="1"/>
                                 <field
-                  name="cabin_length"
-                  class="oe_inline"
-                /> x <field name="cabin_width" class="oe_inline" />
-                                x <field
-                  name="cabin_height"
-                  class="oe_inline"
-                />
-                            <span>(L x W x H)</span>
-                            </div>
-                        </group>
-                    </group>
-
-                    <group string="Seat Map">
-                        <field name="seat_map_1920" widget="image" />
-                    </group>
-
-                    <group string="Amenities">
-                        <field
-              name="amenity_ids"
-              widget="many2many_tags"
-              placeholder="Select amenities"
-            />
-                    </group>
-
-                    <group string="Additional Information">
-                        <field name="is_available_for_lease" />
-                        <field
-              name="lease_terms"
-              attrs="{'invisible': [('is_available_for_lease', '=', False)]}"
-            />
-                        <field name="regional_operations" />
+                                    name="image"
+                                    widget="image"
+                                    options="{
+                                        'size': [90, 90],
+                                        'preview_image': 'image'
+                                    }"
+                                />
+                                <field name="name" optional="show" placeholder="Optional title" />
+                                <field name="description" optional="show"
+                                    placeholder="Optional caption" />
+                            </tree>
+                        </field>
                     </group>
                 </page>
             </xpath>

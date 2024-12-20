@@ -1,29 +1,29 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Aircraft Detail Page -->
-    <template id="page_aircraft_detail" name="Aircraft Detail">
+    <template id="page_aircraft_detail" name="Aircraft Detail" track="1">
         <t t-call="website.layout">
-            <div id="wrap" class="oe_structure">
+            <div id="wrap">
                 <!-- Hero Section -->
                 <section
-          class="s_cover s_parallax_no_overflow_hidden py-7"
-          data-scroll-background-ratio="0"
-        >
+                    class="s_cover s_parallax_no_overflow_hidden py-7"
+                    data-scroll-background-ratio="0"
+                >
                     <div class="s_allow_columns">
                         <div class="s_text_block">
                             <div class="container text-center">
                                 <div class="row justify-content-center">
                                     <div
-                    class="col-lg-7 o_animate o_anim_slide_in o_anim_from_bottom"
-                    style="--wanim-intensity: 10; animation-duration: 0.4s;"
-                  >
+                                        class="col-lg-7 o_animate o_anim_slide_in o_anim_from_bottom"
+                                        style="--wanim-intensity: 10; animation-duration: 0.4s;"
+                                    >
                                         <div class="mb-4">
                                             <h2
-                        class="fw-bold"
-                        t-field="aircraft.website_display_name"
-                      />
+                                                class="fw-bold"
+                                                t-field="aircraft.website_display_name"
+                                            />
                                         </div>
-                                        <div t-field="aircraft.hero_content" />
+                                        <p class="lead mb-2"
+                                            t-field="aircraft.website_short_description"></p>
                                     </div>
                                 </div>
                             </div>
@@ -32,74 +32,106 @@
                 </section>
 
                 <!-- Main Carousel -->
-                <div t-field="aircraft.main_carousel_content" />
+                <t t-if="aircraft.aircraft_image_ids">
+                    <section class="s_carousel_wrapper">
+                        <div
+                            class="s_website_flight_fleet_carousel s_carousel s_carousel_default carousel slide"
+                            id="aircraftCarousel"
+                            data-bs-interval="10000">
+                            <!-- Indicators -->
+                            <ol class="carousel-indicators website-flight-carousel-indicators">
+                                <t t-foreach="aircraft.aircraft_image_ids" t-as="image">
+                                    <li t-att-data-bs-target="'#aircraftCarousel'"
+                                        t-attf-data-bs-slide-to="{{image_index}}"
+                                        t-att-class="'active' if image_index == 0 else ''" />
+                                </t>
+                            </ol>
+
+                            <div class="carousel-inner">
+                                <t t-if="aircraft.aircraft_image_ids">
+                                    <t t-foreach="aircraft.aircraft_image_ids" t-as="image">
+                                        <div
+                                            t-att-class="'carousel-item oe_img_bg o_bg_img_center%s' % (' active' if image_index == 0 else '')"
+                                            data-name="Slide"
+                                            t-att-style="'background-image: url(/web/image/flight.aircraft.image/%s/image)' % image.id">
+                                            <div t-if="image.description" class="carousel-caption">
+                                                <p t-field="image.description" />
+                                            </div>
+                                        </div>
+                                    </t>
+                                </t>
+                            </div>
+
+                            <!-- Controls -->
+                            <button class="carousel-control-prev" type="button"
+                                data-bs-target="#aircraftCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true" />
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button"
+                                data-bs-target="#aircraftCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true" />
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    </section>
+                </t>
+
 
                 <!-- Specifications Section -->
                 <section class="py-7">
                     <div class="container">
                         <!-- Heading Section -->
                         <div class="mb-4">
-                            <div t-field="aircraft.spec_header_content" />
+                            <h3 class="text-black fw-bold" t-field="aircraft.website_spec_header">
+                            </h3>
                         </div>
                         <div class="row align-items-center g-5">
                             <div class="col-lg-6">
                                 <div class="mb-4">
                                     <div
-                    class="lead text-black"
-                    t-field="aircraft.website_short_description"
-                  />
+                                        class="lead text-black"
+                                        t-field="aircraft.website_spec_description"
+                                    />
                                 </div>
 
                                 <div class="row gx-4 mt-2">
                                     <div class="col-md-6">
                                         <div class="mb-4">
                                             <h6
-                        class="fw-bold"
-                      >Specifications</h6>
+                                                class="fw-bold"
+                                            >Specifications</h6>
                                         </div>
-                                        <p class="mb-0">
-                                            <strong>Seats:</strong> <t
-                        t-esc="aircraft.passenger_capacity"
-                      /> passengers<br />
-                                            <strong>
-                                            Range:</strong> <t
-                        t-esc="aircraft.range_nm"
-                      /> nm<br />
-                                            <strong>Cruise
-                                            Speed:</strong> <t
-                        t-esc="aircraft.cruise_speed"
-                      /> knots<br />
-                                            <strong>Useful
-                                            Load:</strong> <t
-                        t-esc="aircraft.useful_load"
-                      /> lbs<br />
-                                            <strong>Cabin
-                                            Dimensions:</strong>
-                                            <t t-esc="aircraft.cabin_length" />
-                                            ft (length) x <t
-                        t-esc="aircraft.cabin_width"
-                      /> ft (width) x <t
-                        t-esc="aircraft.cabin_height"
-                      /> ft (height)<br />
-                                            <strong>Luggage
-                                            Capacity:</strong> <t
-                        t-esc="aircraft.luggage_capacity"
-                      /> cubic feet </p>
+                                        <t
+                                            t-foreach="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id.code != 'amenity').mapped('code_id.category_id')"
+                                            t-as="category">
+                                            <div class="mb-3">
+                                                <p class="fw-bold mb-2">
+                                                    <t t-esc="category.name" />
+                                                </p>
+                                                <ul class="list-unstyled">
+                                                    <t
+                                                        t-foreach="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id == category)"
+                                                        t-as="spec">
+                                                        <li class="mb-1">
+                                                            <t t-esc="spec.display_name" />
+                                                        </li>
+                                                    </t>
+                                                </ul>
+                                            </div>
+                                        </t>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-4">
                                             <h6
-                        class="fw-bold"
-                      >Aircraft Highlights</h6>
+                                                class="fw-bold"
+                                            >Aircraft Highlights</h6>
                                         </div>
                                         <ul class="list-unstyled mb-0">
                                             <t
-                        t-foreach="aircraft.amenity_ids"
-                        t-as="amenity"
-                      >
-                                                <li>- <t
-                            t-esc="amenity.name"
-                          /></li>
+                                                t-foreach="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id.code == 'amenity' and s.value_bool)"
+                                                t-as="amenity">
+                                                <li>- <t t-esc="amenity.code_id.name" /></li>
                                             </t>
                                         </ul>
                                     </div>
@@ -107,19 +139,19 @@
                             </div>
                             <div class="col-lg-6">
                                 <div
-                  class="d-flex justify-content-center align-items-center h-100"
-                >
+                                    class="d-flex justify-content-center align-items-center h-100"
+                                >
                                     <img
-                    t-if="aircraft.seat_map_1920"
-                    t-att-src="website.image_url(aircraft, 'seat_map_1920')"
-                    class="img-fluid"
-                    alt="Seat Map"
-                    style="max-height: 16rem !important"
-                  />
+                                        t-if="aircraft.seat_map_1920"
+                                        t-att-src="website.image_url(aircraft, 'seat_map_1920')"
+                                        class="img-fluid"
+                                        alt="Seat Map"
+                                        style="max-height: 16rem !important"
+                                    />
                                     <div
-                    t-elif="is_website_editor"
-                    class="alert alert-info text-center"
-                  >
+                                        t-elif="is_website_editor"
+                                        class="alert alert-info text-center"
+                                    >
                                         Add a seat map image in the aircraft configuration
                                     </div>
                                 </div>
@@ -128,23 +160,8 @@
                         </div>
                     </div>
                 </section>
-                <div t-field="aircraft.interior_gallery_header_content" />
-                <!-- Interior Gallery -->
+                <div t-field="aircraft.website_description" />
 
-                <div t-field="aircraft.interior_gallery_carousel_content" />
-
-
-                <div t-field="aircraft.benefits_content" />
-
-                <!-- FAQs -->
-
-                <div t-field="aircraft.faq_header_content" />
-                <!-- FAQS -->
-                <div t-field="aircraft.faq_content" />
-
-
-                <!-- Contact CTA -->
-                <div t-field="aircraft.cta_content" />
             </div>
         </t>
     </template>

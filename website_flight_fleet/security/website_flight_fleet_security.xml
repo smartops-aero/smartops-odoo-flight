@@ -33,33 +33,5 @@
         eval="[(4, ref('flight.group_flight_crew'))]"
       />
         </record>
-
-        <!-- Amenity Access Rules -->
-        <record id="website_aircraft_amenity_public" model="ir.rule">
-            <field name="name">Public Aircraft Amenity</field>
-            <field name="model_id" ref="model_flight_aircraft_amenity" />
-            <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="groups" eval="[(4, ref('base.group_public'))]" />
-        </record>
-
-        <record id="website_aircraft_amenity_crew" model="ir.rule">
-            <field name="name">Crew Aircraft Amenity</field>
-            <field name="model_id" ref="model_flight_aircraft_amenity" />
-            <field name="domain_force">[(1, '=', 1)]</field>
-            <field
-        name="groups"
-        eval="[(4, ref('flight.group_flight_crew'))]"
-      />
-        </record>
-
-        <record id="website_aircraft_amenity_manager" model="ir.rule">
-            <field name="name">Manager Aircraft Amenity</field>
-            <field name="model_id" ref="model_flight_aircraft_amenity" />
-            <field name="domain_force">[(1, '=', 1)]</field>
-            <field
-        name="groups"
-        eval="[(4, ref('flight.group_flight_manager'))]"
-      />
-        </record>
     </data>
 </odoo>
