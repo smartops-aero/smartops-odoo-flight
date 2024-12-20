@@ -1,0 +1,52 @@
+.s_website_flight_fleet_accordion {
+  .accordion-item {
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .accordion-button {
+    padding: 1rem 0;
+
+    &::after {
+      display: none; // Remove default Bootstrap arrow
+    }
+
+    &:focus {
+      box-shadow: none;
+    }
+
+    .transition-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease;
+
+      svg {
+        color: var(--o-color-2); // Use your theme's text color
+      }
+    }
+
+    &:not(.collapsed) {
+      .transition-icon {
+        transform: rotate(45deg);
+      }
+
+      background-color: transparent;
+    }
+  }
+
+  .accordion-body {
+    padding: 0 0 1rem 0;
+  }
+  .embed-icon {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+  }
+}

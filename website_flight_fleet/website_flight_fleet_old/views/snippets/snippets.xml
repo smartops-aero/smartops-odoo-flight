@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Register snippets in the website editor -->
+    <template
+    id="website_snippets"
+    inherit_id="website.snippets"
+    name="Website Flight Snippets"
+  >
+        <xpath
+      expr="//div[@id='snippet_feature']/div[hasclass('o_panel_body')]"
+      position="inside"
+    >
+            <t
+        t-snippet="website_flight_fleet.s_website_flight_fleet_accordion"
+        t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_accordion.png"
+      />
+
+            <t
+        t-snippet="website_flight_fleet.s_website_flight_fleet_carousel"
+        t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_carousel.png"
+      />
+
+            <t
+        t-snippet="website_flight_fleet.s_website_flight_fleet_multiple_carousel"
+        t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_multiple_carousel.png"
+      />
+        </xpath>
+    </template>
+</odoo>
