@@ -37,10 +37,11 @@
                                 name="website_spec_description"
                                 placeholder="Description displayed on specifications section"
                             />
-                            <field name="website_description" readonly="1"/>
-                            <button string="Regenerate Description" 
+                            <field name="website_description" invisible="1"/>
+                            <button string="Generate Static Content" 
                                 type="object" 
                                 name="regenerate_website_description"
+                                attrs="{'invisible': [('website_description', 'not in', ['', False])]}"
                                 class="oe_highlight"/>
                         </group>
                     </group>
