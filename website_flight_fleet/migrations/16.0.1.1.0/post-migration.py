@@ -1,14 +1,11 @@
 # post-migration.py
 import logging
-import json
 
 _logger = logging.getLogger(__name__)
 
-def create_spec(cr, aircraft_id, code, value, user_id, is_bool=False):
+def create_spec(cr, aircraft_id, code, value, user_id, is_bool=False, category_id=None):
+    """Create a specification for an aircraft"""
     try:
-        # Log attempt to create spec
-        _logger.info(f"Attempting to create spec - Aircraft: {aircraft_id}, Code: {code}, Value: {value}, Is Bool: {is_bool}")
-
         # Check if spec already exists
         cr.execute("""
             SELECT id FROM flight_aircraft_spec 
@@ -20,19 +17,29 @@ def create_spec(cr, aircraft_id, code, value, user_id, is_bool=False):
             _logger.info(f"Spec already exists for aircraft {aircraft_id}, code {code}")
             return
 
-        # Get the spec code record to determine type and default UOM
+        # Get or create spec code
         cr.execute("""
             SELECT id, code_type, default_uom_id 
             FROM flight_aircraft_spec_code 
             WHERE code = %s
         """, (code,))
         spec_code = cr.fetchone()
+        
         if not spec_code:
-            _logger.warning(f"Spec code {code} not found in flight_aircraft_spec_code")
-            return
+            _logger.info(f"Creating spec code {code}")
+            # Split code to get name
+            name = code.split('.')[-1].replace('_', ' ').title()
+            code_type = 'boolean' if is_bool else 'float'
+            
+            cr.execute("""
+                INSERT INTO flight_aircraft_spec_code 
+                (code, name, code_type, category_id, create_uid, write_uid)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                RETURNING id, code_type, default_uom_id
+            """, (code, name, code_type, category_id, user_id, user_id))
+            spec_code = cr.fetchone()
 
         spec_code_id, code_type, default_uom_id = spec_code
-        _logger.info(f"Found spec code - ID: {spec_code_id}, Type: {code_type}, Default UOM: {default_uom_id}")
 
         # Prepare values based on type
         value_bool = value if is_bool else None
@@ -43,12 +50,9 @@ def create_spec(cr, aircraft_id, code, value, user_id, is_bool=False):
         cr.execute("""
             INSERT INTO flight_aircraft_spec (
                 aircraft_id, code_id, value_float, value_bool, value_text,
-                uom_id, create_uid, create_date, write_uid, write_date
+                uom_id, create_uid, write_uid
             )
-            VALUES (
-                %s, %s, %s, %s, %s,
-                %s, %s, now(), %s, now()
-            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
         """, (
             aircraft_id, spec_code_id, value_float, value_bool, value_text,
@@ -56,7 +60,7 @@ def create_spec(cr, aircraft_id, code, value, user_id, is_bool=False):
         ))
         
         new_spec_id = cr.fetchone()[0]
-        _logger.info(f"Successfully created spec with ID: {new_spec_id}")
+        _logger.info(f"Created spec {new_spec_id} for aircraft {aircraft_id}, code {code}")
         
     except Exception as e:
         _logger.error(f"Error creating spec for aircraft {aircraft_id}, code {code}: {str(e)}")
@@ -73,27 +77,53 @@ def migrate(cr, version):
         _logger.error("Migration table not found, skipping post-migration")
         return
 
-    # Get superuser/admin ID - more reliable method
+    # Get superuser ID
     cr.execute("SELECT MIN(id) FROM res_users WHERE id = 1")
     user_id = cr.fetchone()
     if not user_id:
-        _logger.error("Could not determine admin user ID, aborting migration")
+        _logger.error("Could not determine admin user ID")
         return
     user_id = user_id[0]
+
+    # Get or create spec categories
+    categories = {
+        'performance': 'Performance Specifications',
+        'dimensions': 'Dimensions',
+        'load': 'Load Capabilities',
+        'amenity': 'Amenities'
+    }
+
+    category_ids = {}
+    for code, name in categories.items():
+        cr.execute("""
+            SELECT id FROM flight_aircraft_spec_category WHERE code = %s
+        """, (code,))
+        category_id = cr.fetchone()
+        
+        if not category_id:
+            cr.execute("""
+                INSERT INTO flight_aircraft_spec_category (code, name, create_uid, write_uid)
+                VALUES (%s, %s, %s, %s)
+                RETURNING id
+            """, (code, name, user_id, user_id))
+            category_id = cr.fetchone()
+        
+        category_ids[code] = category_id[0]
 
     # Migrate specifications
     _logger.info("Migrating specifications")
     cr.execute("""
-        SELECT aircraft_id, name, float_value
+        SELECT aircraft_id, name, float_value, category_name
         FROM website_fleet_migration
         WHERE data_type = 'spec' AND float_value IS NOT NULL
     """)
     specs = cr.fetchall()
-    _logger.info(f"Found {len(specs)} specifications to migrate")
-    for aircraft_id, code, value in specs:
-        create_spec(cr, aircraft_id, code, value, user_id)
+    
+    for aircraft_id, code, value, category in specs:
+        category_id = category_ids.get(category)
+        create_spec(cr, aircraft_id, code, value, user_id, category_id=category_id)
 
-    # Migrate amenities
+    # Define amenity mapping
     amenity_codes = {
         'Starlink WiFi': 'amenity.wifi',
         'Power Outlets': 'amenity.power',
@@ -106,6 +136,7 @@ def migrate(cr, version):
         'Cargo Door': 'amenity.cargo_door'
     }
 
+    # Migrate amenities
     _logger.info("Migrating amenities")
     cr.execute("""
         SELECT DISTINCT aircraft_id, name
@@ -114,22 +145,28 @@ def migrate(cr, version):
     """)
     amenities = cr.fetchall()
     _logger.info(f"Found {len(amenities)} amenities to migrate")
-    
-    # Verify amenity spec codes exist
-    cr.execute("""
-        SELECT code, id FROM flight_aircraft_spec_code 
-        WHERE code IN %s
-    """, (tuple(amenity_codes.values()),))
-    existing_codes = cr.fetchall()
-    _logger.info(f"Found {len(existing_codes)} existing amenity spec codes: {[code[0] for code in existing_codes]}")
 
+    # Create missing spec codes for amenities
+    for amenity_name, code in amenity_codes.items():
+        cr.execute("""
+            SELECT id FROM flight_aircraft_spec_code WHERE code = %s
+        """, (code,))
+        if not cr.fetchone():
+            _logger.info(f"Creating spec code {code} for amenity {amenity_name}")
+            cr.execute("""
+                INSERT INTO flight_aircraft_spec_code 
+                (code, name, code_type, category_id, create_uid, write_uid)
+                VALUES (%s, %s, 'boolean', %s, %s, %s)
+                RETURNING id
+            """, (code, amenity_name, category_ids['amenity'], user_id, user_id))
+
+    # Create specs for amenities
     for aircraft_id, amenity_name in amenities:
         if amenity_name in amenity_codes:
             code = amenity_codes[amenity_name]
-            _logger.info(f"Processing amenity {amenity_name} -> {code} for aircraft {aircraft_id}")
             create_spec(cr, aircraft_id, code, True, user_id, is_bool=True)
 
-    # Fix null UOMs using default UOMs from spec codes
+    # Fix null UOMs
     _logger.info("Fixing null UOMs")
     cr.execute("""
         UPDATE flight_aircraft_spec fas
@@ -140,8 +177,8 @@ def migrate(cr, version):
         AND fasc.default_uom_id IS NOT NULL
         RETURNING fas.id
     """)
-    updated_uoms = cr.fetchall()
-    _logger.info(f"Updated UOMs for {len(updated_uoms)} specifications")
+    updated_specs = cr.fetchall()
+    _logger.info(f"Updated UOMs for {len(updated_specs)} specifications")
 
     # Drop temporary table
     _logger.info("Cleaning up migration table")

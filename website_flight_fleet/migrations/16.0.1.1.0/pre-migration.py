@@ -58,7 +58,10 @@ def migrate(cr, version):
                 aircraft_id integer,
                 data_type varchar,  -- 'spec' or 'amenity'
                 name varchar,       -- spec code or amenity name
-                float_value float
+                float_value float,  -- for numeric specs
+                bool_value boolean, -- for boolean specs
+                category_name varchar, -- for grouping
+                sequence integer    -- for ordering
             )
         """)
     except Exception as e:
@@ -72,56 +75,65 @@ def migrate(cr, version):
     if table_exists(cr, rel_table) and table_exists(cr, amenity_table):
         _logger.info("Found amenity tables, checking columns")
         
-        # Get the actual column names
-        rel_columns = get_table_columns(cr, rel_table)
-        amenity_columns = get_table_columns(cr, amenity_table)
-
-        _logger.info(f"Relation table columns: {rel_columns}")
-        _logger.info(f"Amenity table columns: {amenity_columns}")
-
-        # Find the correct ID column names
-        aircraft_id_col = next((col for col in rel_columns if 'aircraft_id' in col), None)
-        amenity_id_col = next((col for col in rel_columns if 'amenity_id' in col), None)
-
-        if aircraft_id_col and amenity_id_col:
+        try:
+            # Extract and store amenity relationships
             _logger.info("Storing amenity data for migration")
-            try:
-                cr.execute(f"""
-                    INSERT INTO website_fleet_migration (aircraft_id, data_type, name)
-                    SELECT rel.{aircraft_id_col}, 'amenity', a.name
-                    FROM {rel_table} rel
-                    JOIN {amenity_table} a ON rel.{amenity_id_col} = a.id
-                """)
-            except Exception as e:
-                _logger.warning(f"Failed to store amenity data: {str(e)}")
-                # Roll back the current transaction and start a new one
-                cr.execute("ROLLBACK")
-                cr.execute("BEGIN")
+            cr.execute(f"""
+                INSERT INTO website_fleet_migration (
+                    aircraft_id, 
+                    data_type, 
+                    name, 
+                    bool_value,
+                    sequence
+                )
+                SELECT 
+                    rel.aircraft_id, 
+                    'amenity', 
+                    a.name, 
+                    true,
+                    a.sequence
+                FROM {rel_table} rel
+                JOIN {amenity_table} a ON rel.amenity_id = a.id
+            """)
+            _logger.info("Successfully stored amenity data")
+        except Exception as e:
+            _logger.warning(f"Failed to store amenity data: {str(e)}")
+            cr.execute("ROLLBACK")
+            cr.execute("BEGIN")
 
     # Store specifications
     specs_to_store = {
-        'passenger_capacity': 'load.passengers',
-        'range_nm': 'performance.range',
-        'cruise_speed': 'performance.cruise_speed',
-        'cabin_length': 'cabin.length',
-        'cabin_width': 'cabin.width',
-        'cabin_height': 'cabin.height',
-        'luggage_capacity': 'load.luggage',
-        'useful_load': 'load.useful_load',
+        'passenger_capacity': {'code': 'load.passengers', 'category': 'load'},
+        'range_nm': {'code': 'performance.range', 'category': 'performance'},
+        'cruise_speed': {'code': 'performance.cruise_speed', 'category': 'performance'},
+        'cabin_length': {'code': 'cabin.length', 'category': 'dimensions'},
+        'cabin_width': {'code': 'cabin.width', 'category': 'dimensions'},
+        'cabin_height': {'code': 'cabin.height', 'category': 'dimensions'},
+        'luggage_capacity': {'code': 'load.luggage', 'category': 'load'},
+        'useful_load': {'code': 'load.useful_load', 'category': 'load'},
     }
 
-    for old_field, spec_code in specs_to_store.items():
+    for old_field, spec_info in specs_to_store.items():
         if column_exists(cr, 'flight_aircraft', old_field):
-            _logger.info(f"Storing {old_field} data for migration to {spec_code}")
+            _logger.info(f"Storing {old_field} data for migration to {spec_info['code']}")
             try:
                 cr.execute(f"""
-                    INSERT INTO website_fleet_migration 
-                        (aircraft_id, data_type, name, float_value)
+                    INSERT INTO website_fleet_migration (
+                        aircraft_id, 
+                        data_type, 
+                        name, 
+                        float_value,
+                        category_name
+                    )
                     SELECT 
-                        id, 'spec', %s, {old_field}
+                        id, 
+                        'spec', 
+                        %s, 
+                        {old_field},
+                        %s
                     FROM flight_aircraft 
                     WHERE {old_field} IS NOT NULL
-                """, (spec_code,))
+                """, (spec_info['code'], spec_info['category']))
             except Exception as e:
                 _logger.warning(f"Failed to store {old_field} data: {str(e)}")
                 cr.execute("ROLLBACK")
@@ -132,7 +144,7 @@ def migrate(cr, version):
         'passenger_capacity', 'range_nm', 'cruise_speed', 
         'cabin_length', 'cabin_width', 'cabin_height',
         'luggage_capacity', 'useful_load',
-        # HTML fields to drop without migration
+        # Content fields that will be replaced by website_description
         'hero_content', 'spec_header_content', 'interior_gallery_header_content',
         'benefits_content', 'faq_header_content', 'faq_content',
         'main_carousel_content', 'interior_gallery_carousel_content', 'cta_content'
