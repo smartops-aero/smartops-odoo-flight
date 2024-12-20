@@ -47,6 +47,7 @@
                         <field name="aircraft_image_ids" colspan="2" nolabel="1">
                             <tree editable="bottom">
                                 <field name="sequence" widget="handle" />
+                                <field name="category_id" required="1"/>
                                 <field
                                     name="image"
                                     widget="image"

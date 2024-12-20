@@ -16,6 +16,13 @@ class FlightAircraftImage(models.Model):
         ondelete='cascade'
     )
 
+    category_id = fields.Many2one(
+        'flight.aircraft.image.category',
+        string='Category',
+        required=True,
+        ondelete='restrict'
+    )
+
     @api.model_create_multi
     def create(self, vals_list):
         # Automatically generate names for images if not provided
