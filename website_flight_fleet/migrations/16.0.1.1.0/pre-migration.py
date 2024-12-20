@@ -89,11 +89,18 @@ def migrate(cr, version):
                 SELECT 
                     rel.aircraft_id, 
                     'amenity', 
-                    a.name, 
+                    COALESCE(t.value, a.name), 
                     true,
                     a.sequence
                 FROM {rel_table} rel
                 JOIN {amenity_table} a ON rel.amenity_id = a.id
+                LEFT JOIN ir_translation t ON (
+                    t.name = 'flight.aircraft.amenity,name'
+                    AND t.res_id = a.id
+                    AND t.lang = 'en_US'
+                    AND t.type = 'model'
+                    AND t.state = 'translated'
+                )
             """)
             _logger.info("Successfully stored amenity data")
         except Exception as e:

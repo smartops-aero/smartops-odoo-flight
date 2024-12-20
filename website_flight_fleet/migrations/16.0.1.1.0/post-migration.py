@@ -123,14 +123,33 @@ def migrate(cr, version):
         category_id = category_ids.get(category)
         create_spec(cr, aircraft_id, code, value, user_id, category_id=category_id)
 
-        # First gather all unique amenity names
+    # First check if we have any amenities in the temporary table
+    cr.execute("""
+        SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_name = 'website_fleet_migration'
+        )
+    """)
+    if not cr.fetchone()[0]:
+        _logger.error("Migration table does not exist! Pre-migration might have failed.")
+        return
+
+    # Check what's in the temporary table
+    cr.execute("""
+        SELECT DISTINCT data_type, name 
+        FROM website_fleet_migration
+    """)
+    temp_data = cr.fetchall()
+    _logger.info(f"Data in temporary table: {temp_data}")
+
+    # First gather all unique amenity names
     cr.execute("""
         SELECT DISTINCT name 
         FROM website_fleet_migration 
         WHERE data_type = 'amenity'
     """)
     old_amenity_names = [row[0] for row in cr.fetchall()]
-    _logger.info(f"Found {len(old_amenity_names)} unique amenities to migrate")
+    _logger.info(f"Found {len(old_amenity_names)} unique amenities to migrate: {old_amenity_names}")
 
     # Get all existing amenity spec codes
     cr.execute("""
@@ -138,18 +157,29 @@ def migrate(cr, version):
         FROM flight_aircraft_spec_code 
         WHERE code LIKE 'amenity.%'
     """)
-    spec_codes = {row[2].lower(): (row[0], row[1]) for row in cr.fetchall()}
+    rows = cr.fetchall()
+    _logger.info(f"Found {len(rows)} amenity spec codes")
+    
+    spec_codes = {}
+    for row in rows:
+        code, id, name = row
+        _logger.info(f"Processing row: code={code}, id={id}, name={type(name)}={name}")
+        if isinstance(name, dict) and 'en_US' in name:  # Handle translated field
+            spec_codes[name['en_US'].lower()] = (code, id)
+        else:
+            _logger.warning(f"Unexpected name format: {type(name)}={name}")
 
     # Create mapping and log unmapped amenities
     amenity_mapping = {}
     unmapped_amenities = []
     for old_name in old_amenity_names:
-        old_name_lower = old_name.lower()
-        if old_name_lower in spec_codes:
-            amenity_mapping[old_name] = spec_codes[old_name_lower][0]
-        else:
-            unmapped_amenities.append(old_name)
-            _logger.warning(f"Could not map amenity: {old_name}")
+        if old_name:  # Check if old_name is not None
+            old_name_lower = old_name.lower()
+            if old_name_lower in spec_codes:
+                amenity_mapping[old_name] = spec_codes[old_name_lower][0]
+            else:
+                unmapped_amenities.append(old_name)
+                _logger.warning(f"Could not map amenity: {old_name}")
 
     if unmapped_amenities:
         _logger.warning(f"The following amenities could not be mapped: {', '.join(unmapped_amenities)}")
@@ -161,7 +191,7 @@ def migrate(cr, version):
         WHERE data_type = 'amenity'
     """)
     for aircraft_id, amenity_name in cr.fetchall():
-        if amenity_name in amenity_mapping:
+        if amenity_name and amenity_name in amenity_mapping:
             code = amenity_mapping[amenity_name]
             create_spec(cr, aircraft_id, code, True, user_id, is_bool=True)
 
