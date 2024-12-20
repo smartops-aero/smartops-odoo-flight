@@ -19,9 +19,9 @@
     "website": "https://github.com/smartops-aero/flight",
     "version": "16.0.1.1.0",
     "depends": [
-        "website", 
+        "website",
         "flight",
-        "flight_aircraft_spec",  
+        "flight_aircraft_spec",
     ],
     "data": [
         "security/ir.model.access.csv",

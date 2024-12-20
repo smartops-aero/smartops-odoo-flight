@@ -1,13 +1,16 @@
 import logging
+
 from odoo import http
 from odoo.http import request
-from odoo.addons.website.controllers.main import QueryURL
 from odoo.osv import expression
+
+from odoo.addons.website.controllers.main import QueryURL
 
 _logger = logging.getLogger(__name__)
 
 # Constants
 AIRCRAFT_PER_PAGE = 12  # Number of aircraft to display per page
+
 
 class WebsiteFlight(http.Controller):
     def _get_base_domain(self):
@@ -20,7 +23,7 @@ class WebsiteFlight(http.Controller):
     def _get_search_domain(self, search=None):
         """Build search domain for aircraft with optional search term"""
         domain = self._get_base_domain()
-        
+
         if search:
             search_domain = [
                 "|",
@@ -36,7 +39,7 @@ class WebsiteFlight(http.Controller):
         """Prepare values for fleet page rendering"""
         Aircraft = request.env["flight.aircraft"]
         domain = self._get_search_domain(search)
-        
+
         if model:
             domain = expression.AND([domain, [("model_id", "=", model.id)]])
 
@@ -53,9 +56,7 @@ class WebsiteFlight(http.Controller):
         )
 
         aircrafts = Aircraft.search(
-            domain, 
-            limit=AIRCRAFT_PER_PAGE, 
-            offset=pager["offset"]
+            domain, limit=AIRCRAFT_PER_PAGE, offset=pager["offset"]
         )
         models = request.env["flight.aircraft.model"].search([])
 
@@ -86,33 +87,43 @@ class WebsiteFlight(http.Controller):
         values = self._prepare_fleet_values(page, model, search, **post)
         return request.render("website_flight_fleet.page_fleet", values)
 
-    @http.route(['/aircraft/<model("flight.aircraft"):aircraft>'], type='http', auth="public", website=True)
-    def aircraft_detail(self, aircraft, **kwargs):        
+    @http.route(
+        ['/aircraft/<model("flight.aircraft"):aircraft>'],
+        type="http",
+        auth="public",
+        website=True,
+    )
+    def aircraft_detail(self, aircraft, **kwargs):
         values = {
-            'aircraft': aircraft,
-            'main_object': aircraft,
-            'is_website_editor': request.env.user.has_group('website.group_website_publisher'),
+            "aircraft": aircraft,
+            "main_object": aircraft,
+            "is_website_editor": request.env.user.has_group(
+                "website.group_website_publisher"
+            ),
         }
         return request.render("website_flight_fleet.page_aircraft_detail", values)
 
-    @http.route(['/flight/aircraft/images'], type='json', auth="public", website=True)
+    @http.route(["/flight/aircraft/images"], type="json", auth="public", website=True)
     def get_aircraft_images(self, category_id=None, aircraft_id=None):
         """Fetch aircraft images based on category and aircraft selection"""
-        domain = [('aircraft_id.website_published', '=', True)]
-        
+        domain = [("aircraft_id.website_published", "=", True)]
+
         if category_id:
-            domain.append(('category_id', '=', int(category_id)))
+            domain.append(("category_id", "=", int(category_id)))
         if aircraft_id:
-            domain.append(('aircraft_id', '=', int(aircraft_id)))
-            
-        images = request.env['flight.aircraft.image'].sudo().search(domain)
-        
+            domain.append(("aircraft_id", "=", int(aircraft_id)))
+
+        images = request.env["flight.aircraft.image"].sudo().search(domain)
+
         return {
-            'images': [{
-                'id': img.id,
-                'name': img.name,
-                'description': img.description,
-                'category': img.category_id.name,
-                'aircraft': img.aircraft_id.website_display_name,
-            } for img in images]
+            "images": [
+                {
+                    "id": img.id,
+                    "name": img.name,
+                    "description": img.description,
+                    "category": img.category_id.name,
+                    "aircraft": img.aircraft_id.website_display_name,
+                }
+                for img in images
+            ]
         }

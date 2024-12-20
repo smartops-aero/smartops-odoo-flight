@@ -42,14 +42,18 @@ options.registry.WebsiteFlightFleetMultipleCarousel = options.Class.extend({
     this.$target.find(".carousel-item:first").addClass("active");
   },
 
-  //--------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Options
-  //--------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   /**
    * @see this.selectClass for parameters
+   * It can have these params in function
+   * @param {String} previewMode
+   * @param {String} value
+   * @param {Object} params
    */
-  addSlide: function (previewMode, widgetValue, params) {
+  addSlide: function () {
     const $carousel = this.$target.find(".carousel-inner");
     const $clone = $carousel.find(".carousel-item:first").clone();
 
@@ -69,11 +73,12 @@ options.registry.WebsiteFlightFleetMultipleCarousel = options.Class.extend({
   /**
    * Changes the animation speed/interval and reinitializes the widget
    *
-   * @param {string} previewMode
-   * @param {string} value
+   * @param {String} previewMode
+   * @param {String} value
    * @param {Object} params
    */
   updateInterval: function (previewMode, value, params) {
+    console.log(previewMode, value, params);
     // Get the widget instance
     const widget = this.$target.data("WebsiteFlightFleetMultipleCarousel");
 
@@ -89,16 +94,15 @@ options.registry.WebsiteFlightFleetMultipleCarousel = options.Class.extend({
     }
   },
 
-  //--------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Private
-  //--------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   /**
    * Initialize carousel functionality
    * @private
    */
   _initializeCarousel: function () {
-    const self = this;
     this.$controls = this.$target.find(
       ".carousel-control-prev, .carousel-control-next"
     );
@@ -146,13 +150,14 @@ options.registry.WebsiteFlightFleetMultipleCarousel = options.Class.extend({
    * @private
    */
   _updateSlidePositions: function () {
-    const $items = this.$target.find(".carousel-item");
-    let visibleSlides =
+    const visibleSlides =
       window.innerWidth >= 992 ? 3 : window.innerWidth >= 768 ? 2 : 1;
+    console.log(visibleSlides);
   },
 
   /**
    * Handle navigation click
+   * @param {Event} ev
    * @private
    */
   _handleNavigationClick: function (ev) {
@@ -164,6 +169,7 @@ options.registry.WebsiteFlightFleetMultipleCarousel = options.Class.extend({
 
   /**
    * Slide the carousel
+   * @param {String} direction
    * @private
    */
   _slide: function (direction) {
@@ -171,12 +177,14 @@ options.registry.WebsiteFlightFleetMultipleCarousel = options.Class.extend({
     const $active = $items.filter(".active");
     const activeIndex = $items.index($active);
 
-    let newIndex;
-    if (direction === "prev") {
-      newIndex = activeIndex - 1 < 0 ? $items.length - 1 : activeIndex - 1;
-    } else {
-      newIndex = activeIndex + 1 >= $items.length ? 0 : activeIndex + 1;
-    }
+    const newIndex =
+      direction === "prev"
+        ? activeIndex - 1 < 0
+          ? $items.length - 1
+          : activeIndex - 1
+        : activeIndex + 1 >= $items.length
+        ? 0
+        : activeIndex + 1;
 
     $items.removeClass("active");
     $items.eq(newIndex).addClass("active");

@@ -1,14 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <template id="default_website_description" name="Default Website Description for Aircraft">
+    <template
+    id="default_website_description"
+    name="Default Website Description for Aircraft"
+  >
         <section class="container mt-7 mb-2 text-center">
             <div class="mw-100 mw-lg-50 mx-auto">
                 <div
-                    class="o_animate o_anim_slide_in o_anim_from_bottom"
-                    style="--wanim-intensity: 20; animation-duration: 0.4s;"
-                >
-                    <h2 class="fw-bold text-black text-center mb-4">Aircraft Showcase</h2>
-                    <p class="lead text-black">Explore our stunning aircraft interiors.</p>
+          class="o_animate o_anim_slide_in o_anim_from_bottom"
+          style="--wanim-intensity: 20; animation-duration: 0.4s;"
+        >
+                    <h2
+            class="fw-bold text-black text-center mb-4"
+          >Aircraft Showcase</h2>
+                    <p
+            class="lead text-black"
+          >Explore our stunning aircraft interiors.</p>
                 </div>
             </div>
         </section>
@@ -16,25 +23,22 @@
 
         <section class="s_website_flight_fleet_multiple_carousel mb-7">
             <div class="container">
-                <div
-                    class="multiple-cards-carousel"
-                    id="interiorGallery"
-                >
+                <div class="multiple-cards-carousel" id="interiorGallery">
                     <!-- Default indicators -->
                     <ol class="carousel-indicators">
                         <li
-                            data-bs-target="#interiorGallery"
-                            data-bs-slide-to="0"
-                            class="active"
-                        />
+              data-bs-target="#interiorGallery"
+              data-bs-slide-to="0"
+              class="active"
+            />
                         <li
-                            data-bs-target="#interiorGallery"
-                            data-bs-slide-to="1"
-                        />
+              data-bs-target="#interiorGallery"
+              data-bs-slide-to="1"
+            />
                         <li
-                            data-bs-target="#interiorGallery"
-                            data-bs-slide-to="2"
-                        />
+              data-bs-target="#interiorGallery"
+              data-bs-slide-to="2"
+            />
                     </ol>
 
                     <div class="carousel-inner">
@@ -43,10 +47,10 @@
                             <div class="card border-0">
                                 <div class="img-wrapper">
                                     <img
-                                        src="/web/image/website.s_carousel_default_image_1"
-                                        class="d-block w-100"
-                                        alt="Gallery Image"
-                                    />
+                    src="/web/image/website.s_carousel_default_image_1"
+                    class="d-block w-100"
+                    alt="Gallery Image"
+                  />
                                 </div>
                             </div>
                         </div>
@@ -54,10 +58,10 @@
                             <div class="card border-0">
                                 <div class="img-wrapper">
                                     <img
-                                        src="/web/image/website.s_carousel_default_image_2"
-                                        class="d-block w-100"
-                                        alt="Gallery Image"
-                                    />
+                    src="/web/image/website.s_carousel_default_image_2"
+                    class="d-block w-100"
+                    alt="Gallery Image"
+                  />
                                 </div>
                             </div>
                         </div>
@@ -65,10 +69,10 @@
                             <div class="card border-0">
                                 <div class="img-wrapper">
                                     <img
-                                        src="/web/image/website.s_carousel_default_image_3"
-                                        class="d-block w-100"
-                                        alt="Gallery Image"
-                                    />
+                    src="/web/image/website.s_carousel_default_image_3"
+                    class="d-block w-100"
+                    alt="Gallery Image"
+                  />
                                 </div>
                             </div>
                         </div>
@@ -76,18 +80,18 @@
 
                     <!-- Controls -->
                     <button
-                        class="carousel-control-prev"
-                        type="button"
-                        data-slide="prev"
-                    >
+            class="carousel-control-prev"
+            type="button"
+            data-slide="prev"
+          >
                         <span class="carousel-control-prev-icon" />
                         <span class="visually-hidden">Previous</span>
                     </button>
                     <button
-                        class="carousel-control-next"
-                        type="button"
-                        data-slide="next"
-                    >
+            class="carousel-control-next"
+            type="button"
+            data-slide="next"
+          >
                         <span class="carousel-control-next-icon" />
                         <span class="visually-hidden">Next</span>
                     </button>
@@ -104,10 +108,11 @@
                         <div class="benefit-item">
                             <div class="mb-4">
                                 <h4
-                                    class="fw-bold"
-                                >Unlock Freedom with a Dry Lease</h4>
+                  class="fw-bold"
+                >Unlock Freedom with a Dry Lease</h4>
                             </div>
-                            <p>Experience the freedom of aircraft ownership with our
+                            <p
+              >Experience the freedom of aircraft ownership with our
                                 tailored dry lease program. Take full control of your
                                 operations with the flexibility to manage your own crew
                                 and flight logistics. Our comprehensive leasing solutions
@@ -121,10 +126,11 @@
                         <div class="benefit-item">
                             <div class="mb-4">
                                 <h4
-                                    class="fw-bold"
-                                >Enhanced Performance and Versatility</h4>
+                  class="fw-bold"
+                >Enhanced Performance and Versatility</h4>
                             </div>
-                            <p>Discover exceptional versatility with advanced avionics
+                            <p
+              >Discover exceptional versatility with advanced avionics
                                 and proven reliability. This aircraft delivers outstanding
                                 performance across various mission profiles, from short
                                 regional flights to extended journeys. With its optimal
@@ -145,8 +151,8 @@
                 <div class="mb-5">
                     <h2 class="fw-bold text-black">FAQs</h2>
                     <p
-                        class="lead text-black"
-                    >Find answers to your most pressing
+            class="lead text-black"
+          >Find answers to your most pressing
                         questions about this aircraft.</p>
                 </div>
             </div>
@@ -154,53 +160,45 @@
         <!-- FAQS -->
         <section class="s_website_flight_fleet_accordion pb-7">
             <div class="container">
-                <div
-                    id="myCollapse"
-                    class="accordion ps-4"
-                    role="tablist"
-                >
+                <div id="myCollapse" class="accordion ps-4" role="tablist">
                     <!-- Default accordion item - can be duplicated -->
                     <div class="accordion-item border-0">
                         <h2 class="accordion-header">
                             <button
-                                data-bs-target="#myCollapseTab_1"
-                                role="tab"
-                                data-bs-toggle="collapse"
-                                aria-expanded="true"
-                                class="accordion-button lead text-black fw-bold bg-transparent"
-                            >
+                data-bs-target="#myCollapseTab_1"
+                role="tab"
+                data-bs-toggle="collapse"
+                aria-expanded="true"
+                class="accordion-button lead text-black fw-bold bg-transparent"
+              >
                                 Question Title <span
-                                    class="transition-icon ms-auto"
-                                >
+                  class="transition-icon ms-auto"
+                >
                                     <div class="embed-icon">
                                         <svg
-                                            width="100%"
-                                            height="100%"
-                                            viewBox="0 0 32 32"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
+                      width="100%"
+                      height="100%"
+                      viewBox="0 0 32 32"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                                             <path
-                                                d="M25.3333 15.667V16.3336C25.3333 16.7018 25.0349 17.0003 24.6667 17.0003H17V24.667C17 25.0351 16.7015 25.3336 16.3333 25.3336H15.6667C15.2985 25.3336 15 25.0351 15 24.667V17.0003H7.3333C6.96511 17.0003 6.66663 16.7018 6.66663 16.3336V15.667C6.66663 15.2988 6.96511 15.0003 7.3333 15.0003H15V7.33365C15 6.96546 15.2985 6.66699 15.6667 6.66699H16.3333C16.7015 6.66699 17 6.96546 17 7.33365V15.0003H24.6667C25.0349 15.0003 25.3333 15.2988 25.3333 15.667Z"
-                                                fill="currentColor"
-                                            />
+                        d="M25.3333 15.667V16.3336C25.3333 16.7018 25.0349 17.0003 24.6667 17.0003H17V24.667C17 25.0351 16.7015 25.3336 16.3333 25.3336H15.6667C15.2985 25.3336 15 25.0351 15 24.667V17.0003H7.3333C6.96511 17.0003 6.66663 16.7018 6.66663 16.3336V15.667C6.66663 15.2988 6.96511 15.0003 7.3333 15.0003H15V7.33365C15 6.96546 15.2985 6.66699 15.6667 6.66699H16.3333C16.7015 6.66699 17 6.96546 17 7.33365V15.0003H24.6667C25.0349 15.0003 25.3333 15.2988 25.3333 15.667Z"
+                        fill="currentColor"
+                      />
                                         </svg>
                                     </div>
                                 </span>
                             </button>
                         </h2>
                         <div
-                            id="myCollapseTab_1"
-                            class="accordion-collapse collapse show"
-                            data-bs-parent="#myCollapse"
-                            role="tabpanel"
-                        >
-                            <div
-                                class="accordion-body pt-0 max-width-large"
-                            >
-                                <p
-                                    class="text-black"
-                                >Answer text goes here</p>
+              id="myCollapseTab_1"
+              class="accordion-collapse collapse show"
+              data-bs-parent="#myCollapse"
+              role="tabpanel"
+            >
+                            <div class="accordion-body pt-0 max-width-large">
+                                <p class="text-black">Answer text goes here</p>
                             </div>
                         </div>
                     </div>
@@ -213,21 +211,19 @@
         <section class="container s_allow_columns text-start py-7">
             <div class="row">
                 <div class="col-lg-7">
-                    <h2
-                        class="fw-bold mb-4 text-black"
-                    >Ready to Explore the
+                    <h2 class="fw-bold mb-4 text-black">Ready to Explore the
                         Caribbean with Ease?</h2>
                     <p
-                        class="lead fw-normal text-black"
-                    >Whether you're interested
+            class="lead fw-normal text-black"
+          >Whether you're interested
                         in dry leasing or fractional ownership, this aircraft
                         offers unmatched flexibility and practicality for regional
                         travel. Take the first step toward seamless private aviation
                         today.</p>
                     <a
-                        href="#contact_us"
-                        class="btn btn-secondary mt-3"
-                    >Contact</a>
+            href="#contact_us"
+            class="btn btn-secondary mt-3"
+          >Contact</a>
                 </div>
             </div>
         </section>

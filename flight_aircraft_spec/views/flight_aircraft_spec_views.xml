@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Category Views -->
     <record id="view_flight_aircraft_spec_category_tree" model="ir.ui.view">
         <field name="name">flight.aircraft.spec.category.tree</field>
         <field name="model">flight.aircraft.spec.category</field>
         <field name="arch" type="xml">
-            <tree string="Aircraft Specification Categories">
-                <field name="sequence" widget="handle"/>
-                <field name="name"/>
-                <field name="code"/>
-                <field name="description"/>
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="code" />
+                <field name="description" />
             </tree>
         </field>
     </record>
@@ -22,15 +22,15 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name"/>
-                            <field name="code"/>
+                            <field name="name" />
+                            <field name="code" />
                         </group>
                         <group>
-                            <field name="sequence"/>
+                            <field name="sequence" />
                         </group>
                     </group>
                     <group>
-                        <field name="description"/>
+                        <field name="description" />
                     </group>
                 </sheet>
             </form>
@@ -42,14 +42,14 @@
         <field name="name">flight.aircraft.spec.code.tree</field>
         <field name="model">flight.aircraft.spec.code</field>
         <field name="arch" type="xml">
-            <tree string="Aircraft Specification Codes">
-                <field name="sequence" widget="handle"/>
-                <field name="category_id"/>
-                <field name="name"/>
-                <field name="code"/>
-                <field name="code_type"/>
-                <field name="description"/>
-                <field name="default_uom_id"/>
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="category_id" />
+                <field name="name" />
+                <field name="code" />
+                <field name="code_type" />
+                <field name="description" />
+                <field name="default_uom_id" />
             </tree>
         </field>
     </record>
@@ -62,18 +62,21 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name"/>
-                            <field name="code"/>
-                            <field name="category_id"/>
+                            <field name="name" />
+                            <field name="code" />
+                            <field name="category_id" />
                         </group>
                         <group>
-                            <field name="code_type"/>
-                            <field name="sequence"/>
-                            <field name="default_uom_id" attrs="{'invisible': [('code_type', '!=', 'float')]}"/>
+                            <field name="code_type" />
+                            <field name="sequence" />
+                            <field
+                name="default_uom_id"
+                attrs="{'invisible': [('code_type', '!=', 'float')]}"
+              />
                         </group>
                     </group>
                     <group>
-                        <field name="description"/>
+                        <field name="description" />
                     </group>
                 </sheet>
             </form>
@@ -85,11 +88,11 @@
         <field name="name">flight.aircraft.spec.tree</field>
         <field name="model">flight.aircraft.spec</field>
         <field name="arch" type="xml">
-            <tree string="Aircraft Specifications">
-                <field name="sequence" widget="handle"/>
-                <field name="aircraft_id"/>
-                <field name="code_id"/>
-                <field name="display_name"/>
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="aircraft_id" />
+                <field name="code_id" />
+                <field name="display_name" />
             </tree>
         </field>
     </record>
@@ -102,16 +105,28 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="aircraft_id"/>
-                            <field name="sequence"/>
-                            <field name="code_id"/>
-                            <field name="code_type" invisible="1"/>
+                            <field name="aircraft_id" />
+                            <field name="sequence" />
+                            <field name="code_id" />
+                            <field name="code_type" invisible="1" />
                         </group>
                         <group>
-                            <field name="value_bool" attrs="{'invisible': [('code_type', '!=', 'bool')]}"/>
-                            <field name="value_text" attrs="{'invisible': [('code_type', '!=', 'text')]}"/>
-                            <field name="value_float" attrs="{'invisible': [('code_type', '!=', 'float')]}"/>
-                            <field name="uom_id" attrs="{'invisible': [('code_type', '!=', 'float')]}"/>
+                            <field
+                name="value_bool"
+                attrs="{'invisible': [('code_type', '!=', 'bool')]}"
+              />
+                            <field
+                name="value_text"
+                attrs="{'invisible': [('code_type', '!=', 'text')]}"
+              />
+                            <field
+                name="value_float"
+                attrs="{'invisible': [('code_type', '!=', 'float')]}"
+              />
+                            <field
+                name="uom_id"
+                attrs="{'invisible': [('code_type', '!=', 'float')]}"
+              />
                         </group>
                     </group>
                 </sheet>
@@ -120,7 +135,10 @@
     </record>
 
     <!-- Actions -->
-    <record id="action_flight_aircraft_spec_category" model="ir.actions.act_window">
+    <record
+    id="action_flight_aircraft_spec_category"
+    model="ir.actions.act_window"
+  >
         <field name="name">Specification Categories</field>
         <field name="res_model">flight.aircraft.spec.category</field>
         <field name="view_mode">tree,form</field>
@@ -138,5 +156,5 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    
+
 </odoo>

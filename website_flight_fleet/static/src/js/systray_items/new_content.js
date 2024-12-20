@@ -1,8 +1,8 @@
 /** @odoo-module **/
 
 import {
-  NewContentModal,
   MODULE_STATUS,
+  NewContentModal,
 } from "@website/systray_items/new_content";
 import { patch } from "web.utils";
 import { xml } from "@odoo/owl";
@@ -15,8 +15,10 @@ patch(NewContentModal.prototype, "website_flight_fleet_new_content", {
     const newAircraftElement = {
       moduleXmlId: "base.module_website_flight_fleet",
       name: "Aircraft",
-      title: "Aircraft", // Added title property
-      description: "Add a new aircraft to your fleet", // Optional but recommended
+      // Added title property
+      title: "Aircraft",
+      // Optional but recommended
+      description: "Add a new aircraft to your fleet",
       model: "flight.aircraft",
       icon: xml`<i class="fa fa-plane"/>`,
       sequence: 35,

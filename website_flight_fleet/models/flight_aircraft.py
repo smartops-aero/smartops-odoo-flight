@@ -1,9 +1,12 @@
 import logging
+
 from odoo import fields, models
-from odoo.addons.http_routing.models.ir_http import slug
 from odoo.tools.translate import html_translate
 
+from odoo.addons.http_routing.models.ir_http import slug
+
 _logger = logging.getLogger(__name__)
+
 
 class FlightAircraft(models.Model):
     _name = "flight.aircraft"
@@ -16,64 +19,69 @@ class FlightAircraft(models.Model):
     ]
 
     def _get_default_website_description(self):
-        return self.env['ir.qweb']._render("website_flight_fleet.default_website_description", raise_if_not_found=False)
+        return self.env["ir.qweb"]._render(
+            "website_flight_fleet.default_website_description", raise_if_not_found=False
+        )
 
-    website_published = fields.Boolean(
-        "Aircraft Visible on Website", 
-        copy=False
-    )
+    website_published = fields.Boolean("Aircraft Visible on Website", copy=False)
     website_short_description = fields.Text(
-        "Website Short Description", 
+        "Website Short Description",
         help="A short description of the aircraft that will be displayed on the website and cards",
-        translate=True
+        translate=True,
     )
     website_display_name = fields.Char(
         "Website Display Name",
         help="The name that will be displayed on the website (e.g., 'Citation Bravo N550RM')",
         index=True,
-        copy=False
+        copy=False,
     )
     website_aircraft_slogan = fields.Char(
-        "Slogan for the aircraft", 
+        "Slogan for the aircraft",
         translate=True,
         help="The slogan or tagline that will be displayed on the website (e.g., 'Fast and reliable')",
     )
 
     website_spec_header = fields.Char(
-        "Website Specification Header", 
+        "Website Specification Header",
         default="Specifications",
         help="The header that will be displayed on the website for the specifications",
     )
-    
+
     website_spec_description = fields.Text(
-        "Website Specification Description", 
+        "Website Specification Description",
         translate=True,
         help="The description that will be displayed on the website for the specifications",
     )
 
     website_description = fields.Html(
-        'Website description, static content of the aircraft', translate=html_translate,
-        default=_get_default_website_description, prefetch=False,
+        "Website description, static content of the aircraft",
+        translate=html_translate,
+        default=_get_default_website_description,
+        prefetch=False,
         sanitize_overridable=True,
-        sanitize_attributes=False, sanitize_form=False)
+        sanitize_attributes=False,
+        sanitize_form=False,
+    )
 
     aircraft_image_ids = fields.One2many(
-        'flight.aircraft.image',
-        'aircraft_id',
-        string='Aircraft Images',
-        help='Images to be displayed in the aircraft detail page carousel'
+        "flight.aircraft.image",
+        "aircraft_id",
+        string="Aircraft Images",
+        help="Images to be displayed in the aircraft detail page carousel",
     )
 
     _sql_constraints = [
-        ('unique_website_display_name', 
-         'unique(website_display_name)', 
-         'Aircraft display name must be unique!')
+        (
+            "unique_website_display_name",
+            "unique(website_display_name)",
+            "Aircraft display name must be unique!",
+        )
     ]
 
     def _compute_website_url(self):
         for aircraft in self:
             aircraft.website_url = f"/aircraft/{slug(aircraft)}"
-    
+
     def regenerate_website_description(self):
         for record in self:
             record.website_description = record._get_default_website_description()
