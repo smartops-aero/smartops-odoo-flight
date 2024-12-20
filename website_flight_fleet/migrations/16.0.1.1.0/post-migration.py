@@ -1,5 +1,6 @@
 # post-migration.py
 import logging
+from odoo import SUPERUSER_ID
 
 _logger = logging.getLogger(__name__)
 
@@ -77,14 +78,6 @@ def migrate(cr, version):
         _logger.error("Migration table not found, skipping post-migration")
         return
 
-    # Get superuser ID
-    cr.execute("SELECT MIN(id) FROM res_users WHERE id = 1")
-    user_id = cr.fetchone()
-    if not user_id:
-        _logger.error("Could not determine admin user ID")
-        return
-    user_id = user_id[0]
-
     # Get or create spec categories
     categories = {
         'performance': 'Performance Specifications',
@@ -105,7 +98,7 @@ def migrate(cr, version):
                 INSERT INTO flight_aircraft_spec_category (code, name, create_uid, write_uid)
                 VALUES (%s, %s, %s, %s)
                 RETURNING id
-            """, (code, name, user_id, user_id))
+            """, (code, name, SUPERUSER_ID, SUPERUSER_ID))
             category_id = cr.fetchone()
         
         category_ids[code] = category_id[0]
@@ -121,7 +114,7 @@ def migrate(cr, version):
     
     for aircraft_id, code, value, category in specs:
         category_id = category_ids.get(category)
-        create_spec(cr, aircraft_id, code, value, user_id, category_id=category_id)
+        create_spec(cr, aircraft_id, code, value, SUPERUSER_ID, category_id=category_id)
 
     # First check if we have any amenities in the temporary table
     cr.execute("""
@@ -193,7 +186,7 @@ def migrate(cr, version):
     for aircraft_id, amenity_name in cr.fetchall():
         if amenity_name and amenity_name in amenity_mapping:
             code = amenity_mapping[amenity_name]
-            create_spec(cr, aircraft_id, code, True, user_id, is_bool=True)
+            create_spec(cr, aircraft_id, code, True, SUPERUSER_ID, is_bool=True)
 
     # Fix null UOMs
     _logger.info("Fixing null UOMs")
