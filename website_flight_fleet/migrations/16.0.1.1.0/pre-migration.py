@@ -106,9 +106,9 @@ def migrate(cr, version):
         'passenger_capacity': {'code': 'load.passengers', 'category': 'load'},
         'range_nm': {'code': 'performance.range', 'category': 'performance'},
         'cruise_speed': {'code': 'performance.cruise_speed', 'category': 'performance'},
-        'cabin_length': {'code': 'cabin.length', 'category': 'dimensions'},
-        'cabin_width': {'code': 'cabin.width', 'category': 'dimensions'},
-        'cabin_height': {'code': 'cabin.height', 'category': 'dimensions'},
+        'cabin_length': {'code': 'cabin.length', 'category': 'cabin'},
+        'cabin_width': {'code': 'cabin.width', 'category': 'cabin'},
+        'cabin_height': {'code': 'cabin.height', 'category': 'cabin'},
         'luggage_capacity': {'code': 'load.luggage', 'category': 'load'},
         'useful_load': {'code': 'load.useful_load', 'category': 'load'},
     }

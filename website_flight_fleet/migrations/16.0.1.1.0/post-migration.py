@@ -88,7 +88,7 @@ def migrate(cr, version):
     # Get or create spec categories
     categories = {
         'performance': 'Performance Specifications',
-        'dimensions': 'Dimensions',
+        'cabin': 'Cabin Capabilities',
         'load': 'Load Capabilities',
         'amenity': 'Amenities'
     }
