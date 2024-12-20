@@ -21,6 +21,9 @@
         "views/menus.xml",
         "data/flight_aircraft_spec_data.xml",
     ],
+    "images": [
+        "static/description/banner.png",
+    ],
     "demo": [],
     "installable": True,
     "application": False,
