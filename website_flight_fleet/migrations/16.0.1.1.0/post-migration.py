@@ -143,68 +143,6 @@ def migrate(cr, version):
     updated_uoms = cr.fetchall()
     _logger.info(f"Updated UOMs for {len(updated_uoms)} specifications")
 
-    # Set default website description
-    _logger.info("Setting default website description")
-    default_content = {
-        "en_US": '''
-<section class="container mt-7 mb-2 text-center">
-    <div class="mw-100 mw-lg-50 mx-auto">
-        <div class="o_animate o_anim_slide_in o_anim_from_bottom" style="--wanim-intensity: 20; animation-duration: 0.4s;">
-            <h2 class="fw-bold text-black text-center mb-4">Aircraft Showcase</h2>
-            <p class="lead text-black">Explore our stunning aircraft interiors.</p>
-        </div>
-    </div>
-</section>
-<section class="py-7">
-    <div class="container">
-        <div class="row g-5">
-            <div class="col-lg-6">
-                <div class="benefit-item">
-                    <div class="mb-4">
-                        <h4 class="fw-bold">Enhanced Performance and Versatility</h4>
-                    </div>
-                    <p>Discover exceptional versatility with advanced avionics and proven reliability. 
-                    This aircraft delivers outstanding performance across various mission profiles.</p>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="benefit-item">
-                    <div class="mb-4">
-                        <h4 class="fw-bold">Premium Comfort</h4>
-                    </div>
-                    <p>Experience unmatched comfort with our meticulously maintained cabin. 
-                    Every detail is designed for your optimal travel experience.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>'''
-    }
-    
-    # Convert to JSON string
-    default_content_json = json.dumps(default_content)
-    
-    cr.execute("""
-        SELECT id, website_description 
-        FROM flight_aircraft 
-        WHERE website_description IS NULL
-    """)
-    null_descriptions = cr.fetchall()
-    _logger.info(f"Found {len(null_descriptions)} aircraft without website description")
-
-    if null_descriptions:
-        cr.execute("""
-            UPDATE flight_aircraft 
-            SET website_description = %s::jsonb 
-            WHERE website_description IS NULL
-        """, (default_content_json,))
-        _logger.info("Updated website descriptions with default content")
-
-        # Verify the update
-        cr.execute("SELECT COUNT(*) FROM flight_aircraft WHERE website_description IS NULL")
-        remaining_null = cr.fetchone()[0]
-        _logger.info(f"Remaining aircraft with null website description: {remaining_null}")
-
     # Drop temporary table
     _logger.info("Cleaning up migration table")
     cr.execute("DROP TABLE IF EXISTS website_fleet_migration")
