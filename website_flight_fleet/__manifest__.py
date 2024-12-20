@@ -54,6 +54,7 @@
             "website_flight_fleet/static/src/snippets/s_website_flight_fleet_multiple_carousel/000.js",
             "website_flight_fleet/static/src/snippets/s_website_flight_fleet_accordion/000.scss",
             "website_flight_fleet/static/src/snippets/s_website_flight_fleet_dynamic_aircraft_images/000.js",
+            "website_flight_fleet/static/src/snippets/s_website_flight_fleet_dynamic_aircraft_images/000.scss",
         ],
         "website.assets_editor": [
             "website_flight_fleet/static/src/js/systray_items/new_content.js",

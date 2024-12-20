@@ -11,20 +11,14 @@
     <!-- Dynamic Filter Template -->
     <template id="dynamic_filter_template_flight_aircraft_image_carousel"
         name="Aircraft Image Carousel">
-        <t t-set="images" t-value="records" />
+        <t t-set="images" t-value="records" data-number-of-elements="1" />
         <div t-foreach="images" t-as="data">
             <t t-set="image" t-value="data['_record']" />
-            <div class="card h-100">
-                <img t-att-src="'/web/image/flight.aircraft.image/%s/image' % image.id" 
-                     t-att-alt="image.name or ''"
-                     class="card-img-top"/>
-                <t t-if="image.name or image.description">
-                    <div class="card-body">
-                        <h5 t-if="image.name" class="card-title" t-esc="image.name"/>
-                        <p t-if="image.description" class="card-text" t-esc="image.description"/>
-                    </div>
-                </t>
-            </div>
+
+            <img t-att-src="'/web/image/flight.aircraft.image/%s/image' % image.id"
+                t-att-alt="image.name or ''"
+                class="dynamic-carousel-item card-img-top" />
+
         </div>
     </template>
 
