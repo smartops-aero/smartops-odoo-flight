@@ -17,8 +17,8 @@
         - Seat map image storage
         - Tracking of specification changes
 
-        This module replaces and consolidates the previous flight_aircraft_specifications 
-        and flight_aircraft_amenities modules, offering a more comprehensive and 
+        This module replaces and consolidates the previous flight_aircraft_specifications
+        and flight_aircraft_amenities modules, offering a more comprehensive and
         extensible approach to aircraft specification management.
     """,
     "depends": [

@@ -9,45 +9,49 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Specifications" name="specifications">
                     <field
-                        name="spec_ids"
-                        context="{'default_aircraft_id': active_id}"
-                    >
-                        <tree 
-                            editable="bottom" 
-                            create="true" 
-                            delete="true"
-                            decoration-muted="code_type == False"
-                        >
+            name="spec_ids"
+            context="{'default_aircraft_id': active_id}"
+          >
+                        <tree
+              editable="bottom"
+              create="true"
+              delete="true"
+              decoration-muted="code_type == False"
+            >
                             <field name="sequence" widget="handle" />
-                            <field 
-                                name="code_id" 
-                                required="1" 
-                                domain="[('code_type', '!=', False)]"
-                            />
+                            <field
+                name="code_id"
+                required="1"
+                domain="[('code_type', '!=', False)]"
+              />
                             <field name="display_name" invisible="1" />
                             <field name="code_type" invisible="1" />
                             <field
-                                name="value_bool"
-                                attrs="{'invisible': [('code_type', '!=', 'bool')], 'required': [('code_type', '=', 'bool')]}"
-                            />
+                name="value_bool"
+                attrs="{'invisible': [('code_type', '!=', 'bool')], 'required': [('code_type', '=', 'bool')]}"
+              />
                             <field
-                                name="value_text"
-                                attrs="{'invisible': [('code_type', '!=', 'text')], 'required': [('code_type', '=', 'text')]}"
-                            />
+                name="value_text"
+                attrs="{'invisible': [('code_type', '!=', 'text')], 'required': [('code_type', '=', 'text')]}"
+              />
                             <field
-                                name="value_float"
-                                attrs="{'invisible': [('code_type', '!=', 'float')], 'required': [('code_type', '=', 'float')]}"
-                            />
+                name="value_float"
+                attrs="{'invisible': [('code_type', '!=', 'float')], 'required': [('code_type', '=', 'float')]}"
+              />
                             <field
-                                name="uom_id"
-                                attrs="{'invisible': [('code_type', '!=', 'float')]}"
-                            />
+                name="uom_id"
+                attrs="{'invisible': [('code_type', '!=', 'float')]}"
+              />
                         </tree>
                     </field>
                 </page>
                 <page string="Images" name="images">
                     <group>
-                        <field name="seat_map_1920" widget="image" string="Seat Map (1920)"/>
+                        <field
+              name="seat_map_1920"
+              widget="image"
+              string="Seat Map (1920)"
+            />
                     </group>
                 </page>
             </xpath>
