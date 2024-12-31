@@ -2,33 +2,26 @@
 <odoo>
 <!-- Menu Items -->
     <menuitem
-    id="menu_flight_aircraft_spec_root"
-    name="Aircraft Specs"
-    parent="flight.menu_flight_root"
+    id="menu_flight_aircraft_spec_category"
+    name="Aircraft Specification Categories"
+    parent="flight.menu_flight_aircraft_configuration"
+    action="action_flight_aircraft_spec_category"
     sequence="30"
   />
 
     <menuitem
-    id="menu_flight_aircraft_spec_category"
-    name="Specification Categories"
-    parent="menu_flight_aircraft_spec_root"
-    action="action_flight_aircraft_spec_category"
-    sequence="10"
-  />
-
-    <menuitem
     id="menu_flight_aircraft_spec_code"
-    name="Specification Codes"
-    parent="menu_flight_aircraft_spec_root"
+    name="Aircraft Specification Codes"
+    parent="flight.menu_flight_aircraft_configuration"
     action="action_flight_aircraft_spec_code"
-    sequence="20"
+    sequence="40"
   />
 
     <menuitem
     id="menu_flight_aircraft_spec"
     name="Aircraft Specifications"
-    parent="menu_flight_aircraft_spec_root"
+    parent="flight.menu_flight_aircraft_configuration"
     action="action_flight_aircraft_spec"
-    sequence="30"
+    sequence="50"
   />
 </odoo>
