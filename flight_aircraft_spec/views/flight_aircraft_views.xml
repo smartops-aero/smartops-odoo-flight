@@ -8,9 +8,6 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
                 <page string="Specifications" name="specifications">
-                    <group>
-                        <field name="seat_map_1920" widget="image" />
-                    </group>
                     <field
                         name="spec_ids"
                         context="{'default_aircraft_id': active_id}"
@@ -47,6 +44,11 @@
                             />
                         </tree>
                     </field>
+                </page>
+                <page string="Images" name="images">
+                    <group>
+                        <field name="seat_map_1920" widget="image" string="Seat Map (1920)"/>
+                    </group>
                 </page>
             </xpath>
         </field>
