@@ -1,6 +1,6 @@
 {
     "name": "Flight Aircraft Specifications",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "Flight",
     "author": "Apexive Solutions LLC",
     "website": "https://github.com/smartops-aero/flight",
@@ -17,8 +17,8 @@
         - Seat map image storage
         - Tracking of specification changes
 
-        This module replaces and consolidates the previous flight_aircraft_specifications 
-        and flight_aircraft_amenities modules, offering a more comprehensive and 
+        This module replaces and consolidates the previous flight_aircraft_specifications
+        and flight_aircraft_amenities modules, offering a more comprehensive and
         extensible approach to aircraft specification management.
     """,
     "depends": [
