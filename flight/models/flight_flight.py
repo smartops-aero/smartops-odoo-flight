@@ -15,6 +15,11 @@ class FlightFlight(models.Model):
     arrival_id = fields.Many2one("flight.aerodrome", required=True, tracking=True)
     locked = fields.Boolean(default=False, tracking=True)
 
+    # Added crew relationship
+    crew_ids = fields.One2many(
+        "flight.crew", "flight_id", string="Crew Members", copy=True
+    )
+
     def name_get(self):
         result = []
         for record in self:

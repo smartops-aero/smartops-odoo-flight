@@ -1,0 +1,6 @@
+id,name,description
+flight_crew_role_pic,"Pilot-in-command (PIC)",
+flight_crew_role_sic,"Second-in-command (SIC)",
+flight_crew_role_instructor,Instructor,
+flight_crew_role_examiner,Examiner,
+flight_crew_role_observer,Observer,
