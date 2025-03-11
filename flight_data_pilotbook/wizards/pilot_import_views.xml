@@ -48,21 +48,8 @@
                             </group>
                         </group>
                         <div class="alert alert-info" role="alert" attrs="{'invisible': [('conflict_rows', '=', 0)]}">
-                            There are <field name="conflict_rows" class="oe_inline"/> conflicts detected. 
-                            Review the conflicts and check the "Import" box for those you want to update.
+                            There are <field name="conflict_rows" class="oe_inline"/> conflicts detected. Review the conflicts and check the "Import" box for those you want to update.
                         </div>
-                        <field name="import_line_ids">
-                            <tree editable="bottom" decoration-success="status=='valid'" decoration-danger="status=='invalid'" decoration-warning="status=='conflict'">
-                                <field name="to_import"/>
-                                <field name="name"/>
-                                <field name="employee_id"/>
-                                <field name="company"/>
-                                <field name="phone"/>
-                                <field name="email"/>
-                                <field name="status"/>
-                                <field name="message"/>
-                            </tree>
-                        </field>
                     </div>
                     
                     <!-- Import Complete State -->
@@ -70,15 +57,18 @@
                         <div class="alert alert-success" role="alert">
                             Import completed successfully!
                         </div>
-                        <field name="import_line_ids">
-                            <tree decoration-success="result=='created'" decoration-info="result=='updated'" decoration-muted="result=='skipped'">
+                    </div>
+                    <field name="import_line_ids" domain="[('result', '=', False)]">
+                            <tree editable="bottom" decoration-success="status=='valid'" decoration-danger="status=='invalid'" decoration-warning="status=='conflict'" default_order="name" limit="40">
                                 <field name="name"/>
                                 <field name="employee_id"/>
                                 <field name="company"/>
-                                <field name="result"/>
+                                <field name="to_import" widget="boolean_toggle" attrs="{'invisible': [('parent.state', '=', 'import')]}"/>
+                                <field name="status" attrs="{'invisible': [('parent.state', '=', 'import')]}"/>
+                                <field name="message" attrs="{'invisible': [('parent.state', '=', 'import')]}"/>
+                                <field name="result" attrs="{'invisible': [('parent.state', '=', 'preview')]}"/>
                             </tree>
                         </field>
-                    </div>
                 </sheet>
                 <footer>
                     <button name="action_parse_file" string="Preview" type="object" 

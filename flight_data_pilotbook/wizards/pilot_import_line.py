@@ -33,3 +33,7 @@ class PilotImportLine(models.TransientModel):
         ('updated', 'Updated'),
         ('skipped', 'Skipped')
     ], string='Result')
+    
+    def unlink(self):
+        """Override unlink to allow deleting records from the tree view"""
+        return super(PilotImportLine, self).unlink()
