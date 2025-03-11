@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Import Wizard Form View -->
+    <record id="view_flight_pilot_import_form" model="ir.ui.view">
+        <field name="name">flight.pilot.import.wizard.form</field>
+        <field name="model">flight.pilot.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Pilots">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="upload,preview,import"/>
+                </header>
+                <sheet>
+                    <!-- Upload State -->
+                    <div attrs="{'invisible': [('state', '!=', 'upload')]}">
+                        <div class="alert alert-info" role="alert">
+                            This wizard will import pilots from a CSV file and create them as contacts in Odoo.
+                            <br/>
+                            The CSV file should have the following headers: Company, Employee ID, Pilot FullName, Phone, Email, Notes
+                        </div>
+                        <group>
+                            <field name="csv_file" filename="file_name"/>
+                            <field name="file_name" invisible="1"/>
+                            <field name="delimiter"/>
+                        </group>
+                        <group string="CSV Field Mapping">
+                            <field name="company_field"/>
+                            <field name="employee_id_field"/>
+                            <field name="name_field"/>
+                            <field name="phone_field"/>
+                            <field name="email_field"/>
+                            <field name="notes_field"/>
+                        </group>
+                        <group string="Options">
+                            <field name="create_companies"/>
+                        </group>
+                    </div>
+                    
+                    <!-- Preview State -->
+                    <div attrs="{'invisible': [('state', '!=', 'preview')]}">
+                        <group>
+                            <group>
+                                <field name="total_rows"/>
+                                <field name="valid_rows"/>
+                            </group>
+                            <group>
+                                <field name="invalid_rows"/>
+                                <field name="conflict_rows"/>
+                            </group>
+                        </group>
+                        <div class="alert alert-info" role="alert" attrs="{'invisible': [('conflict_rows', '=', 0)]}">
+                            There are <field name="conflict_rows" class="oe_inline"/> conflicts detected. 
+                            Review the conflicts and check the "Import" box for those you want to update.
+                        </div>
+                        <field name="import_line_ids">
+                            <tree editable="bottom" decoration-success="status=='valid'" decoration-danger="status=='invalid'" decoration-warning="status=='conflict'">
+                                <field name="to_import"/>
+                                <field name="name"/>
+                                <field name="employee_id"/>
+                                <field name="company"/>
+                                <field name="phone"/>
+                                <field name="email"/>
+                                <field name="status"/>
+                                <field name="message"/>
+                            </tree>
+                        </field>
+                    </div>
+                    
+                    <!-- Import Complete State -->
+                    <div attrs="{'invisible': [('state', '!=', 'import')]}">
+                        <div class="alert alert-success" role="alert">
+                            Import completed successfully!
+                        </div>
+                        <field name="import_line_ids">
+                            <tree decoration-success="result=='created'" decoration-info="result=='updated'" decoration-muted="result=='skipped'">
+                                <field name="name"/>
+                                <field name="employee_id"/>
+                                <field name="company"/>
+                                <field name="result"/>
+                            </tree>
+                        </field>
+                    </div>
+                </sheet>
+                <footer>
+                    <button name="action_parse_file" string="Preview" type="object" 
+                            class="btn-primary" attrs="{'invisible': [('state', '!=', 'upload')]}"/>
+                    <button name="action_import" string="Import" type="object" 
+                            class="btn-primary" attrs="{'invisible': [('state', '!=', 'preview')]}"/>
+                    <button string="Close" class="btn-secondary" special="cancel" 
+                            attrs="{'invisible': [('state', '!=', 'import')]}"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" 
+                            attrs="{'invisible': [('state', '=', 'import')]}"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Import Wizard Action -->
+    <record id="action_flight_pilot_import" model="ir.actions.act_window">
+        <field name="name">Import Pilots</field>
+        <field name="res_model">flight.pilot.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

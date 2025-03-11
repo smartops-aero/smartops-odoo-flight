@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_flight_data_pilotbook_root"
+              name="Pilot Book"
+              parent="contacts.menu_contacts"
+              sequence="20"/>
+              
+    <!-- Action to download the pilot import template -->
+    <record id="action_download_pilot_template" model="ir.actions.act_url">
+        <field name="name">Download Pilot Import Template</field>
+        <field name="url">/web/content/?model=ir.attachment&amp;id=%(pilot_import_template)d&amp;filename_field=name&amp;field=datas&amp;download=true</field>
+        <field name="target">self</field>
+    </record>
+    
+    <menuitem id="menu_download_pilot_template"
+              name="Download Pilot Template"
+              parent="menu_flight_data_pilotbook_root"
+              action="action_download_pilot_template"
+              sequence="10"/>
+              
+    <menuitem id="menu_flight_pilot_import"
+              name="Import Pilots"
+              parent="menu_flight_data_pilotbook_root"
+              action="action_flight_pilot_import"
+              sequence="20"/>
+</odoo>
