@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Aircraft Import Wizard Form View -->
+    <record id="view_flight_aircraft_import_wizard_form" model="ir.ui.view">
+        <field name="name">flight.aircraft.import.wizard.form</field>
+        <field name="model">flight.aircraft.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Aircraft">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="upload,preview,import"/>
+                </header>
+                <sheet>
+                    <!-- Upload State -->
+                    <div attrs="{'invisible': [('state', '!=', 'upload')]}">
+                        <group>
+                            <group>
+                                <field name="csv_file" widget="binary" filename="filename" placeholder="Upload CSV file"/>
+                                <field name="filename" invisible="1"/>
+                                <field name="delimiter"/>
+                            </group>
+                            <group string="Field Mapping">
+                                <field name="registration_field"/>
+                                <field name="model_field"/>
+                                <field name="operator_field"/>
+                                <field name="equipment_type_field"/>
+                                <field name="engine_type_field"/>
+                                <field name="category_field"/>
+                            </group>
+                        </group>
+                    </div>
+                    
+                    <!-- Preview State -->
+                    <div attrs="{'invisible': [('state', '!=', 'preview')]}">
+                        <group>
+                            <group>
+                                <field name="total_rows"/>
+                                <field name="valid_rows"/>
+                            </group>
+                            <group>
+                                <field name="invalid_rows"/>
+                                <field name="conflict_rows"/>
+                            </group>
+                        </group>
+                        <div class="alert alert-info" role="alert" attrs="{'invisible': [('conflict_rows', '=', 0)]}">
+                            There are <field name="conflict_rows" class="oe_inline"/> conflicts detected. Review the conflicts and check the "Import" toggle button for those you want to update.
+                        </div>
+                    </div>
+                    
+                    <!-- Import Complete State -->
+                    <div attrs="{'invisible': [('state', '!=', 'import')]}">
+                        <div class="alert alert-success" role="alert">
+                            Import completed successfully!
+                        </div>
+                        <group>
+                            <group>
+                                <field name="created_rows"/>
+                            </group>
+                            <group>
+                                <field name="updated_rows"/>
+                                <field name="skipped_rows"/>
+                            </group>
+                        </group>
+                    </div>
+                    
+                    <field name="import_line_ids">
+                        <tree editable="bottom" decoration-danger="status=='invalid' and parent.state=='preview'" decoration-warning="status=='conflict' and parent.state=='preview'" decoration-success="result=='created' and parent.state=='import'" decoration-info="result=='updated' and parent.state=='import'" decoration-muted="result=='skipped' and parent.state=='import'" default_order="registration" limit="40">
+                            <field name="registration"/>
+                            <field name="model_name"/>
+                            <field name="operator"/>
+                            <field name="to_import" widget="boolean_toggle" attrs="{'invisible': [('parent.state', '=', 'import')]}"/>
+                            <field name="status" attrs="{'invisible': [('parent.state', '=', 'import')], 'readonly': [('parent.state', '!=', 'upload')]}"/>
+                            <field name="message" attrs="{'invisible': [('parent.state', '=', 'import')], 'readonly': [('parent.state', '!=', 'upload')]}"/>
+                            <field name="result" attrs="{'invisible': [('parent.state', '=', 'preview')], 'readonly': [('parent.state', '!=', 'upload')]}"/>
+                        </tree>
+                    </field>
+                </sheet>
+                <footer>
+                    <button name="action_parse_file" string="Preview" type="object" 
+                            class="btn-primary" attrs="{'invisible': [('state', '!=', 'upload')]}"/>
+                    <button name="action_import" string="Import" type="object" 
+                            class="btn-primary" attrs="{'invisible': [('state', '!=', 'preview')]}"/>
+                    <button special="cancel" string="Close" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Aircraft Import Wizard Action -->
+    <record id="action_flight_aircraft_import" model="ir.actions.act_window">
+        <field name="name">Import Aircraft</field>
+        <field name="res_model">flight.aircraft.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
