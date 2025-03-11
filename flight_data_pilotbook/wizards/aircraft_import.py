@@ -344,6 +344,7 @@ class AircraftImport(models.TransientModel):
                 "status": status,
                 "message": message,
                 "aircraft_id": existing_aircraft.id if existing_aircraft else False,
+                "to_import": status == "valid",  # Only set to_import to True for valid records
             }
             
             import_lines.append((0, 0, import_line))
