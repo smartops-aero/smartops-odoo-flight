@@ -17,4 +17,11 @@
               action="action_flight_aircraft_import"
               parent="menu_flight_data_pilotbook_root"
               sequence="30"/>
+              
+    <!-- Flight Import Menu Item -->
+    <menuitem id="menu_flight_import"
+              name="Import Flights"
+              action="action_flight_import"
+              parent="menu_flight_data_pilotbook_root"
+              sequence="40"/>
 </odoo>

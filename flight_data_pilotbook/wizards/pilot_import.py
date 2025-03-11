@@ -12,11 +12,7 @@ _logger = logging.getLogger(__name__)
 class PilotImport(models.TransientModel):
     _name = 'flight.pilot.import.wizard'
     _description = 'Import Pilots from CSV'
-
-    # File Upload Fields
-    csv_file = fields.Binary(string='CSV File', required=True)
-    file_name = fields.Char(string='File Name')
-    delimiter = fields.Char(string='Delimiter', default=';', help='CSV file delimiter')
+    _inherit = "flight.import.wizard.mixin"
     
     # Field Mapping
     company_field = fields.Char(string='Company Field', default='Company', 
@@ -36,27 +32,16 @@ class PilotImport(models.TransientModel):
     create_companies = fields.Boolean(string='Create Companies', default=True,
                                      help='Create companies if they do not exist')
     
-    # Import State
-    state = fields.Selection([
-        ('upload', 'Upload File'),
-        ('preview', 'Preview Data'),
-        ('import', 'Import Complete')
-    ], default='upload', string='Import State')
-    
     # Preview Data
-    import_line_ids = fields.One2many('flight.pilot.import.line', 'import_id', 
+    line_ids = fields.One2many('flight.pilot.import.line', 'wizard_id', 
                                      string='Import Lines')
-    
-    # Statistics
-    total_rows = fields.Integer(string='Total Rows', readonly=True)
-    valid_rows = fields.Integer(string='Valid Rows', readonly=True)
-    invalid_rows = fields.Integer(string='Invalid Rows', readonly=True)
-    conflict_rows = fields.Integer(string='Conflicts', readonly=True)
     
     @api.model
     def default_get(self, fields_list):
         """Set default values for the wizard"""
         res = super().default_get(fields_list)
+        # Set default delimiter to semicolon for better compatibility with Excel exports
+        res['delimiter'] = ';'
         return res
     
     def action_parse_file(self):
@@ -77,29 +62,34 @@ class PilotImport(models.TransientModel):
         required_headers = [self.name_field]
         for header in required_headers:
             if header not in reader.fieldnames:
-                raise UserError(_('Required header "%s" not found in the CSV file.') % header)
+                available_headers = ', '.join(reader.fieldnames)
+                raise UserError(_(
+                    'Required header "%s" not found in the CSV file.\n\n'
+                    'Available headers: %s\n\n'
+                    'You can adjust the field mapping in the wizard to match your CSV headers.'
+                ) % (header, available_headers))
         
         # Prepare for import
         Partner = self.env['res.partner']
         
         # Clear existing import lines
-        self.import_line_ids.unlink()
+        self.line_ids.unlink()
         
         # Statistics
         stats = {
-            'total': 0,
-            'valid': 0,
-            'invalid': 0,
-            'conflict': 0,
+            'total_rows': 0,
+            'valid_count': 0,
+            'invalid_count': 0,
+            'conflict_count': 0,
         }
         
         # Process each row
         for row in reader:
-            stats['total'] += 1
+            stats['total_rows'] += 1
             
             # Skip empty rows
             if not row[self.name_field] or row[self.name_field].strip() == '':
-                stats['invalid'] += 1
+                stats['invalid_count'] += 1
                 self._create_import_line(row, 'invalid', 'Empty name field')
                 continue
                 
@@ -116,18 +106,14 @@ class PilotImport(models.TransientModel):
             existing_partner = Partner.search(domain, limit=1)
             
             if existing_partner:
-                stats['conflict'] += 1
+                stats['conflict_count'] += 1
                 self._create_import_line(row, 'conflict', 'Partner already exists')
             else:
-                stats['valid'] += 1
+                stats['valid_count'] += 1
                 self._create_import_line(row, 'valid', 'Ready to import')
         
         # Update statistics
         self.write({
-            'total_rows': stats['total'],
-            'valid_rows': stats['valid'],
-            'invalid_rows': stats['invalid'],
-            'conflict_rows': stats['conflict'],
             'state': 'preview'
         })
         
@@ -139,12 +125,12 @@ class PilotImport(models.TransientModel):
             'target': 'new',
         }
     
-    def _create_import_line(self, row, status, message):
-        """Create an import line for preview"""
+    def _create_import_line(self, row, status='valid', message=''):
+        """Create an import line from CSV row data"""
         self.ensure_one()
         
         vals = {
-            'import_id': self.id,
+            'wizard_id': self.id,
             'name': row.get(self.name_field, '').strip(),
             'employee_id': row.get(self.employee_id_field, '').strip(),
             'company': row.get(self.company_field, '').strip(),
@@ -163,7 +149,7 @@ class PilotImport(models.TransientModel):
         self.ensure_one()
         
         # Get lines to import
-        lines_to_import = self.import_line_ids.filtered(lambda l: l.to_import)
+        lines_to_import = self.line_ids.filtered(lambda l: l.to_import)
         
         if not lines_to_import:
             raise UserError(_('No lines selected for import.'))

@@ -24,6 +24,7 @@
         'data/aircraft_import_template.xml',
         'wizards/pilot_import_views.xml',
         'wizards/aircraft_import_views.xml',
+        'wizards/flight_import_views.xml',
         'views/menu_views.xml',
     ],
     'license': 'LGPL-3',
