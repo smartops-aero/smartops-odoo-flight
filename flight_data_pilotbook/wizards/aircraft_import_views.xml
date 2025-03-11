@@ -12,6 +12,11 @@
                 <sheet>
                     <!-- Upload State -->
                     <div attrs="{'invisible': [('state', '!=', 'upload')]}">
+                        <div class="alert alert-info" role="alert">
+                            <p>This wizard will import aircraft from a CSV file.</p>
+                            <p>The CSV file should have the following headers: Registration, Model, Operator, Equipment Type, Engine Type, Category</p>
+                            <p>If your CSV uses different header names, you can adjust the field mapping below.</p>
+                        </div>
                         <group>
                             <group>
                                 <field name="csv_file" widget="binary" filename="filename" placeholder="Upload CSV file"/>
@@ -34,15 +39,21 @@
                         <group>
                             <group>
                                 <field name="total_rows"/>
-                                <field name="valid_rows"/>
+                                <field name="valid_count"/>
                             </group>
                             <group>
-                                <field name="invalid_rows"/>
-                                <field name="conflict_rows"/>
+                                <field name="invalid_count"/>
+                                <field name="conflict_count"/>
                             </group>
                         </group>
-                        <div class="alert alert-info" role="alert" attrs="{'invisible': [('conflict_rows', '=', 0)]}">
-                            There are <field name="conflict_rows" class="oe_inline"/> conflicts detected. Review the conflicts and check the "Import" toggle button for those you want to update.
+                        <div class="alert alert-info" role="alert" attrs="{'invisible': [('valid_count', '=', 0)]}">
+                            There are <field name="valid_count" class="oe_inline"/> valid records ready to be imported.
+                        </div>
+                        <div class="alert alert-danger" role="alert" attrs="{'invisible': [('invalid_count', '=', 0)]}">
+                            There are <field name="invalid_count" class="oe_inline"/> invalid records that cannot be imported.
+                        </div>
+                        <div class="alert alert-warning" role="alert" attrs="{'invisible': [('conflict_count', '=', 0)]}">
+                            There are <field name="conflict_count" class="oe_inline"/> conflicts detected. Review the conflicts and check the "Import" toggle button for those you want to update.
                         </div>
                     </div>
                     
@@ -53,33 +64,34 @@
                         </div>
                         <group>
                             <group>
-                                <field name="created_rows"/>
+                                <field name="imported_count" string="Imported"/>
                             </group>
                             <group>
-                                <field name="updated_rows"/>
-                                <field name="skipped_rows"/>
+                                <field name="skipped_count" string="Skipped"/>
                             </group>
                         </group>
                     </div>
                     
-                    <field name="import_line_ids">
-                        <tree editable="bottom" decoration-danger="status=='invalid' and parent.state=='preview'" decoration-warning="status=='conflict' and parent.state=='preview'" decoration-success="result=='created' and parent.state=='import'" decoration-info="result=='updated' and parent.state=='import'" decoration-muted="result=='skipped' and parent.state=='import'" default_order="registration" limit="40">
+                    <field name="line_ids" attrs="{'invisible': [('state', '=', 'upload')]}">
+                        <tree editable="bottom" decoration-danger="status=='invalid'" decoration-warning="status=='conflict'" decoration-success="status=='valid'">
                             <field name="registration"/>
-                            <field name="model_name"/>
+                            <field name="model"/>
                             <field name="operator"/>
+                            <field name="equipment_type"/>
+                            <field name="engine_type"/>
+                            <field name="category"/>
                             <field name="to_import" widget="boolean_toggle" attrs="{'invisible': [('parent.state', '=', 'import')]}"/>
-                            <field name="status" attrs="{'invisible': [('parent.state', '=', 'import')], 'readonly': [('parent.state', '!=', 'upload')]}"/>
-                            <field name="message" attrs="{'invisible': [('parent.state', '=', 'import')], 'readonly': [('parent.state', '!=', 'upload')]}"/>
-                            <field name="result" attrs="{'invisible': [('parent.state', '=', 'preview')], 'readonly': [('parent.state', '!=', 'upload')]}"/>
+                            <field name="status" attrs="{'invisible': [('parent.state', '=', 'import')]}"/>
+                            <field name="message" attrs="{'invisible': [('parent.state', '=', 'import')]}"/>
+                            <field name="result" attrs="{'invisible': [('parent.state', '!=', 'import')]}"/>
                         </tree>
                     </field>
                 </sheet>
                 <footer>
-                    <button name="action_parse_file" string="Preview" type="object" 
-                            class="btn-primary" attrs="{'invisible': [('state', '!=', 'upload')]}"/>
-                    <button name="action_import" string="Import" type="object" 
-                            class="btn-primary" attrs="{'invisible': [('state', '!=', 'preview')]}"/>
-                    <button special="cancel" string="Close" class="btn-secondary"/>
+                    <button name="action_parse_file" string="Preview" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'upload')]}"/>
+                    <button name="action_import" string="Import" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'preview')]}"/>
+                    <button name="action_reset" string="Import Another File" type="object" class="btn-secondary" attrs="{'invisible': [('state', '!=', 'import')]}"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
         </field>

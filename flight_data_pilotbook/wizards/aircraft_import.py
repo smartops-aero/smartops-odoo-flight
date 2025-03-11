@@ -3,6 +3,7 @@
 import base64
 import csv
 import io
+import re
 import logging
 from collections import defaultdict
 
@@ -13,48 +14,25 @@ _logger = logging.getLogger(__name__)
 
 
 class AircraftImport(models.TransientModel):
+    """Wizard for importing aircraft from CSV"""
     _name = "flight.aircraft.import.wizard"
-    _description = "Import Aircraft from CSV"
+    _description = "Aircraft Import Wizard"
+    _inherit = "flight.import.wizard.mixin"
 
-    # File upload fields
-    csv_file = fields.Binary(string="CSV File", required=True, attachment=False)
-    filename = fields.Char(string="Filename")
-    delimiter = fields.Char(string="Delimiter", default=",", help="CSV delimiter")
-    
-    # Mapping fields
+    # Field mappings
     registration_field = fields.Char(string="Registration Field", default="Reference")
     model_field = fields.Char(string="Model Field", default="AC")
     operator_field = fields.Char(string="Operator Field", default="Company")
-    equipment_type_field = fields.Char(string="Equipment Type Field", default="DeviceCode")
+    equipment_type_field = fields.Char(string="Equipment Type Field", default="DEV")
     engine_type_field = fields.Char(string="Engine Type Field", default="PW")
     category_field = fields.Char(string="Category Field", default="CAT")
     
-    # State management
-    state = fields.Selection(
-        [
-            ("upload", "Upload CSV"),
-            ("preview", "Preview"),
-            ("import", "Import Complete"),
-        ],
-        default="upload",
-        string="Status",
-    )
-    
     # Import lines
-    import_line_ids = fields.One2many(
+    line_ids = fields.One2many(
         "flight.aircraft.import.line",
         "wizard_id",
         string="Import Lines",
     )
-    
-    # Statistics
-    total_rows = fields.Integer(string="Total Rows", readonly=True)
-    valid_rows = fields.Integer(string="Valid Rows", readonly=True)
-    invalid_rows = fields.Integer(string="Invalid Rows", readonly=True)
-    conflict_rows = fields.Integer(string="Conflict Rows", readonly=True)
-    created_rows = fields.Integer(string="Created", readonly=True)
-    updated_rows = fields.Integer(string="Updated", readonly=True)
-    skipped_rows = fields.Integer(string="Skipped", readonly=True)
     
     # Equipment type mapping
     def _get_equipment_type_mapping(self):
@@ -276,26 +254,53 @@ class AircraftImport(models.TransientModel):
             raise UserError(_("Please upload a CSV file first."))
             
         # Clear existing import lines
-        self.import_line_ids.unlink()
+        self.line_ids.unlink()
         
         # Reset statistics
         self.write({
+            "state": "preview",
             "total_rows": 0,
-            "valid_rows": 0,
-            "invalid_rows": 0,
-            "conflict_rows": 0,
+            "valid_count": 0,
+            "invalid_count": 0,
+            "conflict_count": 0,
+            "imported_count": 0,
+            "skipped_count": 0,
         })
         
         # Parse CSV file
         csv_data = base64.b64decode(self.csv_file)
         csv_file = io.StringIO(csv_data.decode("utf-8"))
+        
+        # Log the CSV content for debugging
+        _logger.info("CSV content: %s", csv_data.decode("utf-8"))
+        _logger.info("Delimiter: %s", self.delimiter)
+        
         reader = csv.DictReader(csv_file, delimiter=self.delimiter)
+        
+        # Log the headers for debugging
+        _logger.info("CSV headers: %s", reader.fieldnames)
+        _logger.info("Looking for registration field: %s", self.registration_field)
+        _logger.info("Looking for model field: %s", self.model_field)
+        
+        # Check if required headers exist
+        required_headers = [self.registration_field]
+        for header in required_headers:
+            if header not in reader.fieldnames:
+                available_headers = ', '.join(reader.fieldnames) if reader.fieldnames else 'None'
+                raise UserError(_(
+                    'Required header "%s" not found in the CSV file.\n\n'
+                    'Available headers: %s\n\n'
+                    'You can adjust the field mapping in the wizard to match your CSV headers.'
+                ) % (header, available_headers))
         
         # Process each row
         import_lines = []
         equipment_type_mapping = self._get_equipment_type_mapping()
         
         for row in reader:
+            # Log the row for debugging
+            _logger.info("Processing row: %s", row)
+            
             # Extract data from CSV
             registration = row.get(self.registration_field, "").strip()
             model_str = row.get(self.model_field, "").strip()
@@ -304,8 +309,12 @@ class AircraftImport(models.TransientModel):
             engine_type_str = row.get(self.engine_type_field, "").strip()
             category = row.get(self.category_field, "").strip()
             
+            # Log extracted data for debugging
+            _logger.info("Extracted data - Registration: %s, Model: %s", registration, model_str)
+            
             # Skip empty registrations
             if not registration:
+                _logger.warning("Skipping row with empty registration")
                 continue
                 
             # Map equipment type
@@ -327,7 +336,7 @@ class AircraftImport(models.TransientModel):
             # Create import line
             import_line = {
                 "registration": registration,
-                "model_name": model_str,
+                "model": model_str,
                 "operator": operator,
                 "equipment_type": equipment_type,
                 "engine_type": engine_type_str,
@@ -340,20 +349,19 @@ class AircraftImport(models.TransientModel):
             import_lines.append((0, 0, import_line))
             
         # Create import lines
-        self.write({"import_line_ids": import_lines})
+        self.write({"line_ids": import_lines})
         
         # Update statistics
         total_rows = len(import_lines)
-        valid_rows = len([line for line in self.import_line_ids if line.status == "valid"])
-        invalid_rows = len([line for line in self.import_line_ids if line.status == "invalid"])
-        conflict_rows = len([line for line in self.import_line_ids if line.status == "conflict"])
+        valid_rows = len([line for line in self.line_ids if line.status == "valid"])
+        invalid_rows = len([line for line in self.line_ids if line.status == "invalid"])
+        conflict_rows = len([line for line in self.line_ids if line.status == "conflict"])
         
         self.write({
             "total_rows": total_rows,
-            "valid_rows": valid_rows,
-            "invalid_rows": invalid_rows,
-            "conflict_rows": conflict_rows,
-            "state": "preview",
+            "valid_count": valid_rows,
+            "invalid_count": invalid_rows,
+            "conflict_count": conflict_rows,
         })
         
         return {
@@ -372,16 +380,15 @@ class AircraftImport(models.TransientModel):
             raise UserError(_("Please preview the data before importing."))
             
         # Get lines to import
-        lines_to_import = self.import_line_ids.filtered(lambda l: l.to_import)
+        lines_to_import = self.line_ids.filtered(lambda l: l.to_import)
         
         if not lines_to_import:
             raise UserError(_("No lines selected for import."))
             
         # Reset statistics
         self.write({
-            "created_rows": 0,
-            "updated_rows": 0,
-            "skipped_rows": 0,
+            "imported_count": 0,
+            "skipped_count": 0,
         })
         
         created_count = 0
@@ -401,9 +408,8 @@ class AircraftImport(models.TransientModel):
         
         # Update statistics
         self.write({
-            "created_rows": created_count,
-            "updated_rows": updated_count,
-            "skipped_rows": skipped_count,
+            "imported_count": created_count + updated_count,
+            "skipped_count": skipped_count,
             "state": "import",
         })
         
@@ -449,11 +455,11 @@ class AircraftImport(models.TransientModel):
     
     def _get_or_create_model(self, line):
         """Get or create aircraft model"""
-        if not line.model_name:
+        if not line.model:
             return False
             
         # Get make and model number using separate methods
-        make, model_number = self._parse_model_name(line.model_name)
+        make, model_number = self._parse_model_name(line.model)
         
         # Check for existing model
         model = self.env["flight.aircraft.model"].search([
