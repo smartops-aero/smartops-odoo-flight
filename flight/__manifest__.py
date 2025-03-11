@@ -39,7 +39,7 @@
         "views/menu.xml",
         "data/flight.aircraft.class.csv",
         "data/flight.aircraft.model.tag.csv",
-        "data/flight.crew.role.csv",
+        "data/flight_crew_role.xml",
         # 'data/flight.aerodrome.csv',
     ],
 }
