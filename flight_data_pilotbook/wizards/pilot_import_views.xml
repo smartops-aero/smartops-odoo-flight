@@ -48,7 +48,7 @@
                             </group>
                         </group>
                         <div class="alert alert-info" role="alert" attrs="{'invisible': [('conflict_rows', '=', 0)]}">
-                            There are <field name="conflict_rows" class="oe_inline"/> conflicts detected. Review the conflicts and check the "Import" box for those you want to update.
+                            There are <field name="conflict_rows" class="oe_inline"/> conflicts detected. Review the conflicts and check the "Import" toggle button for those you want to update.
                         </div>
                     </div>
                     
@@ -59,14 +59,14 @@
                         </div>
                     </div>
                     <field name="import_line_ids" domain="[('result', '=', False)]">
-                            <tree editable="bottom" decoration-success="status=='valid'" decoration-danger="status=='invalid'" decoration-warning="status=='conflict'" default_order="name" limit="40">
+                            <tree editable="bottom" decoration-danger="status=='invalid' and parent.state=='preview'" decoration-warning="status=='conflict' and parent.state=='preview'" decoration-success="result=='created' and parent.state=='import'" decoration-info="result=='updated' and parent.state=='import'" decoration-muted="result=='skipped' and parent.state=='import'" default_order="name" limit="40">
                                 <field name="name"/>
                                 <field name="employee_id"/>
                                 <field name="company"/>
                                 <field name="to_import" widget="boolean_toggle" attrs="{'invisible': [('parent.state', '=', 'import')]}"/>
-                                <field name="status" attrs="{'invisible': [('parent.state', '=', 'import')]}"/>
-                                <field name="message" attrs="{'invisible': [('parent.state', '=', 'import')]}"/>
-                                <field name="result" attrs="{'invisible': [('parent.state', '=', 'preview')]}"/>
+                                <field name="status" attrs="{'invisible': [('parent.state', '=', 'import')], 'readonly': [('parent.state', '!=', 'upload')]}"/>
+                                <field name="message" attrs="{'invisible': [('parent.state', '=', 'import')], 'readonly': [('parent.state', '!=', 'upload')]}"/>
+                                <field name="result" attrs="{'invisible': [('parent.state', '=', 'preview')], 'readonly': [('parent.state', '!=', 'upload')]}"/>
                             </tree>
                         </field>
                 </sheet>
