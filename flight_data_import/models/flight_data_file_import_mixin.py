@@ -136,19 +136,31 @@ class FlightDataFileImportMixin(models.AbstractModel):
             return 'csv'  # Default to CSV if no filename
             
         ext = filename.split('.')[-1].lower()
-        if ext in ['csv']:
+        if ext == 'csv':
             return 'csv'
-        elif ext in ['xls']:
+        elif ext == 'xls':
             return 'xls'
-        elif ext in ['xlsx']:
+        elif ext == 'xlsx':
             return 'xlsx'
         else:
             return 'csv'  # Default to CSV for unknown extensions
     
+    def _get_parse_options(self):
+        """Get standard parsing options based on current settings.
+        
+        Returns:
+            dict: Dictionary with parsing options
+        """
+        return {
+            'delimiter': self.csv_delimiter,
+            'quotechar': self.csv_quotechar,
+            'has_header': self.has_header,
+        }
+    
     def _parse_csv_file(self, file_data, options=None):
         """Parse CSV file and return rows as list of lists."""
         if options is None:
-            options = {}
+            options = self._get_parse_options()
             
         delimiter = options.get('delimiter', self.csv_delimiter)
         quotechar = options.get('quotechar', self.csv_quotechar)
@@ -184,7 +196,7 @@ class FlightDataFileImportMixin(models.AbstractModel):
             raise UserError(_("Excel support is not available. Please install xlrd and openpyxl packages."))
             
         if options is None:
-            options = {}
+            options = self._get_parse_options()
             
         has_header = options.get('has_header', self.has_header)
         
@@ -220,7 +232,7 @@ class FlightDataFileImportMixin(models.AbstractModel):
             raise UserError(_("Excel support is not available. Please install xlrd and openpyxl packages."))
             
         if options is None:
-            options = {}
+            options = self._get_parse_options()
             
         has_header = options.get('has_header', self.has_header)
         
@@ -261,7 +273,7 @@ class FlightDataFileImportMixin(models.AbstractModel):
             dict: Parsed data with header and rows
         """
         if options is None:
-            options = {}
+            options = self._get_parse_options()
             
         # Determine file format
         file_format = self.file_format
@@ -279,30 +291,10 @@ class FlightDataFileImportMixin(models.AbstractModel):
             raise UserError(_("Unsupported file format: %s", file_format))
     
     # Import methods
-    def _parse_file(self, file_data):
-        """Parse the file content.
-        
-        This method overrides the base mixin's _parse_file method.
-        It uses the parse_file method to handle different file formats.
-        
-        Args:
-            file_data (bytes): The file content
-            
-        Returns:
-            dict: Parsed data
-        """
-        options = {
-            'delimiter': self.csv_delimiter,
-            'quotechar': self.csv_quotechar,
-            'has_header': self.has_header,
-        }
-        
-        return self.parse_file(file_data, self.filename, options)
-    
     def import_single_file(self, file_data, result):
         """Import a single file.
         
-        This method is called by the base mixin's _import_file method.
+        This method is called by the _import_file method.
         It parses the file and processes the parsed data.
         
         Args:
@@ -318,13 +310,7 @@ class FlightDataFileImportMixin(models.AbstractModel):
             file_data = base64.b64decode(self.import_file)
         
         # Parse the file
-        options = {
-            'delimiter': self.csv_delimiter,
-            'quotechar': self.csv_quotechar,
-            'has_header': self.has_header,
-        }
-        
-        parsed_data = self.parse_file(file_data, self.filename, options)
+        parsed_data = self.parse_file(file_data, self.filename)
         
         # Check if parsed data is valid
         if not self._check_parsed_data(parsed_data):
