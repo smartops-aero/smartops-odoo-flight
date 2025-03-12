@@ -26,6 +26,15 @@
             sequence="20"
     />
 
+    <!-- Pilot Remarks Menu -->
+    <menuitem
+            id="menu_flight_pilot_remark"
+            name="Pilot Remarks"
+            parent="menu_flight_pilot_log"
+            action="action_flight_pilot_remark_list"
+            sequence="25"
+    />
+
     <!-- Time Analysis Menu -->
     <menuitem
             id="menu_flight_pilot_time_analysis"

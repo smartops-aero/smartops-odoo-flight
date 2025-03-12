@@ -25,6 +25,7 @@
         "views/flight_pilot_time_views.xml",
         "views/flight_pilot_event_views.xml",
         "views/flight_pilot_time_code_views.xml",
+        "views/flight_pilot_remark_views.xml",
         "views/menu.xml",
     ],
     "application": False,

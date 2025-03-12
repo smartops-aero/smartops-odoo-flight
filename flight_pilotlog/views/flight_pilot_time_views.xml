@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Flight Pilot Time Views -->
+    <record id="view_flight_pilot_time_tree" model="ir.ui.view">
+        <field name="name">flight.pilot.time.tree</field>
+        <field name="model">flight.pilot.time</field>
+        <field name="arch" type="xml">
+            <tree string="Pilot Times">
+                <field name="flight_id"/>
+                <field name="partner_id"/>
+                <field name="aircraft_id"/>
+                <field name="code_id"/>
+                <field name="duration" sum="Total Duration"/>
+                <field name="date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_flight_pilot_time_form" model="ir.ui.view">
+        <field name="name">flight.pilot.time.form</field>
+        <field name="model">flight.pilot.time</field>
+        <field name="arch" type="xml">
+            <form string="Pilot Time">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="flight_id"/>
+                            <field name="partner_id"/>
+                            <field name="aircraft_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="code_id"/>
+                            <field name="duration" widget="float_time"/>
+                            <field name="date" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_flight_pilot_time_search" model="ir.ui.view">
+        <field name="name">flight.pilot.time.search</field>
+        <field name="model">flight.pilot.time</field>
+        <field name="arch" type="xml">
+            <search string="Search Pilot Times">
+                <field name="flight_id"/>
+                <field name="partner_id"/>
+                <field name="aircraft_id"/>
+                <field name="code_id"/>
+                <field name="date"/>
+                <filter string="This Month" name="this_month" domain="[('date','&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')),('date','&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"/>
+                <filter string="This Year" name="this_year" domain="[('date','&gt;=', (context_today() + relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),('date','&lt;=', (context_today() + relativedelta(years=1, month=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Flight" name="group_by_flight" domain="[]" context="{'group_by':'flight_id'}"/>
+                    <filter string="Pilot" name="group_by_pilot" domain="[]" context="{'group_by':'partner_id'}"/>
+                    <filter string="Aircraft" name="group_by_aircraft" domain="[]" context="{'group_by':'aircraft_id'}"/>
+                    <filter string="Time Code" name="group_by_code" domain="[]" context="{'group_by':'code_id'}"/>
+                    <filter string="Date" name="group_by_date" domain="[]" context="{'group_by':'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_flight_pilot_time_list" model="ir.actions.act_window">
+        <field name="name">Pilot Times</field>
+        <field name="res_model">flight.pilot.time</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first pilot time entry
+            </p>
+            <p>
+                Pilot time entries track flight hours by different time categories.
+            </p>
+        </field>
+    </record>
+
+    <!-- Pilot Time Analysis View -->
+    <record id="view_flight_pilot_time_pivot" model="ir.ui.view">
+        <field name="name">flight.pilot.time.pivot</field>
+        <field name="model">flight.pilot.time</field>
+        <field name="arch" type="xml">
+            <pivot string="Pilot Time Analysis" sample="1">
+                <field name="partner_id" type="row"/>
+                <field name="code_id" type="row"/>
+                <field name="duration" type="measure" widget="float_time"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_flight_pilot_time_graph" model="ir.ui.view">
+        <field name="name">flight.pilot.time.graph</field>
+        <field name="model">flight.pilot.time</field>
+        <field name="arch" type="xml">
+            <graph string="Pilot Time Analysis" type="bar" sample="1">
+                <field name="partner_id"/>
+                <field name="code_id"/>
+                <field name="duration" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_flight_pilot_time_by_pilot" model="ir.actions.act_window">
+        <field name="name">Time Analysis</field>
+        <field name="res_model">flight.pilot.time</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="context">{'search_default_group_by_pilot': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No time data available
+            </p>
+            <p>
+                Create pilot time entries to analyze flight hours.
+            </p>
+        </field>
+    </record>
+</odoo>
