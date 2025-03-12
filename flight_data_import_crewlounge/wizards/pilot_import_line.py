@@ -151,9 +151,9 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
         # Check for existing pilot by email or name
         partner = self._find_pilot(self.name, self.email)
         if partner:
-            return (True, partner.id, _("Pilot already exists"))
+            return True
         
-        return (False, False, False)
+        return False
     
     def action_import(self):
         """Import the pilot data."""
