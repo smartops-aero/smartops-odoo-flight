@@ -184,3 +184,10 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
             _logger.exception("Error importing pilot: %s", self.name)
             self.mark_as_invalid(str(e))
             return False
+
+    def mark_as_conflict(self, conflict_message):
+        self.write({
+            "is_new": False,
+        })
+
+        super().mark_as_conflict(conflict_message)

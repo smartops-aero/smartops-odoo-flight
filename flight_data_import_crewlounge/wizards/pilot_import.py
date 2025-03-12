@@ -3,7 +3,7 @@
 
 import logging
 
-from odoo import _, api, fields, models
+from odoo import _, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -80,18 +80,14 @@ class FlightDataImportCrewLoungePilot(models.TransientModel):
                     "state": "valid",
                 }
                 
-                # Check for existing pilot
-                pilot_line = self.env["flight.data.import.crewlounge.pilot.line"].new(line_vals)
-                has_conflict = pilot_line.check_conflicts()
-                if has_conflict:
-                    line_vals.update({
-                        "state": "conflict",
-                        "is_new": False,
-                        "warning_message": _("Pilot already exists")
-                    })
-                
                 # Create the line
                 line = self.env["flight.data.import.crewlounge.pilot.line"].create(line_vals)
+                
+                # Check for conflicts
+                has_conflict = line.check_conflicts()
+                if has_conflict:
+                    line.mark_as_conflict(_("Pilot already exists"))
+
                 
                 # Update result statistics
                 result["total"] += 1
