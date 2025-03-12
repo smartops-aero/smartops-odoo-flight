@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Flight Import Menu - Under Flights menu -->
+    <menuitem id="menu_flight_import" 
+              name="Import Flights" 
+              parent="flight.menu_flight" 
+              sequence="40"/>
+    
+    <!-- Aircraft Import Menu - Under Aircraft menu -->
+    <menuitem id="menu_aircraft_import" 
+              name="Import Aircraft" 
+              parent="flight.menu_aircraft" 
+              sequence="40"/>
+    
+    <!-- Crew Import Menu - Under Crew menu -->
+    <menuitem id="menu_crew_import" 
+              name="Import Crew" 
+              parent="flight.menu_crew" 
+              sequence="40"/>
+    
+    <!-- Each specific import module will add its own menu items under these parent menus -->
+    <!-- For example:
+    <menuitem id="menu_import_crewlounge_flight" 
+              name="Import from CrewLounge" 
+              parent="menu_flight_import"
+              action="action_import_crewlounge_flight" 
+              sequence="10"/>
+    -->
+</odoo>

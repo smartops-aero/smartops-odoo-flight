@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add import fields to flight form view -->
+    <record id="view_flight_flight_form_import" model="ir.ui.view">
+        <field name="name">flight.flight.form.import</field>
+        <field name="model">flight.flight</field>
+        <field name="inherit_id" ref="flight.view_flight_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Import Data" name="import_data" groups="base.group_system">
+                    <group>
+                        <field name="unique_import_id"/>
+                        <field name="raw_data" widget="text"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
