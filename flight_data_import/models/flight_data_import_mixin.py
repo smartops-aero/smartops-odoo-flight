@@ -31,7 +31,6 @@ class FlightDataImportMixin(models.AbstractModel):
     valid_rows = fields.Integer("Valid Rows", readonly=True)
     invalid_rows = fields.Integer("Invalid Rows", readonly=True)
     conflict_rows = fields.Integer("Conflict Rows", readonly=True)
-    statistics = fields.Text("Import Statistics", readonly=True)
     
     # Conflict resolution
     update_existing = fields.Boolean(
@@ -47,7 +46,6 @@ class FlightDataImportMixin(models.AbstractModel):
             'valid_rows': 0,
             'invalid_rows': 0,
             'conflict_rows': 0,
-            'statistics': '',
         })
     
     def _update_statistics(self):

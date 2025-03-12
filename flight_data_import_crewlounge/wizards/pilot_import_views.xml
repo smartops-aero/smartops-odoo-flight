@@ -23,7 +23,6 @@
                     <!-- Preview and Import Section (Preview/Done States) -->
                     <group attrs="{'invisible': [('state', 'not in', ['preview', 'done'])]}">
                         <group>
-                            <field name="statistics" readonly="1"/>
                             <field name="total_rows" readonly="1"/>
                             <field name="valid_rows" readonly="1"/>
                             <field name="invalid_rows" readonly="1"/>

@@ -77,9 +77,20 @@ class FlightDataImportCrewLoungePilot(models.TransientModel):
                     "phone": phone,
                     "email": email,
                     "notes": notes,
+                    "state": "valid",
                 }
                 
-                # Create the line - validation will happen automatically via onchange
+                # Check for existing pilot
+                pilot_line = self.env["flight.data.import.crewlounge.pilot.line"].new(line_vals)
+                has_conflict = pilot_line.check_conflicts()
+                if has_conflict:
+                    line_vals.update({
+                        "state": "conflict",
+                        "is_new": False,
+                        "warning_message": _("Pilot already exists")
+                    })
+                
+                # Create the line
                 line = self.env["flight.data.import.crewlounge.pilot.line"].create(line_vals)
                 
                 # Update result statistics
@@ -108,7 +119,6 @@ class FlightDataImportCrewLoungePilot(models.TransientModel):
         valid_count = len(self.import_line_ids.filtered(lambda l: l.state == 'valid'))
         invalid_count = len(self.import_line_ids.filtered(lambda l: l.state == 'invalid'))
         conflict_count = len(self.import_line_ids.filtered(lambda l: l.state == 'conflict'))
-        imported_count = len(self.import_line_ids.filtered(lambda l: l.state == 'imported'))
         total_count = len(self.import_line_ids)
         
         # Update statistics fields
@@ -117,18 +127,6 @@ class FlightDataImportCrewLoungePilot(models.TransientModel):
             'valid_rows': valid_count,
             'invalid_rows': invalid_count,
             'conflict_rows': conflict_count,
-            'statistics': _(
-                "Total: %(total)s\n"
-                "Valid: %(valid)s\n"
-                "Invalid: %(invalid)s\n"
-                "Conflicts: %(conflict)s\n"
-                "Imported: %(imported)s",
-                total=total_count,
-                valid=valid_count,
-                invalid=invalid_count,
-                conflict=conflict_count,
-                imported=imported_count,
-            ),
         })
     
     def action_import(self):
@@ -192,3 +190,8 @@ class FlightDataImportCrewLoungePilot(models.TransientModel):
         )
         
         return self._show_success(message)
+    
+    def action_reset(self):
+        self.ensure_one()
+        self.import_line_ids.unlink()
+        return super().action_reset()

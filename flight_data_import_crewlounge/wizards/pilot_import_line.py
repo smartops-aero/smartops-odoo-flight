@@ -55,10 +55,10 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
         
         # Build search domain with OR conditions
         or_conditions = []
-        if email:
-            or_conditions.append(("email", "=ilike", email))
-        if name:
-            or_conditions.append(("name", "=", name))
+        if email and email.strip():
+            or_conditions.append(("email", "=ilike", email.strip()))
+        if name and name.strip():
+            or_conditions.append(("name", "=", name.strip()))
             
         # Only add OR operator and conditions if we have conditions to add
         if len(or_conditions) > 1:
