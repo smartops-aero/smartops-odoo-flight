@@ -40,7 +40,6 @@
                                       decoration-info="state == 'imported'">
                                     <field name="to_import" widget="boolean_toggle"/>
                                     <field name="state" invisible="1"/>
-                                    <field name="row_index"/>
                                     <field name="company_name"/>
                                     <field name="employee_id"/>
                                     <field name="name"/>
@@ -86,7 +85,6 @@
                         <group>
                             <field name="state" readonly="1"/>
                             <field name="to_import"/>
-                            <field name="row_index" readonly="1"/>
                             <field name="raw_data" readonly="1"/>
                             <field name="error_message" readonly="1" attrs="{'invisible': [('error_message', '=', False)]}"/>
                             <field name="warning_message" readonly="1" attrs="{'invisible': [('warning_message', '=', False)]}"/>

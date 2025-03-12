@@ -22,7 +22,6 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
         required=True, 
         ondelete="cascade"
     )
-    row_index = fields.Integer("Row Index", readonly=True)
     
     # Raw data fields from CSV
     company_name = fields.Char("Company")
@@ -61,8 +60,11 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
         if name:
             or_conditions.append(("name", "=", name))
             
-        if or_conditions:
-            domain.append('|' if len(or_conditions) > 1 else '')
+        # Only add OR operator and conditions if we have conditions to add
+        if len(or_conditions) > 1:
+            domain.append('|')
+            domain.extend(or_conditions)
+        elif len(or_conditions) == 1:
             domain.extend(or_conditions)
             
         return self.env["res.partner"].search(domain, limit=1)
@@ -144,7 +146,7 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
         Implementation of the abstract method from flight.data.import.line.mixin.
         
         Returns:
-            tuple: (has_conflict, conflict_record_id, conflict_message)
+            bool: True if there is a conflict, False otherwise
         """
         self.ensure_one()
         
@@ -154,7 +156,7 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
             return True
         
         return False
-    
+
     def action_import(self):
         """Import the pilot data."""
         self.ensure_one()

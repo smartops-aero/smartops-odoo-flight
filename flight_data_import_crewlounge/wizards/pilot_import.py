@@ -69,7 +69,6 @@ class FlightDataImportCrewLoungePilot(models.TransientModel):
                 # Create import line
                 line_vals = {
                     "import_id": self.id,
-                    "row_index": i,
                     "raw_data": ",".join(row),
                     "company_name": company_name,
                     "company_id": company.id if company else False,
@@ -97,7 +96,6 @@ class FlightDataImportCrewLoungePilot(models.TransientModel):
                 # Create an invalid line with error message
                 self.env["flight.data.import.crewlounge.pilot.line"].create({
                     "import_id": self.id,
-                    "row_index": i,
                     "raw_data": ",".join(row) if isinstance(row, list) else str(row),
                     "state": "invalid",
                     "error_message": str(e),
