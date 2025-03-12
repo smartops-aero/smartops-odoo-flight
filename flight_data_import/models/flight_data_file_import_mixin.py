@@ -73,7 +73,14 @@ class FlightDataFileImportMixin(models.AbstractModel):
         It processes the uploaded file and prepares the data for preview.
         
         Returns:
-            dict: Result of the import process
+            dict: Result of the import process containing:
+                - imported_ids: List of IDs of imported records
+                - notifications: List of text messages
+                - total: Total number of rows processed
+                - valid: Number of valid rows
+                - invalid: Number of invalid rows
+                - conflict: Number of rows with conflicts
+                - error: Error message if any
         """
         self.ensure_one()
         result = {
@@ -89,7 +96,7 @@ class FlightDataFileImportMixin(models.AbstractModel):
         # This method should be implemented by specific import wizards
         # that inherit from this mixin
         try:
-            self.import_single_file(None, result)
+            self._import_single_file(None, result)
         except Exception as e:
             raise UserError(f"Error importing file: {str(e)}")
             
@@ -124,14 +131,25 @@ class FlightDataFileImportMixin(models.AbstractModel):
     # File parsing methods
     @api.model
     def _get_supported_file_extensions(self):
-        """Return a list of supported file extensions."""
+        """Return a list of supported file extensions.
+        
+        Returns:
+            list: List of supported file extensions
+        """
         extensions = ['csv']
         if EXCEL_SUPPORT:
             extensions.extend(['xls', 'xlsx'])
         return extensions
     
     def _detect_file_format(self, filename):
-        """Detect file format based on filename extension."""
+        """Detect file format based on filename extension.
+        
+        Args:
+            filename (str): Name of the file
+            
+        Returns:
+            str: Detected file format ('csv', 'xls', 'xlsx')
+        """
         if not filename:
             return 'csv'  # Default to CSV if no filename
             
@@ -158,7 +176,18 @@ class FlightDataFileImportMixin(models.AbstractModel):
         }
     
     def _parse_csv_file(self, file_data, options=None):
-        """Parse CSV file and return rows as list of lists."""
+        """Parse CSV file and return rows as list of lists.
+        
+        Args:
+            file_data (bytes): File content
+            options (dict, optional): Parsing options
+            
+        Returns:
+            dict: Parsed data with header and rows
+            
+        Raises:
+            UserError: If there is an error parsing the CSV file
+        """
         if options is None:
             options = self._get_parse_options()
             
@@ -191,7 +220,18 @@ class FlightDataFileImportMixin(models.AbstractModel):
             raise UserError(_("Error parsing CSV file: %s", str(e)))
     
     def _parse_xls_file(self, file_data, options=None):
-        """Parse XLS file and return rows as list of lists."""
+        """Parse XLS file and return rows as list of lists.
+        
+        Args:
+            file_data (bytes): File content
+            options (dict, optional): Parsing options
+            
+        Returns:
+            dict: Parsed data with header and rows
+            
+        Raises:
+            UserError: If Excel support is not available or there is an error parsing the file
+        """
         if not EXCEL_SUPPORT:
             raise UserError(_("Excel support is not available. Please install xlrd and openpyxl packages."))
             
@@ -227,7 +267,18 @@ class FlightDataFileImportMixin(models.AbstractModel):
             raise UserError(_("Error parsing XLS file: %s", str(e)))
     
     def _parse_xlsx_file(self, file_data, options=None):
-        """Parse XLSX file and return rows as list of lists."""
+        """Parse XLSX file and return rows as list of lists.
+        
+        Args:
+            file_data (bytes): File content
+            options (dict, optional): Parsing options
+            
+        Returns:
+            dict: Parsed data with header and rows
+            
+        Raises:
+            UserError: If Excel support is not available or there is an error parsing the file
+        """
         if not EXCEL_SUPPORT:
             raise UserError(_("Excel support is not available. Please install xlrd and openpyxl packages."))
             
@@ -261,7 +312,7 @@ class FlightDataFileImportMixin(models.AbstractModel):
             _logger.exception("Error parsing XLSX file")
             raise UserError(_("Error parsing XLSX file: %s", str(e)))
     
-    def parse_file(self, file_data, filename=None, options=None):
+    def _parse_file(self, file_data, filename=None, options=None):
         """Parse file based on format and return rows as list of lists.
         
         Args:
@@ -271,6 +322,9 @@ class FlightDataFileImportMixin(models.AbstractModel):
             
         Returns:
             dict: Parsed data with header and rows
+            
+        Raises:
+            UserError: If the file format is unsupported or there is an error parsing the file
         """
         if options is None:
             options = self._get_parse_options()
@@ -291,7 +345,7 @@ class FlightDataFileImportMixin(models.AbstractModel):
             raise UserError(_("Unsupported file format: %s", file_format))
     
     # Import methods
-    def import_single_file(self, file_data, result):
+    def _import_single_file(self, file_data, result):
         """Import a single file.
         
         This method is called by the _import_file method.
@@ -310,7 +364,7 @@ class FlightDataFileImportMixin(models.AbstractModel):
             file_data = base64.b64decode(self.import_file)
         
         # Parse the file
-        parsed_data = self.parse_file(file_data, self.filename)
+        parsed_data = self._parse_file(file_data, self.filename)
         
         # Check if parsed data is valid
         if not self._check_parsed_data(parsed_data):
@@ -331,6 +385,40 @@ class FlightDataFileImportMixin(models.AbstractModel):
         Args:
             parsed_data (dict): Parsed data with header and rows
             result (dict): Dictionary to store import results
+            
+        Example implementation:
+        ```
+        def _process_parsed_data(self, parsed_data, result):
+            header = parsed_data.get('header', [])
+            rows = parsed_data.get('rows', [])
+            
+            # Create import lines
+            import_line_vals = []
+            for row in rows:
+                # Process row and create import line values
+                line_vals = {
+                    'import_id': self.id,
+                    'raw_data': str(row),
+                    # Add other fields based on row data
+                }
+                import_line_vals.append(line_vals)
+            
+            # Create import lines
+            if import_line_vals:
+                self.env['your.import.line.model'].create(import_line_vals)
+            
+            # Update result
+            result['total'] = len(rows)
+            
+            # Validate lines
+            for line in self.import_line_ids:
+                line.validate()
+            
+            # Update result with validation results
+            result['valid'] = len(self.import_line_ids.filtered(lambda l: l.state == 'valid'))
+            result['invalid'] = len(self.import_line_ids.filtered(lambda l: l.state == 'invalid'))
+            result['conflict'] = len(self.import_line_ids.filtered(lambda l: l.state == 'conflict'))
+        ```
         """
         raise NotImplementedError("This method must be implemented by specific import wizards")
         

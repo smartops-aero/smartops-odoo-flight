@@ -53,8 +53,19 @@ class FlightDataImportMixin(models.AbstractModel):
     def _update_statistics(self):
         """Update import statistics based on import lines.
         
-        This method should be implemented by specific import wizards.
-        It should update the statistics based on the import lines.
+        This is a template method that should be overridden by specific import wizards.
+        The implementation should update the statistics fields based on the import result.
+        
+        Example implementation for a specific wizard:
+        ```
+        def _update_statistics(self):
+            self.write({
+                'total_rows': len(self.import_line_ids),
+                'valid_rows': len(self.import_line_ids.filtered(lambda l: l.state == 'valid')),
+                'invalid_rows': len(self.import_line_ids.filtered(lambda l: l.state == 'invalid')),
+                'conflict_rows': len(self.import_line_ids.filtered(lambda l: l.state == 'conflict')),
+            })
+        ```
         """
         pass
     
@@ -92,7 +103,11 @@ class FlightDataImportMixin(models.AbstractModel):
         return True
     
     def _show_error(self, message):
-        """Show error message to user."""
+        """Show error message to user.
+        
+        Returns:
+            dict: Action to display error notification
+        """
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
@@ -105,7 +120,11 @@ class FlightDataImportMixin(models.AbstractModel):
         }
     
     def _show_success(self, message):
-        """Show success message to user."""
+        """Show success message to user.
+        
+        Returns:
+            dict: Action to display success notification
+        """
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
