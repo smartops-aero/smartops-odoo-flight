@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_flight_data_import_crewlounge_pilot,access_flight_data_import_crewlounge_pilot,model_flight_data_import_crewlounge_pilot,base.group_user,1,1,1,1
+access_flight_data_import_crewlounge_pilot_line,access_flight_data_import_crewlounge_pilot_line,model_flight_data_import_crewlounge_pilot_line,base.group_user,1,1,1,1
