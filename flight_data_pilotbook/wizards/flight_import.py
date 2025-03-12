@@ -14,7 +14,7 @@ class FlightImport(models.TransientModel):
 
     _name = "flight.import"
     _description = "Flight Import Wizard"
-    _inherit = "flight.import.wizard.mixin"
+    _inherit = ["flight.import.wizard.mixin", "pilot.import.helper"]
 
     # Field mappings
     date_field = fields.Char("Date Field", default="PILOTLOG_DATE")
@@ -25,10 +25,41 @@ class FlightImport(models.TransientModel):
     aircraft_make_field = fields.Char("Aircraft Make Field", default="AC_MAKE")
     aircraft_model_field = fields.Char("Aircraft Model Field", default="AC_MODEL")
     remarks_field = fields.Char("Remarks Field", default="REMARKS")
-    pilot1_field = fields.Char("Pilot 1 Field", default="PILOT1_NAME")
-    pilot2_field = fields.Char("Pilot 2 Field", default="PILOT2_NAME")
     flight_time_field = fields.Char("Flight Time Field", default="TIME_TOTAL")
     is_simulator_field = fields.Char("Is Simulator Field", default="AC_ISSIM")
+    
+    # Additional pilot time fields
+    pic_time_field = fields.Char("PIC Time Field", default="TIME_PIC")
+    sic_time_field = fields.Char("SIC Time Field", default="TIME_SIC")
+    dual_time_field = fields.Char("Dual Time Field", default="TIME_DUAL")
+    instructor_time_field = fields.Char("Instructor Time Field", default="TIME_INSTRUCTOR")
+    night_time_field = fields.Char("Night Time Field", default="TIME_NIGHT")
+    ifr_time_field = fields.Char("IFR Time Field", default="TIME_IFR")
+    capacity_field = fields.Char("Pilot Capacity Field", default="CAPACITY")
+    
+    # Pilot 1 fields
+    pilot1_id_field = fields.Char("Pilot 1 ID Field", default="PILOT1_ID")
+    pilot1_name_field = fields.Char("Pilot 1 Name Field", default="PILOT1_NAME")
+    pilot1_phone_field = fields.Char("Pilot 1 Phone Field", default="PILOT1_PHONE")
+    pilot1_email_field = fields.Char("Pilot 1 Email Field", default="PILOT1_EMAIL")
+    
+    # Pilot 2 fields
+    pilot2_id_field = fields.Char("Pilot 2 ID Field", default="PILOT2_ID")
+    pilot2_name_field = fields.Char("Pilot 2 Name Field", default="PILOT2_NAME")
+    pilot2_phone_field = fields.Char("Pilot 2 Phone Field", default="PILOT2_PHONE")
+    pilot2_email_field = fields.Char("Pilot 2 Email Field", default="PILOT2_EMAIL")
+    
+    # Pilot 3 fields
+    pilot3_id_field = fields.Char("Pilot 3 ID Field", default="PILOT3_ID")
+    pilot3_name_field = fields.Char("Pilot 3 Name Field", default="PILOT3_NAME")
+    pilot3_phone_field = fields.Char("Pilot 3 Phone Field", default="PILOT3_PHONE")
+    pilot3_email_field = fields.Char("Pilot 3 Email Field", default="PILOT3_EMAIL")
+    
+    # Pilot 4 fields
+    pilot4_id_field = fields.Char("Pilot 4 ID Field", default="PILOT4_ID")
+    pilot4_name_field = fields.Char("Pilot 4 Name Field", default="PILOT4_NAME")
+    pilot4_phone_field = fields.Char("Pilot 4 Phone Field", default="PILOT4_PHONE")
+    pilot4_email_field = fields.Char("Pilot 4 Email Field", default="PILOT4_EMAIL")
     
     # Import lines
     line_ids = fields.One2many("flight.import.line", "wizard_id", string="Import Lines")
@@ -37,19 +68,21 @@ class FlightImport(models.TransientModel):
         """Parse CSV file and prepare data for preview."""
         self.ensure_one()
         
+        # Check if file is uploaded
+        if not self.csv_file:
+            raise UserError(_("Please upload a CSV file."))
+            
         # Clear existing lines
         self.line_ids.unlink()
         
-        if not self.csv_file:
-            raise UserError(_("Please upload a CSV file."))
-        
-        # Read CSV file
+        # Parse CSV file
         try:
+            # Decode file content
             csv_data = base64.b64decode(self.csv_file)
             csv_file = io.StringIO(csv_data.decode("utf-8"))
             reader = csv.DictReader(csv_file, delimiter=self.delimiter)
             
-            # Process each row
+            # Create import lines
             for row in reader:
                 self._create_import_line(row)
                 
@@ -59,6 +92,7 @@ class FlightImport(models.TransientModel):
             # Update state
             self.state = "preview"
             
+            # Return view
             return {
                 "type": "ir.actions.act_window",
                 "res_model": self._name,
@@ -66,7 +100,6 @@ class FlightImport(models.TransientModel):
                 "view_mode": "form",
                 "target": "new",
             }
-            
         except Exception as e:
             raise UserError(_("Error parsing CSV file: %s") % str(e))
     
@@ -81,10 +114,42 @@ class FlightImport(models.TransientModel):
         raw_aircraft_make = row.get(self.aircraft_make_field, "")
         raw_aircraft_model = row.get(self.aircraft_model_field, "")
         raw_remarks = row.get(self.remarks_field, "")
-        raw_pilot1 = row.get(self.pilot1_field, "")
-        raw_pilot2 = row.get(self.pilot2_field, "")
         raw_flight_time = row.get(self.flight_time_field, "")
         raw_is_simulator = row.get(self.is_simulator_field, "")
+        
+        # Extract pilot time data
+        raw_pic_time = row.get(self.pic_time_field, "")
+        raw_sic_time = row.get(self.sic_time_field, "")
+        raw_dual_time = row.get(self.dual_time_field, "")
+        raw_instructor_time = row.get(self.instructor_time_field, "")
+        raw_night_time = row.get(self.night_time_field, "")
+        raw_ifr_time = row.get(self.ifr_time_field, "")
+        raw_capacity = row.get(self.capacity_field, "")
+        
+        # Extract pilot data
+        # Pilot 1
+        raw_pilot1_id = row.get(self.pilot1_id_field, "")
+        raw_pilot1_name = row.get(self.pilot1_name_field, "")
+        raw_pilot1_phone = row.get(self.pilot1_phone_field, "")
+        raw_pilot1_email = row.get(self.pilot1_email_field, "")
+        
+        # Pilot 2
+        raw_pilot2_id = row.get(self.pilot2_id_field, "")
+        raw_pilot2_name = row.get(self.pilot2_name_field, "")
+        raw_pilot2_phone = row.get(self.pilot2_phone_field, "")
+        raw_pilot2_email = row.get(self.pilot2_email_field, "")
+        
+        # Pilot 3
+        raw_pilot3_id = row.get(self.pilot3_id_field, "")
+        raw_pilot3_name = row.get(self.pilot3_name_field, "")
+        raw_pilot3_phone = row.get(self.pilot3_phone_field, "")
+        raw_pilot3_email = row.get(self.pilot3_email_field, "")
+        
+        # Pilot 4
+        raw_pilot4_id = row.get(self.pilot4_id_field, "")
+        raw_pilot4_name = row.get(self.pilot4_name_field, "")
+        raw_pilot4_phone = row.get(self.pilot4_phone_field, "")
+        raw_pilot4_email = row.get(self.pilot4_email_field, "")
         
         # Process date
         date = False
@@ -99,6 +164,49 @@ class FlightImport(models.TransientModel):
         if raw_flight_time:
             try:
                 flight_time = float(raw_flight_time)
+            except ValueError:
+                pass
+        
+        # Process pilot times
+        pic_time = 0.0
+        if raw_pic_time:
+            try:
+                pic_time = float(raw_pic_time)
+            except ValueError:
+                pass
+                
+        sic_time = 0.0
+        if raw_sic_time:
+            try:
+                sic_time = float(raw_sic_time)
+            except ValueError:
+                pass
+                
+        dual_time = 0.0
+        if raw_dual_time:
+            try:
+                dual_time = float(raw_dual_time)
+            except ValueError:
+                pass
+                
+        instructor_time = 0.0
+        if raw_instructor_time:
+            try:
+                instructor_time = float(raw_instructor_time)
+            except ValueError:
+                pass
+                
+        night_time = 0.0
+        if raw_night_time:
+            try:
+                night_time = float(raw_night_time)
+            except ValueError:
+                pass
+                
+        ifr_time = 0.0
+        if raw_ifr_time:
+            try:
+                ifr_time = float(raw_ifr_time)
             except ValueError:
                 pass
         
@@ -118,69 +226,99 @@ class FlightImport(models.TransientModel):
             "raw_aircraft_make": raw_aircraft_make,
             "raw_aircraft_model": raw_aircraft_model,
             "raw_remarks": raw_remarks,
-            "raw_pilot1": raw_pilot1,
-            "raw_pilot2": raw_pilot2,
             "raw_flight_time": raw_flight_time,
             "raw_is_simulator": raw_is_simulator,
+            "raw_pic_time": raw_pic_time,
+            "raw_sic_time": raw_sic_time,
+            "raw_dual_time": raw_dual_time,
+            "raw_instructor_time": raw_instructor_time,
+            "raw_night_time": raw_night_time,
+            "raw_ifr_time": raw_ifr_time,
+            "raw_capacity": raw_capacity,
             "date": date,
             "flight_number": raw_flight_number,
             "remarks": raw_remarks,
             "flight_time": flight_time,
             "is_simulator": is_simulator,
+            "pic_time": pic_time,
+            "sic_time": sic_time,
+            "dual_time": dual_time,
+            "instructor_time": instructor_time,
+            "night_time": night_time,
+            "ifr_time": ifr_time,
+            "capacity": raw_capacity,
+            "pilot1_id": raw_pilot1_id,
+            "pilot1_name": raw_pilot1_name,
+            "pilot1_phone": raw_pilot1_phone,
+            "pilot1_email": raw_pilot1_email,
+            "pilot2_id": raw_pilot2_id,
+            "pilot2_name": raw_pilot2_name,
+            "pilot2_phone": raw_pilot2_phone,
+            "pilot2_email": raw_pilot2_email,
+            "pilot3_id": raw_pilot3_id,
+            "pilot3_name": raw_pilot3_name,
+            "pilot3_phone": raw_pilot3_phone,
+            "pilot3_email": raw_pilot3_email,
+            "pilot4_id": raw_pilot4_id,
+            "pilot4_name": raw_pilot4_name,
+            "pilot4_phone": raw_pilot4_phone,
+            "pilot4_email": raw_pilot4_email,
         })
     
     def _validate_lines(self):
-        """Validate import lines and set appropriate states."""
+        """Validate import lines."""
         for line in self.line_ids:
-            # Process aircraft
-            if line.raw_aircraft_reg:
-                aircraft = self._get_or_create_aircraft(line)
-                if aircraft:
-                    line.aircraft_id = aircraft.id
-            
-            # Process departure aerodrome
-            if line.raw_departure:
-                departure = self._get_or_create_aerodrome(line.raw_departure)
-                if departure:
-                    line.departure_id = departure.id
-            
-            # Process arrival aerodrome
-            if line.raw_arrival:
-                arrival = self._get_or_create_aerodrome(line.raw_arrival)
-                if arrival:
-                    line.arrival_id = arrival.id
-            
-            # Validate required fields
             errors = []
+            
+            # Validate date
             if not line.date:
-                errors.append(_("Invalid or missing date"))
-            if not line.aircraft_id:
-                errors.append(_("Invalid or missing aircraft"))
-            if not line.departure_id:
-                errors.append(_("Invalid or missing departure aerodrome"))
-            if not line.arrival_id:
-                errors.append(_("Invalid or missing arrival aerodrome"))
+                errors.append(_("Invalid date format"))
+            
+            # Validate flight number
+            if not line.flight_number:
+                errors.append(_("Flight number is required"))
+            
+            # Validate departure and arrival
+            if not line.raw_departure:
+                errors.append(_("Departure is required"))
+            
+            if not line.raw_arrival:
+                errors.append(_("Arrival is required"))
+            
+            # Validate aircraft
+            if not line.raw_aircraft_reg:
+                errors.append(_("Aircraft registration is required"))
+            
+            # Validate flight time
+            if line.flight_time <= 0:
+                errors.append(_("Flight time must be positive"))
+            
+            # Validate pilot data
+            if not line.pilot1_name and not line.pilot2_name:
+                errors.append(_("At least one pilot is required"))
+            
+            # Validate pilot time entries
+            total_pilot_time = line.pic_time + line.sic_time + line.dual_time + line.instructor_time
+            if total_pilot_time <= 0:
+                errors.append(_("At least one pilot time entry is required"))
             
             # Set state based on validation
             if errors:
-                line.status = "invalid"
-                line.message = "\n".join(errors)
+                line.state = "invalid"
+                line.error = "\n".join(errors)
             else:
                 # Check for existing flight
                 existing = self.env["flight.flight"].search([
                     ("date", "=", line.date),
-                    ("aircraft_id", "=", line.aircraft_id.id),
-                    ("departure_id", "=", line.departure_id.id),
-                    ("arrival_id", "=", line.arrival_id.id),
+                    ("number", "=", line.flight_number),
+                    ("is_simulator", "=", line.is_simulator),
                 ], limit=1)
                 
                 if existing:
-                    line.status = "conflict"
-                    line.message = _("Flight already exists")
-                    line.to_import = False
+                    line.state = "conflict"
+                    line.error = _("Flight already exists")
                 else:
-                    line.status = "valid"
-                    line.to_import = True
+                    line.state = "valid"
     
     def _get_or_create_aircraft(self, line):
         """Get or create aircraft based on import line data."""
@@ -202,6 +340,27 @@ class FlightImport(models.TransientModel):
             "registration": line.raw_aircraft_reg,
             "model_id": model_id,
             "equipment_type": "aircraft" if not line.is_simulator else "ffs",
+        })
+    
+    def _get_or_create_aerodrome(self, code):
+        """Get or create aerodrome by code."""
+        if not code:
+            return False
+            
+        # Search for existing aerodrome
+        aerodrome = self.env["flight.aerodrome"].search([
+            ("code", "=ilike", code),
+            "|", ("company_id", "=", self.env.company.id), ("company_id", "=", False)
+        ], limit=1)
+        
+        if aerodrome:
+            return aerodrome
+            
+        # Create new aerodrome
+        return self.env["flight.aerodrome"].create({
+            "code": code.upper(),
+            "name": code.upper(),
+            "company_id": self.env.company.id,
         })
     
     def _get_or_create_model(self, line):
@@ -374,57 +533,69 @@ class FlightImport(models.TransientModel):
         
         return make_obj.id
     
-    def _get_or_create_aerodrome(self, icao):
-        """Get or create aerodrome by ICAO code."""
-        if not icao:
-            return False
-            
-        # Search for existing aerodrome
-        aerodrome = self.env["flight.aerodrome"].search([
-            ("icao", "=", icao)
-        ], limit=1)
-        
-        if aerodrome:
-            return aerodrome
-            
-        # Create new aerodrome
-        return self.env["flight.aerodrome"].create({
-            "name": icao,  # Use ICAO as name for now
-            "icao": icao,
-        })
-    
     def action_import(self):
-        """Import valid flights."""
-        self.ensure_one()
+        """Import valid lines."""
+        # Check if there are valid lines
+        valid_lines = self.line_ids.filtered(lambda l: l.state == "valid")
+        if not valid_lines:
+            raise UserError(_("No valid lines to import."))
         
-        # Import only valid and selected lines
-        valid_lines = self.line_ids.filtered(lambda l: l.status == "valid" and l.to_import)
+        # Import lines
+        imported_count = 0
+        error_count = 0
         
         for line in valid_lines:
-            # Create flight
-            flight = self.env["flight.flight"].create({
-                "date": line.date,
-                "aircraft_id": line.aircraft_id.id,
-                "departure_id": line.departure_id.id,
-                "arrival_id": line.arrival_id.id,
-            })
-            
-            # Update line state
-            line.write({
-                "result": "created",
-            })
+            try:
+                # Get or create aircraft
+                aircraft = self._get_or_create_aircraft(line)
+                
+                # Get or create departure and arrival aerodromes
+                departure = self._get_or_create_aerodrome(line.raw_departure)
+                arrival = self._get_or_create_aerodrome(line.raw_arrival)
+                
+                # Create flight
+                flight = self.env["flight.flight"].create({
+                    "date": line.date,
+                    "number": line.flight_number,
+                    "departure_id": departure.id,
+                    "arrival_id": arrival.id,
+                    "aircraft_id": aircraft.id,
+                    "duration": line.flight_time,
+                    "is_simulator": line.is_simulator,
+                    "remarks": line.remarks,
+                })
+                
+                # Process pilot data
+                self.process_pilot_data(flight, line)
+                
+                # Update line
+                line.write({
+                    "state": "imported",
+                    "flight_id": flight.id,
+                })
+                
+                imported_count += 1
+            except Exception as e:
+                # Update line with error
+                line.write({
+                    "state": "invalid",
+                    "error": str(e),
+                })
+                error_count += 1
         
-        # Update skipped lines
-        skipped_lines = self.line_ids.filtered(lambda l: l.status == "valid" and not l.to_import)
-        skipped_lines.write({"result": "skipped"})
-        
-        # Update wizard state
-        self.state = "import"
+        # Show result message
+        message = _("Import completed: %s flights imported, %s errors.") % (
+            imported_count,
+            error_count,
+        )
         
         return {
-            "type": "ir.actions.act_window",
-            "res_model": self._name,
-            "res_id": self.id,
-            "view_mode": "form",
-            "target": "new",
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": _("Import Result"),
+                "message": message,
+                "sticky": False,
+                "type": "success" if error_count == 0 else "warning",
+            },
         }
