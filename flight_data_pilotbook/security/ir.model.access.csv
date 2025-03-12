@@ -1,9 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_flight_pilot_import_wizard_user,access.flight.pilot.import.wizard.user,model_flight_pilot_import_wizard,base.group_user,1,1,1,1
-access_flight_pilot_import_line_user,access.flight.pilot.import.line.user,model_flight_pilot_import_line,base.group_user,1,1,1,1
-access_flight_aircraft_import_wizard_user,access.flight.aircraft.import.wizard.user,model_flight_aircraft_import_wizard,base.group_user,1,1,1,1
-access_flight_aircraft_import_line_user,access.flight.aircraft.import.line.user,model_flight_aircraft_import_line,base.group_user,1,1,1,1
-access_flight_import_user,access.flight.import.user,model_flight_import,base.group_user,1,1,1,1
-access_flight_import_line_user,access.flight.import.line.user,model_flight_import_line,base.group_user,1,1,1,1
-access_flight_import_line_mixin_user,access.flight.import.line.mixin.user,model_flight_import_line_mixin,base.group_user,1,1,1,1
-access_flight_import_wizard_mixin_user,access.flight.import.wizard.mixin.user,model_flight_import_wizard_mixin,base.group_user,1,1,1,1
