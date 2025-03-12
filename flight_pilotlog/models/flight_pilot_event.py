@@ -1,7 +1,5 @@
 from odoo import fields, models
 
-from odoo import fields, models
-
 
 class FlightPilotEventCode(models.Model):
     _name = "flight.pilot.event.code"

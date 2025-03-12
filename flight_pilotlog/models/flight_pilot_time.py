@@ -1,7 +1,4 @@
-from odoo import api
-
-from odoo import fields, models
-
+from odoo import api, fields, models
 
 class FlightPilotTimeCode(models.Model):
     _name = "flight.pilot.time.code"
