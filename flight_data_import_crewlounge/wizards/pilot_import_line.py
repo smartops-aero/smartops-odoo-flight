@@ -37,6 +37,36 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
     partner_id = fields.Many2one("res.partner", "Existing Pilot")
     is_new = fields.Boolean("Is New", default=True)
     
+    def _find_pilot(self, name=None, email=None):
+        """Find a pilot by name or email.
+        
+        This method searches for a pilot with the given name or email.
+        
+        Args:
+            name (str, optional): Name of the pilot to find
+            email (str, optional): Email of the pilot to find
+            
+        Returns:
+            res.partner: Pilot record or False if not found
+        """
+        if not name and not email:
+            return False
+        
+        domain = [("is_company", "=", False)]
+        
+        # Build search domain with OR conditions
+        or_conditions = []
+        if email:
+            or_conditions.append(("email", "=ilike", email))
+        if name:
+            or_conditions.append(("name", "=", name))
+            
+        if or_conditions:
+            domain.append('|' if len(or_conditions) > 1 else '')
+            domain.extend(or_conditions)
+            
+        return self.env["res.partner"].search(domain, limit=1)
+    
     @api.onchange("company_name", "name", "email")
     def _onchange_validate(self):
         """Validate the line data and check for conflicts."""
@@ -53,24 +83,48 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
                 line.mark_as_invalid(_("Pilot name is required"))
                 continue
             
-            # Find company if specified
+            # Find company if specified (only find, don't create during validation)
             if line.company_name and line.company_name != "PRIVATE":
-                company = self.env["res.partner"].search([
-                    ("name", "=", line.company_name),
-                    ("is_company", "=", True),
-                ], limit=1)
+                company = self.env["flight.import.helper"].find_company(line.company_name)
                 line.company_id = company.id if company else False
             
-            # Check for existing pilot by email
-            if line.email:
-                partner = self.env["res.partner"].search([
-                    ("email", "=", line.email),
-                    ("is_company", "=", False),
-                ], limit=1)
-                if partner:
-                    line.partner_id = partner.id
-                    line.is_new = False
-                    line.mark_as_conflict(_("Pilot with this email already exists"))
+            # Check for existing pilot by email or name
+            partner = self._find_pilot(line.name, line.email)
+            if partner:
+                line.partner_id = partner.id
+                line.is_new = False
+                line.mark_as_conflict(_("Pilot already exists"))
+    
+    def prepare_import_values(self):
+        """Prepare values for import.
+        
+        Returns:
+            dict: Values for partner creation/update
+        """
+        self.ensure_one()
+        
+        # Prepare partner values
+        vals = {
+            "name": self.name,
+            "phone": self.phone,
+            "email": self.email,
+            "comment": self.notes,
+            "barcode": self.employee_id,
+            "is_company": False,
+        }
+        
+        # Add company if specified
+        if self.company_name and self.company_name != "PRIVATE":
+            # First check if company exists
+            company = self.env["flight.import.helper"].find_company(self.company_name)
+            
+            # If not found, create it
+            if not company:
+                company = self.env["flight.import.helper"].create_or_update_company(self.company_name)
+                
+            vals["parent_id"] = company.id if company else False
+        
+        return vals
     
     def validate(self):
         """Validate the import line.
@@ -84,41 +138,6 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
         self._onchange_validate()
         return self.state == 'valid'
     
-    def prepare_import_values(self):
-        """Prepare values for import.
-        
-        Implementation of the abstract method from flight.data.import.line.mixin.
-        
-        Returns:
-            dict: Values for creating/updating the target record
-        """
-        self.ensure_one()
-        
-        # Prepare partner values
-        partner_vals = {
-            "name": self.name,
-            "phone": self.phone,
-            "email": self.email,
-            "comment": self.notes,
-            "is_company": False,
-        }
-        
-        # Handle company
-        if self.company_name and self.company_name != "PRIVATE":
-            # Find or create company
-            if self.company_id:
-                company = self.company_id
-            else:
-                company = self.env["res.partner"].create({
-                    "name": self.company_name,
-                    "is_company": True,
-                })
-            
-            # Link pilot to company
-            partner_vals["parent_id"] = company.id
-            
-        return partner_vals
-    
     def check_conflicts(self):
         """Check for conflicts with existing records.
         
@@ -129,14 +148,10 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
         """
         self.ensure_one()
         
-        # Check for existing pilot by email
-        if self.email:
-            partner = self.env["res.partner"].search([
-                ("email", "=", self.email),
-                ("is_company", "=", False),
-            ], limit=1)
-            if partner:
-                return (True, partner.id, _("Pilot with this email already exists"))
+        # Check for existing pilot by email or name
+        partner = self._find_pilot(self.name, self.email)
+        if partner:
+            return (True, partner.id, _("Pilot already exists"))
         
         return (False, False, False)
     

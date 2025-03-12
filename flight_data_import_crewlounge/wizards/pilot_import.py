@@ -23,7 +23,7 @@ class FlightDataImportCrewLoungePilot(models.TransientModel):
         """Return default field mapping for CrewLounge pilot CSV format."""
         return {
             "company": 0,  # Company
-            "employee_id": 1,  # Employee ID
+            "employee_id": 1,  # Employee ID, mapped as barcode in res.partner
             "name": 2,  # Pilot FullName
             "phone": 3,  # Phone
             "email": 4,  # Email
@@ -51,33 +51,59 @@ class FlightDataImportCrewLoungePilot(models.TransientModel):
             if not any(row):
                 continue
             
-            # Create import line
-            line_vals = {
-                "import_id": self.id,
-                "row_index": i,
-                "raw_data": ",".join(row),
-                "company_name": row[mapping["company"]] if len(row) > mapping["company"] else "",
-                "employee_id": row[mapping["employee_id"]] if len(row) > mapping["employee_id"] else "",
-                "name": row[mapping["name"]] if len(row) > mapping["name"] else "",
-                "phone": row[mapping["phone"]] if len(row) > mapping["phone"] else "",
-                "email": row[mapping["email"]] if len(row) > mapping["email"] else "",
-                "notes": row[mapping["notes"]] if len(row) > mapping["notes"] else "",
-            }
-            
-            # Create the line
-            line = self.env["flight.data.import.crewlounge.pilot.line"].create(line_vals)
-            
-            # Validate the line
-            line._onchange_validate()
-            
-            # Update result statistics
-            result["total"] += 1
-            if line.state == "valid":
-                result["valid"] += 1
-            elif line.state == "invalid":
+            try:
+                # Get company if applicable
+                company_name = row[mapping["company"]] if len(row) > mapping["company"] else ""
+                company = False
+                if company_name and company_name != "PRIVATE":
+                    # Only find company during preview, don't create
+                    company = self.env["flight.import.helper"].find_company(company_name)
+                
+                # Safely get values with index checking
+                employee_id = row[mapping["employee_id"]] if len(row) > mapping["employee_id"] else ""
+                name = row[mapping["name"]] if len(row) > mapping["name"] else ""
+                phone = row[mapping["phone"]] if len(row) > mapping["phone"] else ""
+                email = row[mapping["email"]] if len(row) > mapping["email"] else ""
+                notes = row[mapping["notes"]] if len(row) > mapping["notes"] else ""
+                
+                # Create import line
+                line_vals = {
+                    "import_id": self.id,
+                    "row_index": i,
+                    "raw_data": ",".join(row),
+                    "company_name": company_name,
+                    "company_id": company.id if company else False,
+                    "employee_id": employee_id,
+                    "name": name,
+                    "phone": phone,
+                    "email": email,
+                    "notes": notes,
+                }
+                
+                # Create the line - validation will happen automatically via onchange
+                line = self.env["flight.data.import.crewlounge.pilot.line"].create(line_vals)
+                
+                # Update result statistics
+                result["total"] += 1
+                if line.state == "valid":
+                    result["valid"] += 1
+                elif line.state == "invalid":
+                    result["invalid"] += 1
+                elif line.state == "conflict":
+                    result["conflict"] += 1
+                    
+            except Exception as e:
+                _logger.exception("Error processing row %s: %s", i, e)
+                # Create an invalid line with error message
+                self.env["flight.data.import.crewlounge.pilot.line"].create({
+                    "import_id": self.id,
+                    "row_index": i,
+                    "raw_data": ",".join(row) if isinstance(row, list) else str(row),
+                    "state": "invalid",
+                    "error_message": str(e),
+                })
+                result["total"] += 1
                 result["invalid"] += 1
-            elif line.state == "conflict":
-                result["conflict"] += 1
     
     def _update_statistics(self):
         """Update import statistics based on import lines."""
@@ -168,20 +194,3 @@ class FlightDataImportCrewLoungePilot(models.TransientModel):
         )
         
         return self._show_success(message)
-        
-    def _prepare_create_attachment(self, result, model, res_id):
-        """Prepare values for creating an attachment.
-        
-        Override to add specific fields for pilot imports.
-        
-        Args:
-            result (dict): Import result
-            model (str): Target model
-            res_id (int): Target record ID
-            
-        Returns:
-            dict: Values for creating attachment
-        """
-        vals = super()._prepare_create_attachment(result, model, res_id)
-        vals['description'] = _("Imported from CrewLounge CSV")
-        return vals

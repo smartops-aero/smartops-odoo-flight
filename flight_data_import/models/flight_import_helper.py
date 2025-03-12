@@ -13,13 +13,11 @@ class FlightImportHelper(models.AbstractModel):
     _description = "Flight Import Helper"
     
     @api.model
-    def find_or_create_company(self, company_name):
-        """Find or create a company by name.
-        
-        This method uses a cache to avoid duplicate lookups and creation.
+    def find_company(self, company_name):
+        """Find a company by name.
         
         Args:
-            company_name (str): Name of the company to find or create
+            company_name (str): Name of the company to find
             
         Returns:
             res.partner: Company record or False
@@ -27,23 +25,46 @@ class FlightImportHelper(models.AbstractModel):
         if not company_name or company_name == "PRIVATE":
             return False
             
-            
         # Search for existing company (case-insensitive)
         company = self.env["res.partner"].search([
             ("name", "=ilike", company_name),
             ("is_company", "=", True),
         ], limit=1)
         
-        # Create company if not found
-        if not company:
-            company = self.env["res.partner"].create({
-                "name": company_name,
-                "is_company": True,
-            })
+        return company
+    
+    @api.model
+    def create_or_update_company(self, company_name, company_vals=None):
+        """Create or update a company by name.
+        
+        Args:
+            company_name (str): Name of the company to create or update
+            company_vals (dict, optional): Additional values for company creation/update
+            
+        Returns:
+            res.partner: Company record or False
+        """
+        if not company_name or company_name == "PRIVATE":
+            return False
+            
+        # Find existing company
+        company = self.find_company(company_name)
+        
+        # Prepare values
+        vals = company_vals or {}
+        vals.update({
+            "name": company_name,
+            "is_company": True,
+        })
+        
+        # Create or update company
+        if company:
+            company.write(vals)
+        else:
+            company = self.env["res.partner"].create(vals)
         
         return company
 
-    
     @api.model
     def _generate_unique_import_id(self, record_vals, source=None):
         """Generate a unique import ID for flight records.

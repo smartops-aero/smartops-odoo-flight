@@ -421,26 +421,3 @@ class FlightDataFileImportMixin(models.AbstractModel):
         ```
         """
         raise NotImplementedError("This method must be implemented by specific import wizards")
-        
-    # Attachment creation method
-    def _prepare_create_attachment(self, result, model, res_id):
-        """Prepare values for creating an attachment.
-        
-        This method is similar to the _prepare_create_attachment method in account.statement.import.
-        It prepares values for creating an attachment for the imported file.
-        
-        Args:
-            result (dict): Import result
-            model (str): Target model
-            res_id (int): Target record ID
-            
-        Returns:
-            dict: Values for creating attachment
-        """
-        return {
-            'name': self.filename if hasattr(self, 'filename') else 'import',
-            'res_model': model,
-            'res_id': res_id,
-            'type': 'binary',
-            'datas': self.import_file if hasattr(self, 'import_file') else None,
-        }
