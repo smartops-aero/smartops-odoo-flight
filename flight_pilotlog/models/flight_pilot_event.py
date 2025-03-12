@@ -23,9 +23,6 @@ class FlightPilotEventCode(models.Model):
             result.append((record.id, name))
         return result
 
-from odoo import fields, models
-
-
 class FlightPilotEvent(models.Model):
     _name = "flight.pilot.event"
     _description = "Pilot Flight Event"
