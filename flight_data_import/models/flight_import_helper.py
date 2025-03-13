@@ -1,6 +1,7 @@
 # Copyright 2025 Apexive <https://apexive.com/>
 # License MIT (https://opensource.org/licenses/MIT).
 
+import re
 from odoo import api, models
 
 
@@ -129,3 +130,198 @@ class FlightImportHelper(models.AbstractModel):
         aircraft_reg = record_vals.get("aircraft_reg", "")
         
         return f"{source_prefix}_{date_str}_{flight_number}_{aircraft_reg}_{record_vals['import_id']}"
+
+    # Aircraft related methods
+    @api.model
+    def find_aircraft(self, registration):
+        """Find an aircraft by registration.
+        
+        Args:
+            registration (str): Aircraft registration
+            
+        Returns:
+            flight.aircraft: Aircraft record or False
+        """
+        if not registration:
+            return False
+            
+        # Sanitize registration
+        registration = self._sanitize_registration(registration)
+            
+        # Search for existing aircraft (case-insensitive)
+        aircraft = self.env["flight.aircraft"].search([
+            ("registration", "=", registration),
+        ], limit=1)
+        
+        return aircraft
+    
+    @api.model
+    def create_or_update_aircraft(self, registration, aircraft_vals=None):
+        """Create or update an aircraft by registration.
+        
+        Args:
+            registration (str): Aircraft registration
+            aircraft_vals (dict, optional): Additional values for aircraft creation/update
+            
+        Returns:
+            flight.aircraft: Aircraft record or False
+        """
+        if not registration:
+            return False
+            
+        # Sanitize registration
+        registration = self._sanitize_registration(registration)
+            
+        # Find existing aircraft
+        aircraft = self.find_aircraft(registration)
+        
+        # Prepare values
+        vals = aircraft_vals or {}
+        vals.update({
+            "registration": registration,
+        })
+        
+        # Create or update aircraft
+        if aircraft:
+            aircraft.write(vals)
+        else:
+            aircraft = self.env["flight.aircraft"].create(vals)
+        
+        return aircraft
+    
+    @api.model
+    def find_aircraft_model(self, code=None, name=None):
+        """Find an aircraft model by code or name.
+        
+        Args:
+            code (str): Model code
+            name (str): Model name
+            
+        Returns:
+            flight.aircraft.model: Model record or False
+        """
+        if not code and not name:
+            return False
+        
+        domain = []
+        or_conditions = []
+        
+        # Add code condition if provided
+        if code and code.strip():
+            or_conditions.append(("code", "=ilike", code.strip()))
+        
+        # Add name condition if provided
+        if name and name.strip():
+            or_conditions.append(("name", "=ilike", name.strip()))
+        
+        # Only add OR operator and conditions if we have conditions to add
+        if len(or_conditions) > 1:
+            domain.append('|')
+            domain.extend(or_conditions)
+        elif len(or_conditions) == 1:
+            domain.extend(or_conditions)
+        
+        # Search for existing model
+        model = self.env["flight.aircraft.model"].search(domain, limit=1)
+        return model if model else False
+    
+    @api.model
+    def create_or_update_aircraft_model(self, code, model_vals=None):
+        """Create or update an aircraft model by code.
+        
+        Args:
+            code (str): Model code
+            model_vals (dict, optional): Additional values for model creation/update
+            
+        Returns:
+            flight.aircraft.model: Model record or False
+        """
+        if not code:
+            return False
+            
+        # Find existing model
+        model = self.find_aircraft_model(code=code)
+        
+        # Prepare values
+        vals = model_vals or {}
+        vals.update({
+            "code": code,
+            "name": vals.get("name", code),
+        })
+        
+        # Create or update model
+        if model:
+            model.write(vals)
+        else:
+            model = self.env["flight.aircraft.model"].create(vals)
+        
+        return model
+    
+    @api.model
+    def find_aircraft_make(self, name):
+        """Find an aircraft make by name.
+        
+        Args:
+            name (str): Make name
+            
+        Returns:
+            flight.aircraft.make: Make record or False
+        """
+        if not name:
+            return False
+            
+        # Search for existing make (case-insensitive)
+        make = self.env["flight.aircraft.make"].search([
+            ("name", "=ilike", name),
+        ], limit=1)
+        
+        return make
+    
+    @api.model
+    def create_or_update_aircraft_make(self, name, make_vals=None):
+        """Create or update an aircraft make by name.
+        
+        Args:
+            name (str): Make name
+            make_vals (dict, optional): Additional values for make creation/update
+            
+        Returns:
+            flight.aircraft.make: Make record or False
+        """
+        if not name:
+            return False
+            
+        # Find existing make
+        make = self.find_aircraft_make(name)
+        
+        # Prepare values
+        vals = make_vals or {}
+        vals.update({
+            "name": name,
+        })
+        
+        # Create or update make
+        if make:
+            make.write(vals)
+        else:
+            make = self.env["flight.aircraft.make"].create(vals)
+        
+        return make
+    
+    # Helper methods
+    @api.model
+    def _sanitize_registration(self, registration):
+        """Sanitize aircraft registration.
+        
+        Args:
+            registration (str): Aircraft registration
+            
+        Returns:
+            str: Sanitized registration
+        """
+        if not registration:
+            return ""
+            
+        # Remove any non-alphanumeric characters except dash
+        sanitized = re.sub(r"[^a-zA-Z0-9-]", "", registration).strip().upper()
+        return sanitized

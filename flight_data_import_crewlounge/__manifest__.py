@@ -3,7 +3,7 @@
 
 {
     "name": "Flight Data Import - CrewLounge",
-    "summary": "Import pilots from CrewLounge CSV exports",
+    "summary": "Import pilots and aircraft from CrewLounge CSV exports",
     "version": "16.0.1.0.0",
     "category": "Flight Management",
     "license": "LGPL-3",
@@ -14,6 +14,7 @@
         "security/ir.model.access.csv",
         "views/menu_views.xml",
         "wizards/pilot_import_views.xml",
+        "wizards/aircraft_import_views.xml",
     ],
     "installable": True,
     "application": False,

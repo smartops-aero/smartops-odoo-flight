@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Aircraft Import Form View -->
+    <record id="view_flight_data_import_crewlounge_aircraft_form" model="ir.ui.view">
+        <field name="name">flight.data.import.crewlounge.aircraft.form</field>
+        <field name="model">flight.data.import.crewlounge.aircraft</field>
+        <field name="arch" type="xml">
+            <form string="Import Aircraft">
+                <header>
+                    <button
+                        name="action_parse_file"
+                        string="Parse File"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                    />
+                    <button
+                        name="action_import"
+                        string="Import"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'preview')]}"
+                    />
+                    <button
+                        name="action_reset"
+                        string="Reset"
+                        type="object"
+                        class="btn-secondary"
+                        attrs="{'invisible': [('state', '=', 'draft')]}"
+                    />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,preview,done" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field
+                                name="file"
+                                attrs="{'readonly': [('state', '!=', 'draft')], 'required': [('state', '=', 'draft')]}"
+                            />
+                            <field name="file_name" invisible="1" />
+                            <field name="file_type" invisible="1" />
+                        </group>
+                        <group>
+                            <field name="update_existing" attrs="{'readonly': [('state', '!=', 'preview')]}" />
+                            <field name="date" invisible="1" />
+                        </group>
+                    </group>
+                    <notebook attrs="{'invisible': [('state', '=', 'draft')]}">
+                        <page string="Import Lines" name="import_lines">
+                            <div class="alert alert-info" role="alert" attrs="{'invisible': [('state', '!=', 'preview')]}">
+                                <strong>Import Preview:</strong> Review the data below before importing. Only valid records will be imported.
+                                <ul>
+                                    <li><span class="badge badge-success">Valid</span>: Ready to import</li>
+                                    <li><span class="badge badge-warning">Conflict</span>: Aircraft already exists</li>
+                                    <li><span class="badge badge-danger">Invalid</span>: Cannot be imported due to errors</li>
+                                </ul>
+                            </div>
+                            <div class="alert alert-success" role="alert" attrs="{'invisible': [('state', '!=', 'done')]}">
+                                <strong>Import Complete!</strong> The import has been processed.
+                            </div>
+                            <group class="oe_read_only">
+                                <field name="total_rows" />
+                                <field name="valid_rows" />
+                                <field name="invalid_rows" />
+                                <field name="conflict_rows" />
+                            </group>
+                            <field
+                                name="import_line_ids"
+                                attrs="{'readonly': [('state', '=', 'done')]}"
+                                options="{'no_create': True, 'no_open': True}"
+                            >
+                                <tree
+                                    decoration-success="state == 'valid'"
+                                    decoration-warning="state == 'conflict'"
+                                    decoration-danger="state == 'invalid'"
+                                    decoration-muted="state == 'imported'"
+                                    default_order="reference"
+                                >
+                                    <field name="state" invisible="1" />
+                                    <field name="reference" />
+                                    <field name="ac" />
+                                    <field name="dev" />
+                                    <field name="cat" />
+                                    <field name="company_name" />
+                                    <field name="pw" />
+                                    <field name="wt" />
+                                    <field name="is_new" />
+                                    <field name="error_message" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Aircraft Import Line Form View -->
+    <record id="view_flight_data_import_crewlounge_aircraft_line_form" model="ir.ui.view">
+        <field name="name">flight.data.import.crewlounge.aircraft.line.form</field>
+        <field name="model">flight.data.import.crewlounge.aircraft.line</field>
+        <field name="arch" type="xml">
+            <form string="Aircraft Import Line">
+                <header>
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="valid,conflict,invalid,imported"
+                    />
+                </header>
+                <sheet>
+                    <div class="alert alert-danger" role="alert" attrs="{'invisible': [('error_message', '=', False)]}">
+                        <field name="error_message" />
+                    </div>
+                    <group>
+                        <group string="Aircraft Information">
+                            <field name="reference" />
+                            <field name="ac" />
+                            <field name="dev" />
+                            <field name="cat" />
+                            <field name="company_name" />
+                            <field name="pw" />
+                            <field name="wt" />
+                        </group>
+                        <group string="Computed Information">
+                            <field name="equipment_type" />
+                            <field name="engine_type" />
+                            <field name="is_multi_pilot" />
+                            <field name="is_multi_engine" />
+                            <field name="mtow" />
+                            <field name="is_new" />
+                            <field name="aircraft_id" attrs="{'invisible': [('aircraft_id', '=', False)]}" />
+                            <field name="company_id" attrs="{'invisible': [('company_id', '=', False)]}" />
+                        </group>
+                    </group>
+                    <group string="Raw Data">
+                        <field name="raw_data" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Aircraft Import Action -->
+    <record id="action_flight_data_import_crewlounge_aircraft" model="ir.actions.act_window">
+        <field name="name">Import Aircraft</field>
+        <field name="res_model">flight.data.import.crewlounge.aircraft</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
