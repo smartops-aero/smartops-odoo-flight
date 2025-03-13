@@ -120,7 +120,7 @@ class FlightDataImportCrewLoungeAircraftLine(models.TransientModel):
         # Remove any non-alphanumeric characters except dash
         sanitized = re.sub(r"[^a-zA-Z0-9-]", "", registration).strip().upper()
         return sanitized
-    
+    # TODO Need to add class type single engine, multi engine etc
     def _get_equipment_type_mapping(self):
         """Get mapping dictionary for equipment types."""
         return {
@@ -190,36 +190,6 @@ class FlightDataImportCrewLoungeAircraftLine(models.TransientModel):
                 return value
                 
         return "piston"  # Default
-    
-    def _is_multi_pilot(self, cat_value):
-        """Determine if aircraft is multi-pilot based on CAT field.
-        
-        Args:
-            cat_value (str): CAT field value
-            
-        Returns:
-            bool: True if multi-pilot, False otherwise
-        """
-        if not cat_value:
-            return False
-            
-        # Direct check for "Multi Pilot" value
-        return cat_value.strip() == "Multi Pilot"
-    
-    def _is_multi_engine(self, pw_value):
-        """Determine if aircraft is multi-engine based on PW field.
-        
-        Args:
-            pw_value (str): PW field value
-            
-        Returns:
-            bool: True if multi-engine, False otherwise
-        """
-        if not pw_value:
-            return False
-            
-        # Direct check for ME prefix
-        return pw_value.strip().startswith("ME")
     
     def _parse_model_code(self, ac_value):
         """Clean and parse model code from AC field.
