@@ -14,6 +14,14 @@ class FlightDataImportCrewLoungeAircraftLine(models.TransientModel):
     _description = "Aircraft Import Line"
     _inherit = ["flight.data.import.line.mixin"]
 
+    # Relation to parent import wizard
+    import_id = fields.Many2one(
+        "flight.data.import.crewlounge.aircraft",
+        string="Import",
+        required=True,
+        ondelete="cascade",
+    )
+    
     # Raw fields from CSV
     dev = fields.Char(string="DEV", help="Equipment type from CSV")
     reference = fields.Char(string="Registration", help="Aircraft registration from CSV")

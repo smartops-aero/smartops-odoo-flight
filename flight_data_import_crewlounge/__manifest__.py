@@ -12,9 +12,9 @@
     "depends": ["base", "flight", "flight_data_import"],
     "data": [
         "security/ir.model.access.csv",
-        "views/menu_views.xml",
         "wizards/pilot_import_views.xml",
         "wizards/aircraft_import_views.xml",
+        "views/menu_views.xml",
     ],
     "installable": True,
     "application": False,
