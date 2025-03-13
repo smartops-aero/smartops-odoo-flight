@@ -73,47 +73,6 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
         
         return True
     
-    def _find_pilot(self, name=None, email=None, barcode=None):
-        """Find an existing pilot by name or email.
-        
-        Args:
-            name (str): Pilot name
-            email (str): Pilot email
-            
-        Returns:
-            res.partner: Existing pilot record, or False if not found
-        """
-        if not name and not email:
-            return False
-        
-        domain = [("is_company", "=", False)]
-        or_conditions = []
-        
-        # Add email condition if provided
-        if email and email.strip():
-            or_conditions.append(("email", "=ilike", email.strip()))
-        
-        # Add name condition if provided
-        if name and name.strip():
-            or_conditions.append(("name", "=ilike", name.strip()))
-        
-        # Add barcode condition if provided
-        if barcode and barcode.strip():
-            or_conditions.append(("barcode", "=", barcode.strip()))
-        
-        # Only add OR operator and conditions if we have conditions to add
-        if len(or_conditions) > 1:
-            domain.append('|')
-            domain.extend(or_conditions)
-        elif len(or_conditions) == 1:
-            domain.extend(or_conditions)
-        
-        _logger.info("Domain: %s", domain)
-        
-        # Search for existing pilot
-        partner = self.env["res.partner"].search(domain, limit=1)
-        return partner if partner else False
-    
     def check_conflicts(self):
         """Check for conflicts with existing records.
         
@@ -125,14 +84,18 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
         self.ensure_one()
         
         # Check for existing pilot by email or name
-        partner = self._find_pilot(self.name, self.email)
+        partner = self.env["flight.import.helper"].find_pilot(
+            name=self.name,
+            email=self.email,
+            barcode=self.employee_id
+        )
         if partner:
             # Store the partner ID for later use in action_import
             # but don't create a relational field
             self.existing_partner_id = partner.id
             self.is_new = False
             return True
-        
+            
         return False
     
     def validate(self):

@@ -66,6 +66,47 @@ class FlightImportHelper(models.AbstractModel):
         return company
 
     @api.model
+    def find_pilot(self, name=None, email=None, barcode=None):
+        """Find an existing pilot by name, email, or barcode.
+        
+        Args:
+            name (str): Pilot name
+            email (str): Pilot email
+            barcode (str): Pilot barcode/employee ID
+            
+        Returns:
+            res.partner: Existing pilot record, or False if not found
+        """
+        if not name and not email and not barcode:
+            return False
+        
+        domain = [("is_company", "=", False)]
+        or_conditions = []
+        
+        # Add email condition if provided
+        if email and email.strip():
+            or_conditions.append(("email", "=", email.strip()))
+        
+        # Add name condition if provided
+        if name and name.strip():
+            or_conditions.append(("name", "=", name.strip()))
+        
+        # Add barcode condition if provided
+        if barcode and barcode.strip():
+            or_conditions.append(("barcode", "=", barcode.strip()))
+        
+        # Only add OR operator and conditions if we have conditions to add
+        if len(or_conditions) > 1:
+            domain.append('|')
+            domain.extend(or_conditions)
+        elif len(or_conditions) == 1:
+            domain.extend(or_conditions)
+        
+        # Search for existing pilot
+        partner = self.env["res.partner"].search(domain, limit=1)
+        return partner if partner else False
+
+    @api.model
     def _generate_unique_import_id(self, record_vals, source=None):
         """Generate a unique import ID for flight records.
         
@@ -88,4 +129,3 @@ class FlightImportHelper(models.AbstractModel):
         aircraft_reg = record_vals.get("aircraft_reg", "")
         
         return f"{source_prefix}_{date_str}_{flight_number}_{aircraft_reg}_{record_vals['import_id']}"
-    
