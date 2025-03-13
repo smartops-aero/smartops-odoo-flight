@@ -227,8 +227,8 @@ class FlightDataImportCrewLoungeAircraftLine(models.TransientModel):
     def _get_cat_tag_mapping(self):
         """Get mapping dictionary for CAT field to tag names."""
         return {
-            "Multi Pilot": "multi-pilot",
-            "Single Pilot": "single-pilot",
+            "Multi Pilot": "Multi Pilot",
+            "Single Pilot": "Single Pilot",
         }
     
     def _map_equipment_type(self, dev_value):
