@@ -79,107 +79,22 @@ class FlightDataImportCrewLoungeAircraftLine(models.TransientModel):
         return True
     
     def prepare_import_values(self):
-        """Prepare values for aircraft import.
+        """Prepare values for aircraft import using field mappings.
         
         Returns:
             dict: Values for aircraft creation/update
         """
         self.ensure_one()
         
-        # Find or create company
-        company_id = False
-        if self.company_name:
-            # Find existing company
-            company = self.env["res.partner"].search([
-                ("name", "=ilike", self.company_name),
-                ("is_company", "=", True),
-            ], limit=1)
-            
-            if not company and self.company_name != "PRIVATE" and self.company_name != "Other":
-                # Create new company if not found
-                company = self.env["res.partner"].create({
-                    "name": self.company_name,
-                    "is_company": True,
-                })
-            
-            if company:
-                company_id = company.id
+        # Get field mappings
+        mappings = self._get_field_mappings()
         
-        # Find or create tags for CAT (Multi Pilot/Single Pilot)
-        tag_ids = []
-        if self.cat:
-            cat_value = self.cat.strip()
-            cat_mapping = self._get_cat_tag_mapping()
-            
-            if cat_value in cat_mapping:
-                tag_name = cat_mapping[cat_value]
-                
-                # Find existing tag
-                tag = self.env["flight.aircraft.model.tag"].search([
-                    ("name", "=", tag_name)
-                ], limit=1)
-                
-                if not tag:
-                    # Create new tag if not found
-                    tag = self.env["flight.aircraft.model.tag"].create({
-                        "name": tag_name
-                    })
-                
-                if tag:
-                    tag_ids.append(tag.id)
-        
-        # Prepare model
-        model_id = False
-        make_id = False
-        if self.ac:
-            # Parse model code to get clean value
-            model_code = self._parse_model_code(self.ac)
-            make_name = self._get_make_from_model(self.ac)
-            if make_name:
-                make = self.env["flight.aircraft.make"].search([
-                    ("name", "=", make_name)
-                ], limit=1)
-                if not make:
-                    make = self.env["flight.aircraft.make"].create({
-                        "name": make_name
-                    })
-                
-                make_id = make.id
-            
-            model_vals = {
-                "name": model_code,
-                "code": model_code,
-                "make_id": make_id,
-                "engine_type": self._map_engine_type(self.pw),
-            }
-            # Find existing model
-            model = self.env["flight.aircraft.model"].search([
-                ("code", "=", model_code)
-            ], limit=1)
-            
-            if not model:
-                # Create new model if not found
-                model = self.env["flight.aircraft.model"].create(model_vals)
-            elif tag_ids:
-                # Update existing model with tags
-                model.write({
-                    "tag_ids": [(4, tag_id) for tag_id in tag_ids]
-                })
-            
-            if model:
-                model_id = model.id
-        
-        # Prepare values for aircraft creation/update
-        values = {
-            "registration": self._sanitize_registration(self.reference),
-            "equipment_type": self._map_equipment_type(self.dev),
-        }
-        
-        # Add related records if available
-        if company_id:
-            values["operator_id"] = company_id
-        if model_id:
-            values["model_id"] = model_id
+        # Build values dictionary using mappings
+        values = {}
+        for target_field, handler in mappings.items():
+            value = handler(self)
+            if value not in [False, None, ""]:
+                values[target_field] = value
         
         return values
     
@@ -468,6 +383,110 @@ class FlightDataImportCrewLoungeAircraftLine(models.TransientModel):
         return False
 
 
+    def _get_field_mappings(self):
+        """Get field mappings for aircraft import.
+        
+        Returns:
+            dict: Mapping of CSV fields to model fields/handlers
+        """
+        return {
+            # Direct field mappings (CSV field -> aircraft field)
+            "registration": lambda self: self._sanitize_registration(self.reference),
+            "equipment_type": lambda self: self._map_equipment_type(self.dev),
+            
+            # Complex field mappings that require lookups
+            "operator_id": lambda self: self._get_company_id(),
+            "model_id": lambda self: self._get_model_id(),
+        }
+    
+    def _get_company_id(self):
+        """Get company ID from company_name.
+        
+        Returns:
+            int: Company ID or False
+        """
+        if not self.company_name or self.company_name in ["PRIVATE", "Other"]:
+            return False
+            
+        # Find existing company
+        company = self.env["res.partner"].search([
+            ("name", "=ilike", self.company_name),
+            ("is_company", "=", True),
+        ], limit=1)
+        
+        if not company:
+            # Create new company if not found
+            company = self.env["res.partner"].create({
+                "name": self.company_name,
+                "is_company": True,
+            })
+            
+        return company.id if company else False
+    
+    def _get_model_id(self):
+        """Get model ID from AC field.
+        
+        Returns:
+            int: Model ID or False
+        """
+        if not self.ac:
+            return False
+            
+        # Parse model code to get clean value
+        model_code = self._parse_model_code(self.ac)
+        make_name = self._get_make_from_model(self.ac)
+        
+        # Find or create make
+        make_id = False
+        if make_name:
+            make = self.env["flight.aircraft.make"].search([
+                ("name", "=", make_name)
+            ], limit=1)
+            
+            if not make:
+                make = self.env["flight.aircraft.make"].create({
+                    "name": make_name
+                })
+                
+            make_id = make.id if make else False
+        
+        # Find or create model
+        model_vals = {
+            "name": model_code,
+            "code": model_code,
+            "make_id": make_id,
+            "engine_type": self._map_engine_type(self.pw),
+        }
+        
+        model = self.env["flight.aircraft.model"].search([
+            ("code", "=", model_code)
+        ], limit=1)
+        
+        if not model:
+            model = self.env["flight.aircraft.model"].create(model_vals)
+        elif self.cat:
+            # Add tags if needed
+            cat_value = self.cat.strip()
+            cat_mapping = self._get_cat_tag_mapping()
+            
+            if cat_value in cat_mapping:
+                tag_name = cat_mapping[cat_value]
+                tag = self.env["flight.aircraft.model.tag"].search([
+                    ("name", "=", tag_name)
+                ], limit=1)
+                
+                if not tag:
+                    tag = self.env["flight.aircraft.model.tag"].create({
+                        "name": tag_name
+                    })
+                    
+                if tag:
+                    model.write({
+                        "tag_ids": [(4, tag.id)]
+                    })
+        
+        return model.id if model else False
+    
     def action_import(self):
         """Import the aircraft data."""
         self.ensure_one()
