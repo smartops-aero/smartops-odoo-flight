@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Menu items are defined in wizards/pilot_import_views.xml -->
+    <!-- Menu Item -->
+    <menuitem id="menu_flight_data_import_crewlounge_aircraft" 
+              name="Import Aircraft from CrewLounge" 
+              parent="flight_data_import.menu_aircraft_import"
+              action="action_flight_data_import_crewlounge_aircraft" 
+              sequence="10"/>
+    <!-- Menu Item -->
+    <menuitem id="menu_flight_data_import_crewlounge_pilot" 
+              name="Import from CrewLounge" 
+              parent="flight_data_import.menu_crew_import"
+              action="action_flight_data_import_crewlounge_pilot" 
+              sequence="10"/>
 </odoo>

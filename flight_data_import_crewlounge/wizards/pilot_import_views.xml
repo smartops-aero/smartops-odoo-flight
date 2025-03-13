@@ -108,11 +108,4 @@
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
-
-    <!-- Menu Item -->
-    <menuitem id="menu_flight_data_import_crewlounge_pilot" 
-              name="Import from CrewLounge" 
-              parent="flight_data_import.menu_crew_import"
-              action="action_flight_data_import_crewlounge_pilot" 
-              sequence="10"/>
 </odoo>
