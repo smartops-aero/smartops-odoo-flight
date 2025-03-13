@@ -30,6 +30,40 @@ class FlightDataImportCrewLoungePilot(models.TransientModel):
             "notes": 5,  # Notes
         }
     
+    def _get_import_line_model(self):
+        """Get the model name for import lines."""
+        return "flight.data.import.crewlounge.pilot.line"
+    
+    def _get_lines_to_import(self):
+        """Get lines to import based on state."""
+        return self.import_line_ids.filtered(
+            lambda l: l.state in ['valid', 'conflict'] and 
+            (l.state != 'conflict' or self.update_existing)
+        )
+    
+    def _get_all_import_lines(self):
+        """Get all import lines."""
+        return self.import_line_ids
+    
+    def _update_statistics(self):
+        """Update import statistics based on import lines."""
+        self.write({
+            'total_rows': len(self.import_line_ids),
+            'valid_rows': len(self.import_line_ids.filtered(lambda l: l.state == 'valid')),
+            'invalid_rows': len(self.import_line_ids.filtered(lambda l: l.state == 'invalid')),
+            'conflict_rows': len(self.import_line_ids.filtered(lambda l: l.state == 'conflict')),
+        })
+    
+    def action_reset(self):
+        """Reset the import wizard to draft state."""
+        self.ensure_one()
+        
+        # Delete existing import lines
+        if self.import_line_ids:
+            self.import_line_ids.unlink()
+        
+        return super().action_reset()
+    
     def _process_parsed_data(self, parsed_data, result):
         """Process the parsed data and create import lines.
         
@@ -52,43 +86,33 @@ class FlightDataImportCrewLoungePilot(models.TransientModel):
                 continue
             
             try:
-                # Get company if applicable
-                company_name = row[mapping["company"]] if len(row) > mapping["company"] else ""
-                company = False
-                if company_name and company_name != "PRIVATE":
-                    # Only find company during preview, don't create
-                    company = self.env["flight.import.helper"].find_company(company_name)
-                
                 # Safely get values with index checking
+                company_name = row[mapping["company"]] if len(row) > mapping["company"] else ""
                 employee_id = row[mapping["employee_id"]] if len(row) > mapping["employee_id"] else ""
                 name = row[mapping["name"]] if len(row) > mapping["name"] else ""
                 phone = row[mapping["phone"]] if len(row) > mapping["phone"] else ""
                 email = row[mapping["email"]] if len(row) > mapping["email"] else ""
                 notes = row[mapping["notes"]] if len(row) > mapping["notes"] else ""
                 
-                # Create import line
+                # Create import line with raw data only
                 line_vals = {
                     "import_id": self.id,
                     "raw_data": ",".join(row),
                     "company_name": company_name,
-                    "company_id": company.id if company else False,
                     "employee_id": employee_id,
                     "name": name,
                     "phone": phone,
                     "email": email,
                     "notes": notes,
-                    "state": "valid",
+                    "state": "valid",  # Start in draft state
                 }
                 
                 # Create the line
-                line = self.env["flight.data.import.crewlounge.pilot.line"].create(line_vals)
+                line = self.env[self._get_import_line_model()].create(line_vals)
                 
-                # Check for conflicts
-                has_conflict = line.check_conflicts()
-                if has_conflict:
-                    line.mark_as_conflict(_("Pilot already exists"))
+                # Validate the line (sanitizes data, checks conflicts, etc.)
+                line.validate()
 
-                
                 # Update result statistics
                 result["total"] += 1
                 if line.state == "valid":
@@ -101,7 +125,7 @@ class FlightDataImportCrewLoungePilot(models.TransientModel):
             except Exception as e:
                 _logger.exception("Error processing row %s: %s", i, e)
                 # Create an invalid line with error message
-                self.env["flight.data.import.crewlounge.pilot.line"].create({
+                self.env[self._get_import_line_model()].create({
                     "import_id": self.id,
                     "raw_data": ",".join(row) if isinstance(row, list) else str(row),
                     "state": "invalid",
@@ -109,85 +133,3 @@ class FlightDataImportCrewLoungePilot(models.TransientModel):
                 })
                 result["total"] += 1
                 result["invalid"] += 1
-    
-    def _update_statistics(self):
-        """Update import statistics based on import lines."""
-        valid_count = len(self.import_line_ids.filtered(lambda l: l.state == 'valid'))
-        invalid_count = len(self.import_line_ids.filtered(lambda l: l.state == 'invalid'))
-        conflict_count = len(self.import_line_ids.filtered(lambda l: l.state == 'conflict'))
-        total_count = len(self.import_line_ids)
-        
-        # Update statistics fields
-        self.write({
-            'total_rows': total_count,
-            'valid_rows': valid_count,
-            'invalid_rows': invalid_count,
-            'conflict_rows': conflict_count,
-        })
-    
-    def action_import(self):
-        """Import the selected lines."""
-        self.ensure_one()
-        
-        # Only import lines that are selected and valid
-        lines_to_import = self.import_line_ids.filtered(
-            lambda l: l.to_import and l.state != "invalid"
-        )
-        
-        if not lines_to_import:
-            return self._show_error(_("Please select at least one valid line to import."))
-        
-        stats = {
-            "created": 0,
-            "updated": 0,
-            "skipped": 0,
-            "failed": 0,
-        }
-        
-        imported_ids = []
-        for line in lines_to_import:
-            try:
-                partner_id = line.action_import()
-                if partner_id:
-                    imported_ids.append(partner_id)
-                    if line.state == "imported":
-                        if line.is_new:
-                            stats["created"] += 1
-                        else:
-                            stats["updated"] += 1
-                else:
-                    stats["skipped"] += 1
-            except Exception as e:
-                _logger.exception("Error importing line %s", line.id)
-                line.write({
-                    "state": "invalid",
-                    "error_message": str(e),
-                })
-                stats["failed"] += 1
-        
-        # Update statistics after import
-        self._update_statistics()
-        
-        # Update state if all lines are imported
-        if all(line.state in ['imported', 'invalid'] for line in self.import_line_ids):
-            self.state = 'done'
-        
-        # Show import results
-        message = _(
-            "Import completed:\n"
-            "Created: %(created)s\n"
-            "Updated: %(updated)s\n"
-            "Skipped: %(skipped)s\n"
-            "Failed: %(failed)s",
-            created=stats["created"],
-            updated=stats["updated"],
-            skipped=stats["skipped"],
-            failed=stats["failed"],
-        )
-        
-        return self._show_success(message)
-    
-    def action_reset(self):
-        self.ensure_one()
-        self.import_line_ids.unlink()
-        return super().action_reset()

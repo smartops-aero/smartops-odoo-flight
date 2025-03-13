@@ -32,10 +32,6 @@ class FlightDataImportLineMixin(models.AbstractModel):
     # Raw data fields
     raw_data = fields.Text("Raw Data", help="Original data from the import file")
     
-    # Selection for import
-    to_import = fields.Boolean("Import", default=True, 
-                              help="Select to import this record")
-    
     # Common methods
     def validate(self):
         """Validate the import line.
@@ -43,10 +39,32 @@ class FlightDataImportLineMixin(models.AbstractModel):
         This method should be implemented by specific import line models.
         It should validate the line data and update the state accordingly.
         
+        The standard validation flow is:
+        1. Sanitize data
+        2. Perform basic validation
+        3. Check for conflicts
+        4. Mark as valid if no issues found
+        
         Returns:
             bool: True if the line is valid, False otherwise
         """
-        raise NotImplementedError("This method must be implemented by specific import line models")
+        self.ensure_one()
+        
+        # First sanitize the data
+        self.sanitize_data()
+        
+        # Perform basic validation
+        # This should be implemented by specific import line models
+        
+        # Check for conflicts
+        has_conflict = self.check_conflicts()
+        if has_conflict:
+            # Line is still valid for import, just marked as conflict
+            return True
+        
+        # If we get here, the line is valid
+        self.mark_as_valid()
+        return True
     
     def prepare_import_values(self):
         """Prepare values for import.
@@ -66,7 +84,26 @@ class FlightDataImportLineMixin(models.AbstractModel):
         It should check if the line conflicts with existing records.
         
         Returns:
-            tuple: (has_conflict, conflict_record_id, conflict_message)
+            bool: True if there is a conflict, False otherwise
+        """
+        raise NotImplementedError("This method must be implemented by specific import line models")
+    
+    def action_import(self):
+        """Import the line data.
+        
+        This method should be implemented by specific import line models.
+        It should import the line data and return the created/updated record ID.
+        
+        Returns:
+            int: ID of the created/updated record, or False if import failed
+        """
+        raise NotImplementedError("This method must be implemented by specific import line models")
+    
+    def sanitize_data(self):
+        """Sanitize the import line data.
+        
+        This method should be implemented by specific import line models.
+        It should clean up the data (e.g., strip whitespace, normalize values).
         """
         raise NotImplementedError("This method must be implemented by specific import line models")
     
@@ -82,15 +119,13 @@ class FlightDataImportLineMixin(models.AbstractModel):
         self.write({
             'state': 'invalid',
             'error_message': error_message,
-            'to_import': False,
         })
     
-    def mark_as_conflict(self, conflict_message, to_import=False):
+    def mark_as_conflict(self, conflict_message):
         """Mark the line as conflicting with an existing record."""
         self.write({
             'state': 'conflict',
             'warning_message': conflict_message,
-            'to_import': to_import,
         })
     
     def mark_as_imported(self):
