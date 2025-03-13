@@ -29,8 +29,32 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
     notes = fields.Text("Notes")
 
     # Conflict detection info (not relational fields)
-    existing_partner_id = fields.Integer("Existing Partner ID", readonly=True)
-    is_new = fields.Boolean("New Pilot", default=True)
+    existing_partner_id = fields.Integer("Existing Partner ID", readonly=True, compute="_compute_existing_partner_id", store=True)
+    is_new = fields.Boolean("New Pilot", compute="_compute_is_new", store=True)
+
+    @api.depends('name', 'email', 'employee_id')
+    def _compute_existing_partner_id(self):
+        """Find existing partner based on name, email, or employee ID."""
+        for line in self:
+            # Skip if no identifying information
+            if not line.name and not line.email and not line.employee_id:
+                line.existing_partner_id = False
+                continue
+                
+            # Find existing pilot
+            partner = self.env["flight.import.helper"].find_pilot(
+                name=line.name,
+                email=line.email,
+                barcode=line.employee_id
+            )
+            
+            line.existing_partner_id = partner.id if partner else False
+
+    @api.depends('existing_partner_id')
+    def _compute_is_new(self):
+        """Determine if this is a new pilot based on existing partner."""
+        for line in self:
+            line.is_new = not line.existing_partner_id
 
     @api.onchange('name', 'email', 'employee_id')
     def _onchange_validate(self):
@@ -43,10 +67,6 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
             # Skip validation for imported lines
             if line.state == 'imported':
                 continue
-                
-            # Reset conflict detection info before validation
-            line.existing_partner_id = False
-            line.is_new = True
                 
             # Call the standard validate method
             line.validate()
@@ -83,20 +103,8 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
         """
         self.ensure_one()
         
-        # Check for existing pilot by email or name
-        partner = self.env["flight.import.helper"].find_pilot(
-            name=self.name,
-            email=self.email,
-            barcode=self.employee_id
-        )
-        if partner:
-            # Store the partner ID for later use in action_import
-            # but don't create a relational field
-            self.existing_partner_id = partner.id
-            self.is_new = False
-            return True
-            
-        return False
+        # Use the computed field to determine if there's a conflict
+        return bool(self.existing_partner_id)
     
     def validate(self):
         """Validate the import line.
@@ -170,10 +178,7 @@ class FlightDataImportCrewLoungePilotLine(models.TransientModel):
     
     def mark_as_conflict(self, conflict_message):
         """Mark the line as conflict and set default import behavior."""
-        self.write({
-            "is_new": False,
-        })
-        
+        # No need to set is_new as it's now a computed field
         super().mark_as_conflict(conflict_message)
     
     def prepare_import_values(self):
