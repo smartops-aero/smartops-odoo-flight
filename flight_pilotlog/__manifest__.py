@@ -22,6 +22,7 @@
     "data": [
         "security/ir.model.access.csv",
         "data/flight_pilot_time_code_data.xml",
+        "data/flight_pilot_event_code_data.xml",
         "views/flight_pilot_time_views.xml",
         "views/flight_pilot_event_views.xml",
         "views/flight_pilot_time_code_views.xml",
