@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Flight Import Template Form View -->
+    <record id="view_flight_import_template_form" model="ir.ui.view">
+        <field name="name">flight.import.template.form</field>
+        <field name="model">flight.import.template</field>
+        <field name="arch" type="xml">
+            <form string="Import Template">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name" placeholder="Template Name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="source_format"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="description"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Model Sequence" name="model_sequence">
+                            <field name="model_sequence_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="model_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Field Mappings" name="field_mappings">
+                            <field name="mapping_ids">
+                                <tree>
+                                    <field name="model_id"/>
+                                    <field name="field_id"/>
+                                    <field name="source_field"/>
+                                    <field name="transform_type"/>
+                                    <field name="is_required"/>
+                                    <field name="is_identifier"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Flight Import Template Tree View -->
+    <record id="view_flight_import_template_tree" model="ir.ui.view">
+        <field name="name">flight.import.template.tree</field>
+        <field name="model">flight.import.template</field>
+        <field name="arch" type="xml">
+            <tree string="Import Templates">
+                <field name="name"/>
+                <field name="source_format"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Flight Import Template Search View -->
+    <record id="view_flight_import_template_search" model="ir.ui.view">
+        <field name="name">flight.import.template.search</field>
+        <field name="model">flight.import.template</field>
+        <field name="arch" type="xml">
+            <search string="Search Import Templates">
+                <field name="name"/>
+                <field name="source_format"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Flight Import Mapping Form View -->
+    <record id="view_flight_import_mapping_form" model="ir.ui.view">
+        <field name="name">flight.import.mapping.form</field>
+        <field name="model">flight.import.mapping</field>
+        <field name="arch" type="xml">
+            <form string="Field Mapping">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="template_id"/>
+                            <field name="model_id"/>
+                            <field name="field_id" domain="[('model_id', '=', model_id)]"/>
+                            <field name="source_field"/>
+                        </group>
+                        <group>
+                            <field name="transform_type"/>
+                            <field name="transform_function" attrs="{'invisible': [('transform_type', '!=', 'function')], 'required': [('transform_type', '=', 'function')]}"/>
+                            <field name="constant_value" attrs="{'invisible': [('transform_type', '!=', 'constant')], 'required': [('transform_type', '=', 'constant')]}"/>
+                            <field name="relation_field" attrs="{'invisible': [('transform_type', '!=', 'relation')], 'required': [('transform_type', '=', 'relation')]}"/>
+                            <field name="is_required"/>
+                            <field name="is_identifier"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_flight_import_template" model="ir.actions.act_window">
+        <field name="name">Import Templates</field>
+        <field name="res_model">flight.import.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new import template
+            </p>
+            <p>
+                Import templates define how data from external sources is mapped to Odoo flight models.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_flight_import_mapping" model="ir.actions.act_window">
+        <field name="name">Field Mappings</field>
+        <field name="res_model">flight.import.mapping</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new field mapping
+            </p>
+            <p>
+                Field mappings define how fields from external sources are mapped to Odoo fields.
+            </p>
+        </field>
+    </record>
+</odoo>

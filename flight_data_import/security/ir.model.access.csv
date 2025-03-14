@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_flight_import_template_user,flight.import.template.user,model_flight_import_template,flight.group_flight_user,1,0,0,0
+access_flight_import_template_manager,flight.import.template.manager,model_flight_import_template,flight.group_flight_manager,1,1,1,1
+access_flight_import_mapping_user,flight.import.mapping.user,model_flight_import_mapping,flight.group_flight_user,1,0,0,0
+access_flight_import_mapping_manager,flight.import.mapping.manager,model_flight_import_mapping,flight.group_flight_manager,1,1,1,1
+access_flight_import_model_sequence_user,flight.import.model.sequence.user,model_flight_import_model_sequence,flight.group_flight_user,1,0,0,0
+access_flight_import_model_sequence_manager,flight.import.model.sequence.manager,model_flight_import_model_sequence,flight.group_flight_manager,1,1,1,1
+access_flight_import_wizard_user,flight.import.wizard.user,model_flight_import_wizard,flight.group_flight_user,1,1,1,1
+access_flight_import_preview_line_user,flight.import.preview.line.user,model_flight_import_preview_line,flight.group_flight_user,1,1,1,1
