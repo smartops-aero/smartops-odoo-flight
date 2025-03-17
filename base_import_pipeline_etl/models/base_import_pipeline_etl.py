@@ -109,8 +109,8 @@ class BaseImportPipelineETL(models.Model):
             # Create all records in a single transaction
             with self.env.cr.savepoint():
                 for values in transformed_data:
-                    record = self.env[self.model_id.model].create(values)
-                    result['created'].append(record.id)
+                        record = self.env[self.model_id.model].create(values)
+                        result['created'].append(record.id)
         except Exception as e:
             result['errors'].append(str(e))
         

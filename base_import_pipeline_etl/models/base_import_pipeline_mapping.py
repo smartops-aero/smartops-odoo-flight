@@ -17,13 +17,13 @@ class ImportPipelineMapping(models.Model):
         ('lookup', 'Lookup Reference'),
         ('regex', 'Regular Expression'),
     ], default='direct', required=True, string='Transformation')
-    model_id = fields.Many2one('ir.model', string='Target Model', required=True)
+    model_id = fields.Many2one('ir.model', string='Target Model', required=True, ondelete='cascade')
     model = fields.Char(related='model_id.model', string='Model Name', store=True)
     is_required = fields.Boolean(string='Required', default=False)
     
     # Relation configuration
     relation_model_id = fields.Many2one('ir.model', string='Related Model',
-        help="For relational fields, specify the model to look up")
+        help="For relational fields, specify the model to look up", ondelete='cascade')
     relation_model = fields.Char(related='relation_model_id.model', string='Related Model Name', store=True)
     relation_field = fields.Char(string='Relation Field',
         help="Field in the related model to use for lookup (e.g., 'icao' for aerodromes)")
