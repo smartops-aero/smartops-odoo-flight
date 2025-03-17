@@ -6,7 +6,7 @@ class ImportPipelineMapping(models.Model):
     _description = "Import Pipeline Field Mapping"
     _order = "sequence, id"
     
-    pipeline_id = fields.Many2one('base.import.pipeline.etl', string='Pipeline', required=True, ondelete='cascade')
+    pipeline_id = fields.Many2one('base.import.pipeline', string='Pipeline', required=True, ondelete='cascade')
     sequence = fields.Integer(default=10)
     source_field = fields.Char(required=True, string='Source Field')
     target_field = fields.Char(required=True, string='Target Field')

@@ -19,7 +19,6 @@
         "security/ir.model.access.csv",
         "views/base_import_pipeline_etl_views.xml",
         "views/base_import_pipeline_mapping_views.xml",
-        "wizards/import_wizard_views.xml",
         "views/menu.xml",
     ],
     "application": False,

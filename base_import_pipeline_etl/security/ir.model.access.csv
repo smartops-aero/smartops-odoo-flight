@@ -1,6 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_base_import_pipeline_etl_manager,base.import.pipeline.etl manager,model_base_import_pipeline_etl,base.group_system,1,1,1,1
-access_base_import_pipeline_etl_user,base.import.pipeline.etl user,model_base_import_pipeline_etl,base.group_user,1,0,0,0
 access_base_import_pipeline_mapping_manager,base.import.pipeline.mapping manager,model_base_import_pipeline_mapping,base.group_system,1,1,1,1
 access_base_import_pipeline_mapping_user,base.import.pipeline.mapping user,model_base_import_pipeline_mapping,base.group_user,1,0,0,0
-access_import_wizard_user,import.wizard user,model_import_wizard,base.group_user,1,1,1,0

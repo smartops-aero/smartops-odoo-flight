@@ -41,7 +41,7 @@ class BaseImportPipeline(models.Model):
         """Hook method for registering import implementations"""
         return []
     
-    def run_import(self, file_content=None, filename=None, **kwargs):
+    def run_import(self, **kwargs):
         """Run the implementation-specific import process
         
         This is just a skeleton that should be overridden by module that

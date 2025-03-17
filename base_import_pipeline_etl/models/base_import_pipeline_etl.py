@@ -6,14 +6,10 @@ from odoo.exceptions import UserError
 
 
 class BaseImportPipelineETL(models.Model):
-    _name = "base.import.pipeline.etl"
     _inherit = "base.import.pipeline"
-    _description = "ETL Import Pipeline"
     
     mapping_ids = fields.One2many('base.import.pipeline.mapping', 'pipeline_id', string='Field Mappings')
-    csv_delimiter = fields.Char(string='CSV Delimiter', default=',', required=True)
-    skip_header = fields.Boolean(string='Skip Header', default=True, 
-                                help="Skip the first row of the file (header)")
+
     
     def extract(self, file_content, filename=None):
         """Extract data from source file

@@ -3,9 +3,7 @@ from odoo.exceptions import UserError
 
 
 class CrewLoungePilotLogImport(models.Model):
-    _name = "crewlounge.pilot.log.import"
-    _inherit = "base.import.pipeline.etl"
-    _description = "CrewLounge Pilot Log Import"
+    _inherit = "base.import.pipeline"
     
     @api.model
     def _get_available_implementations(self):
