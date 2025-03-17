@@ -79,14 +79,16 @@ class FlightDataImporter(models.AbstractModel):
         :param config: Import configuration
         :return: Import statistics
         """
-        # Initialize tracking dictionaries and statistics
-        created_records = {}
+        # Initialize statistics
         stats = {
             "processed": 0,
             "created": {},
             "updated": {},
             "errors": []
         }
+        
+        # Initialize created records tracking
+        created_records = {}
         
         # Get utility model for transformations
         utils = self.env["flight.import.utils"]
@@ -96,6 +98,8 @@ class FlightDataImporter(models.AbstractModel):
         
         # Process each row
         for row_idx, row in enumerate(rows, 1):
+            # Use a savepoint for each row to prevent transaction abortion affecting other rows
+            savepoint = self.env.cr.savepoint()
             try:
                 # Process each model in sequence
                 flight = False
@@ -129,6 +133,8 @@ class FlightDataImporter(models.AbstractModel):
                 
                 stats["processed"] += 1
             except Exception as e:
+                # If an error occurs, rollback to the savepoint for this row
+                savepoint.rollback()
                 _logger.exception(f"Error processing row {row_idx}")
                 stats["errors"].append({
                     "row": row_idx,
@@ -253,13 +259,22 @@ class FlightDataImporter(models.AbstractModel):
                     relation_value = False
                     
                     if fm.relation_field:
+                        # Check if relation field is a date field and convert if needed
+                        relation_field_info = self.env[fm.relation]._fields.get(fm.relation_field)
+                        search_value = source_value
+                        if relation_field_info and relation_field_info.type == 'date' and isinstance(source_value, str):
+                            search_value = utils.parse_date(source_value)
+                            if not search_value:
+                                _logger.warning(f"Could not parse date '{source_value}' for relation search")
+                                continue
+                        
                         # Find related record from cache
-                        relation_record = created_records.get(fm.relation, {}).get(source_value)
+                        relation_record = created_records.get(fm.relation, {}).get(search_value)
                         if relation_record:
                             relation_value = relation_record["record"].id
                         else:
                             # Try to find existing record
-                            relation_record = self.env[fm.relation].search([(fm.relation_field, "=", source_value)], limit=1)
+                            relation_record = self.env[fm.relation].search([(fm.relation_field, "=", search_value)], limit=1)
                             if relation_record:
                                 relation_value = relation_record.id
                     
