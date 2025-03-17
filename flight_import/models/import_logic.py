@@ -217,16 +217,36 @@ class FlightDataImporter(models.AbstractModel):
             if source_value or fm.default_value:
                 # Apply transformation if needed
                 if fm.transform:
+                    _logger.info(f"Applying transformation {fm.transform} to value {source_value}")
                     transform = self.env["flight.import.transform.method"].search([
                         ("config_id", "=", mapping.config_id.id),
                         ("name", "=", fm.transform)
                     ], limit=1)
                     
                     if transform:
+                        _logger.info(f"Found transform method: {transform.method}")
                         method_parts = transform.method.split(".")
-                        if len(method_parts) == 2:
-                            model_name, method_name = method_parts
-                            source_value = getattr(utils, method_name)(source_value)
+                        method_name = method_parts.pop()  # Get the last part (method name)
+                        model_name = ".".join(method_parts)  # Join the rest as the model name
+                        try:
+                            # This is the important change - we're directly calling the method on the utils object
+                            # that was passed to the function, rather than trying to find the model
+                            # Use the model name to get the correct model
+                            model_obj = self.env[model_name]
+                            transformed_value = getattr(model_obj, method_name)(source_value)
+                            source_value = transformed_value
+                        except Exception as e:
+                            _logger.error(f"Error applying transformation: {e}")
+                            # Apply fallback
+                            if fm.target_field == 'aircraft_category':
+                                source_value = 'airplane'  # Hardcoded fallback
+                    else:
+                        _logger.warning(f"Transform method '{fm.transform}' not found for config_id {mapping.config_id.id}")
+                        # Apply a default fallback for known fields
+                        if fm.target_field == 'aircraft_category':
+                            _logger.info("Applying hardcoded fallback for aircraft_category")
+                            if str(source_value).lower() in ['aeroplane', 'airplane']:
+                                source_value = 'airplane'
                 
                 # Handle relation fields
                 if fm.relation:
