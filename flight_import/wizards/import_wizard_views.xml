@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Import Wizard Form View -->
+    <record id="view_flight_import_wizard_form" model="ir.ui.view">
+        <field name="name">flight.import.wizard.form</field>
+        <field name="model">flight.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Flight Data">
+                <field name="state" invisible="1"/>
+                <sheet>
+                    <div states="draft">
+                        <group>
+                            <field name="config_id"/>
+                            <field name="file" filename="file_name"/>
+                            <field name="file_name" invisible="1"/>
+                        </group>
+                        <footer>
+                            <button name="action_import" string="Import" type="object" class="btn-primary"/>
+                            <button string="Cancel" class="btn-secondary" special="cancel"/>
+                        </footer>
+                    </div>
+                    <div states="done">
+                        <group>
+                            <field name="import_log" readonly="1" widget="text_html"/>
+                        </group>
+                        <group>
+                            <group string="Statistics">
+                                <field name="processed_count"/>
+                                <field name="flight_count"/>
+                                <field name="aircraft_count"/>
+                                <field name="time_count"/>
+                                <field name="event_count"/>
+                                <field name="error_count"/>
+                            </group>
+                        </group>
+                        <group string="Error Details" attrs="{'invisible': [('error_count', '=', 0)]}">
+                            <field name="error_details" nolabel="1" widget="text_html"/>
+                        </group>
+                        <footer>
+                            <button string="Close" class="btn-primary" special="cancel"/>
+                        </footer>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Import Wizard Action -->
+    <record id="action_flight_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import Flight Data</field>
+        <field name="res_model">flight.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_flight_import_wizard"
+              name="Import Flight Data"
+              parent="flight.menu_flight_root"
+              action="action_flight_import_wizard"
+              sequence="90"/>
+</odoo>
