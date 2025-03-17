@@ -50,6 +50,13 @@ class ImportPipelineMapping(models.Model):
         help="Default value to use if source field is empty or transformation fails"
     )
     
+    # Record identification
+    is_key_field = fields.Boolean(
+        string='Is Key Field',
+        help="If checked, this field will be used to identify existing records. For each model, at least one mapping should have this checked.",
+        default=False
+    )
+    
     @api.onchange('transformation')
     def _onchange_transformation(self):
         """Show/hide relevant fields based on transformation type"""
