@@ -1,6 +1,7 @@
 import base64
 import csv
 import io
+import re
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
@@ -22,18 +23,98 @@ class BaseImportPipelineETL(models.Model):
     def transform(self, extracted_data):
         """Transform extracted data
         
-        This is a base ETL method that should be implemented by modules
-        that extend this one.
+        This method applies the configured mappings to transform the extracted data.
+        It handles direct mappings, lookups, and other transformations.
         """
-        return self._dispatch("transform", extracted_data)
+        if not self.mapping_ids:
+            return extracted_data
+            
+        # Group mappings by target model
+        model_mappings = {}
+        for mapping in self.mapping_ids:
+            if mapping.model not in model_mappings:
+                model_mappings[mapping.model] = []
+            model_mappings[mapping.model].append(mapping)
+        
+        # Process each record
+        transformed_data = []
+        for record in extracted_data:
+            # Create a dict to hold the values for the main record
+            values = {}
+            
+            # Process direct field mappings first (non-relational fields)
+            for mapping in self.mapping_ids.filtered(lambda m: not m.relation_model_id):
+                if mapping.source_field in record:
+                    source_value = record[mapping.source_field]
+                    transformed_value = self._apply_field_transformations(source_value, mapping)
+                    if transformed_value is not None:
+                        values[mapping.target_field] = transformed_value
+            
+            # Process relational field mappings
+            for mapping in self.mapping_ids.filtered(lambda m: m.relation_model_id):
+                if mapping.source_field in record:
+                    source_value = record[mapping.source_field]
+                    
+                    # Skip if no relation field is defined
+                    if not mapping.relation_field:
+                        continue
+                    
+                    # Apply transformation to the source value
+                    transformed_value = self._apply_field_transformations(source_value, mapping)
+                    if transformed_value is None:
+                        continue
+                    
+                    # Build domain for lookup
+                    domain = [(mapping.relation_field, '=', transformed_value)]
+                    
+                    # Add additional lookup fields if specified
+                    if mapping.lookup_fields:
+                        additional_fields = [f.strip() for f in mapping.lookup_fields.split(',')]
+                        for field in additional_fields:
+                            if field:
+                                domain = ['|', (field, '=', transformed_value)] + domain
+                    
+                    # Prepare values for creating the related record if needed
+                    related_values = {mapping.relation_field: transformed_value}
+                    
+                    # Find or create the related record
+                    related_record = self._get_or_create_record(
+                        mapping.relation_model, domain, related_values
+                    )
+                    
+                    # Set the relation in the main record
+                    values[mapping.target_field] = related_record.id
+            
+            # Add the transformed record to the result
+            if values:
+                transformed_data.append(values)
+                
+        return transformed_data
         
     def load(self, transformed_data):
         """Load transformed data into target model
         
-        This is a base ETL method that should be implemented by modules
-        that extend this one.
+        Creates records in the target model using the transformed data.
+        All records are created in a single transaction.
         """
-        return self._dispatch("load", transformed_data)
+        result = {
+            'created': [],
+            'errors': [],
+        }
+        
+        if not transformed_data:
+            return result
+            
+        try:
+            # Create all records in a single transaction
+            with self.env.cr.savepoint():
+                for values in transformed_data:
+                    record = self.env[self.model_id.model].create(values)
+                    result['created'].append(record.id)
+        except Exception as e:
+            result['errors'].append(str(e))
+        
+        return result
     
     def run_import(self, file_content=None, filename=None, **kwargs):
         """Run the ETL import process"""
@@ -86,10 +167,16 @@ class BaseImportPipelineETL(models.Model):
         except Exception as e:
             raise UserError(_("Error extracting data: %s") % str(e))
     
-    def _apply_field_transformations(self, source_field, value, transformation, options=None):
-        """Apply transformations to field values - helper method for implementations"""
+    def _apply_field_transformations(self, value, mapping):
+        """Apply transformations to field values based on mapping configuration"""
+        if not value and mapping.default_value:
+            return mapping.default_value
+            
+        transformation = mapping.transformation
+        
         if transformation == 'direct':
             return value
+            
         elif transformation == 'date_format':
             # Basic date format conversion (DD-MM-YYYY to YYYY-MM-DD)
             if value and len(value) == 10:  # Simple validation
@@ -97,11 +184,25 @@ class BaseImportPipelineETL(models.Model):
                 if len(parts) == 3:
                     return f"{parts[2]}-{parts[1]}-{parts[0]}"
             return value
+            
         elif transformation == 'lookup':
-            # This would implement lookup logic
+            # For lookup transformations, we just return the value
+            # The actual lookup is handled in the transform method
             return value
+            
+        elif transformation == 'regex':
+            # Apply regex transformation if pattern is defined
+            if value and mapping.regex_pattern and mapping.regex_replacement:
+                try:
+                    return re.sub(mapping.regex_pattern, mapping.regex_replacement, value)
+                except Exception:
+                    # If regex fails, return original value or default
+                    return mapping.default_value if mapping.default_value else value
+            return value
+            
         else:
-            return value
+            # Default fallback
+            return mapping.default_value if mapping.default_value else value
     
     def _get_or_create_record(self, model, domain, values):
         """Get or create a record - helper method for implementations"""
