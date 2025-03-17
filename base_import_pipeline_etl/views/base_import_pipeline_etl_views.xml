@@ -13,7 +13,6 @@
                             <field name="sequence" widget="handle"/>
                             <field name="source_field"/>
                             <field name="model"/>
-                            <field name="field_type"/>
                             <field name="target_field"/>
                             <field name="transformation"/>
                             <field name="context"/>

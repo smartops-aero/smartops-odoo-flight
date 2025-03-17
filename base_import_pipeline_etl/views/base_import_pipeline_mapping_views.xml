@@ -10,7 +10,6 @@
                 <field name="pipeline_id"/>
                 <field name="source_field"/>
                 <field name="model"/>
-                <field name="field_type"/>
                 <field name="target_field"/>
                 <field name="transformation"/>
                 <field name="is_required"/>
@@ -31,7 +30,6 @@
                             <field name="pipeline_id"/>
                             <field name="sequence"/>
                             <field name="model"/>
-                            <field name="field_type"/>
                         </group>
                         <group>
                             <field name="source_field"/>

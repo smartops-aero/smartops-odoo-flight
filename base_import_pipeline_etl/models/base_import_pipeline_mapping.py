@@ -20,9 +20,5 @@ class ImportPipelineMapping(models.Model):
         ('flight.aircraft', 'Aircraft'),
         ('flight.flight', 'Flight'),
     ], string='Target Model', required=True)
-    field_type = fields.Selection([
-        ('source', 'Source Field'),
-        ('target', 'Target Field'),
-    ], string='Field Type', default='target', required=True)
     is_required = fields.Boolean(string='Required', default=False)
     
