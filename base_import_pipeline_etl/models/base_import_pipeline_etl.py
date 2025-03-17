@@ -12,15 +12,15 @@ class BaseImportPipelineETL(models.Model):
     mapping_ids = fields.One2many('base.import.pipeline.mapping', 'pipeline_id', string='Field Mappings')
 
     
-    def extract(self, file_content, filename=None):
+    def extract(self, **kwargs):
         """Extract data from source file
         
         This is a base ETL method that should be implemented by modules 
         that extend this one.
         """
-        return self._dispatch("extract", file_content, filename)
+        return self._dispatch("extract", **kwargs)
         
-    def transform(self, extracted_data):
+    def transform(self, extracted_data, **kwargs):
         """Transform extracted data
         
         This method applies the configured mappings to transform the extracted data.
@@ -91,7 +91,7 @@ class BaseImportPipelineETL(models.Model):
                 
         return transformed_data
         
-    def load(self, transformed_data):
+    def load(self, transformed_data, **kwargs):
         """Load transformed data into target model
         
         Creates records in the target model using the transformed data.
