@@ -8,7 +8,7 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-class BaseImportPipelineETL(models.Model):
+class BaseImportPipeline(models.Model):
     _inherit = "base.import.pipeline"
     
     mapping_ids = fields.One2many('base.import.pipeline.mapping', 'pipeline_id', string='Field Mappings')
