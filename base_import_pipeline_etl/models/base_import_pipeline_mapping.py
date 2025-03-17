@@ -15,8 +15,6 @@ class ImportPipelineMapping(models.Model):
         ('date_format', 'Date Format Conversion'),
         ('lookup', 'Lookup Reference'),
     ], default='direct', required=True, string='Transformation')
-    transformation_options = fields.Text(string='Transformation Options',
-                                        help="Options for the transformation (JSON format)")
     model = fields.Selection([
         ('flight.aerodrome', 'Aerodrome'),
         ('flight.aircraft', 'Aircraft'),

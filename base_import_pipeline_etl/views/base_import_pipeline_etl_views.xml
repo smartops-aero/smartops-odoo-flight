@@ -16,7 +16,6 @@
                             <field name="field_type"/>
                             <field name="target_field"/>
                             <field name="transformation"/>
-                            <field name="transformation_options"/>
                             <field name="context"/>
                             <field name="is_required"/>
                             <field name="note"/>
