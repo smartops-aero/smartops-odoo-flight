@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- CrewLounge Pilot Log Import Pipeline -->
+        <record id="crewlounge_pilot_log_import_pipeline" model="crewlounge.pilot.log.import">
+            <field name="name">CrewLounge Pilot Log Import</field>
+            <field name="implementation">pilotlog_crewlounge</field>
+            <field name="model_id" ref="flight.model_flight_flight"/>
+            <field name="csv_delimiter">,</field>
+            <field name="skip_header">True</field>
+        </record>
+
+        <!-- Field Mappings for CrewLounge Pilot Log Import -->
+        <record id="crewlounge_mapping_date" model="base.import.pipeline.mapping">
+            <field name="pipeline_id" ref="crewlounge_pilot_log_import_pipeline"/>
+            <field name="sequence">10</field>
+            <field name="source_field">PILOTLOG_DATE</field>
+            <field name="target_field">date</field>
+            <field name="model">flight.flight</field>
+            <field name="field_type">target</field>
+            <field name="transformation">date_format</field>
+            <field name="is_required">True</field>
+            <field name="note">Flight date in DD-MM-YYYY format</field>
+        </record>
+
+        <record id="crewlounge_mapping_departure" model="base.import.pipeline.mapping">
+            <field name="pipeline_id" ref="crewlounge_pilot_log_import_pipeline"/>
+            <field name="sequence">20</field>
+            <field name="source_field">AF_DEP</field>
+            <field name="target_field">icao</field>
+            <field name="model">flight.aerodrome</field>
+            <field name="field_type">source</field>
+            <field name="context">departure</field>
+            <field name="transformation">direct</field>
+            <field name="is_required">True</field>
+            <field name="note">Departure aerodrome ICAO code</field>
+        </record>
+
+        <record id="crewlounge_mapping_arrival" model="base.import.pipeline.mapping">
+            <field name="pipeline_id" ref="crewlounge_pilot_log_import_pipeline"/>
+            <field name="sequence">30</field>
+            <field name="source_field">AF_ARR</field>
+            <field name="target_field">icao</field>
+            <field name="model">flight.aerodrome</field>
+            <field name="field_type">source</field>
+            <field name="context">arrival</field>
+            <field name="transformation">direct</field>
+            <field name="is_required">True</field>
+            <field name="note">Arrival aerodrome ICAO code</field>
+        </record>
+
+        <record id="crewlounge_mapping_aircraft" model="base.import.pipeline.mapping">
+            <field name="pipeline_id" ref="crewlounge_pilot_log_import_pipeline"/>
+            <field name="sequence">40</field>
+            <field name="source_field">AC_REG</field>
+            <field name="target_field">registration</field>
+            <field name="model">flight.aircraft</field>
+            <field name="field_type">target</field>
+            <field name="transformation">direct</field>
+            <field name="is_required">True</field>
+            <field name="note">Aircraft registration number</field>
+        </record>
+    </data>
+</odoo>

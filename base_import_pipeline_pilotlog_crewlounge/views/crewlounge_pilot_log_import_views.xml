@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CrewLounge Import Form View -->
+    <record id="view_crewlounge_pilot_log_import_form" model="ir.ui.view">
+        <field name="name">crewlounge.pilot.log.import.form</field>
+        <field name="model">crewlounge.pilot.log.import</field>
+        <field name="inherit_id" ref="base_import_pipeline_etl.view_base_import_pipeline_etl_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='mapping_ids']" position="before">
+                <div class="alert alert-info" role="alert" attrs="{'invisible': [('implementation', '!=', 'pilotlog_crewlounge')]}">
+                    <p>This pipeline imports CrewLounge Pilot Log data.</p>
+                    <p>Required fields for this import are:</p>
+                    <ul>
+                        <li>PILOTLOG_DATE - Flight date (DD-MM-YYYY)</li>
+                        <li>AF_DEP - Departure aerodrome ICAO code</li>
+                        <li>AF_ARR - Arrival aerodrome ICAO code</li>
+                        <li>AC_REG - Aircraft registration</li>
+                    </ul>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_crewlounge_pilot_log_import" model="ir.actions.act_window">
+        <field name="name">CrewLounge Pilot Log Import</field>
+        <field name="res_model">crewlounge.pilot.log.import</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('implementation', '=', 'pilotlog_crewlounge')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first CrewLounge Pilot Log import pipeline
+            </p>
+            <p>
+                CrewLounge import pipelines allow you to import flight data from CrewLounge Pilot Log CSV exports.
+            </p>
+        </field>
+    </record>
+</odoo>

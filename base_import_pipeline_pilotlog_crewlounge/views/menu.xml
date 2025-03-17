@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Flight-specific menu structure -->
+    <menuitem id="menu_flight_import" 
+              name="Flight Import"
+              parent="flight.menu_flight_root"
+              sequence="70"/>
+
+    <!-- Import Actions -->
+    <menuitem id="menu_flight_import_actions" 
+              name="Import Actions"
+              parent="menu_flight_import"
+              sequence="10"/>
+
+    <menuitem id="menu_crewlounge_import" 
+              name="Import CrewLounge Data"
+              parent="menu_flight_import_actions"
+              sequence="10"
+              action="base_import_pipeline_etl.action_import_wizard"/>
+
+    <!-- Import Configuration -->
+    <menuitem id="menu_flight_import_config" 
+              name="Import Configuration"
+              parent="menu_flight_import"
+              sequence="20"/>
+
+    <menuitem id="menu_crewlounge_pilot_log_import" 
+              name="CrewLounge Import Pipelines"
+              parent="menu_flight_import_config"
+              action="action_crewlounge_pilot_log_import"
+              sequence="10"/>
+</odoo>
