@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- ETL Pipeline Form View -->
-    <record id="view_base_import_pipeline_etl_form" model="ir.ui.view">
-        <field name="name">base.import.pipeline.etl.form</field>
-        <field name="model">base.import.pipeline.etl</field>
+    <record id="view_base_import_pipeline_form" model="ir.ui.view">
+        <field name="name">base.import.pipeline.form</field>
+        <field name="model">base.import.pipeline</field>
         <field name="inherit_id" ref="base_import_pipeline.view_base_import_pipeline_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[1]" position="after">
-                <group string="ETL Configuration">
-                    <field name="csv_delimiter"/>
-                    <field name="skip_header"/>
-                </group>
-            </xpath>
             <notebook position="inside">
                 <page string="Field Mappings">
                     <field name="mapping_ids">
@@ -30,21 +24,6 @@
                     </field>
                 </page>
             </notebook>
-        </field>
-    </record>
-
-    <!-- Actions -->
-    <record id="action_base_import_pipeline_etl" model="ir.actions.act_window">
-        <field name="name">ETL Import Pipelines</field>
-        <field name="res_model">base.import.pipeline.etl</field>
-        <field name="view_mode">tree,form</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Create your first ETL import pipeline
-            </p>
-            <p>
-                ETL import pipelines allow you to extract, transform and load data from external sources.
-            </p>
         </field>
     </record>
 </odoo>
