@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_base_import_pipeline" 
-              name="Import Pipelines"
-              parent="flight.menu_flight_root"
-              sequence="100"/>
+    <menuitem
+          id="menu_base_import_pipeline"
+          name="Import Pipelines"
+          sequence="50"
+    />
 
     <!-- Sub-menu items -->
     <menuitem id="menu_base_import_pipeline_config" 
