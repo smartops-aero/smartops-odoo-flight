@@ -4,7 +4,9 @@ import io
 import re
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+import logging
 
+_logger = logging.getLogger(__name__)
 
 class BaseImportPipelineETL(models.Model):
     _inherit = "base.import.pipeline"
@@ -129,6 +131,7 @@ class BaseImportPipelineETL(models.Model):
             return result
             
         except Exception as e:
+            _logger.error("Error running import: %s", str(e))
             # Log error
             self.env['base.import.pipeline.result'].create({
                 'pipeline_id': self.id,
