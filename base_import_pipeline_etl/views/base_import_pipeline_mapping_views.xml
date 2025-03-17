@@ -14,9 +14,8 @@
                 <field name="target_field"/>
                 <field name="transformation"/>
                 <field name="transformation_options"/>
-                <field name="context"/>
                 <field name="is_required"/>
-                <field name="note"/>
+                <field name="description"/>
             </tree>
         </field>
     </record>
@@ -40,13 +39,12 @@
                             <field name="target_field"/>
                             <field name="transformation"/>
                             <field name="transformation_options"/>
-                            <field name="context"/>
                             <field name="is_required"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Notes">
-                            <field name="note"/>
+                        <page string="Description">
+                            <field name="description"/>
                         </page>
                     </notebook>
                 </sheet>

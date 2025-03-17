@@ -5,7 +5,7 @@ class ImportPipelineMapping(models.Model):
     _name = "base.import.pipeline.mapping"
     _description = "Import Pipeline Field Mapping"
     _order = "sequence, id"
-    
+    description = fields.Text(string='Description about this mapping')
     pipeline_id = fields.Many2one('base.import.pipeline', string='Pipeline', required=True, ondelete='cascade')
     sequence = fields.Integer(default=10)
     source_field = fields.Char(required=True, string='Source Field')
@@ -27,10 +27,4 @@ class ImportPipelineMapping(models.Model):
         ('target', 'Target Field'),
     ], string='Field Type', default='target', required=True)
     is_required = fields.Boolean(string='Required', default=False)
-    note = fields.Text(string='Notes')
-    context = fields.Selection([
-        ('departure', 'Departure'),
-        ('arrival', 'Arrival'),
-        ('both', 'Both'),
-        ('none', 'None'),
-    ], string="Context", default='none', help="Additional context for the mapping")
+    
