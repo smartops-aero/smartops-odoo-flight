@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Pipeline Mapping Tree View -->
+    <record id="view_base_import_pipeline_mapping_tree" model="ir.ui.view">
+        <field name="name">base.import.pipeline.mapping.tree</field>
+        <field name="model">base.import.pipeline.mapping</field>
+        <field name="arch" type="xml">
+            <tree string="Field Mappings" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="pipeline_id"/>
+                <field name="source_field"/>
+                <field name="model"/>
+                <field name="field_type"/>
+                <field name="target_field"/>
+                <field name="transformation"/>
+                <field name="transformation_options"/>
+                <field name="context"/>
+                <field name="is_required"/>
+                <field name="note"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Pipeline Mapping Form View -->
+    <record id="view_base_import_pipeline_mapping_form" model="ir.ui.view">
+        <field name="name">base.import.pipeline.mapping.form</field>
+        <field name="model">base.import.pipeline.mapping</field>
+        <field name="arch" type="xml">
+            <form string="Field Mapping">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="pipeline_id"/>
+                            <field name="sequence"/>
+                            <field name="model"/>
+                            <field name="field_type"/>
+                        </group>
+                        <group>
+                            <field name="source_field"/>
+                            <field name="target_field"/>
+                            <field name="transformation"/>
+                            <field name="transformation_options"/>
+                            <field name="context"/>
+                            <field name="is_required"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_base_import_pipeline_mapping" model="ir.actions.act_window">
+        <field name="name">Field Mappings</field>
+        <field name="res_model">base.import.pipeline.mapping</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first field mapping
+            </p>
+            <p>
+                Field mappings define how source fields are mapped to target fields.
+            </p>
+        </field>
+    </record>
+</odoo>
