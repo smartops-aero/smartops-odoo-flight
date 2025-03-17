@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Pipeline Tree View -->
+    <record id="view_base_import_pipeline_tree" model="ir.ui.view">
+        <field name="name">base.import.pipeline.tree</field>
+        <field name="model">base.import.pipeline</field>
+        <field name="arch" type="xml">
+            <tree string="Import Pipelines">
+                <field name="name"/>
+                <field name="implementation"/>
+                <field name="model_id"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Pipeline Form View -->
+    <record id="view_base_import_pipeline_form" model="ir.ui.view">
+        <field name="name">base.import.pipeline.form</field>
+        <field name="model">base.import.pipeline</field>
+        <field name="arch" type="xml">
+            <form string="Import Pipeline">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Pipeline Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="implementation"/>
+                            <field name="model_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Import Results">
+                            <field name="result_ids">
+                                <tree>
+                                    <field name="date"/>
+                                    <field name="records_created"/>
+                                    <field name="status"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Pipeline Search View -->
+    <record id="view_base_import_pipeline_search" model="ir.ui.view">
+        <field name="name">base.import.pipeline.search</field>
+        <field name="model">base.import.pipeline</field>
+        <field name="arch" type="xml">
+            <search string="Import Pipelines">
+                <field name="name"/>
+                <field name="implementation"/>
+                <field name="model_id"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Import Result Form View -->
+    <record id="view_base_import_pipeline_result_form" model="ir.ui.view">
+        <field name="name">base.import.pipeline.result.form</field>
+        <field name="model">base.import.pipeline.result</field>
+        <field name="arch" type="xml">
+            <form string="Import Result">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="pipeline_id"/>
+                            <field name="date"/>
+                            <field name="status"/>
+                            <field name="records_created"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Summary">
+                            <field name="summary"/>
+                        </page>
+                        <page string="Log">
+                            <field name="log"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Import Results Tree View -->
+    <record id="view_base_import_pipeline_result_tree" model="ir.ui.view">
+        <field name="name">base.import.pipeline.result.tree</field>
+        <field name="model">base.import.pipeline.result</field>
+        <field name="arch" type="xml">
+            <tree string="Import Results">
+                <field name="pipeline_id"/>
+                <field name="date"/>
+                <field name="status"/>
+                <field name="records_created"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_base_import_pipeline" model="ir.actions.act_window">
+        <field name="name">Import Pipelines</field>
+        <field name="res_model">base.import.pipeline</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_base_import_pipeline_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first import pipeline
+            </p>
+            <p>
+                Import pipelines allow you to define how data is imported from external sources.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_base_import_pipeline_result" model="ir.actions.act_window">
+        <field name="name">Import Results</field>
+        <field name="res_model">base.import.pipeline.result</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No import results yet
+            </p>
+            <p>
+                Run an import to see results here.
+            </p>
+        </field>
+    </record>
+</odoo>

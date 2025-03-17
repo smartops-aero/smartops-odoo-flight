@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_base_import_pipeline" 
+              name="Import Pipelines"
+              parent="flight.menu_flight_root"
+              sequence="100"/>
+
+    <!-- Sub-menu items -->
+    <menuitem id="menu_base_import_pipeline_config" 
+              name="Pipelines"
+              parent="menu_base_import_pipeline"
+              action="action_base_import_pipeline"
+              sequence="10"/>
+
+    <menuitem id="menu_base_import_pipeline_result" 
+              name="Import Results"
+              parent="menu_base_import_pipeline"
+              action="action_base_import_pipeline_result"
+              sequence="20"/>
+</odoo>
