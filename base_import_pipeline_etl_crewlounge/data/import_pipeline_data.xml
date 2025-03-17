@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CrewLounge Import Pipeline -->
+    <record id="crewlounge_import_pipeline" model="base.import.pipeline">
+        <field name="name">CrewLounge Flight Import</field>
+        <field name="model_id" ref="flight.model_flight_flight"/>
+        <field name="implementation">crewlounge</field>
+        <field name="active" eval="True"/>
+    </record>
+    
+    <!-- Field Mappings -->
+    <record id="mapping_flight_number" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="name">Flight Number</field>
+        <field name="source_field">FLIGHTNUMBER</field>
+        <field name="target_field">name</field>
+        <field name="model">flight.flight</field>
+        <field name="transformation">direct</field>
+        <field name="sequence">10</field>
+    </record>
+    
+    <record id="mapping_departure_aerodrome" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="name">Departure Aerodrome</field>
+        <field name="source_field">AF_DEP</field>
+        <field name="target_field">departure_id</field>
+        <field name="model">flight.flight</field>
+        <field name="transformation">lookup</field>
+        <field name="relation_model_id" ref="flight.model_flight_aerodrome"/>
+        <field name="relation_field">icao</field>
+        <field name="lookup_fields">code,name</field>
+        <field name="sequence">20</field>
+    </record>
+    
+    <record id="mapping_arrival_aerodrome" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="name">Arrival Aerodrome</field>
+        <field name="source_field">AF_ARR</field>
+        <field name="target_field">arrival_id</field>
+        <field name="model">flight.flight</field>
+        <field name="transformation">lookup</field>
+        <field name="relation_model_id" ref="flight.model_flight_aerodrome"/>
+        <field name="relation_field">icao</field>
+        <field name="lookup_fields">code,name</field>
+        <field name="sequence">30</field>
+    </record>
+    
+    <record id="mapping_aircraft" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="name">Aircraft</field>
+        <field name="source_field">AC_REG</field>
+        <field name="target_field">aircraft_id</field>
+        <field name="model">flight.flight</field>
+        <field name="transformation">lookup</field>
+        <field name="relation_model_id" ref="flight.model_flight_aircraft"/>
+        <field name="relation_field">registration</field>
+        <field name="sequence">40</field>
+    </record>
+</odoo>

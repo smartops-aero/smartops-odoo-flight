@@ -116,10 +116,10 @@ class BaseImportPipelineETL(models.Model):
         
         return result
     
-    def run_import(self, file_content=None, filename=None, **kwargs):
+    def run_import(self, **kwargs):
         """Run the ETL import process"""
         try:
-            extracted_data = self.extract(file_content, filename)
+            extracted_data = self.extract(**kwargs)
             transformed_data = self.transform(extracted_data)
             result = self.load(transformed_data)
             
@@ -140,7 +140,8 @@ class BaseImportPipelineETL(models.Model):
             })
             raise
     
-    def _extract_from_csv(self, file_content, filename=None):
+    @api.model
+    def _extract_from_csv(self, file_content, filename=None, delimiter=','):
         """Extract data from CSV file - helper method for implementations"""
         if not file_content:
             raise UserError(_("No file content provided"))
@@ -152,7 +153,7 @@ class BaseImportPipelineETL(models.Model):
             # Parse CSV
             reader = csv.DictReader(
                 io.StringIO(content), 
-                delimiter=self.csv_delimiter
+                delimiter=delimiter
             )
             
             # Convert to list of dicts

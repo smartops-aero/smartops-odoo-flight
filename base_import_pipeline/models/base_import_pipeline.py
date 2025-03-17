@@ -15,18 +15,14 @@ class BaseImportPipeline(models.Model):
     active = fields.Boolean(default=True)
     result_ids = fields.One2many('base.import.pipeline.result', 'pipeline_id', string='Import Results')
     
-    def _dispatch(self, method, *args, **kwargs):
-        """Dispatch method call to appropriate implementation"""
-        if not self.implementation:
-            raise UserError(_("Import implementation not configured"))
-
-        implementation_method = f"{self.implementation}_{method}"
-        if not hasattr(self, implementation_method):
-            raise NotImplementedError(
-                _("Method %s not implemented for implementation %s") % (method, self.implementation)
-            )
-
-        return getattr(self, implementation_method)(*args, **kwargs)
+    def _dispatch(self, method_name, *args, **kwargs):
+        """Dispatch method calls to the appropriate implementation"""
+        if hasattr(self, f'_{self.implementation}_{method_name}'):
+            method = getattr(self, f'_{self.implementation}_{method_name}')
+            return method(*args, **kwargs)
+        raise NotImplementedError(
+            _("Method %s not implemented for %s") % (method_name, self.implementation)
+        )
     
     @api.model
     def _selection_implementation(self):
