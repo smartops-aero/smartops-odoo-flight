@@ -366,41 +366,12 @@ class BaseImportPipeline(models.Model):
             raise UserError(_("Error extracting data: %s") % str(e))
     
     def _apply_field_transformations(self, value, mapping):
-        """Apply transformations to field values based on mapping configuration"""
-        if not value and mapping.default_value:
-            return mapping.default_value
-            
-        transformation = mapping.transformation
+        """Apply transformations to field values based on mapping configuration
         
-        if transformation == 'direct':
-            return value
-            
-        elif transformation == 'date_format':
-            # Basic date format conversion (DD-MM-YYYY to YYYY-MM-DD)
-            if value and len(value) == 10:  # Simple validation
-                parts = value.split('-')
-                if len(parts) == 3:
-                    return f"{parts[2]}-{parts[1]}-{parts[0]}"
-            return value
-            
-        elif transformation == 'lookup':
-            # For lookup transformations, we just return the value
-            # The actual lookup is handled in the transform method
-            return value
-            
-        elif transformation == 'regex':
-            # Apply regex transformation if pattern is defined
-            if value and mapping.regex_pattern and mapping.regex_replacement:
-                try:
-                    return re.sub(mapping.regex_pattern, mapping.regex_replacement, value)
-                except Exception:
-                    # If regex fails, return original value or default
-                    return mapping.default_value if mapping.default_value else value
-            return value
-            
-        else:
-            # Default fallback
-            return mapping.default_value if mapping.default_value else value
+        This method delegates to the mapping model's transform_value method,
+        which implements the transformation logic.
+        """
+        return mapping.transform_value(value)
     
     def _get_or_create_record(self, model_name, domain, values):
         """Get or create a record in the specified model
