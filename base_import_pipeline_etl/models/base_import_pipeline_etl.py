@@ -396,7 +396,7 @@ class BaseImportPipeline(models.Model):
         
         Args:
             parent_record: The parent record (e.g., flight.flight) to link to
-            target_model: The name of the model to create record in (e.g., 'flight.pilot.remark')
+            target_model: The name of the model to create record in
             mappings: List of mapping records for the target model
             post_result: Dictionary to store results
             extracted_data: Dictionary with original source data
@@ -411,16 +411,16 @@ class BaseImportPipeline(models.Model):
             # Handle parent record ID transformation
             if mapping.transformation == 'parent_record_id':
                 values[field_name] = parent_record.id
-                # Add to domain for finding existing records - this is a key for flight.pilot.remark
-                if target_model == 'flight.pilot.remark' and field_name == 'flight_id':
+                # If this is a key field, add it to the domain for finding existing records
+                if mapping.is_key_field:
                     domain.append((field_name, '=', parent_record.id))
                 continue
                 
             # Handle static values (from post_process_value)
             if mapping.post_process_value:
                 values[field_name] = mapping.post_process_value
-                # For partner_id in flight.pilot.remark, this is part of the unique key
-                if target_model == 'flight.pilot.remark' and field_name == 'partner_id':
+                # If this is a key field, add it to the domain for finding existing records
+                if mapping.is_key_field:
                     domain.append((field_name, '=', mapping.post_process_value))
                 continue
                 
@@ -435,9 +435,9 @@ class BaseImportPipeline(models.Model):
                 
                 if transformed_value is not None:
                     values[field_name] = transformed_value
-                    # For non-relational fields, add to domain
+                    # If this is a key field or a non-relational field, add to domain
                     field_info = self.env[target_model]._fields.get(field_name)
-                    if field_info and not field_info.relational:
+                    if mapping.is_key_field or (field_info and not field_info.relational):
                         domain.append((field_name, '=', transformed_value))
         
         # Skip if we don't have any values to create/update

@@ -174,6 +174,7 @@
         <field name="transformation">parent_record_id</field>
         <field name="sequence">100</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <!-- Pilot Remark - Content -->
@@ -198,6 +199,7 @@
         <field name="post_process_value">3</field>
         <field name="sequence">120</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <!-- ========== Flight Pilot Event Mappings ========== -->
@@ -211,6 +213,7 @@
         <field name="transformation">parent_record_id</field>
         <field name="sequence">130</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_event_pilot_to_day" model="base.import.pipeline.mapping">
@@ -222,6 +225,7 @@
         <field name="post_process_value">3</field>
         <field name="sequence">131</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_event_event_code_to_day" model="base.import.pipeline.mapping">
@@ -233,6 +237,7 @@
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_event_code_to_day"/>
         <field name="sequence">132</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_event_count_to_day" model="base.import.pipeline.mapping">
@@ -255,6 +260,7 @@
         <field name="transformation">parent_record_id</field>
         <field name="sequence">140</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_event_pilot_to_night" model="base.import.pipeline.mapping">
@@ -266,6 +272,7 @@
         <field name="post_process_value">3</field>
         <field name="sequence">141</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_event_event_code_to_night" model="base.import.pipeline.mapping">
@@ -277,6 +284,7 @@
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_event_code_to_night"/>
         <field name="sequence">142</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_event_count_to_night" model="base.import.pipeline.mapping">
@@ -299,6 +307,7 @@
         <field name="transformation">parent_record_id</field>
         <field name="sequence">150</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_event_pilot_ldg_day" model="base.import.pipeline.mapping">
@@ -310,6 +319,7 @@
         <field name="post_process_value">3</field>
         <field name="sequence">151</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_event_event_code_ldg_day" model="base.import.pipeline.mapping">
@@ -321,6 +331,7 @@
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_event_code_ldg_day"/>
         <field name="sequence">152</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_event_count_ldg_day" model="base.import.pipeline.mapping">
@@ -343,6 +354,7 @@
         <field name="transformation">parent_record_id</field>
         <field name="sequence">160</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_event_pilot_ldg_night" model="base.import.pipeline.mapping">
@@ -354,6 +366,7 @@
         <field name="post_process_value">3</field>
         <field name="sequence">161</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_event_event_code_ldg_night" model="base.import.pipeline.mapping">
@@ -365,6 +378,7 @@
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_event_code_ldg_night"/>
         <field name="sequence">162</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_event_count_ldg_night" model="base.import.pipeline.mapping">
@@ -389,6 +403,7 @@
         <field name="transformation">parent_record_id</field>
         <field name="sequence">200</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_time_pilot_total" model="base.import.pipeline.mapping">
@@ -400,6 +415,7 @@
         <field name="post_process_value">3</field>
         <field name="sequence">201</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_time_code_total" model="base.import.pipeline.mapping">
@@ -411,6 +427,7 @@
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_total"/>
         <field name="sequence">202</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_time_duration_total" model="base.import.pipeline.mapping">
@@ -433,6 +450,7 @@
         <field name="transformation">parent_record_id</field>
         <field name="sequence">210</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_time_pilot_pic" model="base.import.pipeline.mapping">
@@ -444,6 +462,7 @@
         <field name="post_process_value">3</field>
         <field name="sequence">211</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_time_code_pic" model="base.import.pipeline.mapping">
@@ -455,6 +474,7 @@
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_pic"/>
         <field name="sequence">212</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_time_duration_pic" model="base.import.pipeline.mapping">
@@ -477,6 +497,7 @@
         <field name="transformation">parent_record_id</field>
         <field name="sequence">220</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_time_pilot_sic" model="base.import.pipeline.mapping">
@@ -488,6 +509,7 @@
         <field name="post_process_value">3</field>
         <field name="sequence">221</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_time_code_sic" model="base.import.pipeline.mapping">
@@ -499,6 +521,7 @@
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_sic"/>
         <field name="sequence">222</field>
         <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <record id="mapping_pilot_time_duration_sic" model="base.import.pipeline.mapping">
