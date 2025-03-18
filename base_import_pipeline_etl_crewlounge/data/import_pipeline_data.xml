@@ -214,6 +214,7 @@
         <field name="sequence">130</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">to_day_event</field>
     </record>
     
     <record id="mapping_pilot_event_pilot_to_day" model="base.import.pipeline.mapping">
@@ -226,6 +227,7 @@
         <field name="sequence">131</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">to_day_event</field>
     </record>
     
     <record id="mapping_pilot_event_event_code_to_day" model="base.import.pipeline.mapping">
@@ -238,6 +240,7 @@
         <field name="sequence">132</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">to_day_event</field>
     </record>
     
     <record id="mapping_pilot_event_count_to_day" model="base.import.pipeline.mapping">
@@ -249,6 +252,7 @@
         <field name="transformation">direct</field>
         <field name="sequence">133</field>
         <field name="is_post_process" eval="True"/>
+        <field name="group_key">to_day_event</field>
     </record>
 
     <!-- Takeoff Night Event -->
@@ -261,6 +265,7 @@
         <field name="sequence">140</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">to_night_event</field>
     </record>
     
     <record id="mapping_pilot_event_pilot_to_night" model="base.import.pipeline.mapping">
@@ -273,6 +278,7 @@
         <field name="sequence">141</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">to_night_event</field>
     </record>
     
     <record id="mapping_pilot_event_event_code_to_night" model="base.import.pipeline.mapping">
@@ -285,6 +291,7 @@
         <field name="sequence">142</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">to_night_event</field>
     </record>
     
     <record id="mapping_pilot_event_count_to_night" model="base.import.pipeline.mapping">
@@ -296,6 +303,7 @@
         <field name="transformation">direct</field>
         <field name="sequence">143</field>
         <field name="is_post_process" eval="True"/>
+        <field name="group_key">to_night_event</field>
     </record>
 
     <!-- Landing Day Event -->
@@ -308,6 +316,7 @@
         <field name="sequence">150</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">ldg_day_event</field>
     </record>
     
     <record id="mapping_pilot_event_pilot_ldg_day" model="base.import.pipeline.mapping">
@@ -320,6 +329,7 @@
         <field name="sequence">151</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">ldg_day_event</field>
     </record>
     
     <record id="mapping_pilot_event_event_code_ldg_day" model="base.import.pipeline.mapping">
@@ -332,6 +342,7 @@
         <field name="sequence">152</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">ldg_day_event</field>
     </record>
     
     <record id="mapping_pilot_event_count_ldg_day" model="base.import.pipeline.mapping">
@@ -343,6 +354,7 @@
         <field name="transformation">direct</field>
         <field name="sequence">153</field>
         <field name="is_post_process" eval="True"/>
+        <field name="group_key">ldg_day_event</field>
     </record>
 
     <!-- Landing Night Event -->
@@ -355,6 +367,7 @@
         <field name="sequence">160</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">ldg_night_event</field>
     </record>
     
     <record id="mapping_pilot_event_pilot_ldg_night" model="base.import.pipeline.mapping">
@@ -367,6 +380,7 @@
         <field name="sequence">161</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">ldg_night_event</field>
     </record>
     
     <record id="mapping_pilot_event_event_code_ldg_night" model="base.import.pipeline.mapping">
@@ -379,6 +393,7 @@
         <field name="sequence">162</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">ldg_night_event</field>
     </record>
     
     <record id="mapping_pilot_event_count_ldg_night" model="base.import.pipeline.mapping">
@@ -390,6 +405,7 @@
         <field name="transformation">direct</field>
         <field name="sequence">163</field>
         <field name="is_post_process" eval="True"/>
+        <field name="group_key">ldg_night_event</field>
     </record>
 
     <!-- ========== Flight Pilot Time Mappings ========== -->
