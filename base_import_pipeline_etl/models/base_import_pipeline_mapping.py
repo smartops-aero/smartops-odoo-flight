@@ -97,6 +97,7 @@ Common use cases:
             ('lookup', 'Lookup Reference'),
             ('regex', 'Regular Expression'),
             ('parent_record_id', 'Parent Record ID'),
+            ('minutes_to_hours', 'Minutes to Hours'),
         ]
     
     def transform_value(self, value):
@@ -153,6 +154,14 @@ Common use cases:
         During post-processing, the parent record ID is set directly.
         """
         return value
+    
+    def _transform_minutes_to_hours(self, value):
+        """Minutes to hours transformation - converts minutes to hours by dividing by 60"""
+        try:
+            minutes = float(value)
+            return minutes / 60.0
+        except (ValueError, TypeError):
+            return 0.0
     
     @api.onchange('transformation')
     def _onchange_transformation(self):

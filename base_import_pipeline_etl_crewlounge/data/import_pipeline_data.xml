@@ -419,7 +419,7 @@
         <field name="source_field">TIME_TOTAL</field>
         <field name="target_field">duration</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
-        <field name="transformation">direct</field>
+        <field name="transformation">minutes_to_hours</field>
         <field name="sequence">203</field>
         <field name="is_post_process" eval="True"/>
     </record>
@@ -463,7 +463,7 @@
         <field name="source_field">TIME_PIC</field>
         <field name="target_field">duration</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
-        <field name="transformation">direct</field>
+        <field name="transformation">minutes_to_hours</field>
         <field name="sequence">213</field>
         <field name="is_post_process" eval="True"/>
     </record>
@@ -507,7 +507,7 @@
         <field name="source_field">TIME_SIC</field>
         <field name="target_field">duration</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
-        <field name="transformation">direct</field>
+        <field name="transformation">minutes_to_hours</field>
         <field name="sequence">223</field>
         <field name="is_post_process" eval="True"/>
     </record>
