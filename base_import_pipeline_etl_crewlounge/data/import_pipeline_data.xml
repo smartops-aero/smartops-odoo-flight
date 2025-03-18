@@ -76,7 +76,7 @@
         <field name="source_field">AC_ENGTYPE</field>
         <field name="target_field">engine_type</field>
         <field name="model_id" ref="flight.model_flight_aircraft_model"/>
-        <field name="transformation">engine_type_mapping</field>
+        <field name="transformation">crewlounge_engine_type_mapping</field>
         <field name="sequence">35</field>
     </record>
     
@@ -91,6 +91,17 @@
         <field name="relation_model_id" ref="flight.model_flight_aircraft_model"/>
         <field name="relation_field">name</field>
         <field name="sequence">41</field>
+    </record>
+
+    <!-- Aircraft Equipment Type -->
+    <record id="mapping_aircraft_equipment_type" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Aircraft Equipment Type</field>
+        <field name="source_field">AC_ISSIM</field>
+        <field name="target_field">equipment_type</field>
+        <field name="model_id" ref="flight.model_flight_aircraft"/>
+        <field name="transformation">crewlounge_equipment_type_mapping</field>
+        <field name="sequence">45</field>
     </record>
     
     <!-- Departure Aerodrome -->

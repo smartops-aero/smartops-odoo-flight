@@ -1,5 +1,8 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class BaseImportPipeline(models.Model):
@@ -29,6 +32,7 @@ class BaseImportPipelineMapping(models.Model):
     def _selection_transformation(self):
         selection = super()._selection_transformation()
         selection.append(('crewlounge_engine_type_mapping', 'Crewlounge Engine Type Mapping'))
+        selection.append(('crewlounge_equipment_type_mapping', 'Crewlounge Equipment Type Mapping'))
         return selection
     
     def _transform_crewlounge_engine_type_mapping(self, value):
@@ -77,3 +81,21 @@ class BaseImportPipelineMapping(models.Model):
         
         # Return default if available, otherwise return None
         return self.default_value if self.default_value else None
+        
+    def _transform_crewlounge_equipment_type_mapping(self, value):
+        """Map equipment type based on AC_ISSIM field (TRUE/FALSE)
+        
+        If AC_ISSIM is TRUE, it's a simulator (FFS)
+        If AC_ISSIM is FALSE, it's an aircraft
+        """
+        if not value:
+            return 'aircraft'  # Default to aircraft if no value
+            
+        # Normalize the value
+        normalized_value = str(value).strip().upper()
+        
+        # Map based on TRUE/FALSE
+        if normalized_value == 'TRUE':
+            return 'ffs'  # Full Flight Simulator
+        else:
+            return 'aircraft'  # Default to aircraft for any other value
