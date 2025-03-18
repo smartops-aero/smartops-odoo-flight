@@ -85,6 +85,10 @@ Common use cases:
         help="Static value to use for this field during post-processing, when not using a source field."
     )
     
+    group_key = fields.Char(string='Group Key', 
+                           help="Mappings with the same group key will be processed together to create a single record. "
+                                "Use different group keys for mappings that should create separate records even with the same model.")
+    
     @api.model
     def _selection_transformation(self):
         """Selection function for transformation types.

@@ -318,7 +318,7 @@ class BaseImportPipeline(models.Model):
         
         return result
     
-    def post_process(self, import_result, extracted_data):
+    def post_process(self, import_result, extracted_data=None):
         """Process post-import actions that depend on created/updated records
         
         This method runs after the main import is complete and handles creating
@@ -334,55 +334,69 @@ class BaseImportPipeline(models.Model):
         post_result = {
             'post_created': [],
             'post_updated': [],
-            'post_errors': [],
+            'post_errors': []
         }
         
-        # Get post-processing mappings
+        if not extracted_data:
+            _logger.warning("No extracted data for post processing")
+            return post_result
+            
+        # Get all post-process mappings
         post_mappings = self.mapping_ids.filtered(lambda m: m.is_post_process)
-        
         if not post_mappings:
-            _logger.info("No post-processing mappings defined, skipping post-processing")
+            _logger.info("No post-process mappings defined")
+            return post_result
+            
+        # Associate original data with record IDs for reference
+        original_data_by_id = {}
+        for idx, data in enumerate(extracted_data):
+            if idx < len(import_result.get('created', [])):
+                record_id = import_result['created'][idx]
+                original_data_by_id[record_id] = data
+            elif idx - len(import_result.get('created', [])) < len(import_result.get('updated', [])):
+                record_id = import_result['updated'][idx - len(import_result.get('created', []))]
+                original_data_by_id[record_id] = data
+        
+        # Get records that were created or updated
+        records = None
+        # Find the main model - safely handle the case where filtering returns no records
+        main_model_mapping = self.mapping_ids.filtered(lambda m: not m.is_post_process and m.sequence == 0)
+        main_model = main_model_mapping.model_id.model if main_model_mapping else self.model_id.model
+        
+        if not main_model:
+            _logger.error("Could not determine main model for post-processing")
+            post_result['post_errors'].append("Could not determine main model for post-processing")
+            return post_result
+            
+        if import_result.get('created') or import_result.get('updated'):
+            records = self.env[main_model].browse(import_result.get('created', []) + import_result.get('updated', []))
+        
+        if not records:
+            _logger.warning("No records were created or updated, skipping post-processing")
             return post_result
         
-        _logger.info("Found %s post-processing mappings", len(post_mappings))
-        
-        # Group mappings by target model
-        mappings_by_model = {}
+        # First, group mappings by model AND group_key (if set)
+        mapping_groups = {}
         for mapping in post_mappings:
             model_name = mapping.model_id.model
-            if model_name not in mappings_by_model:
-                mappings_by_model[model_name] = self.env['base.import.pipeline.mapping']
-            mappings_by_model[model_name] |= mapping
+            # Use combination of model and group_key as the dictionary key
+            # This allows separate processing for different group keys within the same model
+            group_key = f"{model_name}_{mapping.group_key or 'default'}"
+            
+            if group_key not in mapping_groups:
+                mapping_groups[group_key] = []
+            mapping_groups[group_key].append(mapping)
         
-        _logger.info("Mappings by model: %s", list(mappings_by_model.keys()))
-        
-        # Get record IDs from import results
-        record_ids = import_result.get('created', []) + import_result.get('updated', [])
-        records = self.env[self.model_id.model].browse(record_ids)
-        _logger.info("Processing %s records for post-processing", len(records))
-        
-        # Create dictionary to map record IDs to their original data
-        original_data_by_id = {}
-        
-        # We need to match the created/updated records back to their original data
-        for i, record_id in enumerate(import_result.get('created', [])):
-            if i < len(extracted_data):
-                original_data_by_id[record_id] = extracted_data[i]
-        
-        for i, record_id in enumerate(import_result.get('updated', [])):
-            offset = len(import_result.get('created', []))
-            if i + offset < len(extracted_data):
-                original_data_by_id[record_id] = extracted_data[i + offset]
-        
-        # Process each model's mappings
-        for model_name, model_mappings in mappings_by_model.items():
-            _logger.info("Processing mappings for model: %s", model_name)
+        # Process each group of mappings
+        for group_key, mappings in mapping_groups.items():
+            model_name = mappings[0].model_id.model
+            _logger.info("Processing mappings for group: %s (model: %s)", group_key, model_name)
             
             # For each parent record, create related records
             for record in records:
                 try:
                     original_data = original_data_by_id.get(record.id, {})
-                    self._create_post_process_record(record, model_name, model_mappings, post_result, original_data)
+                    self._create_post_process_record(record, model_name, mappings, post_result, original_data)
                 except Exception as e:
                     error_msg = f"Error in post-processing for record {record.id}: {str(e)}"
                     _logger.error(error_msg)

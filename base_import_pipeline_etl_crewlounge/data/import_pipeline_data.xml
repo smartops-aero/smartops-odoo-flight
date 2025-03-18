@@ -404,6 +404,7 @@
         <field name="sequence">200</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">total_time</field>
     </record>
     
     <record id="mapping_pilot_time_pilot_total" model="base.import.pipeline.mapping">
@@ -416,6 +417,7 @@
         <field name="sequence">201</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">total_time</field>
     </record>
     
     <record id="mapping_pilot_time_code_total" model="base.import.pipeline.mapping">
@@ -428,6 +430,7 @@
         <field name="sequence">202</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">total_time</field>
     </record>
     
     <record id="mapping_pilot_time_duration_total" model="base.import.pipeline.mapping">
@@ -439,6 +442,7 @@
         <field name="transformation">minutes_to_hours</field>
         <field name="sequence">203</field>
         <field name="is_post_process" eval="True"/>
+        <field name="group_key">total_time</field>
     </record>
     
     <!-- PIC Time -->
@@ -451,6 +455,7 @@
         <field name="sequence">210</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">pic_time</field>
     </record>
     
     <record id="mapping_pilot_time_pilot_pic" model="base.import.pipeline.mapping">
@@ -463,6 +468,7 @@
         <field name="sequence">211</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">pic_time</field>
     </record>
     
     <record id="mapping_pilot_time_code_pic" model="base.import.pipeline.mapping">
@@ -475,6 +481,7 @@
         <field name="sequence">212</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">pic_time</field>
     </record>
     
     <record id="mapping_pilot_time_duration_pic" model="base.import.pipeline.mapping">
@@ -486,6 +493,7 @@
         <field name="transformation">minutes_to_hours</field>
         <field name="sequence">213</field>
         <field name="is_post_process" eval="True"/>
+        <field name="group_key">pic_time</field>
     </record>
     
     <!-- SIC Time -->
@@ -498,6 +506,7 @@
         <field name="sequence">220</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">sic_time</field>
     </record>
     
     <record id="mapping_pilot_time_pilot_sic" model="base.import.pipeline.mapping">
@@ -510,6 +519,7 @@
         <field name="sequence">221</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">sic_time</field>
     </record>
     
     <record id="mapping_pilot_time_code_sic" model="base.import.pipeline.mapping">
@@ -522,6 +532,7 @@
         <field name="sequence">222</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">sic_time</field>
     </record>
     
     <record id="mapping_pilot_time_duration_sic" model="base.import.pipeline.mapping">
@@ -533,6 +544,7 @@
         <field name="transformation">minutes_to_hours</field>
         <field name="sequence">223</field>
         <field name="is_post_process" eval="True"/>
+        <field name="group_key">sic_time</field>
     </record>
     
     <!-- DUAL Time -->
@@ -545,6 +557,7 @@
         <field name="sequence">230</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">dual_time</field>
     </record>
     
     <record id="mapping_pilot_time_pilot_dual" model="base.import.pipeline.mapping">
@@ -557,6 +570,7 @@
         <field name="sequence">231</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">dual_time</field>
     </record>
     
     <record id="mapping_pilot_time_code_dual" model="base.import.pipeline.mapping">
@@ -569,6 +583,7 @@
         <field name="sequence">232</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
+        <field name="group_key">dual_time</field>
     </record>
     
     <record id="mapping_pilot_time_duration_dual" model="base.import.pipeline.mapping">
@@ -580,5 +595,6 @@
         <field name="transformation">minutes_to_hours</field>
         <field name="sequence">233</field>
         <field name="is_post_process" eval="True"/>
+        <field name="group_key">dual_time</field>
     </record>
 </odoo>
