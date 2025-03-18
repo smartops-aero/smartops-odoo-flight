@@ -1,9 +1,9 @@
 import base64
 import csv
 import io
-import re
 import logging
 import traceback
+import json
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
@@ -108,7 +108,7 @@ class BaseImportPipeline(models.Model):
                                                 model_name, domain, model_values)
                                     
                                     model_record = self._get_or_create_record(
-                                        model_name, domain, model_values
+                                        model_name, domain, model_values, mapping
                                     )
                                     
                                     _logger.info("Result: %s (ID: %s)", model_record, model_record.id)
@@ -167,7 +167,7 @@ class BaseImportPipeline(models.Model):
                             
                             # Find or create the related record
                             related_record = self._get_or_create_record(
-                                relation_model, domain, related_values
+                                relation_model, domain, related_values, mapping
                             )
                             
                             _logger.info("Result: %s (ID: %s)", related_record, related_record.id)
@@ -206,7 +206,7 @@ class BaseImportPipeline(models.Model):
                                             model_name, domain, model_values)
                                 
                                 model_record = self._get_or_create_record(
-                                    model_name, domain, model_values
+                                    model_name, domain, model_values, mapping
                                 )
                                 
                                 _logger.info("Result: %s (ID: %s)", model_record, model_record.id)
@@ -373,7 +373,7 @@ class BaseImportPipeline(models.Model):
         """
         return mapping.transform_value(value)
     
-    def _get_or_create_record(self, model_name, domain, values):
+    def _get_or_create_record(self, model_name, domain, values, mapping=None):
         """Get or create a record in the specified model
         
         This method tries to find a record matching the domain.
@@ -384,6 +384,7 @@ class BaseImportPipeline(models.Model):
             model_name: The name of the model to search/create in
             domain: The domain to search for existing records
             values: The values to use when creating a new record or updating an existing one
+            mapping: Optional mapping record that may contain context for new records
             
         Returns:
             The found or created record
@@ -416,7 +417,30 @@ class BaseImportPipeline(models.Model):
                 record.write(update_values)
         else:
             # Create a new record
-            _logger.debug("Creating new record with values: %s", values)
-            record = self.env[model_name].create(values)
+            create_values = values.copy()
+            create_context = {}
+            
+            # Apply context from mapping if provided
+            if mapping and mapping.context:
+                try:
+                    context_values = json.loads(mapping.context)
+                    if isinstance(context_values, dict):
+                        # Extract default values from context
+                        for key, value in context_values.items():
+                            if key.startswith('default_'):
+                                field_name = key[8:]  # Remove 'default_' prefix
+                                create_values[field_name] = value
+                            else:
+                                create_context[key] = value
+                        
+                        _logger.debug("Added values from context: %s", context_values)
+                except Exception as e:
+                    _logger.warning("Error parsing context from mapping: %s", str(e))
+            
+            _logger.debug("Creating new record with values: %s", create_values)
+            if create_context:
+                record = self.env[model_name].with_context(**create_context).create(create_values)
+            else:
+                record = self.env[model_name].create(create_values)
             
         return record

@@ -104,6 +104,21 @@
         <field name="sequence">45</field>
     </record>
     
+    <!-- Aircraft Operator -->
+    <record id="mapping_aircraft_operator" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Aircraft Operator</field>
+        <field name="source_field">OPERATOR</field>
+        <field name="target_field">operator_id</field>
+        <field name="model_id" ref="flight.model_flight_aircraft"/>
+        <field name="transformation">lookup</field>
+        <field name="relation_model_id" ref="base.model_res_partner"/>
+        <field name="relation_field">name</field>
+        <field name="lookup_fields">display_name</field>
+        <field name="context">{"default_is_company": true}</field>
+        <field name="sequence">46</field>
+    </record>
+    
     <!-- Departure Aerodrome -->
     <record id="mapping_departure_aerodrome" model="base.import.pipeline.mapping">
         <field name="pipeline_id" ref="crewlounge_import_pipeline"/>

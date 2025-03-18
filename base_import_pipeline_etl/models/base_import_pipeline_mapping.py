@@ -37,6 +37,19 @@ class ImportPipelineMapping(models.Model):
         help="Comma-separated list of additional fields to use for lookup (e.g., 'name,code')"
     )
     
+    # Context for new records during lookup
+    context = fields.Text(
+        string='Creation Context',
+        help="""Context values to use when creating new records during lookup transformations.
+Uses standard Odoo 'default_' prefix convention for setting default values.
+Example: {"default_is_company": true, "default_company_type": "company"}
+
+Common use cases:
+- Setting is_company=True for new partners: {"default_is_company": true}
+- Setting a default country: {"default_country_id": 233}
+- Setting a default status: {"default_state": "draft"}"""
+    )
+    
     # Regex configuration
     regex_pattern = fields.Char(
         string='Regex Pattern',
@@ -126,6 +139,7 @@ class ImportPipelineMapping(models.Model):
             self.lookup_fields = False
             self.relation_model_id = False
             self.relation_field = False
+            self.context = False
         
         if self.transformation != 'regex':
             self.regex_pattern = False
