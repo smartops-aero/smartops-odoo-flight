@@ -199,4 +199,316 @@
         <field name="sequence">120</field>
         <field name="is_post_process" eval="True"/>
     </record>
+    
+    <!-- ========== Flight Pilot Event Mappings ========== -->
+
+    <!-- Takeoff Day Event -->
+    <record id="mapping_pilot_event_flight_to_day" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Takeoff Day Event</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">130</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_event_pilot_to_day" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Takeoff Day Event</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value">3</field>
+        <field name="sequence">131</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_event_event_code_to_day" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Event Code for Takeoff Day</field>
+        <field name="target_field">event_code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_event_code_to_day"/>
+        <field name="sequence">132</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_event_count_to_day" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Count for Takeoff Day Event</field>
+        <field name="source_field">TO_DAY</field>
+        <field name="target_field">count</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="sequence">133</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+
+    <!-- Takeoff Night Event -->
+    <record id="mapping_pilot_event_flight_to_night" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Takeoff Night Event</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">140</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_event_pilot_to_night" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Takeoff Night Event</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value">3</field>
+        <field name="sequence">141</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_event_event_code_to_night" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Event Code for Takeoff Night</field>
+        <field name="target_field">event_code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_event_code_to_night"/>
+        <field name="sequence">142</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_event_count_to_night" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Count for Takeoff Night Event</field>
+        <field name="source_field">TO_NIGHT</field>
+        <field name="target_field">count</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="sequence">143</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+
+    <!-- Landing Day Event -->
+    <record id="mapping_pilot_event_flight_ldg_day" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Landing Day Event</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">150</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_event_pilot_ldg_day" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Landing Day Event</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value">3</field>
+        <field name="sequence">151</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_event_event_code_ldg_day" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Event Code for Landing Day</field>
+        <field name="target_field">event_code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_event_code_ldg_day"/>
+        <field name="sequence">152</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_event_count_ldg_day" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Count for Landing Day Event</field>
+        <field name="source_field">LDG_DAY</field>
+        <field name="target_field">count</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="sequence">153</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+
+    <!-- Landing Night Event -->
+    <record id="mapping_pilot_event_flight_ldg_night" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Landing Night Event</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">160</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_event_pilot_ldg_night" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Landing Night Event</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value">3</field>
+        <field name="sequence">161</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_event_event_code_ldg_night" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Event Code for Landing Night</field>
+        <field name="target_field">event_code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_event_code_ldg_night"/>
+        <field name="sequence">162</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_event_count_ldg_night" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Count for Landing Night Event</field>
+        <field name="source_field">LDG_NIGHT</field>
+        <field name="target_field">count</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="sequence">163</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+
+    <!-- ========== Flight Pilot Time Mappings ========== -->
+    
+    <!-- Total Time -->
+    <record id="mapping_pilot_time_flight_total" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Total Time</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">200</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_time_pilot_total" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Total Time</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value">3</field>
+        <field name="sequence">201</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_time_code_total" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Time Code for Total Time</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_total"/>
+        <field name="sequence">202</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_time_duration_total" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Duration for Total Time</field>
+        <field name="source_field">TIME_TOTAL</field>
+        <field name="target_field">duration</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="sequence">203</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <!-- PIC Time -->
+    <record id="mapping_pilot_time_flight_pic" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for PIC Time</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">210</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_time_pilot_pic" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for PIC Time</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value">3</field>
+        <field name="sequence">211</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_time_code_pic" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Time Code for PIC Time</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_pic"/>
+        <field name="sequence">212</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_time_duration_pic" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Duration for PIC Time</field>
+        <field name="source_field">TIME_PIC</field>
+        <field name="target_field">duration</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="sequence">213</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <!-- SIC Time -->
+    <record id="mapping_pilot_time_flight_sic" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for SIC Time</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">220</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_time_pilot_sic" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for SIC Time</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value">3</field>
+        <field name="sequence">221</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_time_code_sic" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Time Code for SIC Time</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_sic"/>
+        <field name="sequence">222</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_time_duration_sic" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Duration for SIC Time</field>
+        <field name="source_field">TIME_SIC</field>
+        <field name="target_field">duration</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="sequence">223</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
 </odoo>
