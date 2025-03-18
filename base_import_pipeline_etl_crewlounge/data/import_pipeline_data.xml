@@ -534,4 +534,51 @@
         <field name="sequence">223</field>
         <field name="is_post_process" eval="True"/>
     </record>
+    
+    <!-- DUAL Time -->
+    <record id="mapping_pilot_time_flight_dual" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for DUAL Time</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">230</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_time_pilot_dual" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for DUAL Time</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value">3</field>
+        <field name="sequence">231</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_time_code_dual" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Time Code for DUAL Time</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_dual"/>
+        <field name="sequence">232</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+    </record>
+    
+    <record id="mapping_pilot_time_duration_dual" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Duration for DUAL Time</field>
+        <field name="source_field">TIME_DUAL</field>
+        <field name="target_field">duration</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">minutes_to_hours</field>
+        <field name="sequence">233</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
 </odoo>
