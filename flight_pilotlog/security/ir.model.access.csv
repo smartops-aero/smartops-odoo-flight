@@ -13,3 +13,8 @@ access_flight_pilot_event_manager,flight.pilot.event manager,model_flight_pilot_
 access_flight_pilot_event_dispatcher,flight.pilot.event dispatcher,model_flight_pilot_event,flight.group_flight_dispatcher,1,1,1,1
 access_flight_pilot_event_crew,flight.pilot.event crew,model_flight_pilot_event,flight.group_flight_crew,1,1,1,0
 access_flight_pilot_event_user,flight.pilot.event user,model_flight_pilot_event,flight.group_flight_user,1,0,0,0
+
+access_flight_pilot_remark_manager,flight.pilot.remark manager,model_flight_pilot_remark,flight.group_flight_manager,1,1,1,1
+access_flight_pilot_remark_dispatcher,flight.pilot.remark dispatcher,model_flight_pilot_remark,flight.group_flight_dispatcher,1,1,1,1
+access_flight_pilot_remark_crew,flight.pilot.remark crew,model_flight_pilot_remark,flight.group_flight_crew,1,1,1,0
+access_flight_pilot_remark_user,flight.pilot.remark user,model_flight_pilot_remark,flight.group_flight_user,1,0,0,0
