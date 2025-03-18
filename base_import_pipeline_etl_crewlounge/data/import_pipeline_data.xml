@@ -69,6 +69,17 @@
         <field name="is_key_field" eval="True"/>
     </record>
     
+    <!-- Aircraft Engine Type -->
+    <record id="mapping_aircraft_engine_type" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Aircraft Engine Type</field>
+        <field name="source_field">AC_ENGTYPE</field>
+        <field name="target_field">engine_type</field>
+        <field name="model_id" ref="flight.model_flight_aircraft_model"/>
+        <field name="transformation">engine_type_mapping</field>
+        <field name="sequence">35</field>
+    </record>
+    
     <!-- Link Aircraft to Model -->
     <record id="mapping_aircraft_model_link" model="base.import.pipeline.mapping">
         <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
