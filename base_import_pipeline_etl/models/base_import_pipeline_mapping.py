@@ -12,7 +12,7 @@ class ImportPipelineMapping(models.Model):
     description = fields.Text(string='Description about this mapping')
     pipeline_id = fields.Many2one('base.import.pipeline', string='Pipeline', required=True, ondelete='cascade')
     sequence = fields.Integer(default=10)
-    source_field = fields.Char(required=True, string='Source Field')
+    source_field = fields.Char(string='Source Field', required=False, help="Field name in the source data")
     target_field = fields.Char(required=True, string='Target Field')
     transformation = fields.Selection(
         selection='_selection_transformation',
@@ -73,6 +73,18 @@ Common use cases:
         default=False
     )
     
+    # Post-processing configuration
+    is_post_process = fields.Boolean(
+        string='Post-Process Mapping',
+        help="If checked, this mapping will be processed after the main import is complete. Used for creating related records that depend on the newly created record IDs.",
+        default=False
+    )
+    
+    post_process_value = fields.Char(
+        string='Post-Process Value',
+        help="Static value to use for this field during post-processing, when not using a source field."
+    )
+    
     @api.model
     def _selection_transformation(self):
         """Selection function for transformation types.
@@ -84,6 +96,7 @@ Common use cases:
             ('date_format', 'Date Format Conversion'),
             ('lookup', 'Lookup Reference'),
             ('regex', 'Regular Expression'),
+            ('parent_record_id', 'Parent Record ID'),
         ]
     
     def transform_value(self, value):
@@ -130,6 +143,15 @@ Common use cases:
             except Exception:
                 # If regex fails, return original value or default
                 return self.default_value if self.default_value else value
+        return value
+    
+    def _transform_parent_record_id(self, value):
+        """Parent record ID transformation
+        
+        This is a placeholder for the post-processing phase.
+        During normal transformation this is not used.
+        During post-processing, the parent record ID is set directly.
+        """
         return value
     
     @api.onchange('transformation')

@@ -162,4 +162,41 @@
         <field name="sequence">70</field>
         <field name="is_key_field" eval="True"/>
     </record>
+    
+    <!-- POST-PROCESSING MAPPINGS -->
+    
+    <!-- Pilot Remark - Link to Flight (Parent Record) -->
+    <record id="mapping_pilot_remark_flight" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Remark Flight Reference</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_remark"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">100</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <!-- Pilot Remark - Content -->
+    <record id="mapping_pilot_remark_content" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Remark Content</field>
+        <field name="source_field">REMARKS</field>
+        <field name="target_field">remark</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_remark"/>
+        <field name="transformation">direct</field>
+        <field name="sequence">110</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
+    
+    <!-- Pilot Remark - Pilot (required field) -->
+    <record id="mapping_pilot_remark_pilot" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_remark"/>
+        <field name="transformation">direct</field>
+        <field name="post_process_value">3</field>
+        <field name="sequence">120</field>
+        <field name="is_post_process" eval="True"/>
+    </record>
 </odoo>
