@@ -10,6 +10,7 @@
     'depends': [
         'base_import_pipeline_etl',
         'flight',
+        'flight_pilotlog',
     ],
     'data': [
         'security/ir.model.access.csv',
