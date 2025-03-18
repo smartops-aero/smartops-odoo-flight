@@ -11,7 +11,7 @@ class BaseImportPipeline(models.Model):
         selection=lambda self: self._selection_implementation(),
         required=True,
     )
-    # TODO: Not sure if this is needed, I could not find any use-case yet. Added as I noted we need it
+
     model_id = fields.Many2one('ir.model', string='Target Model', required=True, ondelete='cascade')
     active = fields.Boolean(default=True)
     result_ids = fields.One2many('base.import.pipeline.result', 'pipeline_id', string='Import Results')
