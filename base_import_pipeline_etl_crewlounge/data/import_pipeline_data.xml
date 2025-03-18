@@ -17,6 +17,7 @@
         <field name="model_id" ref="flight.model_flight_flight"/>
         <field name="transformation">date_format</field>
         <field name="sequence">10</field>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <!-- Aircraft Make -->
@@ -93,6 +94,7 @@
         <field name="relation_field">icao</field>
         <field name="lookup_fields">iata,name</field>
         <field name="sequence">50</field>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <!-- Arrival Aerodrome -->
@@ -107,6 +109,7 @@
         <field name="relation_field">icao</field>
         <field name="lookup_fields">iata,name</field>
         <field name="sequence">60</field>
+        <field name="is_key_field" eval="True"/>
     </record>
     
     <!-- Flight Aircraft -->
@@ -120,5 +123,6 @@
         <field name="relation_model_id" ref="flight.model_flight_aircraft"/>
         <field name="relation_field">registration</field>
         <field name="sequence">70</field>
+        <field name="is_key_field" eval="True"/>
     </record>
 </odoo>

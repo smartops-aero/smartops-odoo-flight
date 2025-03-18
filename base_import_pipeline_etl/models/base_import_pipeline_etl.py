@@ -230,13 +230,16 @@ class BaseImportPipeline(models.Model):
         return transformed_data
         
     def load(self, transformed_data, **kwargs):
-        """Load transformed data into target model
+        """Load transformed data into the target model
         
-        Creates records in the target model using the transformed data.
-        All records are created in a single transaction.
+        This method creates or updates records in the target model
+        based on the transformed data.
         """
+        _logger.info("Loading data into %s", self.model_id.model)
+        
         result = {
             'created': [],
+            'updated': [],
             'errors': [],
         }
         
@@ -246,18 +249,53 @@ class BaseImportPipeline(models.Model):
             
         _logger.info("Starting to load %s records into %s", len(transformed_data), self.model_id.model)
         
+        # Get key fields for the target model
+        key_mappings = self.mapping_ids.filtered(
+            lambda m: m.model_id.model == self.model_id.model and m.is_key_field
+        )
+        
+        has_key_fields = bool(key_mappings)
+        if not has_key_fields:
+            _logger.warning(
+                "No key fields defined for target model %s. Will always create new records.",
+                self.model_id.model
+            )
+        
         try:
             # Create all records in a single transaction
             with self.env.cr.savepoint():
                 for i, values in enumerate(transformed_data):
                     try:
-                        _logger.debug("Creating record %s/%s with values: %s", 
+                        _logger.debug("Processing record %s/%s with values: %s", 
                                      i+1, len(transformed_data), values)
-                        record = self.env[self.model_id.model].create(values)
-                        result['created'].append(record.id)
-                        _logger.debug("Successfully created record with ID %s", record.id)
+                        
+                        # Check if record already exists
+                        existing_record = None
+                        if has_key_fields:
+                            domain = []
+                            for mapping in key_mappings:
+                                field_name = mapping.target_field
+                                if field_name in values:
+                                    domain.append((field_name, '=', values[field_name]))
+                            
+                            if domain:
+                                _logger.debug("Searching for existing record with domain: %s", domain)
+                                existing_record = self.env[self.model_id.model].search(domain, limit=1)
+                                if existing_record:
+                                    _logger.info("Found existing record: %s (ID: %s)", 
+                                                existing_record, existing_record.id)
+                        
+                        # Update existing or create new record
+                        if existing_record:
+                            existing_record.write(values)
+                            result['updated'].append(existing_record.id)
+                            _logger.debug("Successfully updated record with ID %s", existing_record.id)
+                        else:
+                            record = self.env[self.model_id.model].create(values)
+                            result['created'].append(record.id)
+                            _logger.debug("Successfully created record with ID %s", record.id)
                     except Exception as record_error:
-                        error_msg = f"Error creating record {i+1}/{len(transformed_data)}: {str(record_error)}"
+                        error_msg = f"Error processing record {i+1}/{len(transformed_data)}: {str(record_error)}"
                         _logger.error(error_msg)
                         _logger.error("Values that caused the error: %s", values)
                         _logger.error("Stack trace: %s", traceback.format_exc())
@@ -269,8 +307,8 @@ class BaseImportPipeline(models.Model):
             _logger.error("Stack trace: %s", traceback.format_exc())
             result['errors'].append(error_msg)
         
-        _logger.info("Import completed. Created: %s, Errors: %s", 
-                    len(result['created']), len(result['errors']))
+        _logger.info("Import completed. Created: %s, Updated: %s, Errors: %s", 
+                    len(result['created']), len(result['updated']), len(result['errors']))
         
         return result
     
