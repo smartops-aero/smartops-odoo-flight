@@ -415,6 +415,43 @@ class BaseImportPipeline(models.Model):
             post_result: Dictionary to store results
             extracted_data: Dictionary with original source data
         """
+        # Build values and domain
+        values, domain = self._build_post_process_values_and_domain(
+            parent_record, target_model, mappings, extracted_data
+        )
+        
+        # Skip if we don't have any values to create/update
+        if not values:
+            _logger.warning("No values to create/update for post-processing record, skipping")
+            return
+        
+        # Ensure we have a valid domain for finding existing
+        if not domain:
+            _logger.warning("No domain criteria for finding existing records, will always create new")
+        
+        try:
+            existing = self._find_existing_record(target_model, domain)
+            
+            if existing:
+                self._update_post_process_record(target_model, existing, values, post_result)
+            else:
+                self._create_new_post_process_record(target_model, values, post_result)
+                
+        except Exception as e:
+            self._handle_post_process_error(e, target_model, post_result)
+    
+    def _build_post_process_values_and_domain(self, parent_record, target_model, mappings, extracted_data):
+        """Build values and domain for post-processing record
+        
+        Args:
+            parent_record: The parent record to link to
+            target_model: The name of the model to create record in
+            mappings: List of mapping records for the target model
+            extracted_data: Dictionary with original source data
+            
+        Returns:
+            Tuple of (values, domain)
+        """
         values = {}
         domain = []
         
@@ -469,41 +506,171 @@ class BaseImportPipeline(models.Model):
                     if mapping.is_key_field:
                         domain.append((field_name, '=', transformed_value))
         
-        # Skip if we don't have any values to create/update
-        if not values:
-            _logger.warning("No values to create/update for post-processing record, skipping")
-            return
+        return values, domain
+    
+    def _find_existing_record(self, model_name, domain):
+        """Find an existing record by domain
         
-        # Ensure we have a valid domain for finding existing
+        Args:
+            model_name: Name of the model to search
+            domain: Domain to use for search
+            
+        Returns:
+            Record if found, None otherwise
+        """
         if not domain:
-            _logger.warning("No domain criteria for finding existing records, will always create new")
+            return None
+            
+        _logger.info("Checking for existing record with domain: %s", domain)
+        existing = self.env[model_name].search(domain, limit=1)
+        
+        if existing:
+            _logger.info("Found existing record %s with domain %s", existing, domain)
+            
+        return existing
+    
+    def _update_post_process_record(self, model_name, record, values, post_result):
+        """Update an existing record
+        
+        Args:
+            model_name: Name of the model
+            record: Record to update
+            values: Values to update with
+            post_result: Dictionary to update with results
+        """
+        _logger.info("Updating existing %s record: %s with values: %s", model_name, record.id, values)
+        record.write(values)
+        post_result['post_updated'].append(record.id)
+        _logger.info("Updated existing %s record: %s with values: %s", model_name, record.id, values)
+    
+    def _create_new_post_process_record(self, model_name, values, post_result):
+        """Create a new record
+        
+        Args:
+            model_name: Name of the model to create
+            values: Values to create with
+            post_result: Dictionary to update with results
+        """
+        _logger.info("Creating new %s record with values: %s", model_name, values)
+        new_record = self.env[model_name].create(values)
+        post_result['post_created'].append(new_record.id)
+        _logger.info("Created new %s record: %s with values: %s", model_name, new_record.id, values)
+    
+    def _handle_post_process_error(self, error, model_name, post_result):
+        """Handle error in post processing
+        
+        Args:
+            error: The exception
+            model_name: Name of the model that caused the error
+            post_result: Dictionary to update with error
+        """
+        error_msg = f"Error creating/updating {model_name}: {str(error)}"
+        post_result['post_errors'].append(error_msg)
+        _logger.error(error_msg)
+        _logger.error("Stack trace: %s", traceback.format_exc())
+    
+    def _get_or_create_record(self, model_name, domain, values, mapping=None):
+        """Get or create a record in the specified model
+        
+        This method tries to find a record matching the domain.
+        If not found, it creates a new record with the provided values.
+        If found, it updates the record with any new values.
+        
+        Args:
+            model_name: The name of the model to search/create in
+            domain: The domain to search for existing records
+            values: The values to use when creating a new record or updating an existing one
+            mapping: Optional mapping record that may contain context for new records
+            
+        Returns:
+            The found or created record
+        """
+        _logger.debug("_get_or_create_record: model=%s, domain=%s, values=%s", 
+                     model_name, domain, values)
+        
+        record = self.env[model_name].search(domain, limit=1)
+        _logger.debug("Search result: %s", record)
+        
+        if record:
+            # Update the existing record with any new values
+            update_values = self._get_update_values(domain, values, record)
+            
+            if update_values:
+                _logger.debug("Updating record %s with values: %s", record, update_values)
+                record.write(update_values)
+        else:
+            # Create a new record
+            create_values = values.copy()
+            create_context = {}
+            
+            # Apply context from mapping if provided
+            if mapping and mapping.context:
+                create_values, create_context = self._apply_mapping_context(mapping, create_values)
+            
+            _logger.debug("Creating new record with values: %s", create_values)
+            if create_context:
+                record = self.env[model_name].with_context(**create_context).create(create_values)
+            else:
+                record = self.env[model_name].create(create_values)
+            
+        return record
+        
+    def _get_update_values(self, domain, values, record):
+        """Extract values that are not part of the search domain
+        
+        Args:
+            domain: The domain used to search for the record
+            values: All values for the record
+            record: The existing record
+            
+        Returns:
+            Dictionary of values that can be updated
+        """
+        update_values = {}
+        for field, value in values.items():
+            # Check if this field is part of the domain
+            field_in_domain = False
+            for domain_item in domain:
+                if isinstance(domain_item, (list, tuple)) and domain_item[0] == field:
+                    field_in_domain = True
+                    break
+            
+            # Only update if not in domain and either not set or empty
+            if not field_in_domain and (field not in record or not record[field]):
+                update_values[field] = value
+                
+        return update_values
+    
+    def _apply_mapping_context(self, mapping, values):
+        """Apply context from mapping to values
+        
+        Args:
+            mapping: The mapping record that may contain context
+            values: The values to apply context to
+            
+        Returns:
+            Tuple of (updated_values, context_dict)
+        """
+        create_values = values.copy()
+        create_context = {}
         
         try:
-            _logger.info("Checking for existing record with domain: %s", domain)
-
-            # Check if record already exists
-            existing = None
-            if domain:
-                existing = self.env[target_model].search(domain, limit=1)
-                if existing:
-                    _logger.info("Found existing record %s with domain %s", existing, domain)
-            
-            if existing:
-                _logger.info("Updating existing %s record: %s with values: %s", target_model, existing.id, values)
-                existing.write(values)
-                post_result['post_updated'].append(existing.id)
-                _logger.info("Updated existing %s record: %s with values: %s", target_model, existing.id, values)
-            else:
-                _logger.info("Creating new %s record with values: %s", target_model, values)
-                new_record = self.env[target_model].create(values)
-                post_result['post_created'].append(new_record.id)
-                _logger.info("Created new %s record: %s with values: %s", target_model, new_record.id, values)
+            context_values = json.loads(mapping.context)
+            if isinstance(context_values, dict):
+                # Extract default values from context
+                for key, value in context_values.items():
+                    if key.startswith('default_'):
+                        field_name = key[8:]  # Remove 'default_' prefix
+                        create_values[field_name] = value
+                    else:
+                        create_context[key] = value
+                
+                _logger.debug("Added values from context: %s", context_values)
         except Exception as e:
-            error_msg = f"Error creating/updating {target_model}: {str(e)}"
-            post_result['post_errors'].append(error_msg)
-            _logger.error(error_msg)
-            _logger.error("Stack trace: %s", traceback.format_exc())
-    
+            _logger.warning("Error parsing context from mapping: %s", str(e))
+            
+        return create_values, create_context
+
     def run_import(self, **kwargs):
         """Run the ETL import process"""
         _logger.info("Starting import with pipeline: %s", self.name)
@@ -591,74 +758,14 @@ class BaseImportPipeline(models.Model):
         """
         return mapping.transform_value(value, record)
     
-    def _get_or_create_record(self, model_name, domain, values, mapping=None):
-        """Get or create a record in the specified model
-        
-        This method tries to find a record matching the domain.
-        If not found, it creates a new record with the provided values.
-        If found, it updates the record with any new values.
-        
-        Args:
-            model_name: The name of the model to search/create in
-            domain: The domain to search for existing records
-            values: The values to use when creating a new record or updating an existing one
-            mapping: Optional mapping record that may contain context for new records
-            
-        Returns:
-            The found or created record
-        """
-        _logger.debug("_get_or_create_record: model=%s, domain=%s, values=%s", 
-                     model_name, domain, values)
-        
-        record = self.env[model_name].search(domain, limit=1)
-        _logger.debug("Search result: %s", record)
-        
-        if record:
-            # Update the existing record with any new values
-            # This ensures that if we find a record by one field (e.g., name)
-            # we can still update other fields (e.g., make_id)
-            update_values = {}
-            for field, value in values.items():
-                # Check if this field is part of the domain
-                field_in_domain = False
-                for domain_item in domain:
-                    if isinstance(domain_item, (list, tuple)) and domain_item[0] == field:
-                        field_in_domain = True
-                        break
-                
-                # Only update if not in domain and either not set or empty
-                if not field_in_domain and (field not in record or not record[field]):
-                    update_values[field] = value
-            
-            if update_values:
-                _logger.debug("Updating record %s with values: %s", record, update_values)
-                record.write(update_values)
-        else:
-            # Create a new record
-            create_values = values.copy()
-            create_context = {}
-            
-            # Apply context from mapping if provided
-            if mapping and mapping.context:
-                try:
-                    context_values = json.loads(mapping.context)
-                    if isinstance(context_values, dict):
-                        # Extract default values from context
-                        for key, value in context_values.items():
-                            if key.startswith('default_'):
-                                field_name = key[8:]  # Remove 'default_' prefix
-                                create_values[field_name] = value
-                            else:
-                                create_context[key] = value
-                        
-                        _logger.debug("Added values from context: %s", context_values)
-                except Exception as e:
-                    _logger.warning("Error parsing context from mapping: %s", str(e))
-            
-            _logger.debug("Creating new record with values: %s", create_values)
-            if create_context:
-                record = self.env[model_name].with_context(**create_context).create(create_values)
-            else:
-                record = self.env[model_name].create(create_values)
-            
-        return record
+    def _log_import_result(self, result):
+        """Log the import result"""
+        _logger.info("Import result: %s", result)
+        self.env['base.import.pipeline.result'].create({
+            'pipeline_id': self.id,
+            'date': fields.Datetime.now(),
+            'summary': f"Created: {len(result.get('created', []))}, Updated: {len(result.get('updated', []))}, Errors: {len(result.get('errors', []))}",
+            'records_created': len(result.get('created', [])),
+            'status': 'success' if not result.get('errors', []) else 'error',
+            'log': str(result),
+        })
