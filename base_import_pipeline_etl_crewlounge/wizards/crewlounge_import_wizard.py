@@ -26,10 +26,19 @@ class CrewLoungeImportWizard(models.TransientModel):
     preview_row_count = fields.Integer(string='Total Rows', readonly=True)
     preview_column_count = fields.Integer(string='Total Columns', readonly=True)
     preview_column_names = fields.Text(string='Column Names', readonly=True)
+    
+    # Result fields
+    result_data = fields.Text(string='Import Results', readonly=True)
+    created_count = fields.Integer(string='Created Records', readonly=True)
+    updated_count = fields.Integer(string='Updated Records', readonly=True)
+    error_count = fields.Integer(string='Errors', readonly=True)
+    
+    # State management
     state = fields.Selection([
         ('upload', 'Upload'),
         ('preview', 'Preview'),
-    ], default='upload', string='State')
+        ('completed', 'Completed'),
+    ], string='State', default='upload', required=True)
     
     def action_back_to_upload(self):
         """Go back to the upload state"""
@@ -118,24 +127,54 @@ class CrewLoungeImportWizard(models.TransientModel):
             csv_delimiter=self.delimiter,
         )
         
-        # Show a success message with the number of records created
-        created_count = len(result.get('created', []))
-        updated_count = len(result.get('updated', []))
-        error_count = len(result.get('errors', []))
+        # Store the results
+        self.created_count = len(result.get('created', []))
+        self.updated_count = len(result.get('updated', []))
+        self.error_count = len(result.get('errors', []))
         
-        message = _("Import completed: %s flights created") % created_count
-        if updated_count:
-            message += _(", %s flights updated") % updated_count
-        if error_count:
-            message += _(", %s errors occurred") % error_count
-            
+        # Create detailed result information
+        message = _("Import completed successfully.\n\n")
+        message += _("• %s flights created\n") % self.created_count
+        message += _("• %s flights updated\n") % self.updated_count
+        
+        if self.error_count:
+            message += _("• %s errors occurred\n\n") % self.error_count
+            message += _("Error details:\n")
+            for error in result.get('errors', [])[:10]:  # Show first 10 errors
+                message += f"- {error}\n"
+            if len(result.get('errors', [])) > 10:
+                message += _("(and %s more errors)") % (len(result.get('errors', [])) - 10)
+        
+        self.result_data = message
+        
+        # Change state to completed
+        self.state = 'completed'
+        
+        # Show the wizard with the results
         return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Import Result'),
-                'message': message,
-                'sticky': False,
-                'type': 'success' if not error_count else 'warning',
-            }
+            'type': 'ir.actions.act_window',
+            'res_model': self._name,
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
+    
+    def action_new_import(self):
+        """Reset the wizard to start a new import"""
+        self.ensure_one()
+        self.state = 'upload'
+        self.file = False
+        self.filename = False
+        self.preview_data = False
+        self.result_data = False
+        self.created_count = False
+        self.updated_count = False
+        self.error_count = False
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': self._name,
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'new',
         }
