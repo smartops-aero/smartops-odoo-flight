@@ -33,16 +33,7 @@ class BaseImportPipeline(models.Model):
             return extracted_data
             
         # Only process mappings that are NOT marked for post-processing
-        regular_mappings = self.mapping_ids.filtered(lambda m: not m.is_post_process)
-            
-        _logger.info("Starting transformation with %s regular mappings", len(regular_mappings))
-        for mapping in regular_mappings:
-            _logger.info("Mapping: %s, Source: %s, Target: %s, Model: %s, Sequence: %s", 
-                        mapping.description, mapping.source_field, mapping.target_field, 
-                        mapping.model_id.model, mapping.sequence)
-            if mapping.relation_model_id:
-                _logger.info("  Relation model: %s, Relation field: %s", 
-                            mapping.relation_model_id.model, mapping.relation_field)
+        regular_mappings = self._get_regular_mappings()
             
         # Store created/found related records for reference in later mappings
         related_records_cache = {}
@@ -51,187 +42,231 @@ class BaseImportPipeline(models.Model):
         transformed_data = []
         for i, record in enumerate(extracted_data):
             _logger.info("Processing record %s/%s: %s", i+1, len(extracted_data), record)
-            
-            # Create a dict to hold the values for the target model
-            values = {}
-            
-            # Keep track of records we've created/found for this row
-            # This allows us to update them with additional fields later
-            row_records = {}
-            
-            # Process mappings in their natural sequence order
-            # This ensures dependencies are created in the correct order
-            for mapping in regular_mappings.sorted(key=lambda m: m.sequence):
-                if mapping.source_field in record:
-                    source_value = record[mapping.source_field]
-                    _logger.info("Processing mapping %s for field %s with value %s", 
-                                mapping.description, mapping.source_field, source_value)
-                    
-                    # Skip if this is a relation mapping without a relation field
-                    if mapping.relation_model_id and not mapping.relation_field:
-                        _logger.warning("Skipping mapping %s - relation field not defined", mapping.description)
-                        continue
-                    
-                    # Apply transformation to the source value
-                    transformed_value = self._apply_field_transformations(source_value, mapping, record)
-                    if transformed_value is None:
-                        _logger.warning("Transformation returned None for mapping %s, value %s", 
-                                      mapping.description, source_value)
-                        continue
-                    
-                    _logger.info("Transformed value: %s", transformed_value)
-                    
-                    # Handle direct field mappings (non-relational)
-                    if not mapping.relation_model_id:
-                        # If this mapping is for the target model, add it to the values
-                        if mapping.model_id.model == self.model_id.model:
-                            _logger.info("Adding %s = %s to target model %s", 
-                                        mapping.target_field, transformed_value, self.model_id.model)
-                            values[mapping.target_field] = transformed_value
-                        # Otherwise, it's for a related model - create/find it
-                        else:
-                            model_name = mapping.model_id.model
-                            field_name = mapping.target_field
-                            
-                            # If this is a key field, use it to identify the record
-                            if mapping.is_key_field:
-                                domain = [(field_name, '=', transformed_value)]
-                                
-                                # Check if we already have a record for this model in this row
-                                if model_name in row_records:
-                                    # Update the existing record with this field
-                                    model_record = row_records[model_name]
-                                    model_record.write({field_name: transformed_value})
-                                    _logger.info("Updated existing record %s with %s = %s", 
-                                                model_record, field_name, transformed_value)
-                                else:
-                                    # Create or find the record
-                                    model_values = {field_name: transformed_value}
-                                    _logger.info("Creating/finding record in %s with domain %s and values %s", 
-                                                model_name, domain, model_values)
-                                    
-                                    model_record = self._get_or_create_record(
-                                        model_name, domain, model_values, mapping
-                                    )
-                                    
-                                    _logger.info("Result: %s (ID: %s)", model_record, model_record.id)
-                                    
-                                    # Store the record for this row
-                                    row_records[model_name] = model_record
-                                
-                                # Cache the record
-                                cache_key = f"{model_name}:{field_name}:{transformed_value}"
-                                related_records_cache[cache_key] = model_record
-                                _logger.info("Cached with key: %s", cache_key)
-                            else:
-                                # This is a non-key field for a related model
-                                # We need to find the record first
-                                if model_name in row_records:
-                                    # Update the existing record with this field
-                                    model_record = row_records[model_name]
-                                    model_record.write({field_name: transformed_value})
-                                    _logger.info("Updated existing record %s with %s = %s", 
-                                                model_record, field_name, transformed_value)
-                                    
-                                    # Cache the record with this field value
-                                    cache_key = f"{model_name}:{field_name}:{transformed_value}"
-                                    related_records_cache[cache_key] = model_record
-                                    _logger.info("Cached with key: %s", cache_key)
-                    
-                    # Handle relational field mappings
-                    else:
-                        relation_model = mapping.relation_model_id.model
-                        relation_field = mapping.relation_field
-                        
-                        # Try to find the related record in cache first
-                        cache_key = f"{relation_model}:{relation_field}:{transformed_value}"
-                        related_record = related_records_cache.get(cache_key)
-                        
-                        if related_record:
-                            _logger.info("Found related record in cache with key %s: %s (ID: %s)", 
-                                        cache_key, related_record, related_record.id)
-                        
-                        if not related_record:
-                            # Build domain for lookup
-                            domain = [(relation_field, '=', transformed_value)]
-                            
-                            # Add additional lookup fields if specified
-                            if mapping.lookup_fields:
-                                additional_fields = [f.strip() for f in mapping.lookup_fields.split(',')]
-                                for field in additional_fields:
-                                    if field:
-                                        domain = ['|', (field, '=', transformed_value)] + domain
-                            
-                            # Prepare values for creating the related record if needed
-                            related_values = {relation_field: transformed_value}
-                            
-                            _logger.info("Looking up related record in %s with domain %s and values %s", 
-                                        relation_model, domain, related_values)
-                            
-                            # Find or create the related record
-                            related_record = self._get_or_create_record(
-                                relation_model, domain, related_values, mapping
-                            )
-                            
-                            _logger.info("Result: %s (ID: %s)", related_record, related_record.id)
-                            
-                            # Cache the related record
-                            related_records_cache[cache_key] = related_record
-                            _logger.info("Cached with key: %s", cache_key)
-                        
-                        # If this mapping is for the target model, add it to the values
-                        if mapping.model_id.model == self.model_id.model:
-                            _logger.info("Adding %s = %s to target model %s", 
-                                        mapping.target_field, related_record.id, self.model_id.model)
-                            values[mapping.target_field] = related_record.id
-                        # Otherwise, it's for a related model - create/find it
-                        else:
-                            model_name = mapping.model_id.model
-                            field_name = mapping.target_field
-                            
-                            if model_name in row_records:
-                                # Update the existing record with this relation
-                                model_record = row_records[model_name]
-                                model_record.write({field_name: related_record.id})
-                                _logger.info("Updated existing record %s with %s = %s", 
-                                            model_record, field_name, related_record.id)
-                                
-                                # Cache the updated record
-                                cache_key = f"{model_name}:{field_name}:{related_record.id}"
-                                related_records_cache[cache_key] = model_record
-                                _logger.info("Cached with key: %s", cache_key)
-                            else:
-                                # Create or find the record with this relation
-                                domain = [(field_name, '=', related_record.id)]
-                                model_values = {field_name: related_record.id}
-                                
-                                _logger.info("Creating/finding record in %s with domain %s and values %s", 
-                                            model_name, domain, model_values)
-                                
-                                model_record = self._get_or_create_record(
-                                    model_name, domain, model_values, mapping
-                                )
-                                
-                                _logger.info("Result: %s (ID: %s)", model_record, model_record.id)
-                                
-                                # Store the record for this row
-                                row_records[model_name] = model_record
-                                
-                                # Cache the record
-                                cache_key = f"{model_name}:{field_name}:{related_record.id}"
-                                related_records_cache[cache_key] = model_record
-                                _logger.info("Cached with key: %s", cache_key)
-            
-            # Add the transformed record to the result if it has values for the target model
-            if values:
-                _logger.info("Adding transformed record to result: %s", values)
-                transformed_data.append({'values': values, 'original_data': record})
-            else:
-                _logger.warning("No values for target model, skipping record")
+            result = self._transform_single_record(i, record, regular_mappings, related_records_cache)
+            if result:
+                transformed_data.append(result)
                 
         _logger.info("Transformation complete, returning %s records", len(transformed_data))
         return transformed_data
+    
+    def _get_regular_mappings(self):
+        """Get regular mappings that are not marked for post-processing"""
+        regular_mappings = self.mapping_ids.filtered(lambda m: not m.is_post_process)
+        _logger.info("Starting transformation with %s regular mappings", len(regular_mappings))
+        for mapping in regular_mappings:
+            _logger.info("Mapping: %s, Source: %s, Target: %s, Model: %s, Sequence: %s", 
+                        mapping.description, mapping.source_field, mapping.target_field, 
+                        mapping.model_id.model, mapping.sequence)
+            if mapping.relation_model_id:
+                _logger.info("  Relation model: %s, Relation field: %s", 
+                            mapping.relation_model_id.model, mapping.relation_field)
         
+        return regular_mappings
+    
+    def _transform_single_record(self, index, record, regular_mappings, related_records_cache):
+        """Transform a single record using the configured mappings"""
+        # Create a dict to hold the values for the target model
+        values = {}
+        
+        # Keep track of records we've created/found for this row
+        # This allows us to update them with additional fields later
+        row_records = {}
+        
+        # Process mappings in their natural sequence order
+        # This ensures dependencies are created in the correct order
+        for mapping in regular_mappings.sorted(key=lambda m: m.sequence):
+            if mapping.source_field in record:
+                self._process_field_mapping(mapping, record, values, row_records, related_records_cache)
+        
+        # Add the transformed record to the result if it has values for the target model
+        if values:
+            _logger.info("Adding transformed record to result: %s", values)
+            return {'values': values, 'original_data': record}
+        else:
+            _logger.warning("No values for target model, skipping record")
+            return None
+    
+    def _process_field_mapping(self, mapping, record, values, row_records, related_records_cache):
+        """Process a single field mapping for a record"""
+        source_value = record[mapping.source_field]
+        _logger.info("Processing mapping %s for field %s with value %s", 
+                    mapping.description, mapping.source_field, source_value)
+        
+        # Skip if this is a relation mapping without a relation field
+        if mapping.relation_model_id and not mapping.relation_field:
+            _logger.warning("Skipping mapping %s - relation field not defined", mapping.description)
+            return
+        
+        # Apply transformation to the source value
+        transformed_value = self._apply_field_transformations(source_value, mapping, record)
+        if transformed_value is None:
+            _logger.warning("Transformation returned None for mapping %s, value %s", 
+                          mapping.description, source_value)
+            return
+        
+        _logger.info("Transformed value: %s", transformed_value)
+        
+        # Handle direct field mappings (non-relational)
+        if not mapping.relation_model_id:
+            self._process_direct_field_mapping(
+                mapping, transformed_value, values, row_records, related_records_cache
+            )
+        # Handle relational field mappings
+        else:
+            self._process_relational_field_mapping(
+                mapping, transformed_value, values, row_records, related_records_cache, record
+            )
+    
+    def _process_direct_field_mapping(self, mapping, transformed_value, values, row_records, related_records_cache):
+        """Process a direct (non-relational) field mapping"""
+        # If this mapping is for the target model, add it to the values
+        if mapping.model_id.model == self.model_id.model:
+            _logger.info("Adding %s = %s to target model %s", 
+                        mapping.target_field, transformed_value, self.model_id.model)
+            values[mapping.target_field] = transformed_value
+        # Otherwise, it's for a related model - create/find it
+        else:
+            model_name = mapping.model_id.model
+            field_name = mapping.target_field
+            
+            # If this is a key field, use it to identify the record
+            if mapping.is_key_field:
+                domain = [(field_name, '=', transformed_value)]
+                
+                # Check if we already have a record for this model in this row
+                if model_name in row_records:
+                    # Update the existing record with this field
+                    model_record = row_records[model_name]
+                    model_record.write({field_name: transformed_value})
+                    _logger.info("Updated existing record %s with %s = %s", 
+                                model_record, field_name, transformed_value)
+                else:
+                    # Create or find the record
+                    model_values = {field_name: transformed_value}
+                    _logger.info("Creating/finding record in %s with domain %s and values %s", 
+                                model_name, domain, model_values)
+                    
+                    model_record = self._get_or_create_record(
+                        model_name, domain, model_values, mapping
+                    )
+                    
+                    _logger.info("Result: %s (ID: %s)", model_record, model_record.id)
+                    
+                    # Store the record for this row
+                    row_records[model_name] = model_record
+                
+                # Cache the record
+                cache_key = f"{model_name}:{field_name}:{transformed_value}"
+                related_records_cache[cache_key] = model_record
+                _logger.info("Cached with key: %s", cache_key)
+            else:
+                # This is a non-key field for a related model
+                # We need to find the record first
+                if model_name in row_records:
+                    # Update the existing record with this field
+                    model_record = row_records[model_name]
+                    model_record.write({field_name: transformed_value})
+                    _logger.info("Updated existing record %s with %s = %s", 
+                                model_record, field_name, transformed_value)
+                    
+                    # Cache the record with this field value
+                    cache_key = f"{model_name}:{field_name}:{transformed_value}"
+                    related_records_cache[cache_key] = model_record
+                    _logger.info("Cached with key: %s", cache_key)
+    
+    def _process_relational_field_mapping(self, mapping, transformed_value, values, row_records, related_records_cache, record):
+        """Process a relational field mapping"""
+        relation_model = mapping.relation_model_id.model
+        relation_field = mapping.relation_field
+        
+        # Try to find the related record in cache first or create it
+        related_record = self._find_or_create_related_record(
+            mapping, transformed_value, relation_model, relation_field, related_records_cache
+        )
+        
+        # If this mapping is for the target model, add it to the values
+        if mapping.model_id.model == self.model_id.model:
+            _logger.info("Adding %s = %s to target model %s", 
+                        mapping.target_field, related_record.id, self.model_id.model)
+            values[mapping.target_field] = related_record.id
+        # Otherwise, it's for a related model - create/find it
+        else:
+            model_name = mapping.model_id.model
+            field_name = mapping.target_field
+            
+            if model_name in row_records:
+                # Update the existing record with this relation
+                model_record = row_records[model_name]
+                model_record.write({field_name: related_record.id})
+                _logger.info("Updated existing record %s with %s = %s", 
+                            model_record, field_name, related_record.id)
+                
+                # Cache the updated record
+                cache_key = f"{model_name}:{field_name}:{related_record.id}"
+                related_records_cache[cache_key] = model_record
+                _logger.info("Cached with key: %s", cache_key)
+            else:
+                # Create or find the record with this relation
+                domain = [(field_name, '=', related_record.id)]
+                model_values = {field_name: related_record.id}
+                
+                _logger.info("Creating/finding record in %s with domain %s and values %s", 
+                            model_name, domain, model_values)
+                
+                model_record = self._get_or_create_record(
+                    model_name, domain, model_values, mapping
+                )
+                
+                _logger.info("Result: %s (ID: %s)", model_record, model_record.id)
+                
+                # Store the record for this row
+                row_records[model_name] = model_record
+                
+                # Cache the record
+                cache_key = f"{model_name}:{field_name}:{related_record.id}"
+                related_records_cache[cache_key] = model_record
+                _logger.info("Cached with key: %s", cache_key)
+                
+    def _find_or_create_related_record(self, mapping, transformed_value, relation_model, relation_field, related_records_cache):
+        """Find or create a related record for a relational mapping"""
+        # Try to find the related record in cache first
+        cache_key = f"{relation_model}:{relation_field}:{transformed_value}"
+        related_record = related_records_cache.get(cache_key)
+        
+        if related_record:
+            _logger.info("Found related record in cache with key %s: %s (ID: %s)", 
+                        cache_key, related_record, related_record.id)
+            return related_record
+        
+        # Build domain for lookup
+        domain = [(relation_field, '=', transformed_value)]
+        
+        # Add additional lookup fields if specified
+        if mapping.lookup_fields:
+            additional_fields = [f.strip() for f in mapping.lookup_fields.split(',')]
+            for field in additional_fields:
+                if field:
+                    domain = ['|', (field, '=', transformed_value)] + domain
+        
+        # Prepare values for creating the related record if needed
+        related_values = {relation_field: transformed_value}
+        
+        _logger.info("Looking up related record in %s with domain %s and values %s", 
+                    relation_model, domain, related_values)
+        
+        # Find or create the related record
+        related_record = self._get_or_create_record(
+            relation_model, domain, related_values, mapping
+        )
+        
+        _logger.info("Result: %s (ID: %s)", related_record, related_record.id)
+        
+        # Cache the related record
+        related_records_cache[cache_key] = related_record
+        _logger.info("Cached with key: %s", cache_key)
+        
+        return related_record
+    
     def load(self, transformed_data, **kwargs):
         """Load transformed data into the target model
         
@@ -687,9 +722,6 @@ class BaseImportPipeline(models.Model):
             # Load the data into the target model
             result = self.load(transformed_data, extracted_data=extracted_data)
             
-            # Log the result
-            self._log_import_result(result)
-            
             # Run post-processing
             post_result = self.post_process(result, extracted_data=extracted_data)
             
@@ -724,26 +756,33 @@ class BaseImportPipeline(models.Model):
             raise UserError(_("No file content provided"))
         
         try:
-            # Decode the file content
-            content = base64.b64decode(file_content).decode('utf-8')
-            
-            # Parse CSV
-            reader = csv.DictReader(
-                io.StringIO(content), 
-                delimiter=delimiter
-            )
-            
-            # Convert to list of dicts
-            records = []
-            for row in reader:
-                # Clean up the row (strip whitespace from keys and values)
-                cleaned_row = {k.strip(): v.strip() if isinstance(v, str) else v 
-                              for k, v in row.items()}
-                records.append(cleaned_row)
-                
+            content = self._decode_file_content(file_content)
+            csv_reader = self._create_csv_reader(content, delimiter)
+            records = self._process_csv_rows(csv_reader)
             return records
         except Exception as e:
             raise UserError(_("Error extracting data: %s") % str(e))
+    
+    @api.model
+    def _decode_file_content(self, file_content):
+        """Decode base64 file content to UTF-8 string"""
+        return base64.b64decode(file_content).decode('utf-8')
+        
+    @api.model
+    def _create_csv_reader(self, content, delimiter):
+        """Create a CSV DictReader from string content"""
+        return csv.DictReader(io.StringIO(content), delimiter=delimiter)
+        
+    @api.model
+    def _process_csv_rows(self, reader):
+        """Process CSV rows and clean values"""
+        records = []
+        for row in reader:
+            # Clean up the row (strip whitespace from keys and values)
+            cleaned_row = {k.strip(): v.strip() if isinstance(v, str) else v 
+                          for k, v in row.items()}
+            records.append(cleaned_row)
+        return records
     
     def _apply_field_transformations(self, value, mapping, record=None):
         """Apply transformations to field values based on mapping configuration
