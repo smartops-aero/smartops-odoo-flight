@@ -34,6 +34,7 @@ class BaseImportPipelineMapping(models.Model):
         selection.append(('crewlounge_engine_type_mapping', 'Crewlounge Engine Type Mapping'))
         selection.append(('crewlounge_equipment_type_mapping', 'Crewlounge Equipment Type Mapping'))
         selection.append(('crewlounge_aircraft_class_mapping', 'Crewlounge Aircraft Class Mapping'))
+        selection.append(('crewlounge_gear_type_mapping', 'Crewlounge Gear Type Mapping'))
         return selection
     
     def _transform_crewlounge_engine_type_mapping(self, value):
@@ -183,6 +184,43 @@ class BaseImportPipelineMapping(models.Model):
         except Exception as e:
             _logger.error("Failed to resolve XML ID %s: %s", class_ref, e)
             return None
+        
+    def _transform_crewlounge_gear_type_mapping(self, value, record):
+        """
+        Determine aircraft gear type based on CSV fields:
+        - AC_SEA (Seaplane)
+        - AC_TAILWHEEL (Tailwheel aircraft)
+        - AC_COMPLEX (Complex aircraft with retractable landing gear)
+        
+        Maps to appropriate gear_type selection option in flight.aircraft model
+        
+        Args:
+            value: The value of the source field (if any)
+            record: The complete record dictionary with all CSV fields
+        """
+        if not record:
+            return None
+            
+        # Get all relevant fields and normalize them as booleans
+        ac_sea = self._normalize_boolean(self._get_field_value(record, 'AC_SEA', 'FALSE'))
+        ac_tailwheel = self._normalize_boolean(self._get_field_value(record, 'AC_TAILWHEEL', 'FALSE'))
+        ac_complex = self._normalize_boolean(self._get_field_value(record, 'AC_COMPLEX', 'FALSE'))
+        
+        # Determine gear type based on fields using the logic provided
+        if ac_sea:
+            return "floats"
+        elif ac_tailwheel and not ac_complex:
+            return "fixed_tailwheel"
+        elif ac_tailwheel and ac_complex:
+            return "retractable_tailwheel"
+        elif not ac_tailwheel and not ac_complex:
+            return "fixed_tricycle"
+        elif not ac_tailwheel and ac_complex:
+            return "retractable_tricycle"
+        
+        # Default if we can't determine
+        _logger.warning("Could not determine gear type for record: %s", record)
+        return None
         
     def _get_field_value(self, record, field_name, default=''):
         """Helper method to safely get field value from record"""

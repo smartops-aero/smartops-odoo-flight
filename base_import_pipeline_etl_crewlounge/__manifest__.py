@@ -11,6 +11,7 @@
         'base_import_pipeline_etl',
         'flight',
         'flight_pilotlog',
+        'flight_event',
     ],
     'data': [
         'security/ir.model.access.csv',
