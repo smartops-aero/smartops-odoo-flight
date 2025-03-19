@@ -14,7 +14,9 @@ class BaseImportPipeline(models.Model):
     
     mapping_ids = fields.One2many('base.import.pipeline.mapping', 'pipeline_id', string='Field Mappings')
 
-    
+    # Add batch size field for post-processing only
+    batch_size = fields.Integer(string='Post-Process Batch Size', default=1000, 
+                               help='Number of records to process in each batch during post-processing. Higher values are faster but use more memory.')
     def extract(self, **kwargs):
         """Extract data from source file
         
@@ -720,21 +722,53 @@ class BaseImportPipeline(models.Model):
             # Transform the data
             transformed_data = self.transform(extracted_data, **kwargs)
             
-            # Load the data into the target model
-            result = self.load(transformed_data, extracted_data=extracted_data)
+            # Initialize the combined result
+            combined_result = {
+                'created': [],
+                'updated': [],
+                'errors': [],
+                'post_created': [],
+                'post_updated': [],
+                'post_errors': []
+            }
             
-            # Run post-processing
-            post_result = self.post_process(result, extracted_data=extracted_data)
+            # Process in batches for better performance and memory management
+            batch_size = self.batch_size or 1000
+            _logger.info("Processing %s records in batches of %s", len(transformed_data), batch_size)
             
-            # Merge post-processing results into main result
-            for key in ['post_created', 'post_updated', 'post_errors']:
-                if key in post_result:
-                    result[key] = post_result[key]
+            # Process each batch
+            for i in range(0, len(transformed_data), batch_size):
+                batch = transformed_data[i:i+batch_size]
+                batch_extracted = extracted_data[i:i+batch_size]
+                
+                _logger.info("Processing batch %s to %s (%s records)", 
+                            i, min(i+batch_size, len(transformed_data)), len(batch))
+                
+                # Load the batch
+                batch_result = self.load(batch, extracted_data=batch_extracted)
+                
+                # Run post-processing for this batch
+                batch_post_result = self.post_process(batch_result, extracted_data=batch_extracted)
+                
+                # Merge batch results into combined result
+                for key in ['created', 'updated', 'errors']:
+                    if key in batch_result:
+                        combined_result[key].extend(batch_result[key])
+                
+                # Merge post-processing results
+                for key in ['post_created', 'post_updated', 'post_errors']:
+                    if key in batch_post_result:
+                        combined_result[key].extend(batch_post_result[key])
+                
+                # Commit after each batch except the last one
+                if i + batch_size < len(transformed_data):
+                    self.env.cr.commit()
+                    _logger.info("Committed transaction after batch %s", i)
             
-            # Log the merged result
-            self._log_import_result(result)
+            # Log the combined result
+            self._log_import_result(combined_result)
             
-            return result
+            return combined_result
             
         except Exception as e:
             _logger.error("Error running import: %s", str(e))
@@ -748,7 +782,12 @@ class BaseImportPipeline(models.Model):
                 'status': 'error',
                 'log': str(e),
             })
-            raise
+            
+            return {
+                'created': [],
+                'updated': [],
+                'errors': [{'type': 'import_error', 'error': str(e)}]
+            }
     
     @api.model
     def _extract_from_csv(self, file_content, filename=None, delimiter=','):

@@ -7,6 +7,9 @@
         <field name="inherit_id" ref="base_import_pipeline.view_base_import_pipeline_form"/>
         <field name="arch" type="xml">
             <notebook position="inside">
+                <page string="Post-Process">
+                    <field name="batch_size"/>
+                </page>
                 <page string="Field Mappings">
                     <field name="mapping_ids">
                         <tree editable="bottom">
