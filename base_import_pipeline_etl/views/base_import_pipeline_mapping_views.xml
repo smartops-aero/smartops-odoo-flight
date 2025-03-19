@@ -13,7 +13,6 @@
                 <field name="target_field"/>
                 <field name="transformation"/>
                 <field name="relation_model_id"/>
-                <field name="is_required"/>
                 <field name="is_key_field"/>
                 <field name="is_post_process"/>
             </tree>
@@ -39,7 +38,6 @@
                             <field name="source_field"/>
                             <field name="target_field"/>
                             <field name="transformation"/>
-                            <field name="is_required"/>
                             <field name="is_key_field"/>
                             <field name="is_post_process"/>
                             <field name="post_process_value" attrs="{'invisible': [('is_post_process', '=', False)]}"/>

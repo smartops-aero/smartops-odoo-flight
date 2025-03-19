@@ -22,7 +22,6 @@ class ImportPipelineMapping(models.Model):
     )
     model_id = fields.Many2one('ir.model', string='Target Model', required=True, ondelete='cascade')
     model = fields.Char(related='model_id.model', string='Model Name', store=True)
-    is_required = fields.Boolean(string='Required', default=False)
     
     # Relation configuration
     relation_model_id = fields.Many2one('ir.model', string='Related Model',
