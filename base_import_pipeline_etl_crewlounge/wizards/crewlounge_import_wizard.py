@@ -120,9 +120,12 @@ class CrewLoungeImportWizard(models.TransientModel):
         
         # Show a success message with the number of records created
         created_count = len(result.get('created', []))
+        updated_count = len(result.get('updated', []))
         error_count = len(result.get('errors', []))
         
         message = _("Import completed: %s flights created") % created_count
+        if updated_count:
+            message += _(", %s flights updated") % updated_count
         if error_count:
             message += _(", %s errors occurred") % error_count
             
