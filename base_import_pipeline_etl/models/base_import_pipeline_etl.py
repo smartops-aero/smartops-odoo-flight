@@ -432,7 +432,7 @@ class BaseImportPipeline(models.Model):
                 
             # Handle static values (from post_process_value)
             if mapping.post_process_value:
-                transformed_value = mapping.transform_value(mapping.post_process_value)
+                transformed_value = mapping.with_context(parent_record_id=parent_record.id).transform_value(mapping.post_process_value)
                 values[field_name] = transformed_value
                 # If this is a key field, add it to the domain for finding existing records
                 if mapping.is_key_field:
@@ -461,7 +461,7 @@ class BaseImportPipeline(models.Model):
                 _logger.info("Processing source field %s with value: %s", mapping.source_field, source_value)
                 
                 # Apply the standard transformation
-                transformed_value = mapping.transform_value(source_value, extracted_data)
+                transformed_value = mapping.with_context(parent_record_id=parent_record.id).transform_value(source_value, extracted_data)
                 
                 if transformed_value is not None:
                     values[field_name] = transformed_value

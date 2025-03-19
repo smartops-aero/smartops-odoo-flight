@@ -73,7 +73,7 @@
     <record id="mapping_aircraft_engine_type" model="base.import.pipeline.mapping">
         <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
         <field name="description">Aircraft Engine Type</field>
-        <field name="source_field">AC_ENGTYPE</field>
+        <field name="source_field">AC_ENGTYPE</field> <!-- Just a reference field, transformation uses multiple fields -->
         <field name="target_field">engine_type</field>
         <field name="model_id" ref="flight.model_flight_aircraft_model"/>
         <field name="transformation">crewlounge_engine_type_mapping</field>
@@ -1281,5 +1281,158 @@
         <field name="sequence">333</field>
         <field name="is_post_process" eval="True"/>
         <field name="group_key">relief_time</field>
+    </record>
+
+    <!-- Flight Event Times - POST PROCESSING -->
+    <!-- Takeoff Event -->
+    <record id="mapping_flight_event_time_to_code" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Takeoff Event Code</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_event.model_flight_event_time"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_event.flight_event_code_to"/>
+        <field name="is_post_process" eval="True"/>
+        <field name="sequence">499</field>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">event_to</field>
+    </record>
+
+    <record id="mapping_flight_event_time_to" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Takeoff Event Time</field>
+        <field name="source_field">TIME_TO</field>
+        <field name="target_field">time</field>
+        <field name="model_id" ref="flight_event.model_flight_event_time"/>
+        <field name="transformation">crewlounge_flight_event_time</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="sequence">500</field>
+        <field name="group_key">event_to</field>
+    </record>
+
+    <record id="mapping_flight_event_time_to_flight" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight for Takeoff Event</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_event.model_flight_event_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="sequence">501</field>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">event_to</field>
+    </record>
+
+    <!-- Landing Event -->
+    <record id="mapping_flight_event_time_ld_code" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Landing Event Code</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_event.model_flight_event_time"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_event.flight_event_code_ld"/>
+        <field name="is_post_process" eval="True"/>
+        <field name="sequence">509</field>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">event_ld</field>
+    </record>
+
+    <record id="mapping_flight_event_time_ld" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Landing Event Time</field>
+        <field name="source_field">TIME_LDG</field>
+        <field name="target_field">time</field>
+        <field name="model_id" ref="flight_event.model_flight_event_time"/>
+        <field name="transformation">crewlounge_flight_event_time</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="sequence">510</field>
+        <field name="group_key">event_ld</field>
+    </record>
+
+    <record id="mapping_flight_event_time_ld_flight" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight for Landing Event</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_event.model_flight_event_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="sequence">511</field>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">event_ld</field>
+    </record>
+
+    <!-- Off-blocks Event -->
+    <record id="mapping_flight_event_time_ob_code" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Off-blocks Event Code</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_event.model_flight_event_time"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_event.flight_event_code_ob"/>
+        <field name="is_post_process" eval="True"/>
+        <field name="sequence">519</field>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">event_ob</field>
+    </record>
+
+    <record id="mapping_flight_event_time_ob" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Off-blocks Event Time</field>
+        <field name="source_field">TIME_DEP</field>
+        <field name="target_field">time</field>
+        <field name="model_id" ref="flight_event.model_flight_event_time"/>
+        <field name="transformation">crewlounge_flight_event_time</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="sequence">520</field>
+        <field name="group_key">event_ob</field>
+    </record>
+
+    <record id="mapping_flight_event_time_ob_flight" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight for Off-blocks Event</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_event.model_flight_event_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="sequence">521</field>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">event_ob</field>
+    </record>
+
+    <!-- In-blocks Event -->
+    <record id="mapping_flight_event_time_ib_code" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">In-blocks Event Code</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_event.model_flight_event_time"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_event.flight_event_code_ib"/>
+        <field name="is_post_process" eval="True"/>
+        <field name="sequence">529</field>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">event_ib</field>
+    </record>
+
+    <record id="mapping_flight_event_time_ib" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">In-blocks Event Time</field>
+        <field name="source_field">TIME_ARR</field>
+        <field name="target_field">time</field>
+        <field name="model_id" ref="flight_event.model_flight_event_time"/>
+        <field name="transformation">crewlounge_flight_event_time</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="sequence">530</field>
+        <field name="group_key">event_ib</field>
+    </record>
+
+    <record id="mapping_flight_event_time_ib_flight" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight for In-blocks Event</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_event.model_flight_event_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="sequence">531</field>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">event_ib</field>
     </record>
 </odoo>

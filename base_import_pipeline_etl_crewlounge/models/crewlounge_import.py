@@ -36,6 +36,7 @@ class BaseImportPipelineMapping(models.Model):
         selection.append(('crewlounge_aircraft_class_mapping', 'Crewlounge Aircraft Class Mapping'))
         selection.append(('crewlounge_gear_type_mapping', 'Crewlounge Gear Type Mapping'))
         selection.append(('crewlounge_aircraft_tags_mapping', 'Crewlounge Aircraft Tags Mapping'))
+        selection.append(('crewlounge_flight_event_time', 'Crewlounge Flight Event Time'))
         return selection
     
     def _transform_crewlounge_engine_type_mapping(self, value):
@@ -274,7 +275,66 @@ class BaseImportPipelineMapping(models.Model):
         # Return tag_ids as a command for many2many field
         # If tag_ids is empty, return False to not update the field
         return [(6, 0, tag_ids)] if tag_ids else False
+
+    def _transform_crewlounge_flight_event_time(self, value, record=None):
+        """Convert HH:MM time value to datetime by combining with flight date
         
+        This transformation is specifically for flight event times. It:
+        1. Gets the flight record from the post-processing context
+        2. Takes the date from the flight record
+        3. Combines it with the time value (HH:MM) from the source field
+        
+        Args:
+            value: The time value (HH:MM)
+            record: The complete record dictionary
+            
+        Returns:
+            datetime object or False if conversion fails
+        """
+        if not value:
+            return False
+            
+        try:
+            # Get the flight record from context (in post-processing)
+            flight_id = self.env.context.get('parent_record_id')
+            if not flight_id:
+                _logger.error("No flight_id found in context for flight_event_time transformation")
+                return False
+                
+            # Get the flight record
+            flight = self.env['flight.flight'].browse(flight_id)
+            if not flight or not flight.date:
+                _logger.error("No flight record or date found for flight_id: %s", flight_id)
+                return False
+                
+            # Get the flight date
+            flight_date = flight.date
+            
+            # Parse the time string (HH:MM)
+            time_str = value.strip()
+            if not time_str:
+                return False
+                
+            # Split hours and minutes
+            time_parts = time_str.split(':')
+            if len(time_parts) != 2:
+                _logger.error("Invalid time format: %s", time_str)
+                return False
+                
+            hours = int(time_parts[0])
+            minutes = int(time_parts[1])
+            
+            # Combine flight date and time
+            from datetime import datetime
+            dt = datetime.combine(
+                flight_date,
+                datetime.min.time().replace(hour=hours, minute=minutes)
+            )
+            return dt
+        except Exception as e:
+            _logger.error("Error in flight_event_time transformation: %s", e)
+            return False
+
     def _get_field_value(self, record, field_name, default=''):
         """Helper method to safely get field value from record"""
         return record.get(field_name, default)
@@ -286,3 +346,20 @@ class BaseImportPipelineMapping(models.Model):
             
         normalized = str(value).strip().upper()
         return normalized == 'TRUE' or normalized == '1' or normalized == 'YES'
+
+    def _get_or_create_record(self, model_name, domain, values, mapping=None):
+        """Override to handle special case for flight.event.time updating"""
+        # Special handling for flight.event.time model - only update the time field
+        if model_name == 'flight.event.time' and domain:
+            record = self.env[model_name].search(domain, limit=1)
+            if record and 'time' in values:
+                # Only update the time field for existing flight.event.time records
+                # This respects the constraint in the write method
+                time_value = values.get('time')
+                if time_value:
+                    _logger.info("Updating only time field on existing flight.event.time: %s", time_value)
+                    record.write({'time': time_value})
+                return record
+                
+        # For all other cases, use the standard implementation
+        return super()._get_or_create_record(model_name, domain, values, mapping)
