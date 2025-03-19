@@ -15,7 +15,6 @@
                             <field name="model_id"/>
                             <field name="target_field"/>
                             <field name="transformation"/>
-                            <field name="is_required"/>
                         </tree>
                     </field>
                 </page>

@@ -62,6 +62,20 @@
                         <page string="Description">
                             <field name="description"/>
                         </page>
+                        <page string="Advanced Options">
+                            <group>
+                                <group string="Post-Processing Options">
+                                    <field name="group_key" attrs="{'invisible': [('is_post_process', '=', False)]}"/>
+                                </group>
+                                <group string="Context Variables">
+                                    <field name="use_context_value"/>
+                                    <field name="context_variable_name" attrs="{'invisible': [('use_context_value', '=', False)], 'required': [('use_context_value', '=', True)]}"/>
+                                </group>
+                                <group string="Creation Context">
+                                    <field name="context" placeholder="{'default_field': value, 'other_context_key': value}"/>
+                                </group>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
