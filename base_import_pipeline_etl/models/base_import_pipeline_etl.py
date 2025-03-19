@@ -449,9 +449,8 @@ class BaseImportPipeline(models.Model):
                 
                 if transformed_value is not None:
                     values[field_name] = transformed_value
-                    # If this is a key field or a non-relational field, add to domain
-                    field_info = self.env[target_model]._fields.get(field_name)
-                    if mapping.is_key_field or (field_info and not field_info.relational):
+                    # Only add key fields to domain
+                    if mapping.is_key_field:
                         domain.append((field_name, '=', transformed_value))
         
         # Skip if we don't have any values to create/update
