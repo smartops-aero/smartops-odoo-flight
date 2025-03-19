@@ -432,10 +432,11 @@ class BaseImportPipeline(models.Model):
                 
             # Handle static values (from post_process_value)
             if mapping.post_process_value:
-                values[field_name] = mapping.post_process_value
+                transformed_value = mapping.transform_value(mapping.post_process_value)
+                values[field_name] = transformed_value
                 # If this is a key field, add it to the domain for finding existing records
                 if mapping.is_key_field:
-                    domain.append((field_name, '=', mapping.post_process_value))
+                    domain.append((field_name, '=', transformed_value))
                 continue
             
             # Handle context values
@@ -478,6 +479,8 @@ class BaseImportPipeline(models.Model):
             _logger.warning("No domain criteria for finding existing records, will always create new")
         
         try:
+            _logger.info("Checking for existing record with domain: %s", domain)
+
             # Check if record already exists
             existing = None
             if domain:
@@ -486,10 +489,12 @@ class BaseImportPipeline(models.Model):
                     _logger.info("Found existing record %s with domain %s", existing, domain)
             
             if existing:
+                _logger.info("Updating existing %s record: %s with values: %s", target_model, existing.id, values)
                 existing.write(values)
                 post_result['post_updated'].append(existing.id)
                 _logger.info("Updated existing %s record: %s with values: %s", target_model, existing.id, values)
             else:
+                _logger.info("Creating new %s record with values: %s", target_model, values)
                 new_record = self.env[target_model].create(values)
                 post_result['post_created'].append(new_record.id)
                 _logger.info("Created new %s record: %s with values: %s", target_model, new_record.id, values)

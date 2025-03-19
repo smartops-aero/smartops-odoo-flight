@@ -240,7 +240,7 @@
         <field name="description">Event Code for Takeoff Day</field>
         <field name="target_field">event_code_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
-        <field name="transformation">direct</field>
+        <field name="transformation">ref_id</field>
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_event_code_to_day"/>
         <field name="sequence">132</field>
         <field name="is_post_process" eval="True"/>
@@ -292,7 +292,7 @@
         <field name="description">Event Code for Takeoff Night</field>
         <field name="target_field">event_code_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
-        <field name="transformation">direct</field>
+        <field name="transformation">ref_id</field>
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_event_code_to_night"/>
         <field name="sequence">142</field>
         <field name="is_post_process" eval="True"/>
@@ -344,7 +344,7 @@
         <field name="description">Event Code for Landing Day</field>
         <field name="target_field">event_code_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
-        <field name="transformation">direct</field>
+        <field name="transformation">ref_id</field>
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_event_code_ldg_day"/>
         <field name="sequence">152</field>
         <field name="is_post_process" eval="True"/>
@@ -396,7 +396,7 @@
         <field name="description">Event Code for Landing Night</field>
         <field name="target_field">event_code_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
-        <field name="transformation">direct</field>
+        <field name="transformation">ref_id</field>
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_event_code_ldg_night"/>
         <field name="sequence">162</field>
         <field name="is_post_process" eval="True"/>
@@ -450,7 +450,7 @@
         <field name="description">Time Code for Total Time</field>
         <field name="target_field">code_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
-        <field name="transformation">direct</field>
+        <field name="transformation">ref_id</field>
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_total"/>
         <field name="sequence">202</field>
         <field name="is_post_process" eval="True"/>
@@ -502,7 +502,7 @@
         <field name="description">Time Code for PIC Time</field>
         <field name="target_field">code_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
-        <field name="transformation">direct</field>
+        <field name="transformation">ref_id</field>
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_pic"/>
         <field name="sequence">212</field>
         <field name="is_post_process" eval="True"/>
@@ -554,7 +554,7 @@
         <field name="description">Time Code for SIC Time</field>
         <field name="target_field">code_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
-        <field name="transformation">direct</field>
+        <field name="transformation">ref_id</field>
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_sic"/>
         <field name="sequence">222</field>
         <field name="is_post_process" eval="True"/>
@@ -606,7 +606,7 @@
         <field name="description">Time Code for DUAL Time</field>
         <field name="target_field">code_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
-        <field name="transformation">direct</field>
+        <field name="transformation">ref_id</field>
         <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_dual"/>
         <field name="sequence">232</field>
         <field name="is_post_process" eval="True"/>

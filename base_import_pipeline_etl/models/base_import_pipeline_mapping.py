@@ -113,6 +113,7 @@ Common use cases:
             ('regex', 'Regular Expression'),
             ('parent_record_id', 'Parent Record ID'),
             ('minutes_to_hours', 'Minutes to Hours'),
+            ('ref_id', 'XML Reference to Database ID')
         ]
     
     def transform_value(self, value):
@@ -177,6 +178,21 @@ Common use cases:
             return minutes / 60.0
         except (ValueError, TypeError):
             return 0.0
+    
+    def _transform_ref_id(self, value):
+        """Transform an XML reference to its database ID"""
+        if isinstance(value, int) or (isinstance(value, str) and value.isdigit()):
+            # Already an ID
+            return int(value)
+        elif hasattr(self.env.ref, value):
+            # It's a reference string like 'module.xmlid'
+            try:
+                result = self.env.ref(value).id
+                _logger.info("Resolved ref_id %s to ID %s", value, result)
+                return result
+            except Exception:
+                _logger.error("Failed to resolve ref_id %s", value)
+        return value
     
     @api.onchange('transformation')
     def _onchange_transformation(self):
