@@ -275,11 +275,8 @@ class BaseImportPipeline(models.Model):
         """
         _logger.info("Loading data into %s", self.model_id.model)
         
-        result = {
-            'created': [],
-            'updated': [],
-            'errors': [],
-        }
+        # Initialize result structure
+        result = self._initialize_import_result()
         
         if not transformed_data:
             _logger.info("No transformed data to load")
@@ -288,9 +285,7 @@ class BaseImportPipeline(models.Model):
         _logger.info("Starting to load %s records into %s", len(transformed_data), self.model_id.model)
         
         # Get key fields for the target model
-        key_mappings = self.mapping_ids.filtered(
-            lambda m: m.model_id.model == self.model_id.model and m.is_key_field
-        )
+        key_mappings = self._get_key_mappings()
         
         has_key_fields = bool(key_mappings)
         if not has_key_fields:
@@ -303,55 +298,110 @@ class BaseImportPipeline(models.Model):
             # Create all records in a single transaction
             with self.env.cr.savepoint():
                 for i, data in enumerate(transformed_data):
-                    try:
-                        _logger.debug("Processing record %s/%s with values: %s", 
-                                     i+1, len(transformed_data), data)
-                        
-                        # Store original source data in values as context for post-processing
-                        original_data = kwargs.get('extracted_data', [])[i] if i < len(kwargs.get('extracted_data', [])) else {}
-                        
-                        # Check if record already exists
-                        existing_record = None
-                        if has_key_fields:
-                            domain = []
-                            for mapping in key_mappings:
-                                field_name = mapping.target_field
-                                if field_name in data['values']:
-                                    domain.append((field_name, '=', data['values'][field_name]))
-                            
-                            if domain:
-                                _logger.debug("Searching for existing record with domain: %s", domain)
-                                existing_record = self.env[self.model_id.model].search(domain, limit=1)
-                                if existing_record:
-                                    _logger.info("Found existing record: %s (ID: %s)", 
-                                                existing_record, existing_record.id)
-                        
-                        # Update existing or create new record
-                        if existing_record:
-                            existing_record.with_context(original_data=original_data).write(data['values'])
-                            result['updated'].append(existing_record.id)
-                            _logger.debug("Successfully updated record with ID %s", existing_record.id)
-                        else:
-                            record = self.env[self.model_id.model].with_context(original_data=original_data).create(data['values'])
-                            result['created'].append(record.id)
-                            _logger.debug("Successfully created record with ID %s", record.id)
-                    except Exception as record_error:
-                        error_msg = f"Error processing record {i+1}/{len(transformed_data)}: {str(record_error)}"
-                        _logger.error(error_msg)
-                        _logger.error("Values that caused the error: %s", data)
-                        _logger.error("Stack trace: %s", traceback.format_exc())
-                        result['errors'].append(error_msg)
-                        # Continue with next record instead of failing the whole batch
+                    self._process_single_record(
+                        i, data, has_key_fields, key_mappings, result, kwargs
+                    )
         except Exception as e:
-            error_msg = f"Error in batch processing: {str(e)}"
-            _logger.error(error_msg)
-            _logger.error("Stack trace: %s", traceback.format_exc())
-            result['errors'].append(error_msg)
+            self._handle_batch_error(e, result)
         
-        _logger.info("Import completed. Created: %s, Updated: %s, Errors: %s", 
-                    len(result['created']), len(result['updated']), len(result['errors']))
+        self._log_import_summary(result)
         
         return result
+    
+    def _initialize_import_result(self):
+        """Initialize the structure for import results"""
+        return {
+            'created': [],
+            'updated': [],
+            'errors': [],
+        }
+    
+    def _get_key_mappings(self):
+        """Get key mappings for the target model"""
+        return self.mapping_ids.filtered(
+            lambda m: m.model_id.model == self.model_id.model and m.is_key_field
+        )
+    
+    def _process_single_record(self, index, data, has_key_fields, key_mappings, result, kwargs):
+        """Process a single record for import
+        
+        This handles finding an existing record or creating a new one
+        with proper error handling.
+        """
+        try:
+            _logger.debug("Processing record %s with values: %s", 
+                         index+1, data)
+            
+            # Store original source data in values as context for post-processing
+            original_data = self._get_original_data(index, kwargs)
+            
+            # Check if record already exists
+            existing_record = None
+            if has_key_fields:
+                existing_record = self._find_existing_record_for_import(key_mappings, data)
+            
+            # Update existing or create new record
+            if existing_record:
+                self._update_existing_record(existing_record, data, original_data, result)
+            else:
+                self._create_new_record(data, original_data, result)
+                
+        except Exception as record_error:
+            self._handle_record_error(record_error, index, data, len(data), result)
+    
+    def _get_original_data(self, index, kwargs):
+        """Get original data for the record at the given index"""
+        extracted_data = kwargs.get('extracted_data', [])
+        return extracted_data[index] if index < len(extracted_data) else {}
+    
+    def _find_existing_record_for_import(self, key_mappings, data):
+        """Find an existing record based on key mappings"""
+        domain = []
+        for mapping in key_mappings:
+            field_name = mapping.target_field
+            if field_name in data['values']:
+                domain.append((field_name, '=', data['values'][field_name]))
+        
+        if domain:
+            _logger.debug("Searching for existing record with domain: %s", domain)
+            existing_record = self.env[self.model_id.model].search(domain, limit=1)
+            if existing_record:
+                _logger.info("Found existing record: %s (ID: %s)", 
+                            existing_record, existing_record.id)
+                return existing_record
+        return None
+    
+    def _update_existing_record(self, existing_record, data, original_data, result):
+        """Update an existing record and log the result"""
+        existing_record.with_context(original_data=original_data).write(data['values'])
+        result['updated'].append(existing_record.id)
+        _logger.debug("Successfully updated record with ID %s", existing_record.id)
+    
+    def _create_new_record(self, data, original_data, result):
+        """Create a new record and log the result"""
+        record = self.env[self.model_id.model].with_context(original_data=original_data).create(data['values'])
+        result['created'].append(record.id)
+        _logger.debug("Successfully created record with ID %s", record.id)
+    
+    def _handle_record_error(self, error, index, data, total_records, result):
+        """Handle and log an error for a specific record"""
+        error_msg = f"Error processing record {index+1}/{total_records}: {str(error)}"
+        _logger.error(error_msg)
+        _logger.error("Values that caused the error: %s", data)
+        _logger.error("Stack trace: %s", traceback.format_exc())
+        result['errors'].append(error_msg)
+    
+    def _handle_batch_error(self, error, result):
+        """Handle and log a batch processing error"""
+        error_msg = f"Error in batch processing: {str(error)}"
+        _logger.error(error_msg)
+        _logger.error("Stack trace: %s", traceback.format_exc())
+        result['errors'].append(error_msg)
+    
+    def _log_import_summary(self, result):
+        """Log a summary of the import results"""
+        _logger.info("Import completed. Created: %s, Updated: %s, Errors: %s", 
+                    len(result['created']), len(result['updated']), len(result['errors']))
     
     def post_process(self, import_result, extracted_data=None):
         """Process post-import actions that depend on created/updated records
@@ -366,61 +416,36 @@ class BaseImportPipeline(models.Model):
         Returns:
             Dictionary with post-processing results
         """
-        post_result = {
-            'post_created': [],
-            'post_updated': [],
-            'post_errors': []
-        }
+        # Initialize result structure
+        post_result = self._initialize_post_process_result()
         
         if not extracted_data:
             _logger.warning("No extracted data for post processing")
             return post_result
             
         # Get all post-process mappings
-        post_mappings = self.mapping_ids.filtered(lambda m: m.is_post_process)
+        post_mappings = self._get_post_process_mappings()
         if not post_mappings:
             _logger.info("No post-process mappings defined")
             return post_result
             
         # Associate original data with record IDs for reference
-        original_data_by_id = {}
-        for idx, data in enumerate(extracted_data):
-            if idx < len(import_result.get('created', [])):
-                record_id = import_result['created'][idx]
-                original_data_by_id[record_id] = data
-            elif idx - len(import_result.get('created', [])) < len(import_result.get('updated', [])):
-                record_id = import_result['updated'][idx - len(import_result.get('created', []))]
-                original_data_by_id[record_id] = data
+        original_data_by_id = self._associate_data_with_record_ids(import_result, extracted_data)
         
         # Get records that were created or updated
-        records = None
-        # Find the main model - safely handle the case where filtering returns no records
-        main_model_mapping = self.mapping_ids.filtered(lambda m: not m.is_post_process and m.sequence == 0)
-        main_model = main_model_mapping.model_id.model if main_model_mapping else self.model_id.model
+        records, main_model = self._get_parent_records_for_post_process(import_result)
         
         if not main_model:
             _logger.error("Could not determine main model for post-processing")
             post_result['post_errors'].append("Could not determine main model for post-processing")
             return post_result
             
-        if import_result.get('created') or import_result.get('updated'):
-            records = self.env[main_model].browse(import_result.get('created', []) + import_result.get('updated', []))
-        
         if not records:
             _logger.warning("No records were created or updated, skipping post-processing")
             return post_result
         
-        # First, group mappings by model AND group_key (if set)
-        mapping_groups = {}
-        for mapping in post_mappings:
-            model_name = mapping.model_id.model
-            # Use combination of model and group_key as the dictionary key
-            # This allows separate processing for different group keys within the same model
-            group_key = f"{model_name}_{mapping.group_key or 'default'}"
-            
-            if group_key not in mapping_groups:
-                mapping_groups[group_key] = []
-            mapping_groups[group_key].append(mapping)
+        # Group mappings by model and group_key
+        mapping_groups = self._group_post_process_mappings(post_mappings)
         
         # Process each group of mappings
         for group_key, mappings in mapping_groups.items():
@@ -433,13 +458,82 @@ class BaseImportPipeline(models.Model):
                     original_data = original_data_by_id.get(record.id, {})
                     self._create_post_process_record(record, model_name, mappings, post_result, original_data)
                 except Exception as e:
-                    error_msg = f"Error in post-processing for record {record.id}: {str(e)}"
-                    _logger.error(error_msg)
-                    _logger.error("Stack trace: %s", traceback.format_exc())
-                    post_result['post_errors'].append(error_msg)
+                    self._handle_post_process_error(e, model_name, post_result, record_id=record.id)
         
         return post_result
-
+    
+    def _initialize_post_process_result(self):
+        """Initialize the structure for post-process results"""
+        return {
+            'post_created': [],
+            'post_updated': [],
+            'post_errors': []
+        }
+    
+    def _get_post_process_mappings(self):
+        """Get mappings that are marked for post-processing"""
+        return self.mapping_ids.filtered(lambda m: m.is_post_process)
+    
+    def _associate_data_with_record_ids(self, import_result, extracted_data):
+        """Associate original data with created/updated record IDs
+        
+        Args:
+            import_result: Dictionary with created/updated record IDs
+            extracted_data: Original extracted data
+            
+        Returns:
+            Dictionary mapping record IDs to original data
+        """
+        original_data_by_id = {}
+        for idx, data in enumerate(extracted_data):
+            if idx < len(import_result.get('created', [])):
+                record_id = import_result['created'][idx]
+                original_data_by_id[record_id] = data
+            elif idx - len(import_result.get('created', [])) < len(import_result.get('updated', [])):
+                record_id = import_result['updated'][idx - len(import_result.get('created', []))]
+                original_data_by_id[record_id] = data
+        return original_data_by_id
+    
+    def _get_parent_records_for_post_process(self, import_result):
+        """Get parent records that were created or updated
+        
+        Args:
+            import_result: Dictionary with created/updated record IDs
+            
+        Returns:
+            Tuple of (records, model_name)
+        """
+        records = None
+        # Find the main model - safely handle the case where filtering returns no records
+        main_model_mapping = self.mapping_ids.filtered(lambda m: not m.is_post_process and m.sequence == 0)
+        main_model = main_model_mapping.model_id.model if main_model_mapping else self.model_id.model
+        
+        if import_result.get('created') or import_result.get('updated'):
+            records = self.env[main_model].browse(import_result.get('created', []) + import_result.get('updated', []))
+        
+        return records, main_model
+    
+    def _group_post_process_mappings(self, post_mappings):
+        """Group post-process mappings by model and group_key
+        
+        Args:
+            post_mappings: Collection of post-process mapping records
+            
+        Returns:
+            Dictionary with groups of mappings
+        """
+        mapping_groups = {}
+        for mapping in post_mappings:
+            model_name = mapping.model_id.model
+            # Use combination of model and group_key as the dictionary key
+            # This allows separate processing for different group keys within the same model
+            group_key = f"{model_name}_{mapping.group_key or 'default'}"
+            
+            if group_key not in mapping_groups:
+                mapping_groups[group_key] = []
+            mapping_groups[group_key].append(mapping)
+        return mapping_groups
+    
     def _create_post_process_record(self, parent_record, target_model, mappings, post_result, extracted_data):
         """Create or update a record in the target model linked to the parent record
         
@@ -591,15 +685,18 @@ class BaseImportPipeline(models.Model):
         post_result['post_created'].append(new_record.id)
         _logger.info("Created new %s record: %s with values: %s", model_name, new_record.id, values)
     
-    def _handle_post_process_error(self, error, model_name, post_result):
+    def _handle_post_process_error(self, error, model_name, post_result, record_id=None):
         """Handle error in post processing
         
         Args:
             error: The exception
             model_name: Name of the model that caused the error
             post_result: Dictionary to update with error
+            record_id: ID of the record that caused the error (optional)
         """
         error_msg = f"Error creating/updating {model_name}: {str(error)}"
+        if record_id:
+            error_msg += f" for record {record_id}"
         post_result['post_errors'].append(error_msg)
         _logger.error(error_msg)
         _logger.error("Stack trace: %s", traceback.format_exc())
