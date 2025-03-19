@@ -14,7 +14,9 @@ class FlightPilotRemark(models.Model):
         "res.partner", string="Pilot", required=True, index=True, ondelete="restrict"
     )
     remark = fields.Text(string="Remark", help="Pilot remark or note about the flight")
-    signature = fields.Binary(string="Signature", attachment=True, help="Pilot signature image")
+    signature = fields.Binary(
+        string="Signature", attachment=True, help="Pilot signature image"
+    )
     date = fields.Date(related="flight_id.date", store=True, readonly=True)
 
     _sql_constraints = [

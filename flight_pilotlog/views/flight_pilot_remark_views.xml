@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Flight Pilot Remark Views -->
     <record id="view_flight_pilot_remark_tree" model="ir.ui.view">
@@ -6,9 +6,9 @@
         <field name="model">flight.pilot.remark</field>
         <field name="arch" type="xml">
             <tree string="Pilot Remarks">
-                <field name="flight_id"/>
-                <field name="partner_id"/>
-                <field name="date"/>
+                <field name="flight_id" />
+                <field name="partner_id" />
+                <field name="date" />
             </tree>
         </field>
     </record>
@@ -21,17 +21,28 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="flight_id"/>
-                            <field name="partner_id"/>
-                            <field name="date" readonly="1"/>
+                            <field name="flight_id" />
+                            <field name="partner_id" />
+                            <field name="date" readonly="1" />
                         </group>
                     </group>
                     <notebook>
                         <page string="Remark">
-                            <field name="remark" nolabel="1" placeholder="Enter pilot remarks about the flight..."/>
+                            <field
+                name="remark"
+                nolabel="1"
+                placeholder="Enter pilot remarks about the flight..."
+              />
                         </page>
-                        <page string="Signature" attrs="{'invisible': [('signature', '=', False)]}">
-                            <field name="signature" widget="image" class="oe_avatar"/>
+                        <page
+              string="Signature"
+              attrs="{'invisible': [('signature', '=', False)]}"
+            >
+                            <field
+                name="signature"
+                widget="image"
+                class="oe_avatar"
+              />
                         </page>
                     </notebook>
                 </sheet>
@@ -44,15 +55,38 @@
         <field name="model">flight.pilot.remark</field>
         <field name="arch" type="xml">
             <search string="Search Pilot Remarks">
-                <field name="flight_id"/>
-                <field name="partner_id"/>
-                <field name="date"/>
-                <filter string="This Month" name="this_month" domain="[('date','&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')),('date','&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"/>
-                <filter string="This Year" name="this_year" domain="[('date','&gt;=', (context_today() + relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),('date','&lt;=', (context_today() + relativedelta(years=1, month=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"/>
+                <field name="flight_id" />
+                <field name="partner_id" />
+                <field name="date" />
+                <filter
+          string="This Month"
+          name="this_month"
+          domain="[('date','&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')),('date','&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"
+        />
+                <filter
+          string="This Year"
+          name="this_year"
+          domain="[('date','&gt;=', (context_today() + relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),('date','&lt;=', (context_today() + relativedelta(years=1, month=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"
+        />
                 <group expand="0" string="Group By">
-                    <filter string="Flight" name="group_by_flight" domain="[]" context="{'group_by':'flight_id'}"/>
-                    <filter string="Pilot" name="group_by_pilot" domain="[]" context="{'group_by':'partner_id'}"/>
-                    <filter string="Date" name="group_by_date" domain="[]" context="{'group_by':'date'}"/>
+                    <filter
+            string="Flight"
+            name="group_by_flight"
+            domain="[]"
+            context="{'group_by':'flight_id'}"
+          />
+                    <filter
+            string="Pilot"
+            name="group_by_pilot"
+            domain="[]"
+            context="{'group_by':'partner_id'}"
+          />
+                    <filter
+            string="Date"
+            name="group_by_date"
+            domain="[]"
+            context="{'group_by':'date'}"
+          />
                 </group>
             </search>
         </field>

@@ -1,5 +1,6 @@
 from odoo import api, fields, models
 
+
 class FlightPilotTimeCode(models.Model):
     _name = "flight.pilot.time.code"
     _description = "Pilot Time Code"

@@ -3,8 +3,8 @@
     "summary": """
         ETL implementation for base import pipeline""",
     "description": """
-        This module adds ETL (Extract, Transform, Load) capabilities to the 
-        base import pipeline framework. It provides CSV file handling, 
+        This module adds ETL (Extract, Transform, Load) capabilities to the
+        base import pipeline framework. It provides CSV file handling,
         field mapping, and transformation functionality.
     """,
     "author": "Apexive Solutions LLC",

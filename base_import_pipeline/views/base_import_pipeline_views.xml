@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Pipeline Tree View -->
     <record id="view_base_import_pipeline_tree" model="ir.ui.view">
@@ -6,10 +6,10 @@
         <field name="model">base.import.pipeline</field>
         <field name="arch" type="xml">
             <tree string="Import Pipelines">
-                <field name="name"/>
-                <field name="implementation"/>
-                <field name="model_id"/>
-                <field name="active" widget="boolean_toggle"/>
+                <field name="name" />
+                <field name="implementation" />
+                <field name="model_id" />
+                <field name="active" widget="boolean_toggle" />
             </tree>
         </field>
     </record>
@@ -22,28 +22,33 @@
             <form string="Import Pipeline">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
-                            <field name="active" widget="boolean_button"/>
+                        <button
+              name="toggle_active"
+              type="object"
+              class="oe_stat_button"
+              icon="fa-archive"
+            >
+                            <field name="active" widget="boolean_button" />
                         </button>
                     </div>
                     <div class="oe_title">
                         <h1>
-                            <field name="name" placeholder="Pipeline Name"/>
+                            <field name="name" placeholder="Pipeline Name" />
                         </h1>
                     </div>
                     <group>
                         <group>
-                            <field name="implementation"/>
-                            <field name="model_id"/>
+                            <field name="implementation" />
+                            <field name="model_id" />
                         </group>
                     </group>
                     <notebook>
                         <page string="Import Results">
                             <field name="result_ids">
                                 <tree>
-                                    <field name="date"/>
-                                    <field name="records_created"/>
-                                    <field name="status"/>
+                                    <field name="date" />
+                                    <field name="records_created" />
+                                    <field name="status" />
                                 </tree>
                             </field>
                         </page>
@@ -59,10 +64,14 @@
         <field name="model">base.import.pipeline</field>
         <field name="arch" type="xml">
             <search string="Import Pipelines">
-                <field name="name"/>
-                <field name="implementation"/>
-                <field name="model_id"/>
-                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <field name="name" />
+                <field name="implementation" />
+                <field name="model_id" />
+                <filter
+          string="Archived"
+          name="inactive"
+          domain="[('active', '=', False)]"
+        />
             </search>
         </field>
     </record>
@@ -76,18 +85,18 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="pipeline_id"/>
-                            <field name="date"/>
-                            <field name="status"/>
-                            <field name="records_created"/>
+                            <field name="pipeline_id" />
+                            <field name="date" />
+                            <field name="status" />
+                            <field name="records_created" />
                         </group>
                     </group>
                     <notebook>
                         <page string="Summary">
-                            <field name="summary"/>
+                            <field name="summary" />
                         </page>
                         <page string="Log">
-                            <field name="log"/>
+                            <field name="log" />
                         </page>
                     </notebook>
                 </sheet>
@@ -101,10 +110,10 @@
         <field name="model">base.import.pipeline.result</field>
         <field name="arch" type="xml">
             <tree string="Import Results">
-                <field name="pipeline_id"/>
-                <field name="date"/>
-                <field name="status"/>
-                <field name="records_created"/>
+                <field name="pipeline_id" />
+                <field name="date" />
+                <field name="status" />
+                <field name="records_created" />
             </tree>
         </field>
     </record>
@@ -114,7 +123,7 @@
         <field name="name">Import Pipelines</field>
         <field name="res_model">base.import.pipeline</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="view_base_import_pipeline_search"/>
+        <field name="search_view_id" ref="view_base_import_pipeline_search" />
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first import pipeline
@@ -125,7 +134,10 @@
         </field>
     </record>
 
-    <record id="action_base_import_pipeline_result" model="ir.actions.act_window">
+    <record
+    id="action_base_import_pipeline_result"
+    model="ir.actions.act_window"
+  >
         <field name="name">Import Results</field>
         <field name="res_model">base.import.pipeline.result</field>
         <field name="view_mode">tree,form</field>

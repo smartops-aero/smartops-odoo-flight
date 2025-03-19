@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Flight Pilot Event Code Views -->
     <record id="view_flight_pilot_event_code_tree" model="ir.ui.view">
@@ -6,11 +6,11 @@
         <field name="model">flight.pilot.event.code</field>
         <field name="arch" type="xml">
             <tree string="Event Codes">
-                <field name="sequence" widget="handle"/>
-                <field name="code"/>
-                <field name="name"/>
-                <field name="description"/>
-                <field name="active"/>
+                <field name="sequence" widget="handle" />
+                <field name="code" />
+                <field name="name" />
+                <field name="description" />
+                <field name="active" />
             </tree>
         </field>
     </record>
@@ -22,20 +22,29 @@
             <form string="Event Code">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
-                            <field name="active" widget="boolean_button"/>
+                        <button
+              name="toggle_active"
+              type="object"
+              class="oe_stat_button"
+              icon="fa-archive"
+            >
+                            <field name="active" widget="boolean_button" />
                         </button>
                     </div>
                     <group>
                         <group>
-                            <field name="code"/>
-                            <field name="name"/>
-                            <field name="sequence"/>
+                            <field name="code" />
+                            <field name="name" />
+                            <field name="sequence" />
                         </group>
                     </group>
                     <notebook>
                         <page string="Description">
-                            <field name="description" nolabel="1" placeholder="Detailed description of this event code..."/>
+                            <field
+                name="description"
+                nolabel="1"
+                placeholder="Detailed description of this event code..."
+              />
                         </page>
                     </notebook>
                 </sheet>
@@ -48,15 +57,22 @@
         <field name="model">flight.pilot.event.code</field>
         <field name="arch" type="xml">
             <search string="Search Event Codes">
-                <field name="name"/>
-                <field name="code"/>
-                <field name="description"/>
-                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <field name="name" />
+                <field name="code" />
+                <field name="description" />
+                <filter
+          string="Archived"
+          name="inactive"
+          domain="[('active', '=', False)]"
+        />
             </search>
         </field>
     </record>
 
-    <record id="action_flight_pilot_event_code_list" model="ir.actions.act_window">
+    <record
+    id="action_flight_pilot_event_code_list"
+    model="ir.actions.act_window"
+  >
         <field name="name">Event Codes</field>
         <field name="res_model">flight.pilot.event.code</field>
         <field name="view_mode">tree,form</field>
@@ -76,12 +92,12 @@
         <field name="model">flight.pilot.event</field>
         <field name="arch" type="xml">
             <tree string="Pilot Events">
-                <field name="flight_id"/>
-                <field name="partner_id"/>
-                <field name="event_code_id"/>
-                <field name="count"/>
-                <field name="datetime"/>
-                <field name="date"/>
+                <field name="flight_id" />
+                <field name="partner_id" />
+                <field name="event_code_id" />
+                <field name="count" />
+                <field name="datetime" />
+                <field name="date" />
             </tree>
         </field>
     </record>
@@ -94,14 +110,14 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="flight_id"/>
-                            <field name="partner_id"/>
-                            <field name="event_code_id"/>
+                            <field name="flight_id" />
+                            <field name="partner_id" />
+                            <field name="event_code_id" />
                         </group>
                         <group>
-                            <field name="count"/>
-                            <field name="datetime"/>
-                            <field name="date" readonly="1"/>
+                            <field name="count" />
+                            <field name="datetime" />
+                            <field name="date" readonly="1" />
                         </group>
                     </group>
                 </sheet>
@@ -114,17 +130,45 @@
         <field name="model">flight.pilot.event</field>
         <field name="arch" type="xml">
             <search string="Search Pilot Events">
-                <field name="flight_id"/>
-                <field name="partner_id"/>
-                <field name="event_code_id"/>
-                <field name="date"/>
-                <filter string="This Month" name="this_month" domain="[('date','&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')),('date','&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"/>
-                <filter string="This Year" name="this_year" domain="[('date','&gt;=', (context_today() + relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),('date','&lt;=', (context_today() + relativedelta(years=1, month=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"/>
+                <field name="flight_id" />
+                <field name="partner_id" />
+                <field name="event_code_id" />
+                <field name="date" />
+                <filter
+          string="This Month"
+          name="this_month"
+          domain="[('date','&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')),('date','&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"
+        />
+                <filter
+          string="This Year"
+          name="this_year"
+          domain="[('date','&gt;=', (context_today() + relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),('date','&lt;=', (context_today() + relativedelta(years=1, month=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"
+        />
                 <group expand="0" string="Group By">
-                    <filter string="Flight" name="group_by_flight" domain="[]" context="{'group_by':'flight_id'}"/>
-                    <filter string="Pilot" name="group_by_pilot" domain="[]" context="{'group_by':'partner_id'}"/>
-                    <filter string="Event Code" name="group_by_event_code" domain="[]" context="{'group_by':'event_code_id'}"/>
-                    <filter string="Date" name="group_by_date" domain="[]" context="{'group_by':'date'}"/>
+                    <filter
+            string="Flight"
+            name="group_by_flight"
+            domain="[]"
+            context="{'group_by':'flight_id'}"
+          />
+                    <filter
+            string="Pilot"
+            name="group_by_pilot"
+            domain="[]"
+            context="{'group_by':'partner_id'}"
+          />
+                    <filter
+            string="Event Code"
+            name="group_by_event_code"
+            domain="[]"
+            context="{'group_by':'event_code_id'}"
+          />
+                    <filter
+            string="Date"
+            name="group_by_date"
+            domain="[]"
+            context="{'group_by':'date'}"
+          />
                 </group>
             </search>
         </field>
@@ -150,9 +194,9 @@
         <field name="model">flight.pilot.event</field>
         <field name="arch" type="xml">
             <pivot string="Pilot Event Analysis">
-                <field name="partner_id" type="row"/>
-                <field name="event_code_id" type="row"/>
-                <field name="count" type="measure"/>
+                <field name="partner_id" type="row" />
+                <field name="event_code_id" type="row" />
+                <field name="count" type="measure" />
             </pivot>
         </field>
     </record>
@@ -162,14 +206,17 @@
         <field name="model">flight.pilot.event</field>
         <field name="arch" type="xml">
             <graph string="Pilot Event Analysis" type="bar">
-                <field name="partner_id"/>
-                <field name="event_code_id"/>
-                <field name="count" type="measure"/>
+                <field name="partner_id" />
+                <field name="event_code_id" />
+                <field name="count" type="measure" />
             </graph>
         </field>
     </record>
 
-    <record id="action_flight_pilot_event_by_pilot" model="ir.actions.act_window">
+    <record
+    id="action_flight_pilot_event_by_pilot"
+    model="ir.actions.act_window"
+  >
         <field name="name">Event Analysis</field>
         <field name="res_model">flight.pilot.event</field>
         <field name="view_mode">pivot,graph</field>

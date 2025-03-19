@@ -1,31 +1,48 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo noupdate="1">
 
     <record id="flight_pilot_event_code_to_day" model="flight.pilot.event.code">
         <field name="name">Takeoff Day</field>
         <field name="code">TO_DAY</field>
-        <field name="description">Takeoff conducted during daylight hours.</field>
+        <field
+      name="description"
+    >Takeoff conducted during daylight hours.</field>
         <field name="sequence">10</field>
     </record>
 
-    <record id="flight_pilot_event_code_to_night" model="flight.pilot.event.code">
+    <record
+    id="flight_pilot_event_code_to_night"
+    model="flight.pilot.event.code"
+  >
         <field name="name">Takeoff Night</field>
         <field name="code">TO_NIGHT</field>
-        <field name="description">Takeoff conducted during nighttime hours.</field>
+        <field
+      name="description"
+    >Takeoff conducted during nighttime hours.</field>
         <field name="sequence">20</field>
     </record>
 
-    <record id="flight_pilot_event_code_ldg_day" model="flight.pilot.event.code">
+    <record
+    id="flight_pilot_event_code_ldg_day"
+    model="flight.pilot.event.code"
+  >
         <field name="name">Landing Day</field>
         <field name="code">LDG_DAY</field>
-        <field name="description">Landing conducted during daylight hours.</field>
+        <field
+      name="description"
+    >Landing conducted during daylight hours.</field>
         <field name="sequence">30</field>
     </record>
 
-    <record id="flight_pilot_event_code_ldg_night" model="flight.pilot.event.code">
+    <record
+    id="flight_pilot_event_code_ldg_night"
+    model="flight.pilot.event.code"
+  >
         <field name="name">Landing Night</field>
         <field name="code">LDG_NIGHT</field>
-        <field name="description">Landing conducted during nighttime hours.</field>
+        <field
+      name="description"
+    >Landing conducted during nighttime hours.</field>
         <field name="sequence">40</field>
     </record>
 
@@ -36,7 +53,10 @@
         <field name="sequence">50</field>
     </record>
 
-    <record id="flight_pilot_event_code_holding" model="flight.pilot.event.code">
+    <record
+    id="flight_pilot_event_code_holding"
+    model="flight.pilot.event.code"
+  >
         <field name="name">Holding Pattern</field>
         <field name="code">HOLDING</field>
         <field name="description">Aircraft entered a holding pattern.</field>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- CrewLounge Import Wizard Form View - Upload State -->
     <record id="view_crewlounge_import_wizard_form_upload" model="ir.ui.view">
@@ -6,16 +6,25 @@
         <field name="model">crewlounge.import.wizard</field>
         <field name="arch" type="xml">
             <form string="Import CrewLounge CSV">
-                <field name="state" invisible="1"/>
+                <field name="state" invisible="1" />
                 <sheet>
                     <group attrs="{'invisible': [('state', '=', 'preview')]}">
-                        <field name="file" filename="filename" attrs="{'required': [('state', '=', 'upload')]}"/>
-                        <field name="filename" invisible="1"/>
-                        <field name="delimiter"/>
-                        <field name="partner_id"/>
+                        <field
+              name="file"
+              filename="filename"
+              attrs="{'required': [('state', '=', 'upload')]}"
+            />
+                        <field name="filename" invisible="1" />
+                        <field name="delimiter" />
+                        <field name="partner_id" />
                     </group>
-                    <div class="alert alert-info" role="alert" attrs="{'invisible': [('state', '=', 'preview')]}">
-                        <p>This wizard will import flight data from a CrewLounge CSV file.</p>
+                    <div
+            class="alert alert-info"
+            role="alert"
+            attrs="{'invisible': [('state', '=', 'preview')]}"
+          >
+                        <p
+            >This wizard will import flight data from a CrewLounge CSV file.</p>
                         <p>The CSV should contain the following columns:</p>
                         <ul>
                             <li>FLIGHTNUMBER - The flight number</li>
@@ -24,43 +33,104 @@
                             <li>AC_REG - The aircraft registration</li>
                         </ul>
                     </div>
-                    
+
                     <!-- Preview Section -->
-                    <div attrs="{'invisible': [('state', '!=', 'preview')]}" class="alert alert-info" role="alert" style="width: 100%;">
-                        <field name="preview_data" readonly="1" nolabel="1"/>
+                    <div
+            attrs="{'invisible': [('state', '!=', 'preview')]}"
+            class="alert alert-info"
+            role="alert"
+            style="width: 100%;"
+          >
+                        <field name="preview_data" readonly="1" nolabel="1" />
                         <div class="mt-3">
                             <group>
-                                <field name="preview_row_count" readonly="1"/>
-                                <field name="preview_column_count" readonly="1"/>
+                                <field name="preview_row_count" readonly="1" />
+                                <field
+                  name="preview_column_count"
+                  readonly="1"
+                />
                             </group>
                         </div>
                     </div>
-                    
+
                     <!-- Completed Section -->
-                    <div attrs="{'invisible': [('state', '!=', 'completed')]}" style="width: 100%;">
-                        <div class="alert alert-success" role="alert" attrs="{'invisible': [('error_count', '!=', 0)]}">
-                            <h4 class="alert-heading" role="alert">Import Completed Successfully!</h4>
-                            <field name="result_data" readonly="1" nolabel="1"/>
+                    <div
+            attrs="{'invisible': [('state', '!=', 'completed')]}"
+            style="width: 100%;"
+          >
+                        <div
+              class="alert alert-success"
+              role="alert"
+              attrs="{'invisible': [('error_count', '!=', 0)]}"
+            >
+                            <h4
+                class="alert-heading"
+                role="alert"
+              >Import Completed Successfully!</h4>
+                            <field
+                name="result_data"
+                readonly="1"
+                nolabel="1"
+              />
                         </div>
-                        <div class="alert alert-warning" role="alert" attrs="{'invisible': [('error_count', '=', 0)]}">
-                            <h4 class="alert-heading" role="alert">Import Completed with Warnings</h4>
-                            <field name="result_data" readonly="1" nolabel="1"/>
+                        <div
+              class="alert alert-warning"
+              role="alert"
+              attrs="{'invisible': [('error_count', '=', 0)]}"
+            >
+                            <h4
+                class="alert-heading"
+                role="alert"
+              >Import Completed with Warnings</h4>
+                            <field
+                name="result_data"
+                readonly="1"
+                nolabel="1"
+              />
                         </div>
                         <div class="mt-3">
                             <group>
-                                <field name="created_count" readonly="1"/>
-                                <field name="updated_count" readonly="1"/>
-                                <field name="error_count" readonly="1"/>
+                                <field name="created_count" readonly="1" />
+                                <field name="updated_count" readonly="1" />
+                                <field name="error_count" readonly="1" />
                             </group>
                         </div>
                     </div>
                 </sheet>
                 <footer>
-                    <button string="Preview" name="action_preview" type="object" class="btn-primary" attrs="{'invisible': [('state', '=', 'preview')]}"/>
-                    <button string="Import" name="action_import" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'preview')]}"/>
-                    <button string="Back to Upload" name="action_back_to_upload" type="object" class="btn-secondary" attrs="{'invisible': [('state', '!=', 'preview')]}"/>
-                    <button string="New Import" name="action_new_import" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'completed')]}"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <button
+            string="Preview"
+            name="action_preview"
+            type="object"
+            class="btn-primary"
+            attrs="{'invisible': [('state', '=', 'preview')]}"
+          />
+                    <button
+            string="Import"
+            name="action_import"
+            type="object"
+            class="btn-primary"
+            attrs="{'invisible': [('state', '!=', 'preview')]}"
+          />
+                    <button
+            string="Back to Upload"
+            name="action_back_to_upload"
+            type="object"
+            class="btn-secondary"
+            attrs="{'invisible': [('state', '!=', 'preview')]}"
+          />
+                    <button
+            string="New Import"
+            name="action_new_import"
+            type="object"
+            class="btn-primary"
+            attrs="{'invisible': [('state', '!=', 'completed')]}"
+          />
+                    <button
+            string="Cancel"
+            class="btn-secondary"
+            special="cancel"
+          />
                 </footer>
             </form>
         </field>
@@ -75,9 +145,11 @@
     </record>
 
     <!-- Menu Item -->
-    <menuitem id="menu_crewlounge_import_wizard"
-              name="Import CrewLounge CSV"
-              parent="flight.menu_flight_root"
-              action="action_crewlounge_import_wizard"
-              sequence="50"/>
+    <menuitem
+    id="menu_crewlounge_import_wizard"
+    name="Import CrewLounge CSV"
+    parent="flight.menu_flight_root"
+    action="action_crewlounge_import_wizard"
+    sequence="50"
+  />
 </odoo>

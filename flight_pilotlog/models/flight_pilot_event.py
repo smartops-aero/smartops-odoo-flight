@@ -23,6 +23,7 @@ class FlightPilotEventCode(models.Model):
             result.append((record.id, name))
         return result
 
+
 class FlightPilotEvent(models.Model):
     _name = "flight.pilot.event"
     _description = "Pilot Flight Event"
@@ -42,7 +43,9 @@ class FlightPilotEvent(models.Model):
         index=True,
         ondelete="restrict",
     )
-    count = fields.Integer(string="Count", default=1, help="Number of times this event occurred")
+    count = fields.Integer(
+        string="Count", default=1, help="Number of times this event occurred"
+    )
     datetime = fields.Datetime(string="Datetime")
     date = fields.Date(related="flight_id.date", store=True, readonly=True)
 
