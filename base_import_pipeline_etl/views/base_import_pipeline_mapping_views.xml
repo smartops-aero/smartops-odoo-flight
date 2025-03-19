@@ -15,6 +15,7 @@
                 <field name="relation_model_id"/>
                 <field name="is_key_field"/>
                 <field name="is_post_process"/>
+                <button name="action_open_form_view" string="View" type="object" icon="fa-eye"/>
             </tree>
         </field>
     </record>

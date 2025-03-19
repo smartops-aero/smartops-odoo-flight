@@ -222,3 +222,16 @@ Common use cases:
         """Clear relation field when model changes"""
         if self.relation_model_id:
             self.relation_field = False
+
+    def action_open_form_view(self):
+        """Open the form view of the mapping"""
+        self.ensure_one()
+        return {
+            'name': _('Field Mapping'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'base.import.pipeline.mapping',
+            'res_id': self.id,
+            'type': 'ir.actions.act_window',
+            'target': 'current',
+        }
