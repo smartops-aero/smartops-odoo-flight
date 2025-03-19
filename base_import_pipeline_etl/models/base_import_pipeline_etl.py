@@ -225,7 +225,6 @@ class BaseImportPipeline(models.Model):
         This method creates or updates records in the target model
         based on the transformed data.
         """
-        _logger.info("Loading data into %s", self.model_id.model)
         
         # Initialize result structure
         result = self._initialize_import_result()
@@ -252,8 +251,6 @@ class BaseImportPipeline(models.Model):
                     )
         except Exception as e:
             self._handle_batch_error(e, result)
-        
-        self._log_import_summary(result)
         
         return result
     
@@ -309,11 +306,8 @@ class BaseImportPipeline(models.Model):
                 domain.append((field_name, '=', data['values'][field_name]))
         
         if domain:
-            _logger.debug("Searching for existing record with domain: %s", domain)
             existing_record = self.env[self.model_id.model].search(domain, limit=1)
             if existing_record:
-                _logger.info("Found existing record: %s (ID: %s)", 
-                            existing_record, existing_record.id)
                 return existing_record
         return None
     
@@ -342,11 +336,6 @@ class BaseImportPipeline(models.Model):
         _logger.error("Stack trace: %s", traceback.format_exc())
         result['errors'].append(error_msg)
     
-    def _log_import_summary(self, result):
-        """Log a summary of the import results"""
-        _logger.info("Import completed. Created: %s, Updated: %s, Errors: %s", 
-                    len(result['created']), len(result['updated']), len(result['errors']))
-    
     def post_process(self, import_result, extracted_data=None):
         """Process post-import actions that depend on created/updated records
         
@@ -364,13 +353,11 @@ class BaseImportPipeline(models.Model):
         post_result = self._initialize_post_process_result()
         
         if not extracted_data:
-            _logger.warning("No extracted data for post processing")
             return post_result
             
         # Get all post-process mappings
         post_mappings = self._get_post_process_mappings()
         if not post_mappings:
-            _logger.info("No post-process mappings defined")
             return post_result
             
         # Associate original data with record IDs for reference
@@ -385,7 +372,6 @@ class BaseImportPipeline(models.Model):
             return post_result
             
         if not records:
-            _logger.warning("No records were created or updated, skipping post-processing")
             return post_result
         
         # Group mappings by model and group_key
@@ -394,7 +380,6 @@ class BaseImportPipeline(models.Model):
         # Process each group of mappings
         for group_key, mappings in mapping_groups.items():
             model_name = mappings[0].model_id.model
-            _logger.info("Processing mappings for group: %s (model: %s)", group_key, model_name)
             
             # For each parent record, create related records
             for record in records:
@@ -495,12 +480,7 @@ class BaseImportPipeline(models.Model):
         
         # Skip if we don't have any values to create/update
         if not values:
-            _logger.warning("No values to create/update for post-processing record, skipping")
             return
-        
-        # Ensure we have a valid domain for finding existing
-        if not domain:
-            _logger.warning("No domain criteria for finding existing records, will always create new")
         
         try:
             existing = self._find_existing_record(target_model, domain)
