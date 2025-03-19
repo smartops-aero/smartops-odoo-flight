@@ -800,7 +800,6 @@ class BaseImportPipeline(models.Model):
     
     def _log_import_result(self, result):
         """Log the import result"""
-        _logger.info("Import result: %s", result)
         self.env['base.import.pipeline.result'].create({
             'pipeline_id': self.id,
             'date': fields.Datetime.now(),
