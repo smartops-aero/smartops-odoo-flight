@@ -1,9 +1,8 @@
 import base64
 import csv
 import io
-from odoo import api, fields, models, _
+from odoo import fields, models, _
 from odoo.exceptions import UserError
-
 
 class CrewLoungeImportWizard(models.TransientModel):
     _name = "crewlounge.import.wizard"
@@ -23,7 +22,10 @@ class CrewLoungeImportWizard(models.TransientModel):
     )
     
     # Preview fields
-    preview_data = fields.Text(string='Preview Data', readonly=True)
+    preview_data = fields.Text(string='Preview Info', readonly=True)
+    preview_row_count = fields.Integer(string='Total Rows', readonly=True)
+    preview_column_count = fields.Integer(string='Total Columns', readonly=True)
+    preview_column_names = fields.Text(string='Column Names', readonly=True)
     state = fields.Selection([
         ('upload', 'Upload'),
         ('preview', 'Preview'),
@@ -52,7 +54,10 @@ class CrewLoungeImportWizard(models.TransientModel):
             # Decode the file content
             content = base64.b64decode(self.file).decode('utf-8')
             
-            # Parse CSV
+            # First count total rows in the CSV
+            row_count = sum(1 for _ in csv.reader(io.StringIO(content), delimiter=self.delimiter)) - 1  # Subtract header row
+            
+            # Parse CSV for preview
             reader = csv.DictReader(
                 io.StringIO(content), 
                 delimiter=self.delimiter
@@ -65,23 +70,18 @@ class CrewLoungeImportWizard(models.TransientModel):
                     break
                 preview_rows.append(row)
             
-            # Format the preview data
             if preview_rows:
                 # Get all keys from the first row
                 keys = list(preview_rows[0].keys())
                 
-                # Format as a table
-                preview_text = []
+                # Store the structured data
+                self.preview_row_count = row_count
+                self.preview_column_count = len(keys)
+                self.preview_column_names = ", ".join(keys)
                 
-                # Add header
-                preview_text.append("| " + " | ".join(keys) + " |")
-                preview_text.append("|-" + "-|-".join(["-" * len(k) for k in keys]) + "-|")
-                
-                # Add rows
-                for row in preview_rows:
-                    preview_text.append("| " + " | ".join([str(row.get(k, '')) for k in keys]) + " |")
-                
-                self.preview_data = "\n".join(preview_text)
+                # Simple text summary
+                message = "Found %s rows with %s columns.\n\nColumn names: %s\n\nThe file appears to be valid and ready for import."
+                self.preview_data = _(message) % (row_count, len(keys), self.preview_column_names)
             else:
                 self.preview_data = _("No data found in the CSV file")
             
