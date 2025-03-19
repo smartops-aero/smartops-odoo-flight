@@ -198,7 +198,8 @@
         <field name="target_field">partner_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_remark"/>
         <field name="transformation">direct</field>
-        <field name="post_process_value">3</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
         <field name="sequence">120</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
@@ -226,7 +227,8 @@
         <field name="target_field">partner_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
         <field name="transformation">direct</field>
-        <field name="post_process_value">3</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
         <field name="sequence">131</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
@@ -277,7 +279,8 @@
         <field name="target_field">partner_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
         <field name="transformation">direct</field>
-        <field name="post_process_value">3</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
         <field name="sequence">141</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
@@ -328,7 +331,8 @@
         <field name="target_field">partner_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
         <field name="transformation">direct</field>
-        <field name="post_process_value">3</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
         <field name="sequence">151</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
@@ -379,7 +383,8 @@
         <field name="target_field">partner_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
         <field name="transformation">direct</field>
-        <field name="post_process_value">3</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
         <field name="sequence">161</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
@@ -432,7 +437,8 @@
         <field name="target_field">partner_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
         <field name="transformation">direct</field>
-        <field name="post_process_value">3</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
         <field name="sequence">201</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
@@ -483,7 +489,8 @@
         <field name="target_field">partner_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
         <field name="transformation">direct</field>
-        <field name="post_process_value">3</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
         <field name="sequence">211</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
@@ -534,7 +541,8 @@
         <field name="target_field">partner_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
         <field name="transformation">direct</field>
-        <field name="post_process_value">3</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
         <field name="sequence">221</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>
@@ -585,7 +593,8 @@
         <field name="target_field">partner_id</field>
         <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
         <field name="transformation">direct</field>
-        <field name="post_process_value">3</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
         <field name="sequence">231</field>
         <field name="is_post_process" eval="True"/>
         <field name="is_key_field" eval="True"/>

@@ -12,6 +12,7 @@
                         <field name="file" filename="filename" attrs="{'required': [('state', '=', 'upload')]}"/>
                         <field name="filename" invisible="1"/>
                         <field name="delimiter"/>
+                        <field name="partner_id"/>
                     </group>
                     <div class="alert alert-info" role="alert" attrs="{'invisible': [('state', '=', 'preview')]}">
                         <p>This wizard will import flight data from a CrewLounge CSV file.</p>

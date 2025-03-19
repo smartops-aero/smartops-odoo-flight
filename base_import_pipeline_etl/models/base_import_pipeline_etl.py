@@ -437,6 +437,21 @@ class BaseImportPipeline(models.Model):
                 if mapping.is_key_field:
                     domain.append((field_name, '=', mapping.post_process_value))
                 continue
+            
+            # Handle context values
+            if mapping.use_context_value and mapping.context_variable_name:
+                context_value = self.env.context.get(mapping.context_variable_name)
+                if context_value is not None:
+                    _logger.info("Using context value %s for field %s from variable %s", 
+                                context_value, field_name, mapping.context_variable_name)
+                    values[field_name] = context_value
+                    # If this is a key field, add it to the domain
+                    if mapping.is_key_field:
+                        domain.append((field_name, '=', context_value))
+                    continue
+                else:
+                    _logger.warning("Context variable %s not found in context for field %s", 
+                                   mapping.context_variable_name, field_name)
                 
             # Handle source field based values with transformation
             if mapping.source_field and mapping.source_field in extracted_data:

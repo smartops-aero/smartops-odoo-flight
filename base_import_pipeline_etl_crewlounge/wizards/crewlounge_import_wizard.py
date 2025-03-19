@@ -13,6 +13,15 @@ class CrewLoungeImportWizard(models.TransientModel):
     filename = fields.Char(string='Filename')
     delimiter = fields.Char(string='Delimiter', default=',', required=True, help="CSV delimiter character")
     
+    # Pilot selection
+    partner_id = fields.Many2one(
+        "res.partner", 
+        string="Pilot", 
+        required=True,
+        domain=[('is_company', '=', False)],
+        help="Select the pilot for whom this flight data is being imported"
+    )
+    
     # Preview fields
     preview_data = fields.Text(string='Preview Data', readonly=True)
     state = fields.Selection([
@@ -103,7 +112,7 @@ class CrewLoungeImportWizard(models.TransientModel):
             raise UserError(_("CrewLounge import pipeline not found. Please create one first."))
         
         # Run the import with the file content, filename, and delimiter as parameters
-        result = pipeline.run_import(
+        result = pipeline.with_context(import_partner_id=self.partner_id.id).run_import(
             file_content=self.file,
             filename=self.filename,
             csv_delimiter=self.delimiter,

@@ -85,6 +85,17 @@ Common use cases:
         help="Static value to use for this field during post-processing, when not using a source field."
     )
     
+    use_context_value = fields.Boolean(
+        string='Use Context Value',
+        help="If checked, the system will look for a value in the context using the context_variable_name",
+        default=False
+    )
+    
+    context_variable_name = fields.Char(
+        string='Context Variable Name',
+        help="Name of the context variable to use when use_context_value is True. For example: 'import_partner_id'"
+    )
+    
     group_key = fields.Char(string='Group Key', 
                            help="Mappings with the same group key will be processed together to create a single record. "
                                 "Use different group keys for mappings that should create separate records even with the same model.")
