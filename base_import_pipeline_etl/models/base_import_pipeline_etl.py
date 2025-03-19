@@ -73,7 +73,7 @@ class BaseImportPipeline(models.Model):
                         continue
                     
                     # Apply transformation to the source value
-                    transformed_value = self._apply_field_transformations(source_value, mapping)
+                    transformed_value = self._apply_field_transformations(source_value, mapping, record)
                     if transformed_value is None:
                         _logger.warning("Transformation returned None for mapping %s, value %s", 
                                       mapping.description, source_value)
@@ -461,7 +461,7 @@ class BaseImportPipeline(models.Model):
                 _logger.info("Processing source field %s with value: %s", mapping.source_field, source_value)
                 
                 # Apply the standard transformation
-                transformed_value = mapping.transform_value(source_value)
+                transformed_value = mapping.transform_value(source_value, extracted_data)
                 
                 if transformed_value is not None:
                     values[field_name] = transformed_value
@@ -578,13 +578,18 @@ class BaseImportPipeline(models.Model):
         except Exception as e:
             raise UserError(_("Error extracting data: %s") % str(e))
     
-    def _apply_field_transformations(self, value, mapping):
+    def _apply_field_transformations(self, value, mapping, record=None):
         """Apply transformations to field values based on mapping configuration
         
         This method delegates to the mapping model's transform_value method,
         which implements the transformation logic.
+        
+        Args:
+            value: The value to transform
+            mapping: The mapping record to use for transformation
+            record: The complete record dictionary (optional)
         """
-        return mapping.transform_value(value)
+        return mapping.transform_value(value, record)
     
     def _get_or_create_record(self, model_name, domain, values, mapping=None):
         """Get or create a record in the specified model

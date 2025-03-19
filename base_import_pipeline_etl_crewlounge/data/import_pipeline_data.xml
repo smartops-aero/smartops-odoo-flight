@@ -119,6 +119,17 @@
         <field name="sequence">46</field>
     </record>
     
+    <!-- Aircraft Class -->
+    <record id="mapping_aircraft_class" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Aircraft Class</field>
+        <field name="source_field">AC_CLASS</field> <!-- It just to be consistent with other mappings, but main things happens in transformation -->
+        <field name="target_field">class_id</field>
+        <field name="model_id" ref="flight.model_flight_aircraft_model"/>
+        <field name="transformation">crewlounge_aircraft_class_mapping</field>
+        <field name="sequence">55</field>
+    </record>
+    
     <!-- Departure Aerodrome -->
     <record id="mapping_departure_aerodrome" model="base.import.pipeline.mapping">
         <field name="pipeline_id" ref="crewlounge_import_pipeline"/>

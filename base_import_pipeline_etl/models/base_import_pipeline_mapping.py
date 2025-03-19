@@ -116,11 +116,15 @@ Common use cases:
             ('ref_id', 'XML Reference to Database ID')
         ]
     
-    def transform_value(self, value):
+    def transform_value(self, value, record=None):
         """Transform a value based on the mapping configuration.
         
         This method uses a dispatch pattern to call the appropriate transformation
         method based on the transformation type.
+        
+        Args:
+            value: The value to transform
+            record: The complete record dictionary (optional)
         """
         if not value and self.default_value:
             return self.default_value
@@ -128,7 +132,14 @@ Common use cases:
         # Use dispatch pattern for all transformations
         method_name = f"_transform_{self.transformation}"
         if hasattr(self, method_name) and callable(getattr(self, method_name)):
-            return getattr(self, method_name)(value)
+            # Check if the method accepts a record parameter
+            method = getattr(self, method_name)
+            # Check if the method accepts both value and record
+            if 'record' in method.__code__.co_varnames:
+                return method(value, record)
+            else:
+                # For backward compatibility
+                return method(value)
         
         # If no method found, return original value or default
         _logger.warning("No transformation method found for %s", self.transformation)

@@ -33,6 +33,7 @@ class BaseImportPipelineMapping(models.Model):
         selection = super()._selection_transformation()
         selection.append(('crewlounge_engine_type_mapping', 'Crewlounge Engine Type Mapping'))
         selection.append(('crewlounge_equipment_type_mapping', 'Crewlounge Equipment Type Mapping'))
+        selection.append(('crewlounge_aircraft_class_mapping', 'Crewlounge Aircraft Class Mapping'))
         return selection
     
     def _transform_crewlounge_engine_type_mapping(self, value):
@@ -99,3 +100,98 @@ class BaseImportPipelineMapping(models.Model):
             return 'ffs'  # Full Flight Simulator
         else:
             return 'aircraft'  # Default to aircraft for any other value
+            
+    def _transform_crewlounge_aircraft_class_mapping(self, value, record):
+        """
+        Determine aircraft class based on CSV fields:
+        - AC_CLASS (Aeroplane, etc.)
+        - AC_SPSE (Single Pilot Single Engine)
+        - AC_SPME (Single Pilot Multi Engine)
+        - AC_GLIDER (Glider)
+        - AC_SEA (Seaplane)
+        - AC_ENGINES (Single or Multi)
+        
+        Maps to appropriate class_id reference from flight.aircraft.class model
+        
+        Args:
+            value: The value of the source field (if any)
+            record: The complete record dictionary with all CSV fields
+        """
+        if not record:
+            return None
+            
+        # Default to None if we can't determine
+        class_ref = None
+        
+        # Get all relevant fields and normalize them
+        ac_class = self._get_field_value(record, 'AC_CLASS', '').lower().strip()
+        ac_spse = self._normalize_boolean(self._get_field_value(record, 'AC_SPSE', 'FALSE'))
+        ac_spme = self._normalize_boolean(self._get_field_value(record, 'AC_SPME', 'FALSE'))
+        ac_glider = self._normalize_boolean(self._get_field_value(record, 'AC_GLIDER', 'FALSE'))
+        ac_sea = self._normalize_boolean(self._get_field_value(record, 'AC_SEA', 'FALSE'))
+        ac_engines = self._get_field_value(record, 'AC_ENGINES', '').lower().strip()
+        
+        # Determine class based on fields
+        if ac_glider:
+            # It's a glider
+            class_ref = 'flight.class_glider'
+        elif 'aeroplane' in ac_class or 'airplane' in ac_class:
+            # It's an airplane, determine which type
+            if ac_sea:
+                # Seaplane
+                if ac_engines == 'multi' or ac_spme:
+                    class_ref = 'flight.class_airplane_mes'  # Multi-Engine Sea
+                else:
+                    class_ref = 'flight.class_airplane_ses'  # Single-Engine Sea
+            else:
+                # Land plane
+                if ac_engines == 'multi' or ac_spme:
+                    class_ref = 'flight.class_airplane_mel'  # Multi-Engine Land
+                else:
+                    class_ref = 'flight.class_airplane_sel'  # Single-Engine Land
+        elif 'rotorcraft' in ac_class or 'helicopter' in ac_class:
+            # It's a rotorcraft
+            class_ref = 'flight.class_rotorcraft_helicopter'
+        elif 'gyroplane' in ac_class or 'gyrocopter' in ac_class:
+            class_ref = 'flight.class_rotorcraft_gyroplane'
+        elif 'balloon' in ac_class:
+            class_ref = 'flight.class_lighter_than_air_balloon'
+        elif 'airship' in ac_class:
+            class_ref = 'flight.class_lighter_than_air_airship'
+        elif 'powered lift' in ac_class:
+            class_ref = 'flight.class_powered_lift'
+        elif 'powered parachute' in ac_class:
+            class_ref = 'flight.class_powered_parachute'
+        elif 'weight shift' in ac_class:
+            class_ref = 'flight.class_weight_shift_control'
+            
+        # Default for airplanes if nothing else matches
+        if not class_ref and ('aeroplane' in ac_class or 'airplane' in ac_class or ac_class == ''):
+            # Default to single engine land if we can't determine specifics
+            class_ref = 'flight.class_airplane_sel'
+            
+        # Log warning if we couldn't determine the class
+        if not class_ref:
+            _logger.warning("Could not determine aircraft class for record: %s", record)
+            return None
+            
+        # Convert XML ID to database ID
+        try:
+            class_id = self.env.ref(class_ref).id
+            _logger.info("Resolved XML ID %s to database ID %s", class_ref, class_id)
+            return class_id
+        except Exception as e:
+            _logger.error("Failed to resolve XML ID %s: %s", class_ref, e)
+            return None
+        
+    def _get_field_value(self, record, field_name, default=''):
+        """Helper method to safely get field value from record"""
+        return record.get(field_name, default)
+        
+    def _normalize_boolean(self, value):
+        """Convert string boolean values to actual boolean"""
+        if isinstance(value, bool):
+            return value
+            
+        normalized = str(value).strip().upper()
+        return normalized == 'TRUE' or normalized == '1' or normalized == 'YES'
