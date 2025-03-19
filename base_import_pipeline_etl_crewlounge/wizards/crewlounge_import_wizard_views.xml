@@ -39,11 +39,11 @@
                     <!-- Completed Section -->
                     <div attrs="{'invisible': [('state', '!=', 'completed')]}" style="width: 100%;">
                         <div class="alert alert-success" role="alert" attrs="{'invisible': [('error_count', '!=', 0)]}">
-                            <h4 class="alert-heading">Import Completed Successfully!</h4>
+                            <h4 class="alert-heading" role="alert">Import Completed Successfully!</h4>
                             <field name="result_data" readonly="1" nolabel="1"/>
                         </div>
                         <div class="alert alert-warning" role="alert" attrs="{'invisible': [('error_count', '=', 0)]}">
-                            <h4 class="alert-heading">Import Completed with Warnings</h4>
+                            <h4 class="alert-heading" role="alert">Import Completed with Warnings</h4>
                             <field name="result_data" readonly="1" nolabel="1"/>
                         </div>
                         <div class="mt-3">
