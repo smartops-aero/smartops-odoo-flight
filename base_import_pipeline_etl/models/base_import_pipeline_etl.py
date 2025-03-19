@@ -41,7 +41,6 @@ class BaseImportPipeline(models.Model):
         # Process each record
         transformed_data = []
         for i, record in enumerate(extracted_data):
-            _logger.info("Processing record %s/%s: %s", i+1, len(extracted_data), record)
             result = self._transform_single_record(i, record, regular_mappings, related_records_cache)
             if result:
                 transformed_data.append(result)
@@ -52,15 +51,6 @@ class BaseImportPipeline(models.Model):
     def _get_regular_mappings(self):
         """Get regular mappings that are not marked for post-processing"""
         regular_mappings = self.mapping_ids.filtered(lambda m: not m.is_post_process)
-        _logger.info("Starting transformation with %s regular mappings", len(regular_mappings))
-        for mapping in regular_mappings:
-            _logger.info("Mapping: %s, Source: %s, Target: %s, Model: %s, Sequence: %s", 
-                        mapping.description, mapping.source_field, mapping.target_field, 
-                        mapping.model_id.model, mapping.sequence)
-            if mapping.relation_model_id:
-                _logger.info("  Relation model: %s, Relation field: %s", 
-                            mapping.relation_model_id.model, mapping.relation_field)
-        
         return regular_mappings
     
     def _transform_single_record(self, index, record, regular_mappings, related_records_cache):
@@ -80,21 +70,16 @@ class BaseImportPipeline(models.Model):
         
         # Add the transformed record to the result if it has values for the target model
         if values:
-            _logger.info("Adding transformed record to result: %s", values)
             return {'values': values, 'original_data': record}
         else:
-            _logger.warning("No values for target model, skipping record")
             return None
     
     def _process_field_mapping(self, mapping, record, values, row_records, related_records_cache):
         """Process a single field mapping for a record"""
         source_value = record[mapping.source_field]
-        _logger.info("Processing mapping %s for field %s with value %s", 
-                    mapping.description, mapping.source_field, source_value)
         
         # Skip if this is a relation mapping without a relation field
         if mapping.relation_model_id and not mapping.relation_field:
-            _logger.warning("Skipping mapping %s - relation field not defined", mapping.description)
             return
         
         # Apply transformation to the source value
@@ -103,8 +88,6 @@ class BaseImportPipeline(models.Model):
             _logger.warning("Transformation returned None for mapping %s, value %s", 
                           mapping.description, source_value)
             return
-        
-        _logger.info("Transformed value: %s", transformed_value)
         
         # Handle direct field mappings (non-relational)
         if not mapping.relation_model_id:
@@ -121,8 +104,6 @@ class BaseImportPipeline(models.Model):
         """Process a direct (non-relational) field mapping"""
         # If this mapping is for the target model, add it to the values
         if mapping.model_id.model == self.model_id.model:
-            _logger.info("Adding %s = %s to target model %s", 
-                        mapping.target_field, transformed_value, self.model_id.model)
             values[mapping.target_field] = transformed_value
         # Otherwise, it's for a related model - create/find it
         else:
@@ -138,19 +119,13 @@ class BaseImportPipeline(models.Model):
                     # Update the existing record with this field
                     model_record = row_records[model_name]
                     model_record.write({field_name: transformed_value})
-                    _logger.info("Updated existing record %s with %s = %s", 
-                                model_record, field_name, transformed_value)
                 else:
                     # Create or find the record
                     model_values = {field_name: transformed_value}
-                    _logger.info("Creating/finding record in %s with domain %s and values %s", 
-                                model_name, domain, model_values)
                     
                     model_record = self._get_or_create_record(
                         model_name, domain, model_values, mapping
                     )
-                    
-                    _logger.info("Result: %s (ID: %s)", model_record, model_record.id)
                     
                     # Store the record for this row
                     row_records[model_name] = model_record
@@ -158,7 +133,6 @@ class BaseImportPipeline(models.Model):
                 # Cache the record
                 cache_key = f"{model_name}:{field_name}:{transformed_value}"
                 related_records_cache[cache_key] = model_record
-                _logger.info("Cached with key: %s", cache_key)
             else:
                 # This is a non-key field for a related model
                 # We need to find the record first
@@ -166,13 +140,10 @@ class BaseImportPipeline(models.Model):
                     # Update the existing record with this field
                     model_record = row_records[model_name]
                     model_record.write({field_name: transformed_value})
-                    _logger.info("Updated existing record %s with %s = %s", 
-                                model_record, field_name, transformed_value)
                     
                     # Cache the record with this field value
                     cache_key = f"{model_name}:{field_name}:{transformed_value}"
                     related_records_cache[cache_key] = model_record
-                    _logger.info("Cached with key: %s", cache_key)
     
     def _process_relational_field_mapping(self, mapping, transformed_value, values, row_records, related_records_cache, record):
         """Process a relational field mapping"""
@@ -186,8 +157,6 @@ class BaseImportPipeline(models.Model):
         
         # If this mapping is for the target model, add it to the values
         if mapping.model_id.model == self.model_id.model:
-            _logger.info("Adding %s = %s to target model %s", 
-                        mapping.target_field, related_record.id, self.model_id.model)
             values[mapping.target_field] = related_record.id
         # Otherwise, it's for a related model - create/find it
         else:
@@ -198,26 +167,18 @@ class BaseImportPipeline(models.Model):
                 # Update the existing record with this relation
                 model_record = row_records[model_name]
                 model_record.write({field_name: related_record.id})
-                _logger.info("Updated existing record %s with %s = %s", 
-                            model_record, field_name, related_record.id)
                 
                 # Cache the updated record
                 cache_key = f"{model_name}:{field_name}:{related_record.id}"
                 related_records_cache[cache_key] = model_record
-                _logger.info("Cached with key: %s", cache_key)
             else:
                 # Create or find the record with this relation
                 domain = [(field_name, '=', related_record.id)]
                 model_values = {field_name: related_record.id}
                 
-                _logger.info("Creating/finding record in %s with domain %s and values %s", 
-                            model_name, domain, model_values)
-                
                 model_record = self._get_or_create_record(
                     model_name, domain, model_values, mapping
                 )
-                
-                _logger.info("Result: %s (ID: %s)", model_record, model_record.id)
                 
                 # Store the record for this row
                 row_records[model_name] = model_record
@@ -225,7 +186,6 @@ class BaseImportPipeline(models.Model):
                 # Cache the record
                 cache_key = f"{model_name}:{field_name}:{related_record.id}"
                 related_records_cache[cache_key] = model_record
-                _logger.info("Cached with key: %s", cache_key)
                 
     def _find_or_create_related_record(self, mapping, transformed_value, relation_model, relation_field, related_records_cache):
         """Find or create a related record for a relational mapping"""
@@ -234,8 +194,6 @@ class BaseImportPipeline(models.Model):
         related_record = related_records_cache.get(cache_key)
         
         if related_record:
-            _logger.info("Found related record in cache with key %s: %s (ID: %s)", 
-                        cache_key, related_record, related_record.id)
             return related_record
         
         # Build domain for lookup
@@ -251,19 +209,13 @@ class BaseImportPipeline(models.Model):
         # Prepare values for creating the related record if needed
         related_values = {relation_field: transformed_value}
         
-        _logger.info("Looking up related record in %s with domain %s and values %s", 
-                    relation_model, domain, related_values)
-        
         # Find or create the related record
         related_record = self._get_or_create_record(
             relation_model, domain, related_values, mapping
         )
         
-        _logger.info("Result: %s (ID: %s)", related_record, related_record.id)
-        
         # Cache the related record
         related_records_cache[cache_key] = related_record
-        _logger.info("Cached with key: %s", cache_key)
         
         return related_record
     
@@ -279,11 +231,8 @@ class BaseImportPipeline(models.Model):
         result = self._initialize_import_result()
         
         if not transformed_data:
-            _logger.info("No transformed data to load")
             return result
             
-        _logger.info("Starting to load %s records into %s", len(transformed_data), self.model_id.model)
-        
         # Get key fields for the target model
         key_mappings = self._get_key_mappings()
         
@@ -329,9 +278,6 @@ class BaseImportPipeline(models.Model):
         with proper error handling.
         """
         try:
-            _logger.debug("Processing record %s with values: %s", 
-                         index+1, data)
-            
             # Store original source data in values as context for post-processing
             original_data = self._get_original_data(index, kwargs)
             
@@ -375,13 +321,11 @@ class BaseImportPipeline(models.Model):
         """Update an existing record and log the result"""
         existing_record.with_context(original_data=original_data).write(data['values'])
         result['updated'].append(existing_record.id)
-        _logger.debug("Successfully updated record with ID %s", existing_record.id)
     
     def _create_new_record(self, data, original_data, result):
         """Create a new record and log the result"""
         record = self.env[self.model_id.model].with_context(original_data=original_data).create(data['values'])
         result['created'].append(record.id)
-        _logger.debug("Successfully created record with ID %s", record.id)
     
     def _handle_record_error(self, error, index, data, total_records, result):
         """Handle and log an error for a specific record"""
@@ -609,8 +553,6 @@ class BaseImportPipeline(models.Model):
             if mapping.use_context_value and mapping.context_variable_name:
                 context_value = self.env.context.get(mapping.context_variable_name)
                 if context_value is not None:
-                    _logger.info("Using context value %s for field %s from variable %s", 
-                                context_value, field_name, mapping.context_variable_name)
                     values[field_name] = context_value
                     # If this is a key field, add it to the domain
                     if mapping.is_key_field:
@@ -624,7 +566,6 @@ class BaseImportPipeline(models.Model):
             if mapping.source_field and mapping.source_field in extracted_data:
                 # Get source value
                 source_value = extracted_data.get(mapping.source_field)
-                _logger.info("Processing source field %s with value: %s", mapping.source_field, source_value)
                 
                 # Apply the standard transformation
                 transformed_value = mapping.with_context(parent_record_id=parent_record.id).transform_value(source_value, extracted_data)
@@ -650,13 +591,10 @@ class BaseImportPipeline(models.Model):
         if not domain:
             return None
             
-        _logger.info("Checking for existing record with domain: %s", domain)
         existing = self.env[model_name].search(domain, limit=1)
         
         if existing:
-            _logger.info("Found existing record %s with domain %s", existing, domain)
-            
-        return existing
+            return existing
     
     def _update_post_process_record(self, model_name, record, values, post_result):
         """Update an existing record
@@ -667,10 +605,8 @@ class BaseImportPipeline(models.Model):
             values: Values to update with
             post_result: Dictionary to update with results
         """
-        _logger.info("Updating existing %s record: %s with values: %s", model_name, record.id, values)
         record.write(values)
         post_result['post_updated'].append(record.id)
-        _logger.info("Updated existing %s record: %s with values: %s", model_name, record.id, values)
     
     def _create_new_post_process_record(self, model_name, values, post_result):
         """Create a new record
@@ -680,10 +616,8 @@ class BaseImportPipeline(models.Model):
             values: Values to create with
             post_result: Dictionary to update with results
         """
-        _logger.info("Creating new %s record with values: %s", model_name, values)
         new_record = self.env[model_name].create(values)
         post_result['post_created'].append(new_record.id)
-        _logger.info("Created new %s record: %s with values: %s", model_name, new_record.id, values)
     
     def _handle_post_process_error(self, error, model_name, post_result, record_id=None):
         """Handle error in post processing
@@ -717,18 +651,13 @@ class BaseImportPipeline(models.Model):
         Returns:
             The found or created record
         """
-        _logger.debug("_get_or_create_record: model=%s, domain=%s, values=%s", 
-                     model_name, domain, values)
-        
         record = self.env[model_name].search(domain, limit=1)
-        _logger.debug("Search result: %s", record)
         
         if record:
             # Update the existing record with any new values
             update_values = self._get_update_values(domain, values, record)
             
             if update_values:
-                _logger.debug("Updating record %s with values: %s", record, update_values)
                 record.write(update_values)
         else:
             # Create a new record
@@ -739,7 +668,6 @@ class BaseImportPipeline(models.Model):
             if mapping and mapping.context:
                 create_values, create_context = self._apply_mapping_context(mapping, create_values)
             
-            _logger.debug("Creating new record with values: %s", create_values)
             if create_context:
                 record = self.env[model_name].with_context(**create_context).create(create_values)
             else:
@@ -797,7 +725,6 @@ class BaseImportPipeline(models.Model):
                     else:
                         create_context[key] = value
                 
-                _logger.debug("Added values from context: %s", context_values)
         except Exception as e:
             _logger.warning("Error parsing context from mapping: %s", str(e))
             
@@ -805,16 +732,13 @@ class BaseImportPipeline(models.Model):
 
     def run_import(self, **kwargs):
         """Run the ETL import process"""
-        _logger.info("Starting import with pipeline: %s", self.name)
         
         try:
             # Extract data from the source
             extracted_data = self.extract(**kwargs)
-            _logger.info("Extracted %s records", len(extracted_data))
             
             # Transform the data
             transformed_data = self.transform(extracted_data, **kwargs)
-            _logger.info("Transformed data for %s records", len(transformed_data))
             
             # Load the data into the target model
             result = self.load(transformed_data, extracted_data=extracted_data)
