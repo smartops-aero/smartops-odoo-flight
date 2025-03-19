@@ -35,6 +35,7 @@ class BaseImportPipelineMapping(models.Model):
         selection.append(('crewlounge_equipment_type_mapping', 'Crewlounge Equipment Type Mapping'))
         selection.append(('crewlounge_aircraft_class_mapping', 'Crewlounge Aircraft Class Mapping'))
         selection.append(('crewlounge_gear_type_mapping', 'Crewlounge Gear Type Mapping'))
+        selection.append(('crewlounge_aircraft_tags_mapping', 'Crewlounge Aircraft Tags Mapping'))
         return selection
     
     def _transform_crewlounge_engine_type_mapping(self, value):
@@ -221,6 +222,58 @@ class BaseImportPipelineMapping(models.Model):
         # Default if we can't determine
         _logger.warning("Could not determine gear type for record: %s", record)
         return None
+        
+    def _transform_crewlounge_aircraft_tags_mapping(self, value, record):
+        """
+        Map boolean CSV fields to aircraft model tags.
+        
+        Currently maps:
+        - AC_COMPLEX to 'Complex' tag
+        - AC_HIGHPERF to 'High Performance' tag
+        
+        Args:
+            value: The value of the source field (if any)
+            record: The complete record dictionary with all CSV fields
+            
+        Returns:
+            A list of tag IDs based on the boolean fields in the record
+        """
+        if not record:
+            return False
+            
+        # Initialize empty tag list
+        tag_ids = []
+        
+        # Check for Complex tag
+        if self._normalize_boolean(self._get_field_value(record, 'AC_COMPLEX', 'FALSE')):
+            try:
+                complex_tag = self.env.ref('flight.flight_aircraft_model_tag_complex')
+                if complex_tag:
+                    tag_ids.append(complex_tag.id)
+            except Exception as e:
+                _logger.error("Failed to resolve Complex tag: %s", e)
+        
+        # Check for High Performance tag
+        if self._normalize_boolean(self._get_field_value(record, 'AC_HIGHPERF', 'FALSE')):
+            try:
+                highperf_tag = self.env.ref('flight.flight_aircraft_model_tag_high_performance')
+                if highperf_tag:
+                    tag_ids.append(highperf_tag.id)
+            except Exception as e:
+                _logger.error("Failed to resolve High Performance tag: %s", e)
+        
+        # Check for Pressurized tag (if such a field exists)
+        if self._normalize_boolean(self._get_field_value(record, 'AC_PRESSURIZED', 'FALSE')):
+            try:
+                pressurized_tag = self.env.ref('flight.flight_aircraft_model_tag_pressurized')
+                if pressurized_tag:
+                    tag_ids.append(pressurized_tag.id)
+            except Exception as e:
+                _logger.error("Failed to resolve Pressurized tag: %s", e)
+        
+        # Return tag_ids as a command for many2many field
+        # If tag_ids is empty, return False to not update the field
+        return [(6, 0, tag_ids)] if tag_ids else False
         
     def _get_field_value(self, record, field_name, default=''):
         """Helper method to safely get field value from record"""
