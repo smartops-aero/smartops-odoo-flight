@@ -198,7 +198,6 @@ Common use cases:
             # It's a reference string like 'module.xmlid'
             try:
                 result = self.env.ref(value).id
-                _logger.info("Resolved ref_id %s to ID %s", value, result)
                 return result
             except Exception:
                 _logger.error("Failed to resolve ref_id %s", value)

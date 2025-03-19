@@ -181,7 +181,6 @@ class BaseImportPipelineMapping(models.Model):
         # Convert XML ID to database ID
         try:
             class_id = self.env.ref(class_ref).id
-            _logger.info("Resolved XML ID %s to database ID %s", class_ref, class_id)
             return class_id
         except Exception as e:
             _logger.error("Failed to resolve XML ID %s: %s", class_ref, e)
@@ -357,7 +356,6 @@ class BaseImportPipelineMapping(models.Model):
                 # This respects the constraint in the write method
                 time_value = values.get('time')
                 if time_value:
-                    _logger.info("Updating only time field on existing flight.event.time: %s", time_value)
                     record.write({'time': time_value})
                 return record
                 
