@@ -416,6 +416,110 @@
         <field name="group_key">ldg_night_event</field>
     </record>
 
+    <!-- LIFT Event -->
+    <record id="mapping_pilot_event_flight_lift" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Lift Event</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">170</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">lift_event</field>
+    </record>
+    
+    <record id="mapping_pilot_event_pilot_lift" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Lift Event</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
+        <field name="sequence">171</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">lift_event</field>
+    </record>
+    
+    <record id="mapping_pilot_event_event_code_lift" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Event Code for Lift</field>
+        <field name="target_field">event_code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_event_code_lift"/>
+        <field name="sequence">172</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">lift_event</field>
+    </record>
+    
+    <record id="mapping_pilot_event_count_lift" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Count for Lift Event</field>
+        <field name="source_field">LIFT</field>
+        <field name="target_field">count</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="sequence">173</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="group_key">lift_event</field>
+    </record>
+
+    <!-- HOLDING Event -->
+    <record id="mapping_pilot_event_flight_holding" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Holding Event</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">180</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">holding_event</field>
+    </record>
+    
+    <record id="mapping_pilot_event_pilot_holding" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Holding Event</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
+        <field name="sequence">181</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">holding_event</field>
+    </record>
+    
+    <record id="mapping_pilot_event_event_code_holding" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Event Code for Holding</field>
+        <field name="target_field">event_code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_event_code_holding"/>
+        <field name="sequence">182</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">holding_event</field>
+    </record>
+    
+    <record id="mapping_pilot_event_count_holding" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Count for Holding Event</field>
+        <field name="source_field">HOLDING</field>
+        <field name="target_field">count</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_event"/>
+        <field name="transformation">direct</field>
+        <field name="sequence">183</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="group_key">holding_event</field>
+    </record>
+
     <!-- ========== Flight Pilot Time Mappings ========== -->
     
     <!-- Total Time -->
