@@ -729,4 +729,524 @@
         <field name="is_post_process" eval="True"/>
         <field name="group_key">dual_time</field>
     </record>
+    
+    <!-- AIR Time -->
+    <record id="mapping_pilot_time_flight_air" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Air Time</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">240</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">air_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_pilot_air" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Air Time</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
+        <field name="sequence">241</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">air_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_code_air" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Time Code for Air Time</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_air"/>
+        <field name="sequence">242</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">air_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_duration_air" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Duration for Air Time</field>
+        <field name="source_field">TIME_AIR</field>
+        <field name="target_field">duration</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">minutes_to_hours</field>
+        <field name="sequence">243</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="group_key">air_time</field>
+    </record>
+    
+    <!-- PICUS Time -->
+    <record id="mapping_pilot_time_flight_picus" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for PICUS Time</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">250</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">picus_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_pilot_picus" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for PICUS Time</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
+        <field name="sequence">251</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">picus_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_code_picus" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Time Code for PICUS Time</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_picus"/>
+        <field name="sequence">252</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">picus_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_duration_picus" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Duration for PICUS Time</field>
+        <field name="source_field">TIME_PICUS</field>
+        <field name="target_field">duration</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">minutes_to_hours</field>
+        <field name="sequence">253</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="group_key">picus_time</field>
+    </record>
+    
+    <!-- INSTRUCTOR Time -->
+    <record id="mapping_pilot_time_flight_instructor" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Instructor Time</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">260</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">instructor_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_pilot_instructor" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Instructor Time</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
+        <field name="sequence">261</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">instructor_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_code_instructor" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Time Code for Instructor Time</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_instructor"/>
+        <field name="sequence">262</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">instructor_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_duration_instructor" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Duration for Instructor Time</field>
+        <field name="source_field">TIME_INSTRUCTOR</field>
+        <field name="target_field">duration</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">minutes_to_hours</field>
+        <field name="sequence">263</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="group_key">instructor_time</field>
+    </record>
+
+    <!-- EXAMINER Time -->
+    <record id="mapping_pilot_time_flight_examiner" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Examiner Time</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">270</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">examiner_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_pilot_examiner" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Examiner Time</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
+        <field name="sequence">271</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">examiner_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_code_examiner" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Time Code for Examiner Time</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_examiner"/>
+        <field name="sequence">272</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">examiner_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_duration_examiner" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Duration for Examiner Time</field>
+        <field name="source_field">TIME_EXAMINER</field>
+        <field name="target_field">duration</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">minutes_to_hours</field>
+        <field name="sequence">273</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="group_key">examiner_time</field>
+    </record>
+
+    <!-- NIGHT Time -->
+    <record id="mapping_pilot_time_flight_night" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Night Time</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">280</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">night_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_pilot_night" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Night Time</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
+        <field name="sequence">281</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">night_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_code_night" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Time Code for Night Time</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_night"/>
+        <field name="sequence">282</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">night_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_duration_night" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Duration for Night Time</field>
+        <field name="source_field">TIME_NIGHT</field>
+        <field name="target_field">duration</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">minutes_to_hours</field>
+        <field name="sequence">283</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="group_key">night_time</field>
+    </record>
+    
+    <!-- XC Time -->
+    <record id="mapping_pilot_time_flight_xc" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Cross-Country Time</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">290</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">xc_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_pilot_xc" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Cross-Country Time</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
+        <field name="sequence">291</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">xc_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_code_xc" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Time Code for Cross-Country Time</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_xc"/>
+        <field name="sequence">292</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">xc_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_duration_xc" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Duration for Cross-Country Time</field>
+        <field name="source_field">TIME_XC</field>
+        <field name="target_field">duration</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">minutes_to_hours</field>
+        <field name="sequence">293</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="group_key">xc_time</field>
+    </record>
+    
+    <!-- IFR Time -->
+    <record id="mapping_pilot_time_flight_ifr" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for IFR Time</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">300</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">ifr_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_pilot_ifr" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for IFR Time</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
+        <field name="sequence">301</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">ifr_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_code_ifr" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Time Code for IFR Time</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_ifr"/>
+        <field name="sequence">302</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">ifr_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_duration_ifr" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Duration for IFR Time</field>
+        <field name="source_field">TIME_IFR</field>
+        <field name="target_field">duration</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">minutes_to_hours</field>
+        <field name="sequence">303</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="group_key">ifr_time</field>
+    </record>
+    
+    <!-- HOOD Time -->
+    <record id="mapping_pilot_time_flight_hood" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Hood Time</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">310</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">hood_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_pilot_hood" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Hood Time</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
+        <field name="sequence">311</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">hood_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_code_hood" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Time Code for Hood Time</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_hood"/>
+        <field name="sequence">312</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">hood_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_duration_hood" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Duration for Hood Time</field>
+        <field name="source_field">TIME_HOOD</field>
+        <field name="target_field">duration</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">minutes_to_hours</field>
+        <field name="sequence">313</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="group_key">hood_time</field>
+    </record>
+    
+    <!-- ACTUAL/IMC Time -->
+    <record id="mapping_pilot_time_flight_actual" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Actual IMC Time</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">320</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">actual_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_pilot_actual" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Actual IMC Time</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
+        <field name="sequence">321</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">actual_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_code_actual" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Time Code for Actual IMC Time</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_actual"/>
+        <field name="sequence">322</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">actual_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_duration_actual" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Duration for Actual IMC Time</field>
+        <field name="source_field">TIME_ACTUAL</field>
+        <field name="target_field">duration</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">minutes_to_hours</field>
+        <field name="sequence">323</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="group_key">actual_time</field>
+    </record>
+    
+    <!-- RELIEF Time -->
+    <record id="mapping_pilot_time_flight_relief" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Flight Reference for Relief Time</field>
+        <field name="target_field">flight_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">parent_record_id</field>
+        <field name="sequence">330</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">relief_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_pilot_relief" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Pilot Reference for Relief Time</field>
+        <field name="target_field">partner_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">direct</field>
+        <field name="use_context_value" eval="True"/>
+        <field name="context_variable_name">import_partner_id</field>
+        <field name="sequence">331</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">relief_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_code_relief" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Time Code for Relief Time</field>
+        <field name="target_field">code_id</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">ref_id</field>
+        <field name="post_process_value" ref="flight_pilotlog.flight_pilot_time_code_relief"/>
+        <field name="sequence">332</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="is_key_field" eval="True"/>
+        <field name="group_key">relief_time</field>
+    </record>
+    
+    <record id="mapping_pilot_time_duration_relief" model="base.import.pipeline.mapping">
+        <field name="pipeline_id" ref="crewlounge_import_pipeline"/>
+        <field name="description">Duration for Relief Time</field>
+        <field name="source_field">TIME_RELIEF</field>
+        <field name="target_field">duration</field>
+        <field name="model_id" ref="flight_pilotlog.model_flight_pilot_time"/>
+        <field name="transformation">minutes_to_hours</field>
+        <field name="sequence">333</field>
+        <field name="is_post_process" eval="True"/>
+        <field name="group_key">relief_time</field>
+    </record>
 </odoo>
