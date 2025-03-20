@@ -28,14 +28,13 @@ class BaseImportPipeline(models.Model):
 
     def _prepare_update_values(self, target_model, record, values):
         """Override to handle special case for flight.event.time model updates
-        
+
         For flight.event.time, we only want to update the time field
         to respect the constraint in the write method
         """
         if target_model == "flight.event.time" and "time" in values:
             # Only keep the time field for flight.event.time model
             return {"time": values["time"]}
-        
+
         # For all other models, use the standard implementation
         return super()._prepare_update_values(target_model, record, values)
-

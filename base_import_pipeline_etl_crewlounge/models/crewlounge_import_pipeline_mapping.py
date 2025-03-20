@@ -1,8 +1,9 @@
 import logging
 
-from odoo import _, models
+from odoo import models
 
 _logger = logging.getLogger(__name__)
+
 
 class BaseImportPipelineMapping(models.Model):
     _inherit = "base.import.pipeline.mapping"

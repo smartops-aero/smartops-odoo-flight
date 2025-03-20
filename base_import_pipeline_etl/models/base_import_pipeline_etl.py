@@ -298,7 +298,7 @@ class BaseImportPipeline(models.Model):
             # Prepare data for bulk operations
             records_to_create = []
             records_to_update = []  # [(record, values)]
-            
+
             # Map to track which original data corresponds to which record
             # This is needed for post-processing
             original_data_map = {}
@@ -308,8 +308,12 @@ class BaseImportPipeline(models.Model):
                 try:
                     # Prepare values
                     values = data["values"]
-                    original_data = kwargs.get("extracted_data", [])[i] if i < len(kwargs.get("extracted_data", [])) else {}
-                    
+                    original_data = (
+                        kwargs.get("extracted_data", [])[i]
+                        if i < len(kwargs.get("extracted_data", []))
+                        else {}
+                    )
+
                     # Find existing record if we have key fields
                     existing_record = None
                     if has_key_fields:
@@ -318,10 +322,12 @@ class BaseImportPipeline(models.Model):
                             field_name = mapping.target_field
                             if field_name in values:
                                 domain.append((field_name, "=", values[field_name]))
-                        
+
                         if domain:
-                            existing_record = self.env[self.model_id.model].search(domain, limit=1)
-                    
+                            existing_record = self.env[self.model_id.model].search(
+                                domain, limit=1
+                            )
+
                     # Queue for creation or update
                     if existing_record:
                         records_to_update.append((existing_record, values))
@@ -332,19 +338,25 @@ class BaseImportPipeline(models.Model):
                         records_to_create.append(values)
                         # We'll store original data after creation when we have IDs
                 except Exception as record_error:
-                    self._handle_record_error(record_error, i, data, len(transformed_data), result)
-            
+                    self._handle_record_error(
+                        record_error, i, data, len(transformed_data), result
+                    )
+
             # Bulk create new records - much more efficient than one by one
             if records_to_create:
-                created_records = self.env[self.model_id.model].create(records_to_create)
-                
+                created_records = self.env[self.model_id.model].create(
+                    records_to_create
+                )
+
                 # Store IDs and map original data
                 for i, record in enumerate(created_records):
                     result["created"].append(record.id)
                     # Map original data to record ID for potential post-processing
                     if i < len(kwargs.get("extracted_data", [])):
-                        original_data_map[record.id] = kwargs.get("extracted_data", [])[i]
-            
+                        original_data_map[record.id] = kwargs.get("extracted_data", [])[
+                            i
+                        ]
+
             # Bulk update records - group by identical values for efficiency
             update_groups = {}
             for record, values in records_to_update:
@@ -355,15 +367,15 @@ class BaseImportPipeline(models.Model):
                         "records": self.env[self.model_id.model].browse(),
                     }
                 update_groups[values_key]["records"] |= record
-            
+
             # Process each update group
             for group_info in update_groups.values():
                 if group_info["records"]:
                     group_info["records"].write(group_info["values"])
-            
+
             # Store original data map in result for post-processing
             result["original_data_map"] = original_data_map
-            
+
         except Exception as e:
             self._handle_batch_error(e, result)
 
@@ -421,7 +433,7 @@ class BaseImportPipeline(models.Model):
         post_mappings = self._get_post_process_mappings()
         if not post_mappings:
             return post_result
-        
+
         # Associate original data with record IDs for reference
         original_data_by_id = self._associate_data_with_record_ids(
             import_result, extracted_data
@@ -446,7 +458,7 @@ class BaseImportPipeline(models.Model):
         # Process each group of mappings with batch operations
         for group_key, mappings in mapping_groups.items():
             model_name = mappings[0].model_id.model
-            
+
             try:
                 with self.env.cr.savepoint():
                     self._batch_process_post_records(
@@ -478,7 +490,7 @@ class BaseImportPipeline(models.Model):
         # If the optimized load method was used, the mapping is already provided
         if "original_data_map" in import_result:
             return import_result["original_data_map"]
-        
+
         original_data_by_id = {}
         for idx, data in enumerate(extracted_data):
             if idx < len(import_result.get("created", [])):
@@ -541,7 +553,9 @@ class BaseImportPipeline(models.Model):
             mapping_groups[group_key].append(mapping)
         return mapping_groups
 
-    def _batch_process_post_records(self, parent_records, target_model, mappings, original_data_by_id, post_result):
+    def _batch_process_post_records(
+        self, parent_records, target_model, mappings, original_data_by_id, post_result
+    ):
         """Process creation and update of post-process records in batches
 
         Args:
@@ -555,19 +569,21 @@ class BaseImportPipeline(models.Model):
         records_to_create, records_to_update = self._prepare_post_process_records(
             parent_records, target_model, mappings, original_data_by_id, post_result
         )
-        
+
         # Bulk create new records
         self._bulk_create_post_process_records(
             target_model, records_to_create, post_result
         )
-        
+
         # Group and bulk update existing records
         update_groups = self._group_records_for_update(target_model, records_to_update)
-        
+
         # Process each update group in bulk
         self._bulk_update_post_process_records(target_model, update_groups, post_result)
 
-    def _prepare_post_process_records(self, parent_records, target_model, mappings, original_data_by_id, post_result):
+    def _prepare_post_process_records(
+        self, parent_records, target_model, mappings, original_data_by_id, post_result
+    ):
         """Prepare data for post-process records
 
         Args:
@@ -582,41 +598,43 @@ class BaseImportPipeline(models.Model):
         """
         records_to_create = []
         records_to_update = []  # [(record, values)]
-        
+
         # First pass: prepare data for batch operations
         for parent_record in parent_records:
             try:
                 # Get original data for this record
                 extracted_data = original_data_by_id.get(parent_record.id, {})
-                
+
                 # Build values and domain for finding/creating records
                 values, domain = self._build_post_process_values_and_domain(
                     parent_record, target_model, mappings, extracted_data
                 )
-                
+
                 # Skip if we don't have any values
                 if not values:
                     continue
-                    
+
                 # Try to find an existing record
                 existing = None
                 if domain:
                     existing = self.env[target_model].search(domain, limit=1)
-                    
+
                 # Queue for update or creation
                 if existing:
                     records_to_update.append((existing, values))
                 else:
                     records_to_create.append(values)
-                
+
             except Exception as e:
                 self._handle_post_process_error(
                     e, target_model, post_result, record_id=parent_record.id
                 )
-        
+
         return records_to_create, records_to_update
 
-    def _bulk_create_post_process_records(self, target_model, records_to_create, post_result):
+    def _bulk_create_post_process_records(
+        self, target_model, records_to_create, post_result
+    ):
         """Bulk create new post-process records
 
         Args:
@@ -649,7 +667,7 @@ class BaseImportPipeline(models.Model):
         for record, values in records_to_update:
             # Pre-process values if needed (to be overridden in specialized imports)
             values = self._prepare_update_values(target_model, record, values)
-            
+
             values_key = str(sorted(values.items()))
             if values_key not in update_groups:
                 update_groups[values_key] = {
@@ -657,24 +675,26 @@ class BaseImportPipeline(models.Model):
                     "records": self.env[target_model].browse(),
                 }
             update_groups[values_key]["records"] |= record
-        
+
         return update_groups
-        
+
     def _prepare_update_values(self, target_model, record, values):
         """Hook method to preprocess values before update
         Can be overridden in specialized imports to handle model-specific constraints
-        
+
         Args:
             target_model: Model name to update records in
             record: Record to update
             values: Values to update
-            
+
         Returns:
             Processed values dict ready for update
         """
         return values
 
-    def _bulk_update_post_process_records(self, target_model, update_groups, post_result):
+    def _bulk_update_post_process_records(
+        self, target_model, update_groups, post_result
+    ):
         """Bulk update post-process records
 
         Args:

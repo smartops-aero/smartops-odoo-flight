@@ -112,17 +112,19 @@ class FlightEventTime(models.Model):
         # Only allow updating the 'time' field
         if set(vals.keys()) - {"time"}:
             raise UserError("Only the time field can be modified after creation")
-            
+
         history_vals = []
         for record in self:
             if record.time != vals["time"]:
-                history_vals.append({
-                    "event_id": record.id,
-                    "time": record.time,
-                    "write_uid": record.write_uid.id,
-                    "write_date": record.write_date,
-                })
-                
+                history_vals.append(
+                    {
+                        "event_id": record.id,
+                        "time": record.time,
+                        "write_uid": record.write_uid.id,
+                        "write_date": record.write_date,
+                    }
+                )
+
         if history_vals:
             self.env["flight.event.time.history"].create(history_vals)
 
