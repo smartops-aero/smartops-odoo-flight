@@ -74,6 +74,8 @@
                 <field name="arrival_id"/>
                 <field name="pic_duration" sum="Total PIC"/>
                 <field name="sic_duration" sum="Total SIC"/>
+                <field name="total_duration" sum="Total Time"/>
+                <field name="remark" /> 
                 <field name="dual_duration" optional="hide" sum="Total Dual"/>
                 <field name="picus_duration" optional="hide" sum="Total PICUS"/>
                 <field name="instructor_duration" optional="hide" sum="Total Instructor"/>
