@@ -39,32 +39,6 @@ class BaseImportPipeline(models.Model):
         # For all other models, use the standard implementation
         return super()._prepare_update_values(target_model, record, values)
 
-    def _bulk_update_post_process_records(self, target_model, update_groups, post_result):
-        """Override to handle special case for flight.event.time model
-        
-        The flight.event.time model's write method requires a singleton record
-        when comparing the current time with new time. We need to process each
-        record individually for this model.
-        """
-        if target_model == "flight.event.time":
-            # Process flight.event.time records one by one
-            for group_info in update_groups.values():
-                if group_info["records"]:
-                    try:
-                        # Update each record individually
-                        for record in group_info["records"]:
-                            record.write(group_info["values"])
-                            post_result["post_updated"].append(record.id)
-                    except Exception as e:
-                        error_msg = f"Error updating {target_model} records: {str(e)}"
-                        post_result["post_errors"].append(error_msg)
-                        _logger.error(error_msg)
-                        _logger.error("Stack trace: %s", traceback.format_exc())
-        else:
-            # For all other models, use the standard bulk implementation
-            super()._bulk_update_post_process_records(target_model, update_groups, post_result)
-
-
 class BaseImportPipelineMapping(models.Model):
     _inherit = "base.import.pipeline.mapping"
 
