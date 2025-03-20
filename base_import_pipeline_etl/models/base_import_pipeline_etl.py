@@ -541,16 +541,44 @@ class BaseImportPipeline(models.Model):
             mapping_groups[group_key].append(mapping)
         return mapping_groups
 
-    def _batch_process_post_records(self, parent_records, target_model, mappings, 
-                                   original_data_by_id, post_result):
-        """Process a batch of post-process records with bulk operations
-        
+    def _batch_process_post_records(self, parent_records, target_model, mappings, original_data_by_id, post_result):
+        """Process creation and update of post-process records in batches
+
         Args:
-            parent_records: The parent records to link to
-            target_model: The name of the model to create records in
+            parent_records: Records that need post-processing
+            target_model: Model name to create records in
             mappings: List of mapping records for the target model
             original_data_by_id: Dictionary mapping record IDs to original data
             post_result: Dictionary to update with results
+        """
+        # Prepare data for batch operations
+        records_to_create, records_to_update = self._prepare_post_process_records(
+            parent_records, target_model, mappings, original_data_by_id, post_result
+        )
+        
+        # Bulk create new records
+        self._bulk_create_post_process_records(
+            target_model, records_to_create, post_result
+        )
+        
+        # Group and bulk update existing records
+        update_groups = self._group_records_for_update(target_model, records_to_update)
+        
+        # Process each update group in bulk
+        self._bulk_update_post_process_records(target_model, update_groups, post_result)
+
+    def _prepare_post_process_records(self, parent_records, target_model, mappings, original_data_by_id, post_result):
+        """Prepare data for post-process records
+
+        Args:
+            parent_records: Records that need post-processing
+            target_model: Model name to create records in
+            mappings: List of mapping records for the target model
+            original_data_by_id: Dictionary mapping record IDs to original data
+            post_result: Dictionary to update with results
+
+        Returns:
+            Tuple of (records_to_create, records_to_update)
         """
         records_to_create = []
         records_to_update = []  # [(record, values)]
@@ -586,6 +614,16 @@ class BaseImportPipeline(models.Model):
                     e, target_model, post_result, record_id=parent_record.id
                 )
         
+        return records_to_create, records_to_update
+
+    def _bulk_create_post_process_records(self, target_model, records_to_create, post_result):
+        """Bulk create new post-process records
+
+        Args:
+            target_model: Model name to create records in
+            records_to_create: List of dictionaries with values to create
+            post_result: Dictionary to update with results
+        """
         # Bulk create new records
         if records_to_create:
             try:
@@ -596,10 +634,22 @@ class BaseImportPipeline(models.Model):
                 post_result["post_errors"].append(error_msg)
                 _logger.error(error_msg)
                 _logger.error("Stack trace: %s", traceback.format_exc())
-        
-        # Group updates by identical values for efficiency
+
+    def _group_records_for_update(self, target_model, records_to_update):
+        """Group records to update by identical values for efficiency
+
+        Args:
+            target_model: Model name to update records in
+            records_to_update: List of tuples with (record, values) to update
+
+        Returns:
+            Dictionary with groups of records to update
+        """
         update_groups = {}
         for record, values in records_to_update:
+            # Pre-process values if needed (to be overridden in specialized imports)
+            values = self._prepare_update_values(target_model, record, values)
+            
             values_key = str(sorted(values.items()))
             if values_key not in update_groups:
                 update_groups[values_key] = {
@@ -608,6 +658,30 @@ class BaseImportPipeline(models.Model):
                 }
             update_groups[values_key]["records"] |= record
         
+        return update_groups
+        
+    def _prepare_update_values(self, target_model, record, values):
+        """Hook method to preprocess values before update
+        Can be overridden in specialized imports to handle model-specific constraints
+        
+        Args:
+            target_model: Model name to update records in
+            record: Record to update
+            values: Values to update
+            
+        Returns:
+            Processed values dict ready for update
+        """
+        return values
+
+    def _bulk_update_post_process_records(self, target_model, update_groups, post_result):
+        """Bulk update post-process records
+
+        Args:
+            target_model: Model name to update records in
+            update_groups: Dictionary with groups of records to update
+            post_result: Dictionary to update with results
+        """
         # Process each update group in bulk
         for group_info in update_groups.values():
             if group_info["records"]:
