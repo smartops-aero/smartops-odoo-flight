@@ -3,6 +3,7 @@
     <menuitem
     id="menu_base_import_pipeline"
     name="Import Pipelines"
+    parent="base.menu_custom"
     sequence="50"
   />
 
