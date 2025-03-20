@@ -4,8 +4,13 @@ class FlightPilotLog(models.TransientModel):
     _name = 'flight.pilot.log.editor'
     _description = 'Pilot Log Editor'
     
-    flight_id = fields.Many2one('flight.flight', string='Flight', required=True)
-    partner_id = fields.Many2one('res.partner', string='Pilot', required=True)
+    flight_id = fields.Many2one('flight.flight', string='Flight', required=True, readonly=True)
+    partner_id = fields.Many2one(
+        'res.partner', 
+        string='Pilot', 
+        compute='_compute_partner_id',
+        readonly=True,
+    )
     
     # Related fields from flight
     date = fields.Date(related='flight_id.date', readonly=True)
@@ -303,6 +308,52 @@ class FlightPilotLog(models.TransientModel):
                         })
                 elif event_record:
                     event_record.unlink()
+    
+    @api.depends('flight_id')
+    def _compute_partner_id(self):
+        """Compute the default pilot based on flight crew."""
+        for record in self:
+            partner = False
+            
+            # First priority: Check if there's a PIC in the crew
+            if record.flight_id:
+                # Try to get the PIC role, using safer approach with search
+                pic_role = self.env['flight.crew.role'].search([('name', 'ilike', 'Pilot-in-command')], limit=1)
+                
+                if pic_role:
+                    crew_member = self.env['flight.crew'].search([
+                        ('flight_id', '=', record.flight_id.id),
+                        ('role_id', '=', pic_role.id)
+                    ], limit=1)
+                    if crew_member:
+                        partner = crew_member.partner_id
+            
+            # Second priority: Check existing pilot records for this flight
+            if not partner and record.flight_id:
+                # Check pilot time records
+                pilot_time = self.env['flight.pilot.time'].search([
+                    ('flight_id', '=', record.flight_id.id)
+                ], limit=1)
+                if pilot_time:
+                    partner = pilot_time.partner_id
+                
+                # If still not found, check pilot event records
+                if not partner:
+                    pilot_event = self.env['flight.pilot.event'].search([
+                        ('flight_id', '=', record.flight_id.id)
+                    ], limit=1)
+                    if pilot_event:
+                        partner = pilot_event.partner_id
+                
+                # If still not found, check pilot remark records
+                if not partner:
+                    pilot_remark = self.env['flight.pilot.remark'].search([
+                        ('flight_id', '=', record.flight_id.id)
+                    ], limit=1)
+                    if pilot_remark:
+                        partner = pilot_remark.partner_id
+            
+            record.partner_id = partner
     
     @api.depends('flight_id', 'partner_id')
     def _compute_remark(self):
