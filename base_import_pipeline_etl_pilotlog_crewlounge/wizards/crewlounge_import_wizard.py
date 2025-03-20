@@ -5,6 +5,7 @@ import io
 from odoo import _, fields, models
 from odoo.exceptions import UserError
 
+IMPLEMENTATION = "pilotlog_crewlounge"
 
 class CrewLoungeImportWizard(models.TransientModel):
     _name = "crewlounge.import.wizard"
@@ -118,7 +119,7 @@ class CrewLoungeImportWizard(models.TransientModel):
                 self.preview_data = _("No data found in the CSV file")
 
             pipeline = self.env["base.import.pipeline"].search(
-                [("implementation", "=", "crewlounge")], limit=1
+                [("implementation", "=", IMPLEMENTATION)], limit=1
             )
 
             if pipeline and not self.batch_size:
@@ -146,7 +147,7 @@ class CrewLoungeImportWizard(models.TransientModel):
 
         # Get the CrewLounge import pipeline
         pipeline = self.env["base.import.pipeline"].search(
-            [("implementation", "=", "crewlounge")], limit=1
+            [("implementation", "=", IMPLEMENTATION)], limit=1
         )
 
         if not pipeline:
