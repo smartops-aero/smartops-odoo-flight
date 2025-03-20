@@ -1,54 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Tree View -->
-    <record id="view_flight_pilot_log_tree" model="ir.ui.view">
-        <field name="name">flight.pilot.log.editor.tree</field>
-        <field name="model">flight.pilot.log.editor</field>
-        <field name="arch" type="xml">
-            <tree editable="bottom" create="false" delete="false">
-                <field name="flight_id" readonly="1"/>
-                <field name="partner_id" readonly="1"/>
-                <field name="date" readonly="1"/>
-                <field name="departure_id" readonly="1"/>
-                <field name="arrival_id" readonly="1"/>
-                <field name="aircraft_id" readonly="1"/>
-                <field name="pic_duration"/>
-                <field name="sic_duration"/>
-                <field name="to_day_count"/>
-                <field name="to_night_count"/>
-                <field name="remark"/>
-            </tree>
-        </field>
-    </record>
-
-    <!-- Form View -->
     <record id="view_flight_pilot_log_form" model="ir.ui.view">
         <field name="name">flight.pilot.log.editor.form</field>
         <field name="model">flight.pilot.log.editor</field>
         <field name="arch" type="xml">
-            <form>
+            <form string="Pilot Log Editor">
                 <sheet>
-                    <group string="Flight Details">
-                        <field name="flight_id" readonly="1"/>
-                        <field name="partner_id" readonly="1"/>
-                        <field name="date" readonly="1"/>
-                        <field name="departure_id" readonly="1"/>
-                        <field name="arrival_id" readonly="1"/>
-                        <field name="aircraft_id" readonly="1"/>
+                    <group>
+                        <group>
+                            <field name="flight_id" readonly="1"/>
+                            <field name="partner_id" readonly="1"/>
+                            <field name="date"/>
+                            <field name="departure_id"/>
+                            <field name="arrival_id"/>
+                            <field name="aircraft_id"/>
+                        </group>
                     </group>
-                    <group string="Time Codes">
-                        <field name="pic_duration"/>
-                        <field name="sic_duration"/>
-                    </group>
-                    <group string="Event Codes">
-                        <field name="to_day_count"/>
-                        <field name="to_night_count"/>
-                    </group>
-                    <group string="Remark">
-                        <field name="remark"/>
-                    </group>
+                    
+                    <notebook>
+                        <page string="Flight Time" name="flight_time">
+                            <group>
+                                <group string="Required Times">
+                                    <field name="pic_duration"/>
+                                    <field name="sic_duration"/>
+                                </group>
+                                <group string="Optional Times" name="optional_times">
+                                    <field name="dual_duration" optional="show"/>
+                                    <field name="picus_duration" optional="show"/>
+                                    <field name="instructor_duration" optional="hide"/>
+                                    <field name="examiner_duration" optional="hide"/>
+                                    <field name="night_duration" optional="show"/>
+                                    <field name="xc_duration" optional="hide"/>
+                                    <field name="ifr_duration" optional="hide"/>
+                                    <field name="hood_duration" optional="hide"/>
+                                    <field name="imc_duration" optional="hide"/>
+                                    <field name="relief_duration" optional="hide"/>
+                                    <field name="safety_duration" optional="hide"/>
+                                    <field name="air_duration" optional="show"/>
+                                    <field name="total_duration" optional="show"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="Events" name="events">
+                            <group>
+                                <field name="to_day_count"/>
+                                <field name="to_night_count"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Remarks" name="remarks">
+                            <field name="remark" placeholder="Enter any remarks about this flight..."/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
+        </field>
+    </record>
+    
+    <record id="view_flight_pilot_log_tree" model="ir.ui.view">
+        <field name="name">flight.pilot.log.editor.tree</field>
+        <field name="model">flight.pilot.log.editor</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="flight_id"/>
+                <field name="partner_id"/>
+                <field name="date"/>
+                <field name="departure_id"/>
+                <field name="arrival_id"/>
+                <field name="pic_duration" sum="Total PIC"/>
+                <field name="sic_duration" sum="Total SIC"/>
+                <field name="dual_duration" optional="hide" sum="Total Dual"/>
+                <field name="picus_duration" optional="hide" sum="Total PICUS"/>
+                <field name="instructor_duration" optional="hide" sum="Total Instructor"/>
+                <field name="examiner_duration" optional="hide" sum="Total Examiner"/>
+                <field name="night_duration" optional="hide" sum="Total Night"/>
+                <field name="xc_duration" optional="hide" sum="Total XC"/>
+                <field name="ifr_duration" optional="hide" sum="Total IFR"/>
+                <field name="hood_duration" optional="hide" sum="Total Hood"/>
+                <field name="imc_duration" optional="hide" sum="Total IMC"/>
+                <field name="relief_duration" optional="hide" sum="Total Relief"/>
+                <field name="safety_duration" optional="hide" sum="Total Safety"/>
+                <field name="air_duration" optional="hide" sum="Total Air"/>
+                <field name="total_duration" optional="show" sum="Total Time"/>
+                <field name="to_day_count" optional="hide" sum="Total Day Takeoffs"/>
+                <field name="to_night_count" optional="hide" sum="Total Night Takeoffs"/>
+            </tree>
         </field>
     </record>
 
@@ -68,13 +105,4 @@
         <field name="state">code</field>
         <field name="code">action = model.load_pilot_logs()</field>
     </record>
-
-    <!-- Menu Item (using the server action to load logs) -->
-    <menuitem
-        id="menu_flight_pilot_log_overview"
-        name="Overview"
-        parent="menu_flight_pilot_log"
-        action="action_load_pilot_logs"
-        sequence="5"
-    />
 </odoo>
