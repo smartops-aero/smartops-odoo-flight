@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_flight_pilot_log_tree" model="ir.ui.view">
+        <field name="name">flight.pilot.log.editor.tree</field>
+        <field name="model">flight.pilot.log.editor</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom" create="false" delete="false">
+                <field name="flight_id" readonly="1"/>
+                <field name="partner_id" readonly="1"/>
+                <field name="date" readonly="1"/>
+                <field name="departure_id" readonly="1"/>
+                <field name="arrival_id" readonly="1"/>
+                <field name="aircraft_id" readonly="1"/>
+                <field name="pic_duration"/>
+                <field name="sic_duration"/>
+                <field name="to_day_count"/>
+                <field name="to_night_count"/>
+                <field name="remark"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_flight_pilot_log_form" model="ir.ui.view">
+        <field name="name">flight.pilot.log.editor.form</field>
+        <field name="model">flight.pilot.log.editor</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group string="Flight Details">
+                        <field name="flight_id" readonly="1"/>
+                        <field name="partner_id" readonly="1"/>
+                        <field name="date" readonly="1"/>
+                        <field name="departure_id" readonly="1"/>
+                        <field name="arrival_id" readonly="1"/>
+                        <field name="aircraft_id" readonly="1"/>
+                    </group>
+                    <group string="Time Codes">
+                        <field name="pic_duration"/>
+                        <field name="sic_duration"/>
+                    </group>
+                    <group string="Event Codes">
+                        <field name="to_day_count"/>
+                        <field name="to_night_count"/>
+                    </group>
+                    <group string="Remark">
+                        <field name="remark"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for viewing pilot logs -->
+    <record id="action_flight_pilot_log" model="ir.actions.act_window">
+        <field name="name">Pilot Log Overview</field>
+        <field name="res_model">flight.pilot.log.editor</field>
+        <field name="view_mode">tree,form</field>
+        <field name="target">current</field>
+        <field name="context">{'create': False}</field>
+    </record>
+    
+    <!-- Server action to load pilot logs -->
+    <record id="action_load_pilot_logs" model="ir.actions.server">
+        <field name="name">Pilot Log Overview</field>
+        <field name="model_id" ref="model_flight_pilot_log_editor"/>
+        <field name="state">code</field>
+        <field name="code">action = model.load_pilot_logs()</field>
+    </record>
+
+    <!-- Menu Item (using the server action to load logs) -->
+    <menuitem
+        id="menu_flight_pilot_log_overview"
+        name="Overview"
+        parent="menu_flight_pilot_log"
+        action="action_load_pilot_logs"
+        sequence="5"
+    />
+</odoo>
