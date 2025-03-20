@@ -11,10 +11,10 @@ class BaseImportPipeline(models.Model):
 
     def _selection_implementation(self):
         selection = super()._selection_implementation()
-        selection.append(("crewlounge", "Flight Import - CrewLounge"))
+        selection.append(("pilotlog_crewlounge", "Flight Import - CrewLounge"))
         return selection
 
-    def _crewlounge_extract(
+    def _pilotlog_crewlounge_extract(
         self, file_content, filename=None, csv_delimiter=",", **kwargs
     ):
         """Extract data from CrewLounge CSV file"""
