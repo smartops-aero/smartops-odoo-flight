@@ -20,7 +20,7 @@ class BaseImportPipeline(models.Model):
 
     # Add batch size field for post-processing only
     batch_size = fields.Integer(
-        string="Post-Process Batch Size",
+        string="Default Post-Process Batch Size",
         default=1000,
         help="Number of records to process in each batch during post-processing. Higher values are faster but use more memory.",
     )
@@ -928,7 +928,7 @@ class BaseImportPipeline(models.Model):
             }
 
             # Process in batches for better performance and memory management
-            batch_size = self.batch_size or 1000
+            batch_size = kwargs.get('batch_size') or self.batch_size or 1000
             _logger.info(
                 "Processing %s records in batches of %s",
                 len(transformed_data),

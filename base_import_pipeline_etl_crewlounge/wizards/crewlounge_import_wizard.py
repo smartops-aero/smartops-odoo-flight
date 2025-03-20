@@ -16,6 +16,13 @@ class CrewLoungeImportWizard(models.TransientModel):
         string="Delimiter", default=",", required=True, help="CSV delimiter character"
     )
 
+    # Post-process settings
+    batch_size = fields.Integer(
+        string="Batch Size",
+        default=500,
+        help="Number of records to process in each batch during load, post-processing. Higher values are faster but use more memory.",
+    )
+
     # Pilot selection
     partner_id = fields.Many2one(
         "res.partner",
@@ -110,6 +117,13 @@ class CrewLoungeImportWizard(models.TransientModel):
             else:
                 self.preview_data = _("No data found in the CSV file")
 
+            pipeline = self.env["base.import.pipeline"].search(
+                [("implementation", "=", "crewlounge")], limit=1
+            )
+
+            if pipeline and not self.batch_size:
+                self.batch_size = pipeline.batch_size
+
             self.state = "preview"
 
             return {
@@ -145,6 +159,7 @@ class CrewLoungeImportWizard(models.TransientModel):
             file_content=self.file,
             filename=self.filename,
             csv_delimiter=self.delimiter,
+            batch_size=self.batch_size or pipeline.batch_size,
         )
 
         # Store the results
