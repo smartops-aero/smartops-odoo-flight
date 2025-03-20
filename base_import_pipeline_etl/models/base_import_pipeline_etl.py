@@ -294,12 +294,77 @@ class BaseImportPipeline(models.Model):
             )
 
         try:
-            # Create all records in a single transaction
+            # Process data in batches using bulk operations
             with self.env.cr.savepoint():
+                # Prepare data for bulk operations
+                records_to_create = []
+                records_to_update = []  # [(record, values)]
+                
+                # Map to track which original data corresponds to which record
+                # This is needed for post-processing
+                original_data_map = {}
+
+                # First pass: identify existing records and prepare create/update lists
                 for i, data in enumerate(transformed_data):
-                    self._process_single_record(
-                        i, data, has_key_fields, key_mappings, result, kwargs
-                    )
+                    try:
+                        # Prepare values
+                        values = data["values"]
+                        original_data = kwargs.get("extracted_data", [])[i] if i < len(kwargs.get("extracted_data", [])) else {}
+                        
+                        # Find existing record if we have key fields
+                        existing_record = None
+                        if has_key_fields:
+                            domain = []
+                            for mapping in key_mappings:
+                                field_name = mapping.target_field
+                                if field_name in values:
+                                    domain.append((field_name, "=", values[field_name]))
+                            
+                            if domain:
+                                existing_record = self.env[self.model_id.model].search(domain, limit=1)
+                        
+                        # Queue for creation or update
+                        if existing_record:
+                            records_to_update.append((existing_record, values))
+                            # Store original data for post-processing
+                            original_data_map[existing_record.id] = original_data
+                            result["updated"].append(existing_record.id)
+                        else:
+                            records_to_create.append(values)
+                            # We'll store original data after creation when we have IDs
+                    except Exception as record_error:
+                        self._handle_record_error(record_error, i, data, len(transformed_data), result)
+                
+                # Bulk create new records - much more efficient than one by one
+                if records_to_create:
+                    created_records = self.env[self.model_id.model].create(records_to_create)
+                    
+                    # Store IDs and map original data
+                    for i, record in enumerate(created_records):
+                        result["created"].append(record.id)
+                        # Map original data to record ID for potential post-processing
+                        if i < len(kwargs.get("extracted_data", [])):
+                            original_data_map[record.id] = kwargs.get("extracted_data", [])[i]
+                
+                # Bulk update records - group by identical values for efficiency
+                update_groups = {}
+                for record, values in records_to_update:
+                    values_key = str(sorted(values.items()))
+                    if values_key not in update_groups:
+                        update_groups[values_key] = {
+                            "values": values,
+                            "records": self.env[self.model_id.model].browse(),
+                        }
+                    update_groups[values_key]["records"] |= record
+                
+                # Process each update group
+                for group_info in update_groups.values():
+                    if group_info["records"]:
+                        group_info["records"].write(group_info["values"])
+                
+                # Store original data map in result for post-processing
+                result["original_data_map"] = original_data_map
+                
         except Exception as e:
             self._handle_batch_error(e, result)
 
@@ -318,69 +383,6 @@ class BaseImportPipeline(models.Model):
         return self.mapping_ids.filtered(
             lambda m: m.model_id.model == self.model_id.model and m.is_key_field
         )
-
-    def _process_single_record(
-        self, index, data, has_key_fields, key_mappings, result, kwargs
-    ):
-        """Process a single record for import
-
-        This handles finding an existing record or creating a new one
-        with proper error handling.
-        """
-        try:
-            # Store original source data in values as context for post-processing
-            original_data = self._get_original_data(index, kwargs)
-
-            # Check if record already exists
-            existing_record = None
-            if has_key_fields:
-                existing_record = self._find_existing_record_for_import(
-                    key_mappings, data
-                )
-
-            # Update existing or create new record
-            if existing_record:
-                self._update_existing_record(
-                    existing_record, data, original_data, result
-                )
-            else:
-                self._create_new_record(data, original_data, result)
-
-        except Exception as record_error:
-            self._handle_record_error(record_error, index, data, len(data), result)
-
-    def _get_original_data(self, index, kwargs):
-        """Get original data for the record at the given index"""
-        extracted_data = kwargs.get("extracted_data", [])
-        return extracted_data[index] if index < len(extracted_data) else {}
-
-    def _find_existing_record_for_import(self, key_mappings, data):
-        """Find an existing record based on key mappings"""
-        domain = []
-        for mapping in key_mappings:
-            field_name = mapping.target_field
-            if field_name in data["values"]:
-                domain.append((field_name, "=", data["values"][field_name]))
-
-        if domain:
-            existing_record = self.env[self.model_id.model].search(domain, limit=1)
-            if existing_record:
-                return existing_record
-        return None
-
-    def _update_existing_record(self, existing_record, data, original_data, result):
-        """Update an existing record and log the result"""
-        existing_record.with_context(original_data=original_data).write(data["values"])
-        result["updated"].append(existing_record.id)
-
-    def _create_new_record(self, data, original_data, result):
-        """Create a new record and log the result"""
-        record = (
-            self.env[self.model_id.model]
-            .with_context(original_data=original_data)
-            .create(data["values"])
-        )
-        result["created"].append(record.id)
 
     def _handle_record_error(self, error, index, data, total_records, result):
         """Handle and log an error for a specific record"""
@@ -420,7 +422,7 @@ class BaseImportPipeline(models.Model):
         post_mappings = self._get_post_process_mappings()
         if not post_mappings:
             return post_result
-
+        
         # Associate original data with record IDs for reference
         original_data_by_id = self._associate_data_with_record_ids(
             import_result, extracted_data
@@ -478,6 +480,10 @@ class BaseImportPipeline(models.Model):
         Returns:
             Dictionary mapping record IDs to original data
         """
+        # If the optimized load method was used, the mapping is already provided
+        if "original_data_map" in import_result:
+            return import_result["original_data_map"]
+        
         original_data_by_id = {}
         for idx, data in enumerate(extracted_data):
             if idx < len(import_result.get("created", [])):
