@@ -38,3 +38,73 @@ class BaseImportPipeline(models.Model):
 
         # For all other models, use the standard implementation
         return super()._prepare_update_values(target_model, record, values)
+
+    def _is_zero_value(self, value):
+        """Determine if a value should be considered as zero/null/empty
+        
+        Returns True if the value is:
+        - None
+        - False
+        - Empty string
+        - Integer zero (0)
+        - Float zero (0.0)
+        - String representation of zero ("0")
+        
+        This is used to skip creating records with zero counts, durations, or times.
+        """
+        # Check for None, False, or empty string
+        if value is None or value is False or value == "":
+            return True
+            
+        # Check by type for more precise comparison
+        value_type = type(value)
+        
+        # Integer comparison
+        if value_type is int:
+            return value == 0
+            
+        # Float comparison
+        if value_type is float:
+            return value == 0.0
+            
+        # String comparison - strip whitespace and check for "0"
+        if value_type is str:
+            stripped = value.strip()
+            return stripped == "0" or stripped == ""
+            
+        # For any other types, try to convert to float if possible
+        try:
+            return float(value) == 0
+        except (ValueError, TypeError):
+            # If we can't convert to float, it's not a zero value
+            return False
+
+    def _build_post_process_values_and_domain(
+        self, parent_record, target_model, mappings, extracted_data
+    ):
+        """Override to implement validation checks for pilot events and times
+        
+        - Skip flight.pilot.event if count is 0
+        - Skip flight.pilot.time if duration is 0.0
+        - Skip flight.event.time if time is 0.0
+        """
+        values, domain = super()._build_post_process_values_and_domain(
+            parent_record, target_model, mappings, extracted_data
+        )
+        
+        # Skip flight.pilot.event records with count 0
+        if target_model == "flight.pilot.event" and self._is_zero_value(values.get("count")):
+            _logger.info(f"Skipping pilot event record with zero count: {values}")
+            return {}, []
+            
+        # Skip flight.pilot.time records with duration 0.0
+        if target_model == "flight.pilot.time" and self._is_zero_value(values.get("duration")):
+            _logger.info(f"Skipping pilot time record with zero duration: {values}")
+            return {}, []
+            
+        # Skip flight.event.time records with time 0.0
+        if target_model == "flight.event.time" and self._is_zero_value(values.get("time")):
+            _logger.info(f"Skipping flight event time record with zero time: {values}")
+            return {}, []
+            
+        return values, domain
