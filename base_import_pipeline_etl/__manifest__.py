@@ -13,6 +13,7 @@
     "category": "Technical",
     "version": "16.0.1.0.0",
     "depends": [
+        "base",
         "base_import_pipeline",
     ],
     "data": [
