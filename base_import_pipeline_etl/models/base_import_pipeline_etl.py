@@ -295,76 +295,75 @@ class BaseImportPipeline(models.Model):
 
         try:
             # Process data in batches using bulk operations
-            with self.env.cr.savepoint():
-                # Prepare data for bulk operations
-                records_to_create = []
-                records_to_update = []  # [(record, values)]
-                
-                # Map to track which original data corresponds to which record
-                # This is needed for post-processing
-                original_data_map = {}
+            # Prepare data for bulk operations
+            records_to_create = []
+            records_to_update = []  # [(record, values)]
+            
+            # Map to track which original data corresponds to which record
+            # This is needed for post-processing
+            original_data_map = {}
 
-                # First pass: identify existing records and prepare create/update lists
-                for i, data in enumerate(transformed_data):
-                    try:
-                        # Prepare values
-                        values = data["values"]
-                        original_data = kwargs.get("extracted_data", [])[i] if i < len(kwargs.get("extracted_data", [])) else {}
-                        
-                        # Find existing record if we have key fields
-                        existing_record = None
-                        if has_key_fields:
-                            domain = []
-                            for mapping in key_mappings:
-                                field_name = mapping.target_field
-                                if field_name in values:
-                                    domain.append((field_name, "=", values[field_name]))
-                            
-                            if domain:
-                                existing_record = self.env[self.model_id.model].search(domain, limit=1)
-                        
-                        # Queue for creation or update
-                        if existing_record:
-                            records_to_update.append((existing_record, values))
-                            # Store original data for post-processing
-                            original_data_map[existing_record.id] = original_data
-                            result["updated"].append(existing_record.id)
-                        else:
-                            records_to_create.append(values)
-                            # We'll store original data after creation when we have IDs
-                    except Exception as record_error:
-                        self._handle_record_error(record_error, i, data, len(transformed_data), result)
-                
-                # Bulk create new records - much more efficient than one by one
-                if records_to_create:
-                    created_records = self.env[self.model_id.model].create(records_to_create)
+            # First pass: identify existing records and prepare create/update lists
+            for i, data in enumerate(transformed_data):
+                try:
+                    # Prepare values
+                    values = data["values"]
+                    original_data = kwargs.get("extracted_data", [])[i] if i < len(kwargs.get("extracted_data", [])) else {}
                     
-                    # Store IDs and map original data
-                    for i, record in enumerate(created_records):
-                        result["created"].append(record.id)
-                        # Map original data to record ID for potential post-processing
-                        if i < len(kwargs.get("extracted_data", [])):
-                            original_data_map[record.id] = kwargs.get("extracted_data", [])[i]
+                    # Find existing record if we have key fields
+                    existing_record = None
+                    if has_key_fields:
+                        domain = []
+                        for mapping in key_mappings:
+                            field_name = mapping.target_field
+                            if field_name in values:
+                                domain.append((field_name, "=", values[field_name]))
+                        
+                        if domain:
+                            existing_record = self.env[self.model_id.model].search(domain, limit=1)
+                    
+                    # Queue for creation or update
+                    if existing_record:
+                        records_to_update.append((existing_record, values))
+                        # Store original data for post-processing
+                        original_data_map[existing_record.id] = original_data
+                        result["updated"].append(existing_record.id)
+                    else:
+                        records_to_create.append(values)
+                        # We'll store original data after creation when we have IDs
+                except Exception as record_error:
+                    self._handle_record_error(record_error, i, data, len(transformed_data), result)
+            
+            # Bulk create new records - much more efficient than one by one
+            if records_to_create:
+                created_records = self.env[self.model_id.model].create(records_to_create)
                 
-                # Bulk update records - group by identical values for efficiency
-                update_groups = {}
-                for record, values in records_to_update:
-                    values_key = str(sorted(values.items()))
-                    if values_key not in update_groups:
-                        update_groups[values_key] = {
-                            "values": values,
-                            "records": self.env[self.model_id.model].browse(),
-                        }
-                    update_groups[values_key]["records"] |= record
-                
-                # Process each update group
-                for group_info in update_groups.values():
-                    if group_info["records"]:
-                        group_info["records"].write(group_info["values"])
-                
-                # Store original data map in result for post-processing
-                result["original_data_map"] = original_data_map
-                
+                # Store IDs and map original data
+                for i, record in enumerate(created_records):
+                    result["created"].append(record.id)
+                    # Map original data to record ID for potential post-processing
+                    if i < len(kwargs.get("extracted_data", [])):
+                        original_data_map[record.id] = kwargs.get("extracted_data", [])[i]
+            
+            # Bulk update records - group by identical values for efficiency
+            update_groups = {}
+            for record, values in records_to_update:
+                values_key = str(sorted(values.items()))
+                if values_key not in update_groups:
+                    update_groups[values_key] = {
+                        "values": values,
+                        "records": self.env[self.model_id.model].browse(),
+                    }
+                update_groups[values_key]["records"] |= record
+            
+            # Process each update group
+            for group_info in update_groups.values():
+                if group_info["records"]:
+                    group_info["records"].write(group_info["values"])
+            
+            # Store original data map in result for post-processing
+            result["original_data_map"] = original_data_map
+            
         except Exception as e:
             self._handle_batch_error(e, result)
 
@@ -444,21 +443,17 @@ class BaseImportPipeline(models.Model):
         # Group mappings by model and group_key
         mapping_groups = self._group_post_process_mappings(post_mappings)
 
-        # Process each group of mappings
+        # Process each group of mappings with batch operations
         for group_key, mappings in mapping_groups.items():
             model_name = mappings[0].model_id.model
-
-            # For each parent record, create related records
-            for record in records:
-                try:
-                    original_data = original_data_by_id.get(record.id, {})
-                    self._create_post_process_record(
-                        record, model_name, mappings, post_result, original_data
+            
+            try:
+                with self.env.cr.savepoint():
+                    self._batch_process_post_records(
+                        records, model_name, mappings, original_data_by_id, post_result
                     )
-                except Exception as e:
-                    self._handle_post_process_error(
-                        e, model_name, post_result, record_id=record.id
-                    )
+            except Exception as e:
+                self._handle_post_process_error(e, model_name, post_result)
 
         return post_result
 
@@ -546,39 +541,84 @@ class BaseImportPipeline(models.Model):
             mapping_groups[group_key].append(mapping)
         return mapping_groups
 
-    def _create_post_process_record(
-        self, parent_record, target_model, mappings, post_result, extracted_data
-    ):
-        """Create or update a record in the target model linked to the parent record
-
+    def _batch_process_post_records(self, parent_records, target_model, mappings, 
+                                   original_data_by_id, post_result):
+        """Process a batch of post-process records with bulk operations
+        
         Args:
-            parent_record: The parent record (e.g., flight.flight) to link to
-            target_model: The name of the model to create record in
+            parent_records: The parent records to link to
+            target_model: The name of the model to create records in
             mappings: List of mapping records for the target model
-            post_result: Dictionary to store results
-            extracted_data: Dictionary with original source data
+            original_data_by_id: Dictionary mapping record IDs to original data
+            post_result: Dictionary to update with results
         """
-        # Build values and domain
-        values, domain = self._build_post_process_values_and_domain(
-            parent_record, target_model, mappings, extracted_data
-        )
-
-        # Skip if we don't have any values to create/update
-        if not values:
-            return
-
-        try:
-            existing = self._find_existing_record(target_model, domain)
-
-            if existing:
-                self._update_post_process_record(
-                    target_model, existing, values, post_result
+        records_to_create = []
+        records_to_update = []  # [(record, values)]
+        
+        # First pass: prepare data for batch operations
+        for parent_record in parent_records:
+            try:
+                # Get original data for this record
+                extracted_data = original_data_by_id.get(parent_record.id, {})
+                
+                # Build values and domain for finding/creating records
+                values, domain = self._build_post_process_values_and_domain(
+                    parent_record, target_model, mappings, extracted_data
                 )
-            else:
-                self._create_new_post_process_record(target_model, values, post_result)
-
-        except Exception as e:
-            self._handle_post_process_error(e, target_model, post_result)
+                
+                # Skip if we don't have any values
+                if not values:
+                    continue
+                    
+                # Try to find an existing record
+                existing = None
+                if domain:
+                    existing = self.env[target_model].search(domain, limit=1)
+                    
+                # Queue for update or creation
+                if existing:
+                    records_to_update.append((existing, values))
+                else:
+                    records_to_create.append(values)
+                
+            except Exception as e:
+                self._handle_post_process_error(
+                    e, target_model, post_result, record_id=parent_record.id
+                )
+        
+        # Bulk create new records
+        if records_to_create:
+            try:
+                created_records = self.env[target_model].create(records_to_create)
+                post_result["post_created"].extend(created_records.ids)
+            except Exception as e:
+                error_msg = f"Error bulk creating {target_model} records: {str(e)}"
+                post_result["post_errors"].append(error_msg)
+                _logger.error(error_msg)
+                _logger.error("Stack trace: %s", traceback.format_exc())
+        
+        # Group updates by identical values for efficiency
+        update_groups = {}
+        for record, values in records_to_update:
+            values_key = str(sorted(values.items()))
+            if values_key not in update_groups:
+                update_groups[values_key] = {
+                    "values": values,
+                    "records": self.env[target_model].browse(),
+                }
+            update_groups[values_key]["records"] |= record
+        
+        # Process each update group in bulk
+        for group_info in update_groups.values():
+            if group_info["records"]:
+                try:
+                    group_info["records"].write(group_info["values"])
+                    post_result["post_updated"].extend(group_info["records"].ids)
+                except Exception as e:
+                    error_msg = f"Error bulk updating {target_model} records: {str(e)}"
+                    post_result["post_errors"].append(error_msg)
+                    _logger.error(error_msg)
+                    _logger.error("Stack trace: %s", traceback.format_exc())
 
     def _build_post_process_values_and_domain(
         self, parent_record, target_model, mappings, extracted_data
@@ -653,47 +693,6 @@ class BaseImportPipeline(models.Model):
                         domain.append((field_name, "=", transformed_value))
 
         return values, domain
-
-    def _find_existing_record(self, model_name, domain):
-        """Find an existing record by domain
-
-        Args:
-            model_name: Name of the model to search
-            domain: Domain to use for search
-
-        Returns:
-            Record if found, None otherwise
-        """
-        if not domain:
-            return None
-
-        existing = self.env[model_name].search(domain, limit=1)
-
-        if existing:
-            return existing
-
-    def _update_post_process_record(self, model_name, record, values, post_result):
-        """Update an existing record
-
-        Args:
-            model_name: Name of the model
-            record: Record to update
-            values: Values to update with
-            post_result: Dictionary to update with results
-        """
-        record.write(values)
-        post_result["post_updated"].append(record.id)
-
-    def _create_new_post_process_record(self, model_name, values, post_result):
-        """Create a new record
-
-        Args:
-            model_name: Name of the model to create
-            values: Values to create with
-            post_result: Dictionary to update with results
-        """
-        new_record = self.env[model_name].create(values)
-        post_result["post_created"].append(new_record.id)
 
     def _handle_post_process_error(
         self, error, model_name, post_result, record_id=None
