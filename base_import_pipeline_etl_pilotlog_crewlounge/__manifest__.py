@@ -1,5 +1,5 @@
 {
-    "name": "Base Import Pipeline ETL - CrewLounge",
+    "name": "Base Import Pipeline ETL - PilotLog CrewLounge",
     "version": "1.0",
     "category": "Tools",
     "summary": "Import CrewLounge CSV data into flight models",
