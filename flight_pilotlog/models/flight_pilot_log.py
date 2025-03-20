@@ -117,6 +117,30 @@ class FlightPilotLog(models.TransientModel):
         inverse='_inverse_event_counts',
     )
     
+    ldg_day_count = fields.Integer(
+        string='LDG DAY',
+        compute='_compute_event_counts',
+        inverse='_inverse_event_counts',
+    )
+    
+    ldg_night_count = fields.Integer(
+        string='LDG NIGHT',
+        compute='_compute_event_counts',
+        inverse='_inverse_event_counts',
+    )
+    
+    lift_count = fields.Integer(
+        string='LIFT',
+        compute='_compute_event_counts',
+        inverse='_inverse_event_counts',
+    )
+    
+    holding_count = fields.Integer(
+        string='HOLDING',
+        compute='_compute_event_counts',
+        inverse='_inverse_event_counts',
+    )
+    
     remark = fields.Text(
         string='Remark',
         compute='_compute_remark',
@@ -146,6 +170,10 @@ class FlightPilotLog(models.TransientModel):
     _event_field_mapping = {
         'to_day_count': 'TO_DAY',
         'to_night_count': 'TO_NIGHT',
+        'ldg_day_count': 'LDG_DAY',
+        'ldg_night_count': 'LDG_NIGHT',
+        'lift_count': 'LIFT',
+        'holding_count': 'HOLDING',
     }
     
     @api.depends('flight_id', 'partner_id')

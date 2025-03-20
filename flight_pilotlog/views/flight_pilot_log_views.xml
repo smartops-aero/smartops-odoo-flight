@@ -46,6 +46,10 @@
                             <group>
                                 <field name="to_day_count"/>
                                 <field name="to_night_count"/>
+                                <field name="ldg_day_count"/>
+                                <field name="ldg_night_count"/>
+                                <field name="lift_count"/>
+                                <field name="holding_count"/>
                             </group>
                         </page>
                         
@@ -85,6 +89,10 @@
                 <field name="total_duration" optional="show" sum="Total Time"/>
                 <field name="to_day_count" optional="hide" sum="Total Day Takeoffs"/>
                 <field name="to_night_count" optional="hide" sum="Total Night Takeoffs"/>
+                <field name="ldg_day_count" optional="hide" sum="Total Day Landings"/>
+                <field name="ldg_night_count" optional="hide" sum="Total Night Landings"/>
+                <field name="lift_count" optional="hide" sum="Total Lifts"/>
+                <field name="holding_count" optional="hide" sum="Total Holdings"/>
             </tree>
         </field>
     </record>
