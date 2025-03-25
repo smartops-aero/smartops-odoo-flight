@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2024 Apexive <https://apexive.com/>
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl-3.0.html). -->
+<odoo>
+    <record id="view_crewlounge_import_wizard_form" model="ir.ui.view">
+        <field name="name">flight.import.pilotlog.crewlounge.wizard.form</field>
+        <field name="model">flight.import.pilotlog.crewlounge.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import CrewLounge Flight Data">
+                <sheet>
+                    <group>
+                        <field name="file" widget="binary" filename="filename"/>
+                        <field name="filename" invisible="1"/>
+                        <field name="delimiter"/>
+                    </group>
+                    
+                    <group string="Statistics" attrs="{'invisible': [('total_rows', '=', 0)]}">
+                        <field name="total_rows" readonly="1"/>
+                        <field name="makes_count" readonly="1"/>
+                        <field name="models_count" readonly="1"/>
+                        <field name="aircraft_count" readonly="1"/>
+                        <field name="aerodromes_count" readonly="1"/>
+                        <field name="flights_count" readonly="1"/>
+                        <field name="skipped_count" readonly="1"/>
+                        <field name="failed_count" readonly="1"/>
+                    </group>
+                </sheet>
+                
+                <footer>
+                    <button name="action_analyze_file" string="Analyze File" type="object" class="btn-primary" attrs="{'invisible': [('total_rows', '>', 0)]}"/>
+                    <button name="action_import" string="Import" type="object" class="btn-primary" attrs="{'invisible': [('total_rows', '=', 0)]}"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <record id="action_crewlounge_import" model="ir.actions.act_window">
+        <field name="name">Import CrewLounge Data</field>
+        <field name="res_model">flight.import.pilotlog.crewlounge.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
