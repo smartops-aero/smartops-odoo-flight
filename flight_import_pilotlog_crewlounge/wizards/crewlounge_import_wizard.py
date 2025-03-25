@@ -175,13 +175,16 @@ class AircraftModelProcessor(EntityProcessor):
         return ['AC_MAKE', 'AC_MODEL']
         
     def get_dependencies(self, record, entity_cache):
+        """Get dependencies, but don't fail if make not found"""
+        result = {}
         make_name = record.get('AC_MAKE')
-        if not make_name or 'makes' not in entity_cache or make_name not in entity_cache['makes']:
-            return False
-            
-        return {
-            'make_id': entity_cache['makes'][make_name]
-        }
+        
+        # Try to get make if available
+        if make_name and 'makes' in entity_cache and make_name in entity_cache['makes']:
+            result['make_id'] = entity_cache['makes'][make_name]
+        
+        # Return dependencies even if make_id is not found
+        return result
         
     def build_search_domain(self, record, dependencies):
         model_name = record.get('AC_MODEL')
@@ -200,7 +203,7 @@ class AircraftModelProcessor(EntityProcessor):
         if isinstance(value, str):
             return value.strip().upper() in ('TRUE', 'YES', 'Y', '1')
         return bool(value)
-    
+    # TODO: Remove this with database based mapping instead later
     def _get_aircraft_class_id(self, record):
         """Determine aircraft class ID based on the record fields"""
         # Get all relevant fields and normalize them
@@ -264,16 +267,19 @@ class AircraftModelProcessor(EntityProcessor):
         model_name = record.get('AC_MODEL')
         eng_type = record.get('AC_ENGTYPE', '')
         
-        if not model_name or not dependencies or 'make_id' not in dependencies:
+        if not model_name:
             return False
             
         values = {
             'name': model_name,
-            'make_id': dependencies['make_id'],
             'engine_type': 'turbofan' if eng_type == 'Jet' else 'piston',
             'gear_type': 'retractable_tricycle',  # Default value
             'code': model_name[:4].upper() if model_name else ''
         }
+        
+        # Add make_id if available
+        if dependencies and 'make_id' in dependencies:
+            values['make_id'] = dependencies['make_id']
         
         # Add class_id if we can determine it
         class_id = self._get_aircraft_class_id(record)
