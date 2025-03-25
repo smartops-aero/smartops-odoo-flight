@@ -236,21 +236,11 @@ class CrewLoungeImportWizard(models.TransientModel):
                 
                 if not model:
                     continue
-                
-                # Handle seats
-                seats = record['AC_SEATS']
-                try:
-                    seats_int = int(seats) if seats else 5
-                except:
-                    seats_int = 5
                     
                 # Create new aircraft
                 aircraft_vals = {
                     'registration': registration,
                     'model_id': model.id,
-                    'dom': '2015-01-01',  # Default manufacturing date
-                    'mtow': seats_int * 1000,  # Estimated MTOW based on seats
-                    'sn': f"SN{registration.replace('-', '')}"  # Generate a dummy serial number
                 }
                 
                 aircraft = self.env['flight.aircraft'].create(aircraft_vals)
@@ -282,8 +272,6 @@ class CrewLoungeImportWizard(models.TransientModel):
                 # Create new aerodrome
                 aerodrome_vals = {
                     'icao': icao,
-                    'name': f"Airport {icao}",
-                    'city': f"City for {icao}"
                 }
                 
                 aerodrome = self.env['flight.aerodrome'].create(aerodrome_vals)
@@ -339,7 +327,6 @@ class CrewLoungeImportWizard(models.TransientModel):
                 'aircraft_id': aircraft_id,
                 'departure_id': departure_id,
                 'arrival_id': arrival_id,
-                'locked': False
             }
             
             self.env['flight.flight'].create(flight_vals)
