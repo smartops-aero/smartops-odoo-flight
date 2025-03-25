@@ -3,16 +3,13 @@
 
 import base64
 import contextlib
-import io
 import logging
 import os
 import tempfile
 import petl as etl
 from datetime import datetime
-from odoo import api, fields, models, _
+from odoo import fields, models, _
 from odoo.exceptions import UserError
-from functools import partial
-from collections import defaultdict
 
 _logger = logging.getLogger(__name__)
 
