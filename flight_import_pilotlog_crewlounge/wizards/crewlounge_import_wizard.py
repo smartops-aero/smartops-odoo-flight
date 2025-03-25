@@ -188,12 +188,11 @@ class AircraftModelProcessor(EntityProcessor):
         
     def build_search_domain(self, record, dependencies):
         model_name = record.get('AC_MODEL')
-        if not model_name or not dependencies or 'make_id' not in dependencies:
+        if not model_name:
             return False
             
         return [
             ('name', '=', model_name),
-            ('make_id', '=', dependencies['make_id'])
         ]
     
     def _normalize_boolean(self, value):
@@ -417,8 +416,6 @@ class FlightProcessor(EntityProcessor):
         dep_icao = record.get('AF_DEP')
         arr_icao = record.get('AF_ARR')
         date_str = record.get('PILOTLOG_DATE')
-        
-        _logger.info(f"Processing flight: Date={date_str}, From={dep_icao}, To={arr_icao}, Reg={registration}")
         
         if not all([registration, dep_icao, arr_icao]):
             _logger.warning(f"Skipping: Missing required fields - Date={date_str}, From={dep_icao}, To={arr_icao}, Reg={registration}")
