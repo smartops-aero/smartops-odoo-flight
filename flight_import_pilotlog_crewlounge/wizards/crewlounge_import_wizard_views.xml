@@ -12,6 +12,8 @@
                         <field name="file" widget="binary" filename="filename"/>
                         <field name="filename" invisible="1"/>
                         <field name="delimiter"/>
+                        <field name="partner_id" options="{'no_create': True}" 
+                            placeholder="Select pilot for flight remarks"/>
                     </group>
                     
                     <group string="Statistics" attrs="{'invisible': [('total_rows', '=', 0)]}">
@@ -21,6 +23,8 @@
                         <field name="aircraft_count" readonly="1"/>
                         <field name="aerodromes_count" readonly="1"/>
                         <field name="flights_count" readonly="1"/>
+                        <field name="remarks_count" readonly="1" 
+                            attrs="{'invisible': [('partner_id', '=', False)]}"/>
                         <field name="skipped_count" readonly="1"/>
                         <field name="failed_count" readonly="1"/>
                     </group>
