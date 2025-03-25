@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_base_import_pipeline_manager,base.import.pipeline manager,model_base_import_pipeline,base.group_system,1,1,1,1
-access_base_import_pipeline_user,base.import.pipeline user,model_base_import_pipeline,base.group_user,1,0,0,0
-access_base_import_pipeline_result_manager,base.import.pipeline.result manager,model_base_import_pipeline_result,base.group_system,1,1,1,1
-access_base_import_pipeline_result_user,base.import.pipeline.result user,model_base_import_pipeline_result,base.group_user,1,0,0,0
