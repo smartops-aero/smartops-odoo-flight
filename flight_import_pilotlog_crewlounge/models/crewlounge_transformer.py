@@ -7,13 +7,13 @@ from datetime import datetime
 _logger = logging.getLogger(__name__)
 
 
-class FlightImportTransformer(models.Model):
-    _inherit = "flight.import.transformer"
+class FlightImportPIlotlogTransformer(models.Model):
+    _inherit = "flight.import.pilotlog.transformer"
 
     @api.model
     def _get_available_implementations(self):
         """Add CrewLounge to available implementations"""
-        implementations = super(FlightImportTransformer, self)._get_available_implementations()
+        implementations = super(FlightImportPIlotlogTransformer, self)._get_available_implementations()
         return implementations + [('crewlounge', 'CrewLounge Format')]
 
     def flight_flight_crewlounge_transform_data(self, data_rows, headers):

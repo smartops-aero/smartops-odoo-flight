@@ -198,7 +198,7 @@ odoo.define('flight_import_pilotlog.import', function (require) {
             
             // Fetch available transformers for this model
             this._rpc({
-                model: 'flight.import.transformer',
+                model: 'flight.import.pilotlog.transformer',
                 method: 'search_read',
                 args: [[['model_id.model', '=', this.res_model], ['active', '=', true]], ['id', 'name']],
             }).then(transformers => {

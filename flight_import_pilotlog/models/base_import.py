@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class ImportExtended(models.TransientModel):
     _inherit = 'base_import.import'
 
-    transformer_id = fields.Many2one('flight.import.transformer', string='Data Transformer',
+    transformer_id = fields.Many2one('flight.import.pilotlog.transformer', string='Data Transformer',
                                     help="Transformer to use for data conversion")
     
     base_pilot_id = fields.Many2one('res.partner', string='Base Pilot',

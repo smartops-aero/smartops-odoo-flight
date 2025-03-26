@@ -6,8 +6,8 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-class FlightImportTransformer(models.Model):
-    _name = "flight.import.transformer"
+class FlightImportPIlotlogTransformer(models.Model):
+    _name = "flight.import.pilotlog.transformer"
     _inherit = ["mail.thread"]
     _description = "Flight Import Transformer"
 
