@@ -22,6 +22,7 @@ class FlightAircraftClass(models.Model):
     )
 
     name = fields.Char("Aircraft class")
+    model_ids = fields.One2many("flight.aircraft.model","class_id", "Aircraft Models")
 
 
 class FlightAircraftMake(models.Model):
@@ -29,6 +30,8 @@ class FlightAircraftMake(models.Model):
     _description = "Aircraft Make"
 
     name = fields.Char()
+
+    model_ids = fields.One2many("flight.aircraft.model","make_id", "Aircraft Models")
 
 
 class FlightAircraftModelTag(models.Model):
@@ -82,6 +85,7 @@ class FlightAircraftModel(models.Model):
     tag_ids = fields.Many2many("flight.aircraft.model.tag")
 
 
+
 class FlightAircraft(models.Model):
     _name = "flight.aircraft"
     _description = "Aircraft"
@@ -126,6 +130,7 @@ class FlightAircraft(models.Model):
         required=True,
         tracking=True,
     )
+    flight_ids = fields.One2many("flight.flight", "aircraft_id", string="Flights")
 
     _sql_constraints = [
         (
@@ -134,3 +139,4 @@ class FlightAircraft(models.Model):
             "Aircraft with this registration number already exists!",
         )
     ]
+    
