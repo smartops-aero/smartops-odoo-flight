@@ -374,3 +374,8 @@ class ImportExtended(models.TransientModel):
         
         # Proceed with normal import
         return super(ImportExtended, self).execute_import(fields, columns, options, dryrun)
+    @api.model
+    def update_transformation_preview(self, id):
+        """Public method that can be called remotely"""
+        record = self.browse(id)
+        return record._onchange_transformation_type()

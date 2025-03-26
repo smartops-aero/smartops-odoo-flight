@@ -11,12 +11,14 @@ odoo.define('flight_import.import', function (require) {
         events: _.extend({}, DataImport.prototype.events, {
             'change select.flight_import_transformation': function (e) {
                 this.transformation_type = $(e.currentTarget).val();
+                
+                // First, update the transformation type on the server
                 this._rpc({
                     model: 'base_import.import',
                     method: 'write',
                     args: [[this.id], {transformation_type: this.transformation_type}],
                 }).then(() => {
-                    // Reload preview with transformation
+                    // Then, if transformation is active, update preview
                     if (this.transformation_type !== 'none') {
                         // Show loading indicator
                         $.blockUI({message: qweb.render('base_import.progressDialog', {
@@ -24,9 +26,10 @@ odoo.define('flight_import.import', function (require) {
                         })});
                         $(document.body).addClass('o_ui_blocked');
                         
+                        // Call the transformation preview method once
                         this._rpc({
                             model: 'base_import.import',
-                            method: '_onchange_transformation_type',
+                            method: 'update_transformation_preview',
                             args: [[this.id]],
                         }).then(() => {
                             // Remove loading indicator
