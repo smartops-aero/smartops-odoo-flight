@@ -1,0 +1,4 @@
+id,date,aircraft_id/registration,departure_id/icao,arrival_id/icao,pilot_time_ids/id,pilot_time_ids/partner_id/id,pilot_time_ids/code_id/id,pilot_time_ids/duration
+flight_import_001,2025-03-28,N12345,KJFK,EGLL,time_001,base.partner_admin,flight_pilotlog.flight_pilot_time_code_pic,2.5
+flight_import_001,2025-03-28,N12345,KJFK,EGLL,time_001,base.partner_admin,flight_pilotlog.flight_pilot_time_code_sic,1.0
+flight_import_002,2025-03-29,G-ABCD,EGLL,KJFK,time_004,base.partner_admin,flight_pilotlog.flight_pilot_time_code_pic,2.7
