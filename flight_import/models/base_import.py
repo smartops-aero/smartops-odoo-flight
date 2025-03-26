@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-import base64
-import csv
-import io
-import tempfile
 import logging
-
+from datetime import datetime
+import io
+import csv
+import base64
+import itertools
 _logger = logging.getLogger(__name__)
 
 class ImportExtended(models.TransientModel):
@@ -17,365 +15,273 @@ class ImportExtended(models.TransientModel):
     transformation_type = fields.Selection([
         ('none', 'No Transformation'),
         ('crewlounge', 'CrewLounge Format')
-    ], string='Transformation', default='none')
+    ], string='Transformation', default='none', required=True)
     
-    base_pilot_id = fields.Many2one('res.partner', string='Base Pilot', 
+    base_pilot_id = fields.Many2one('res.partner', string='Base Pilot',
                                    help="Default pilot to use for imported flights")
-    
-    @api.onchange('base_pilot_id')
-    def _onchange_base_pilot_id(self):
-        """Update context when base pilot changes"""
-        if self.base_pilot_id:
-            self.env.context = dict(self.env.context, default_base_pilot_id=self.base_pilot_id.id)
-    
-    @api.onchange('transformation_type')
-    def _onchange_transformation_type(self):
-        """When transformation type changes, prepare the transformation preview"""
-        if self.res_model != 'flight.flight' or not self.file or self.transformation_type == 'none':
-            return
-            
-        if self.transformation_type == 'crewlounge':
-            self._prepare_crewlounge_preview()
-    
-    def _prepare_crewlounge_preview(self):
-        """Prepare a preview of the CrewLounge transformation"""
-        if not self.file:
-            return
-            
-        # Get file content
-        file_content = base64.b64decode(self.file)
-        
-        # Parse options
-        options = self.import_options()
-        encoding = options.get('encoding', 'utf-8')
-        separator = options.get('separator', ',')
-        quoting = options.get('quoting', '"')
-        
-        # Parse the file into a list of lists
-        try:
-            reader = csv.reader(io.StringIO(file_content.decode(encoding)), 
-                               delimiter=separator,
-                               quotechar=quoting)
-            crewlounge_data = [row for row in reader]
-            
-            # Keep only first few rows for preview
-            preview_data = crewlounge_data[:10] if len(crewlounge_data) > 10 else crewlounge_data
-            
-            # Create temporary transformed file for preview
-            transformed_data = self._transform_crewlounge_to_odoo(preview_data, is_preview=True)
-            
-            if transformed_data:
-                # Create a temporary file with the transformed data
-                output = io.StringIO()
-                writer = csv.writer(output, quoting=csv.QUOTE_MINIMAL)
-                for row in transformed_data:
-                    writer.writerow(row)
-                
-                # Update the file content temporarily for preview
-                # We'll do the real transformation during execute_import
-                temp_file = base64.b64encode(output.getvalue().encode('utf-8'))
-                
-                # Store original file content to restore it later
-                self.env.context = dict(
-                    self.env.context, 
-                    original_file=self.file,
-                    original_file_name=self.file_name,
-                    preview_file=temp_file,
-                    preview_file_name=self.file_name.rsplit('.', 1)[0] + '_transformed.csv'
-                )
-                
-                # Set the transformed file for preview
-                self.file = temp_file
-                self.file_name = self.file_name.rsplit('.', 1)[0] + '_transformed_preview.csv'
-                
-                # Update import options
-                options['has_headers'] = True
-                options['separator'] = ','
-                options['quoting'] = '"'
-        
-        except Exception as e:
-            _logger.error("Error preparing CrewLounge preview: %s", e)
-            return {
-                'warning': {
-                    'title': _("Transformation Preview Error"),
-                    'message': _("Could not prepare transformation preview: %s") % str(e)
-                }
-            }
 
-    def _transform_crewlounge_to_odoo(self, crewlounge_data, is_preview=False):
-        """
-        Transform CrewLounge CSV data to Odoo-compatible format for flight.flight model
-        
-        :param crewlounge_data: List of lists containing the CrewLounge data
-        :param is_preview: Whether this is a preview transformation
-        :return: Transformed data as a list of lists
-        """
-        if not crewlounge_data or len(crewlounge_data) < 2:  # Need at least header + one data row
-            return []
-        
-        # Create header for Odoo format
-        odoo_header = [
-            'id', 'date', 'aircraft_id/registration', 'departure_id/icao', 'arrival_id/icao', 
-            'remark_ids/id', 'remark_ids/partner_id/id', 'remark_ids/remark', 
-            'pilot_time_ids/id', 'pilot_time_ids/partner_id/id', 'pilot_time_ids/code_id/id', 'pilot_time_ids/duration',
-            'pilot_event_ids/id', 'pilot_event_ids/partner_id/id', 'pilot_event_ids/event_code_id/id', 'pilot_event_ids/count'
-        ]
-        
-        odoo_data = [odoo_header]
-        
-        # Get base pilot information
-        base_pilot = self.base_pilot_id or self.env.user.partner_id
-        partner_xml_id = self.env['ir.model.data'].search([
-            ('model', '=', 'res.partner'),
-            ('res_id', '=', base_pilot.id)
-        ]).complete_name or 'base.partner_admin'
-        
-        # Create a header map for easier access
-        header_map = {col: idx for idx, col in enumerate(crewlounge_data[0])}
-        
-        # Process data rows
-        for idx, row in enumerate(crewlounge_data[1:], 1):
-            # Skip if this is just a preview and we've processed enough rows
-            if is_preview and idx > 5:
-                break
-                
-            # Create a dictionary for easier access - handle variable length rows
-            crew_dict = {}
-            for col_name, col_idx in header_map.items():
-                if col_idx < len(row):
-                    crew_dict[col_name] = row[col_idx]
-                else:
-                    crew_dict[col_name] = ""
-            
-            flight_id = f"flight_import_{idx:03d}"
-            
-            # Basic flight data
-            date = crew_dict.get('PILOTLOG_DATE', '')
-            if date:
-                # Convert date format if needed (assuming it's in MM/DD/YYYY)
-                try:
-                    month, day, year = date.split('/')
-                    date = f"{year}-{month.zfill(2)}-{day.zfill(2)}"
-                except (ValueError, AttributeError):
-                    # Keep as is if not in expected format
-                    pass
-            
-            aircraft_reg = crew_dict.get('AC_REG', '')
-            departure = crew_dict.get('AF_DEP', '')
-            arrival = crew_dict.get('AF_ARR', '')
-            remarks = crew_dict.get('REMARKS', '')
-            
-            # Time data - convert from minutes to hours if needed
-            pic_time = self._safe_convert_time(crew_dict.get('TIME_PIC', 0))
-            sic_time = self._safe_convert_time(crew_dict.get('TIME_SIC', 0))
-            night_time = self._safe_convert_time(crew_dict.get('TIME_NIGHT', 0))
-            
-            # Event data
-            to_day = int(float(crew_dict.get('TO_DAY', 0)) if crew_dict.get('TO_DAY') else 0)
-            to_night = int(float(crew_dict.get('TO_NIGHT', 0)) if crew_dict.get('TO_NIGHT') else 0)
-            ldg_day = int(float(crew_dict.get('LDG_DAY', 0)) if crew_dict.get('LDG_DAY') else 0)
-            ldg_night = int(float(crew_dict.get('LDG_NIGHT', 0)) if crew_dict.get('LDG_NIGHT') else 0)
-            
-            # Create base row with flight info
-            base_row = [
-                flight_id, date, aircraft_reg, departure, arrival
-            ]
-            
-            # Add remark if exists
-            if remarks:
-                remark_row = base_row + [
-                    f"remark_{idx:03d}", partner_xml_id, remarks, "", "", "", "", "", "", "", ""
-                ]
-                odoo_data.append(remark_row)
-            else:
-                # Add empty row to maintain structure
-                empty_remark_row = base_row + ["", "", "", "", "", "", "", "", "", "", ""]
-                odoo_data.append(empty_remark_row)
-            
-            # Add PIC time if exists
-            if pic_time > 0:
-                pic_row = base_row + [
-                    "", "", "", f"time_{(idx*10)+1:03d}", partner_xml_id, 
-                    "flight_pilotlog.flight_pilot_time_code_pic", str(pic_time), "", "", "", ""
-                ]
-                odoo_data.append(pic_row)
-            
-            # Add SIC time if exists
-            if sic_time > 0:
-                sic_row = base_row + [
-                    "", "", "", f"time_{(idx*10)+2:03d}", partner_xml_id, 
-                    "flight_pilotlog.flight_pilot_time_code_sic", str(sic_time), "", "", "", ""
-                ]
-                odoo_data.append(sic_row)
-            
-            # Add Night time if exists
-            if night_time > 0:
-                night_row = base_row + [
-                    "", "", "", f"time_{(idx*10)+3:03d}", partner_xml_id, 
-                    "flight_pilotlog.flight_pilot_time_code_night", str(night_time), "", "", "", ""
-                ]
-                odoo_data.append(night_row)
-            
-            # Add takeoff day if exists
-            if to_day > 0:
-                to_day_row = base_row + [
-                    "", "", "", "", "", "", "", f"event_{(idx*10)+1:03d}", partner_xml_id, 
-                    "flight_pilotlog.flight_pilot_event_code_to_day", str(to_day)
-                ]
-                odoo_data.append(to_day_row)
-            
-            # Add takeoff night if exists
-            if to_night > 0:
-                to_night_row = base_row + [
-                    "", "", "", "", "", "", "", f"event_{(idx*10)+2:03d}", partner_xml_id, 
-                    "flight_pilotlog.flight_pilot_event_code_to_night", str(to_night)
-                ]
-                odoo_data.append(to_night_row)
-            
-            # Add landing day if exists
-            if ldg_day > 0:
-                ldg_day_row = base_row + [
-                    "", "", "", "", "", "", "", f"event_{(idx*10)+3:03d}", partner_xml_id, 
-                    "flight_pilotlog.flight_pilot_event_code_ldg_day", str(ldg_day)
-                ]
-                odoo_data.append(ldg_day_row)
-            
-            # Add landing night if exists
-            if ldg_night > 0:
-                ldg_night_row = base_row + [
-                    "", "", "", "", "", "", "", f"event_{(idx*10)+4:03d}", partner_xml_id, 
-                    "flight_pilotlog.flight_pilot_event_code_ldg_night", str(ldg_night)
-                ]
-                odoo_data.append(ldg_night_row)
-        
-        return odoo_data
-
-    def _safe_convert_time(self, time_value):
-        """Safely convert time values to float hours"""
-        try:
-            # Try to convert to float first
-            time_float = float(time_value)
-            # Check if it's likely in minutes (common in pilot logs)
-            if time_float > 10:  # Assume it's minutes if > 10
-                return time_float / 60
-            return time_float
-        except (ValueError, TypeError):
-            return 0
-
-    def parse_preview(self, options, count=10):
-        """Override to handle transformation preview"""
-        # Check if we need to restore original file for transformation preview
-        ctx = self.env.context
-        if self.res_model == 'flight.flight' and ctx.get('original_file') and self.transformation_type != 'none':
-            # Restore original file for actual parsing
-            original_file = ctx.get('original_file')
-            original_file_name = ctx.get('original_file_name')
-            
-            # Store current file
-            current_file = self.file
-            current_file_name = self.file_name
-            
-            # Set original file
-            self.file = original_file
-            self.file_name = original_file_name
-            
-            # Get result
-            result = super(ImportExtended, self).parse_preview(options, count)
-            
-            # Restore transformed file
-            self.file = current_file
-            self.file_name = current_file_name
-            
-            return result
-        
-        # Normal parse preview
-        result = super(ImportExtended, self).parse_preview(options, count)
-        
-        # Add transformation type if this is flight.flight
-        if hasattr(result, 'get') and self.res_model == 'flight.flight':
-            result['transformation_type'] = self.transformation_type
-            if self.base_pilot_id:
-                result['base_pilot_id'] = {
-                    'id': self.base_pilot_id.id,
-                    'name': self.base_pilot_id.name
-                }
-        
-        return result
-    
-    def execute_import(self, fields, columns, options, dryrun=False):
-        """Override to transform data if needed"""
-        # Check if we need to transform the data
-        if self.res_model == 'flight.flight' and self.transformation_type != 'none':
-            # Get original file content if we're in preview mode
-            ctx = self.env.context
-            file_content = base64.b64decode(ctx.get('original_file', self.file))
-            
-            # Parse the file
-            encoding = options.get('encoding', 'utf-8')
-            separator = options.get('separator', ',')
-            quoting = options.get('quoting', '"')
-            
-            try:
-                reader = csv.reader(io.StringIO(file_content.decode(encoding)), 
-                                  delimiter=separator,
-                                  quotechar=quoting)
-                source_data = [row for row in reader]
-                
-                # Transform based on type
-                if self.transformation_type == 'crewlounge':
-                    transformed_data = self._transform_crewlounge_to_odoo(source_data)
-                else:
-                    transformed_data = source_data
-                
-                if not transformed_data:
-                    return {
-                        'messages': [{
-                            'type': 'error',
-                            'message': _("Failed to transform data to Odoo format."),
-                            'record': False
-                        }]
-                    }
-                
-                # Write to a new CSV file
-                output = io.StringIO()
-                writer = csv.writer(output, quoting=csv.QUOTE_MINIMAL)
-                for row in transformed_data:
-                    writer.writerow(row)
-                
-                # Update the import object with the new file
-                self.file = base64.b64encode(output.getvalue().encode('utf-8'))
-                self.file_name = (ctx.get('original_file_name', '') or self.file_name).rsplit('.', 1)[0] + '_transformed.csv'
-                
-                # Update options for the new file
-                options['has_headers'] = True
-                options['separator'] = ','
-                options['quoting'] = '"'
-                
-                # Setup field mappings for the transformed file
-                odoo_fields = [
-                    'id', 'date', 'aircraft_id/registration', 'departure_id/icao', 'arrival_id/icao', 
-                    'remark_ids/id', 'remark_ids/partner_id/id', 'remark_ids/remark', 
-                    'pilot_time_ids/id', 'pilot_time_ids/partner_id/id', 'pilot_time_ids/code_id/id', 'pilot_time_ids/duration',
-                    'pilot_event_ids/id', 'pilot_event_ids/partner_id/id', 'pilot_event_ids/event_code_id/id', 'pilot_event_ids/count'
-                ]
-                
-                fields = odoo_fields
-                columns = odoo_fields
-            
-            except Exception as e:
-                _logger.error("Error transforming data: %s", e)
-                return {
-                    'messages': [{
-                        'type': 'error',
-                        'message': _("Error transforming data: %s") % str(e),
-                        'record': False
-                    }]
-                }
-        
-        # Proceed with normal import
-        return super(ImportExtended, self).execute_import(fields, columns, options, dryrun)
     @api.model
     def update_transformation_preview(self, id):
-        """Public method that can be called remotely"""
+        """Log and skip transformation for now"""
+        _logger.info("update_transformation_preview called with ID: %s", id)
         record = self.browse(id)
-        return record._onchange_transformation_type()
+        _logger.info("Record: %s, Model: %s, Transformation Type: %s",
+                     record, record.res_model, record.transformation_type)
+        
+        if record.res_model != 'flight.flight':
+            _logger.info("Skipping: Not importing into flight.flight model")
+            return {'status': 'success'}
+
+        try:
+            if not record.file:
+                _logger.warning("No file data found for record ID: %s", id)
+                return {'status': 'error', 'message': 'No file data available'}
+
+            _logger.info("File found for record ID: %s, proceeding with original data", id)
+            return {'status': 'success'}
+        except Exception as e:
+            _logger.exception("Error in update_transformation_preview: %s", e)
+            return {'status': 'error', 'message': str(e)}
+
+    def parse_preview(self, options, count=10):
+        """Follow base parse_preview pattern with optional transformation"""
+        self.ensure_one()
+        _logger.info("parse_preview called with transformation_type: %s", self.transformation_type)
+        
+        if self.transformation_type != 'crewlounge':
+            return super(ImportExtended, self).parse_preview(options, count)
+        else:
+
+            try:
+                fields_tree = self.get_fields_tree(self.res_model)
+                file_length, rows = self._read_file(options)
+                if file_length <= 0:
+                    raise UserError(_("Import file has no content or is corrupt"))
+                    
+                # Apply transformation if crewlounge is selected
+                if self.transformation_type == 'crewlounge':
+                    _logger.info("Applying CrewLounge transformation")
+                    
+                    # Extract headers if present
+                    original_headers = []
+                    if options.get('has_headers') and rows:
+                        original_headers = rows[0]
+                        _logger.info("Original headers: %s", original_headers)
+                    
+                    # Transform the data
+                    rows = self._transform_crewlounge_to_odoo(rows, original_headers)
+                    _logger.info("Transformation complete, got %s rows", len(rows))
+                    
+                    # Force has_headers to True for transformed data
+                    options = dict(options)
+                    options['has_headers'] = True
+                
+                # Continue with standard processing, same as base implementation
+                preview = rows[:count]
+                
+                # Get file headers
+                if options.get('has_headers') and preview:
+                    # We need the header types before matching columns to fields
+                    headers = preview.pop(0)
+                    header_types = self._extract_headers_types(headers, preview, options)
+                else:
+                    header_types, headers = {}, []
+                    
+                # Get matches: the ones already selected by the user or propose a new matching.
+                matches = {}
+                # If user checked to the advanced mode, we re-parse the file but we keep the mapping "as is".
+                # No need to make another mapping proposal
+                if options.get('keep_matches') and options.get('fields'):
+                    for index, match in enumerate(options.get('fields', [])):
+                        if match:
+                            matches[index] = match.split('/')
+                elif options.get('has_headers'):
+                    matches = self._get_mapping_suggestions(headers, header_types, fields_tree)
+                    # remove header_name for matches keys as tuples are no supported in json.
+                    # and remove distance from suggestion (keep only the field path) as not used at client side.
+                    matches = {
+                        header_key[0]: suggestion['field_path']
+                        for header_key, suggestion in matches.items()
+                        if suggestion
+                    }
+                    
+                # compute if we should activate advanced mode or not:
+                # if was already activated of if file contains "relational fields".
+                if options.get('keep_matches'):
+                    advanced_mode = options.get('advanced')
+                else:
+                    # Check is label contain relational field
+                    from odoo import models
+                    has_relational_header = any(len(models.fix_import_export_id_paths(col)) > 1 for col in headers)
+                    # Check is matches fields have relational field
+                    has_relational_match = any(len(match) > 1 for field, match in matches.items() if match)
+                    advanced_mode = has_relational_header or has_relational_match
+                    
+                # Take first non null values for each column to show preview to users.
+                column_example = []
+                if preview and preview[0]:  # Ensure we have data to process
+                    for column_index, _unused in enumerate(preview[0]):
+                        vals = []
+                        for record in preview:
+                            if record[column_index]:
+                                vals.append("%s%s" % (record[column_index][:50], "..." if len(record[column_index]) > 50 else ""))
+                            if len(vals) == 5:
+                                break
+                        column_example.append(
+                            vals or
+                            [""]  # blank value if no example have been found at all for the current column
+                        )
+                        
+                # Batch management
+                batch = False
+                batch_cutoff = options.get('limit')
+                if batch_cutoff:
+                    if count > batch_cutoff:
+                        batch = len(preview) > batch_cutoff
+                    else:
+                        batch = bool(next(
+                            itertools.islice(rows, batch_cutoff - count, None),
+                            None
+                        ))
+                        
+                result = {
+                    'fields': fields_tree,
+                    'matches': matches or False,
+                    'headers': headers or False,
+                    'header_types': list(header_types.values()) if header_types else False,
+                    'preview': column_example,
+                    'options': options,
+                    'advanced_mode': advanced_mode,
+                    'debug': self.user_has_groups('base.group_no_one'),
+                    'batch': batch,
+                    'file_length': file_length
+                }
+                
+                # Add transformation info if applicable
+                if self.transformation_type:
+                    result['transformation_type'] = self.transformation_type
+                    result['is_transformed'] = self.transformation_type == 'crewlounge'
+                    
+                # Add base_pilot_id if available
+                if self.base_pilot_id:
+                    result['base_pilot_id'] = {
+                        'id': self.base_pilot_id.id,
+                        'name': self.base_pilot_id.name
+                    }
+                    
+                return result
+                
+            except Exception as error:
+                _logger.exception("Error during parsing preview: %s", error)
+                preview = None
+                if self.file_type == 'text/csv' and self.file:
+                    preview = self.file[:1024].decode('iso-8859-1')
+                return {
+                    'error': str(error),
+                    'preview': preview,
+                    'transformation_type': self.transformation_type,
+                    'base_pilot_id': {'id': self.base_pilot_id.id, 'name': self.base_pilot_id.name} if self.base_pilot_id else False
+                }
+
+    def execute_import(self, fields, columns, options, dryrun=False):
+        """Log and delegate to parent method"""
+        self.ensure_one()  # Ensure singleton
+        _logger.info("execute_import called for record ID: %s with fields: %s, columns: %s, options: %s, dryrun: %s",
+                     self.id, fields, columns, options, dryrun)
+        
+        try:
+            result = super(ImportExtended, self).execute_import(fields, columns, options, dryrun)
+            _logger.info("Import executed successfully, result: %s", result)
+            return result
+        except Exception as e:
+            _logger.exception("Error in execute_import: %s", e)
+            raise
+
+    def _transform_crewlounge_to_odoo(self, data_rows, headers):
+        """Transform CrewLounge data to Odoo flight.flight format
+        
+        Returns a list where:
+        - First element is the list of transformed headers
+        - Each subsequent element is a row of data matching those headers
+        """
+        _logger.info("Starting transformation of CrewLounge data with %d rows", len(data_rows))
+        
+        # Define the transformed headers we want in our output
+        transformed_headers = [
+            'id', 'date', 'aircraft_id/registration', 'departure_id/icao', 'arrival_id/icao',
+            'remarks'  # Simplified for now - we'll use a simple text field instead of a relation
+        ]
+        
+        # Create a mapping of original headers to their indices
+        header_map = {}
+        if headers:
+            for idx, col in enumerate(headers):
+                header_map[col.upper()] = idx
+            _logger.info("Created header map: %s", header_map)
+        
+        # Create the result with headers as the first row
+        transformed_data = [transformed_headers]
+        
+        # Process each row of the original data
+        for idx, row in enumerate(data_rows):
+            # Skip header row if present in data_rows
+            if idx == 0 and headers and row == headers:
+                continue
+                
+            # Skip empty rows
+            if not row or all(not cell for cell in row):
+                continue
+                
+            # Make sure row has enough elements
+            if len(row) < max(header_map.values()) + 1 if header_map else 1:
+                _logger.warning("Row %d has insufficient columns, skipping", idx)
+                continue
+                
+            # Generate a unique ID for this flight
+            flight_id = f"flight_import_{idx:03d}"
+            
+            # Extract and format date
+            date_str = ''
+            date_idx = header_map.get('PILOTLOG_DATE', 0)
+            if date_idx < len(row) and row[date_idx]:
+                try:
+                    date_str = datetime.strptime(row[date_idx], '%d-%m-%Y').strftime('%Y-%m-%d')
+                except (ValueError, TypeError) as e:
+                    _logger.warning("Failed to parse date '%s': %s", row[date_idx] if date_idx < len(row) else 'N/A', e)
+            
+            # Extract other basic fields with safety checks
+            aircraft_reg = ''
+            reg_idx = header_map.get('AC_REG')
+            if reg_idx is not None and reg_idx < len(row):
+                aircraft_reg = row[reg_idx] or ''
+                
+            departure = ''
+            dep_idx = header_map.get('AF_DEP')
+            if dep_idx is not None and dep_idx < len(row):
+                departure = row[dep_idx] or ''
+                
+            arrival = ''
+            arr_idx = header_map.get('AF_ARR')
+            if arr_idx is not None and arr_idx < len(row):
+                arrival = row[arr_idx] or ''
+                
+            remarks = ''
+            rem_idx = header_map.get('REMARKS')
+            if rem_idx is not None and rem_idx < len(row):
+                remarks = row[rem_idx] or ''
+            
+            # Create a transformed row with all required fields
+            transformed_row = [
+                flight_id,
+                date_str,
+                aircraft_reg,
+                departure,
+                arrival,
+                remarks
+            ]
+            
+            # Add this row to our transformed data
+            transformed_data.append(transformed_row)
+        
+        _logger.info("Transformation complete, generated %d rows", len(transformed_data))
+        return transformed_data
