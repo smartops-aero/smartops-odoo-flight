@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from odoo.addons.base_import.models.base_import import ImportValidationError
 import logging
 from datetime import datetime
-import io
-import csv
-import base64
 import itertools
+import operator
 _logger = logging.getLogger(__name__)
 
 class ImportExtended(models.TransientModel):
@@ -196,6 +195,67 @@ class ImportExtended(models.TransientModel):
         except Exception as e:
             _logger.exception("Error in execute_import: %s", e)
             raise
+
+    @api.model
+    def _convert_import_data(self, fields, options):
+        """Override to apply transformation before conversion"""
+        # Apply transformation if crewlounge is selected
+        if self.transformation_type == 'crewlounge':
+            _logger.info("Applying CrewLounge transformation for import")
+            
+            # Read the original file data
+            file_length, rows_to_import = self._read_file(options)
+            _logger.info("Read %d rows from file", file_length)
+            
+            # Extract headers if present
+            original_headers = []
+            if options.get('has_headers') and rows_to_import:
+                original_headers = rows_to_import[0]
+                _logger.info("Original headers: %s", original_headers)
+            
+            # Transform the data
+            transformed_rows = self._transform_crewlounge_to_odoo(rows_to_import, original_headers)
+            _logger.info("Transformation complete, got %s rows", len(transformed_rows))
+            
+            # Now continue with the standard processing, but using our transformed data
+            # Get indices for non-empty fields
+            indices = [index for index, field in enumerate(fields) if field]
+            if not indices:
+                raise ImportValidationError(_("You must configure at least one field to import"))
+                
+            # If only one index, itemgetter will return an atom rather than a 1-tuple
+            if len(indices) == 1:
+                mapper = lambda row: [row[indices[0]]]
+            else:
+                mapper = operator.itemgetter(*indices)
+                
+            # Get only list of actually imported fields
+            import_fields = [f for f in fields if f]
+            
+            # Skip the header row from the transformed data
+            rows_to_process = transformed_rows[1:] if options.get('has_headers') else transformed_rows
+            
+            # Ensure the transformed data has the right number of columns
+            if transformed_rows and len(transformed_rows[0]) != len(fields):
+                _logger.warning("Transformed data has %d columns but fields has %d elements. This may cause issues.",
+                               len(transformed_rows[0]), len(fields))
+                
+                # If the transformed data has fewer columns than fields, pad with empty strings
+                if len(transformed_rows[0]) < len(fields):
+                    rows_to_process = [row + [''] * (len(fields) - len(row)) for row in rows_to_process]
+                    
+            # Apply the mapper to extract only the fields we want
+            data = [
+                list(row) for row in map(mapper, rows_to_process)
+                # don't try inserting completely empty rows
+                if any(row)
+            ]
+            
+            # slicing needs to happen after filtering out empty rows
+            return data[options.get('skip'):], import_fields
+        
+        # For all other cases, use the standard implementation
+        return super(ImportExtended, self)._convert_import_data(fields, options)
 
     def _transform_crewlounge_to_odoo(self, data_rows, headers):
         """Transform CrewLounge data to Odoo flight.flight format
