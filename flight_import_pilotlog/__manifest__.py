@@ -12,7 +12,7 @@ Base module for importing pilot log data with flexible transformers.
     'depends': ['base_import', 'flight'],
     'data': [
         'security/ir.model.access.csv',
-        'views/flight_import_transformer_views.xml',
+        'views/flight_import_pilotlog_transformer_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

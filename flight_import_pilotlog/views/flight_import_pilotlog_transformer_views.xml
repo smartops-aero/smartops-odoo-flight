@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Tree View -->
-    <record id="view_flight_import_transformer_tree" model="ir.ui.view">
+    <record id="view_flight_import_pilotlog_transformer_tree" model="ir.ui.view">
         <field name="name">flight.import.pilotlog.transformer.tree</field>
         <field name="model">flight.import.pilotlog.transformer</field>
         <field name="arch" type="xml">
@@ -15,7 +15,7 @@
     </record>
 
     <!-- Form View -->
-    <record id="view_flight_import_transformer_form" model="ir.ui.view">
+    <record id="view_flight_import_pilotlog_transformer_form" model="ir.ui.view">
         <field name="name">flight.import.pilotlog.transformer.form</field>
         <field name="model">flight.import.pilotlog.transformer</field>
         <field name="arch" type="xml">
@@ -46,7 +46,7 @@
     </record>
 
     <!-- Search View -->
-    <record id="view_flight_import_transformer_search" model="ir.ui.view">
+    <record id="view_flight_import_pilotlog_transformer_search" model="ir.ui.view">
         <field name="name">flight.import.pilotlog.transformer.search</field>
         <field name="model">flight.import.pilotlog.transformer</field>
         <field name="arch" type="xml">
@@ -64,11 +64,11 @@
     </record>
 
     <!-- Action -->
-    <record id="action_flight_import_transformer" model="ir.actions.act_window">
+    <record id="action_flight_import_pilotlog_transformer" model="ir.actions.act_window">
         <field name="name">Flight Import Transformers</field>
         <field name="res_model">flight.import.pilotlog.transformer</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="view_flight_import_transformer_search"/>
+        <field name="search_view_id" ref="view_flight_import_pilotlog_transformer_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first flight import transformer
@@ -81,9 +81,9 @@
     </record>
 
     <!-- Menu -->
-    <menuitem id="menu_flight_import_transformer"
+    <menuitem id="menu_flight_import_pilotlog_transformer"
         name="Flight Import Transformers"
         parent="base.menu_custom"
-        action="action_flight_import_transformer"
+        action="action_flight_import_pilotlog_transformer"
         sequence="100"/>
 </odoo>
