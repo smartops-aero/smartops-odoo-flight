@@ -9,7 +9,7 @@ Flight Import PilotLog CrewLounge
 =================================
 Adds support for importing pilot log data from CrewLounge format.
     """,
-    'depends': ['flight_import_pilotlog'],
+    'depends': ['base','flight_import_pilotlog'],
     'data': [
         'data/flight_import_transformer_data.xml',
     ],

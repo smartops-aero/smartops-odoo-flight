@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action -->
+    <record id="action_flight_import_pilotlog_transformer" model="ir.actions.act_window">
+        <field name="name">Flight Import Transformers</field>
+        <field name="res_model">flight.import.pilotlog.transformer</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_flight_import_pilotlog_transformer_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first flight import transformer
+            </p>
+            <p>
+                Flight import transformers allow you to convert data from various formats
+                into the format required by the flight module.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_flight_import_pilotlog_transformer"
+        name="Flight Import Transformers"
+        parent="base.menu_custom"
+        action="action_flight_import_pilotlog_transformer"
+        sequence="100"/>
+</odoo>
