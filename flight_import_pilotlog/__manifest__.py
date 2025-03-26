@@ -17,7 +17,7 @@ Base module for importing pilot log data with flexible transformers.
     ],
     'assets': {
         'web.assets_backend': [
-            'flight_import_pilotlog/static/src/js/import.js',
+            'flight_import_pilotlog/static/src/js/import_action.js',
         ],
     },
     'installable': True,
