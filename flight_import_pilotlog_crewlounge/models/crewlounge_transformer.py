@@ -21,6 +21,21 @@ class FlightImportPIlotlogTransformer(models.Model):
         """Round duration values to a consistent number of decimal places."""
         return round(value, decimals)
 
+    def _standardize_aircraft_name(self, name):
+        """Standardize aircraft name capitalization.
+        
+        Converts names to title case (first letter of each word capitalized).
+        
+        Args:
+            name: The name string to standardize
+            
+        Returns:
+            Properly capitalized name string
+        """
+        if not name:
+            return name
+        return name.title()
+
     def _create_full_model_name(self, make_name, model_name, variant=''):
         """Helper method to create a standardized full model name.
         
@@ -32,6 +47,9 @@ class FlightImportPIlotlogTransformer(models.Model):
         Returns:
             A formatted full model name string
         """
+        # Standardize capitalization
+        make_name = self._standardize_aircraft_name(make_name)
+        
         full_model_name = f"{make_name} {model_name}"
         if variant:
             full_model_name += f" {variant}"
@@ -450,6 +468,9 @@ class FlightImportPIlotlogTransformer(models.Model):
                     continue
                     
                 make_name = str(row[make_idx]).strip()
+                # Standardize capitalization
+                make_name = self._standardize_aircraft_name(make_name)
+                
                 if not make_name or make_name in processed_makes:
                     continue
                     
@@ -585,7 +606,7 @@ class FlightImportPIlotlogTransformer(models.Model):
                     class_id = class_display_names['class_airplane_sel']  # Single-Engine Land
                 
                 # Create IDs for references
-                make_id = make_name
+                make_id = self._standardize_aircraft_name(make_name)
                 model_id = f"model_{make_name.lower().replace(' ', '_')}_{model_name.lower().replace(' ', '_')}"
                 
                 transformed_data.append([
