@@ -30,13 +30,6 @@ class FlightImportPIlotlogTransformer(models.Model):
         """
         _logger.info("Starting CrewLounge data transformation for %d rows", len(data_rows))
 
-        # --- Mappings from CSV Column Name (UPPERCASE) to Odoo Info ---
-        # Assumes flight_pilotlog module XML IDs are loaded
-        # Duration needs conversion from minutes (CSV) to hours (Odoo)
-
-        # Default partner XML ID to use if no base_pilot_id is provided
-        DEFAULT_PARTNER_XMLID = "base.partner_admin"
-
         TIME_CODE_MAPPING = {
             'TIME_TOTAL': ('flight_pilotlog.flight_pilot_time_code_total', 60.0), # Total Block Time
             'TIME_PIC': ('flight_pilotlog.flight_pilot_time_code_pic', 60.0),     # Pilot in Command
