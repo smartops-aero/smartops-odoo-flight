@@ -48,12 +48,19 @@ class FlightImportPIlotlogTransformer(models.Model):
             A formatted full model name string
         """
         # Standardize capitalization
-        make_name = self._standardize_aircraft_name(make_name)
+        make_name = self._standardize_aircraft_name(make_name) if make_name else ""
+        model_name = model_name if model_name else ""
         
-        full_model_name = f"{make_name} {model_name}"
+        # Build the full model name, handling empty components
+        parts = []
+        if make_name:
+            parts.append(make_name)
+        if model_name:
+            parts.append(model_name)
         if variant:
-            full_model_name += f" {variant}"
-        return full_model_name.strip()
+            parts.append(variant)
+            
+        return " ".join(parts)
 
     def flight_flight_crewlounge_transform_data(self, data_rows, headers, import_wizard=None):
         """Transform CrewLounge data to flight.flight format suitable for Odoo import.
@@ -535,17 +542,20 @@ class FlightImportPIlotlogTransformer(models.Model):
                 model_idx = header_map.get('AC_MODEL')
                 variant_idx = header_map.get('AC_VARIANT')
                 
-                # Skip if missing essential data
-                if (make_idx is None or make_idx >= len(row) or not row[make_idx] or
-                    model_idx is None or model_idx >= len(row) or not row[model_idx]):
-                    continue
-                    
-                make_name = str(row[make_idx]).strip()
-                model_name = str(row[model_idx]).strip()
-                variant = str(row[variant_idx]).strip() if variant_idx is not None and variant_idx < len(row) and row[variant_idx] else ''
+                # Extract values with defaults for missing data
+                make_name = ""
+                if make_idx is not None and make_idx < len(row) and row[make_idx]:
+                    make_name = str(row[make_idx]).strip()
+                    # Standardize capitalization for make
+                    make_name = self._standardize_aircraft_name(make_name)
                 
-                # Standardize capitalization
-                make_name = self._standardize_aircraft_name(make_name)
+                model_name = ""
+                if model_idx is not None and model_idx < len(row) and row[model_idx]:
+                    model_name = str(row[model_idx]).strip()
+                
+                variant = ""
+                if variant_idx is not None and variant_idx < len(row) and row[variant_idx]:
+                    variant = str(row[variant_idx]).strip()
                 
                 full_model_name = self._create_full_model_name(make_name, model_name, variant)
                 
@@ -555,8 +565,13 @@ class FlightImportPIlotlogTransformer(models.Model):
                     
                 processed_models.add(full_model_name)
                 
-                # Create unique ID for the model
-                model_id = f"model_{make_name.lower().replace(' ', '_')}_{model_name.lower().replace(' ', '_')}"
+                # Create unique ID for the model - handle empty make_name
+                model_id_parts = []
+                if make_name:
+                    model_id_parts.append(make_name.lower().replace(' ', '_'))
+                model_id_parts.append(model_name.lower().replace(' ', '_'))
+                
+                model_id = f"model_{'_'.join(model_id_parts)}"
                 
                 # Initialize with required fields
                 transformed_row = [
@@ -564,11 +579,8 @@ class FlightImportPIlotlogTransformer(models.Model):
                     full_model_name # name
                 ]
                 
-                # Add make_id if available (optional)
-                if make_name:
-                    transformed_row.append(make_name)  # make_id (name lookup)
-                else:
-                    transformed_row.append('')  # Empty make_id
+                # Add make_id (optional)
+                transformed_row.append(make_name)  # make_id (name lookup) - can be empty
                 
                 # Determine class_id if possible (optional)
                 class_id = ''
