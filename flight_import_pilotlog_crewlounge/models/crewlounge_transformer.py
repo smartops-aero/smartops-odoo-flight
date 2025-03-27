@@ -534,8 +534,6 @@ class FlightImportPIlotlogTransformer(models.Model):
                 make_idx = header_map.get('AC_MAKE')
                 model_idx = header_map.get('AC_MODEL')
                 variant_idx = header_map.get('AC_VARIANT')
-                engine_type_idx = header_map.get('AC_ENGTYPE')
-                tailwheel_idx = header_map.get('AC_TAILWHEEL')
                 
                 # Skip if missing essential data
                 if (make_idx is None or make_idx >= len(row) or not row[make_idx] or
@@ -546,23 +544,41 @@ class FlightImportPIlotlogTransformer(models.Model):
                 model_name = str(row[model_idx]).strip()
                 variant = str(row[variant_idx]).strip() if variant_idx is not None and variant_idx < len(row) and row[variant_idx] else ''
                 
+                # Standardize capitalization
+                make_name = self._standardize_aircraft_name(make_name)
+                
                 full_model_name = self._create_full_model_name(make_name, model_name, variant)
                 
-                # Skip if already processed
-                if full_model_name in processed_models:
+                # Skip if empty or already processed
+                if not full_model_name or full_model_name in processed_models:
                     continue
                     
                 processed_models.add(full_model_name)
                 
-                # Extract engine type and count
-                engine_type_idx = header_map.get('AC_ENGTYPE')
-                engine_type = str(row[engine_type_idx]).strip() if engine_type_idx is not None and engine_type_idx < len(row) and row[engine_type_idx] else ''
-                odoo_engine_type = engine_type_mapping.get(engine_type, '')
+                # Create unique ID for the model
+                model_id = f"model_{make_name.lower().replace(' ', '_')}_{model_name.lower().replace(' ', '_')}"
+                
+                # Initialize with required fields
+                transformed_row = [
+                    model_id,       # id
+                    full_model_name # name
+                ]
+                
+                # Add make_id if available (optional)
+                if make_name:
+                    transformed_row.append(make_name)  # make_id (name lookup)
+                else:
+                    transformed_row.append('')  # Empty make_id
+                
+                # Determine class_id if possible (optional)
+                class_id = ''
                 
                 # Extract engine count (Single/Multi)
                 engines_idx = header_map.get('AC_ENGINES')
-                engine_count = str(row[engines_idx]).strip() if engines_idx is not None and engines_idx < len(row) and row[engines_idx] else ''
-                is_multi_engine = engine_count.lower() == 'multi'
+                is_multi_engine = False
+                if engines_idx is not None and engines_idx < len(row) and row[engines_idx]:
+                    engine_count = str(row[engines_idx]).strip()
+                    is_multi_engine = engine_count.lower() == 'multi'
                 
                 # Check if seaplane
                 sea_idx = header_map.get('AC_SEA')
@@ -570,15 +586,6 @@ class FlightImportPIlotlogTransformer(models.Model):
                 if sea_idx is not None and sea_idx < len(row) and row[sea_idx]:
                     is_seaplane = str(row[sea_idx]).strip().upper() in ('TRUE', 'YES', '1')
                 
-                # Determine gear type
-                tailwheel_idx = header_map.get('AC_TAILWHEEL')
-                is_tailwheel = False
-                if tailwheel_idx is not None and tailwheel_idx < len(row):
-                    is_tailwheel = str(row[tailwheel_idx]).strip().upper() in ('TRUE', 'YES', '1')
-                    
-                gear_type = 'fixed_tailwheel' if is_tailwheel else 'fixed_tricycle'
-                
-                # Map to the correct class ID based on aircraft category and characteristics
                 # Map class IDs to display names
                 class_display_names = {
                     'class_airplane_mes': 'Multi-Engine Sea',
@@ -595,28 +602,37 @@ class FlightImportPIlotlogTransformer(models.Model):
                     'class_weight_shift_control': 'Weight Shift Control'
                 }
                 
-                class_id = ''
+                # Only set class_id if we have enough information to determine it
                 if is_multi_engine and is_seaplane:
                     class_id = class_display_names['class_airplane_mes']  # Multi-Engine Sea
                 elif is_multi_engine:
                     class_id = class_display_names['class_airplane_mel']  # Multi-Engine Land
                 elif is_seaplane:
                     class_id = class_display_names['class_airplane_ses']  # Single-Engine Sea
-                else:
+                elif not is_multi_engine:  # Default to SEL if we know it's not multi-engine
                     class_id = class_display_names['class_airplane_sel']  # Single-Engine Land
                 
-                # Create IDs for references
-                make_id = self._standardize_aircraft_name(make_name)
-                model_id = f"model_{make_name.lower().replace(' ', '_')}_{model_name.lower().replace(' ', '_')}"
+                transformed_row.append(class_id)  # class_id (name lookup)
                 
-                transformed_data.append([
-                    model_id,
-                    full_model_name,
-                    make_id,
-                    class_id,
-                    odoo_engine_type,
-                    gear_type
-                ])
+                # Add engine_type if available (optional)
+                engine_type_idx = header_map.get('AC_ENGTYPE')
+                engine_type = ''
+                if engine_type_idx is not None and engine_type_idx < len(row) and row[engine_type_idx]:
+                    raw_engine_type = str(row[engine_type_idx]).strip()
+                    engine_type = engine_type_mapping.get(raw_engine_type, '')
+                
+                transformed_row.append(engine_type)  # engine_type
+                
+                # Add gear_type if available (optional)
+                gear_type = ''
+                tailwheel_idx = header_map.get('AC_TAILWHEEL')
+                if tailwheel_idx is not None and tailwheel_idx < len(row) and row[tailwheel_idx]:
+                    is_tailwheel = str(row[tailwheel_idx]).strip().upper() in ('TRUE', 'YES', '1')
+                    gear_type = 'fixed_tailwheel' if is_tailwheel else 'fixed_tricycle'
+                
+                transformed_row.append(gear_type)  # gear_type
+                
+                transformed_data.append(transformed_row)
                 
             except Exception as e:
                 _logger.error("Error processing model in row %d: %s", idx + 1, e)
