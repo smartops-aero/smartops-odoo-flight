@@ -4,7 +4,6 @@ class FlightFlight(models.Model):
     
     _inherit = "flight.flight"
 
-    # Added crew relationship
     remark_ids = fields.One2many(
         "flight.pilot.remark", "flight_id", string="Pilot Remarks", copy=True
     )
