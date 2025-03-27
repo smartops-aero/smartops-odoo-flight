@@ -2,6 +2,8 @@
     "name": "Flight Import PilotLog",
     "version": "1.0",
     "category": "Flight",
+    "author": "Apexive Solutions LLC",
+    "website": "https://github.com/smartops-aero/flight",
     "summary": "Base module for importing pilot log data",
     "description": """
 Flight Import PilotLog
@@ -22,4 +24,5 @@ Base module for importing pilot log data with flexible transformers.
     "installable": True,
     "application": False,
     "auto_install": False,
+    "license": "LGPL-3",
 }
