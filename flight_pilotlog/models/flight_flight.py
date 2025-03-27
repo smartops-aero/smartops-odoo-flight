@@ -15,9 +15,3 @@ class FlightFlight(models.Model):
     pilot_time_ids = fields.One2many(
         "flight.pilot.time", "flight_id", string="Pilot Times", copy=True
     )
-        
-        
-
-
-
-    
