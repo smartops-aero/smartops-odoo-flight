@@ -74,7 +74,6 @@ class FlightImportPIlotlogTransformer(models.Model):
             Transformed data with headers as first row, structured for Odoo import
             with nested one2many fields.
         """
-        _logger.info("Starting CrewLounge data transformation for %d rows", len(data_rows))
 
         TIME_CODE_MAPPING = {
             'TIME_TOTAL': 'flight_pilotlog.flight_pilot_time_code_total',     # Total Block Time
@@ -194,10 +193,8 @@ class FlightImportPIlotlogTransformer(models.Model):
                 if import_wizard and import_wizard.base_pilot_id:
                     # For Odoo imports, use the database ID directly
                     partner_ref = import_wizard.base_pilot_id.id
-                    _logger.info("Using partner ID: %s", partner_ref)
                 else:
                     partner_ref = self.env.user.partner_id.id
-                    _logger.info("Using current user's partner ID: %s", partner_ref)
 
                 # Remarks
                 remark_idx = header_map.get('REMARKS')
@@ -232,8 +229,6 @@ class FlightImportPIlotlogTransformer(models.Model):
                                 # Standard processing for minute values
                                 duration_minutes = float(row[col_idx])
                                 duration_hours = self._round_duration(duration_minutes / 60.0)
-                            _logger.info("TIME DURATION")
-                            _logger.info(duration_hours)
                             if duration_hours > 0:
                                 times_data.append({
                                     'id': f"time_{flight_id}_{time_counter}",
@@ -324,7 +319,6 @@ class FlightImportPIlotlogTransformer(models.Model):
                 skipped_rows += 1
                 continue # Skip to the next row on unexpected errors
 
-        _logger.info("Transformation complete. Generated %d data rows (excluding header). Skipped %d rows.", len(transformed_data) - 1, skipped_rows)
         if skipped_rows > 0:
              _logger.warning("%d rows were skipped due to errors or missing essential data. Please check logs.", skipped_rows)
 
@@ -341,7 +335,6 @@ class FlightImportPIlotlogTransformer(models.Model):
         Returns:
             Transformed data with headers as first row, structured for Odoo import
         """
-        _logger.info("Starting CrewLounge data transformation for aircraft: %d rows", len(data_rows))
 
         # Define the transformed headers for aircraft import
         transformed_headers = [
@@ -431,8 +424,6 @@ class FlightImportPIlotlogTransformer(models.Model):
                 skipped_rows += 1
                 continue  # Skip to the next row on unexpected errors
 
-        _logger.info("Aircraft transformation complete. Generated %d data rows (excluding header). Skipped %d rows.", 
-                    len(transformed_data) - 1, skipped_rows)
         if skipped_rows > 0:
             _logger.warning("%d rows were skipped due to errors or missing essential data. Please check logs.", 
                            skipped_rows)
@@ -444,7 +435,6 @@ class FlightImportPIlotlogTransformer(models.Model):
         
         Extracts unique aircraft makes from the data.
         """
-        _logger.info("Starting CrewLounge data transformation for aircraft makes: %d rows", len(data_rows))
         
         # Define headers for make import
         transformed_headers = ['id', 'name']
@@ -492,7 +482,6 @@ class FlightImportPIlotlogTransformer(models.Model):
                 _logger.error("Error processing make in row %d: %s", idx + 1, e)
                 continue
                 
-        _logger.info("Aircraft make transformation complete. Generated %d unique makes.", len(transformed_data) - 1)
         return transformed_data
         
     def flight_aircraft_model_crewlounge_transform_data(self, data_rows, headers, import_wizard=None):
@@ -500,7 +489,6 @@ class FlightImportPIlotlogTransformer(models.Model):
         
         Extracts unique aircraft models from the data with references to makes and classes.
         """
-        _logger.info("Starting CrewLounge data transformation for aircraft models: %d rows", len(data_rows))
         
         # Define headers for model import
         transformed_headers = [
@@ -542,25 +530,20 @@ class FlightImportPIlotlogTransformer(models.Model):
                 model_idx = header_map.get('AC_MODEL')
                 variant_idx = header_map.get('AC_VARIANT')
                 
-                # Extract values with defaults for missing data
-                make_name = ""
-                if make_idx is not None and make_idx < len(row) and row[make_idx]:
-                    make_name = str(row[make_idx]).strip()
-                    # Standardize capitalization for make
-                    make_name = self._standardize_aircraft_name(make_name)
+                # Extract values with fallbacks
+                make_name = str(row[make_idx]).strip() if make_idx is not None and make_idx < len(row) and row[make_idx] else ''
+                # Standardize capitalization for make
+                make_name = self._standardize_aircraft_name(make_name) if make_name else ''
                 
-                model_name = ""
-                if model_idx is not None and model_idx < len(row) and row[model_idx]:
-                    model_name = str(row[model_idx]).strip()
-                
-                variant = ""
-                if variant_idx is not None and variant_idx < len(row) and row[variant_idx]:
-                    variant = str(row[variant_idx]).strip()
+                model_name = str(row[model_idx]).strip() if model_idx is not None and model_idx < len(row) and row[model_idx] else ''
+                variant = str(row[variant_idx]).strip() if variant_idx is not None and variant_idx < len(row) and row[variant_idx] else ''
                 
                 full_model_name = self._create_full_model_name(make_name, model_name, variant)
                 
                 # Skip if empty or already processed
                 if not full_model_name or full_model_name in processed_models:
+                    _logger.info("Skipping model - full_model_name: '%s', make_name: '%s', model_name: '%s', variant: '%s'", 
+                                full_model_name, make_name, model_name, variant)
                     continue
                     
                 processed_models.add(full_model_name)
@@ -650,5 +633,4 @@ class FlightImportPIlotlogTransformer(models.Model):
                 _logger.error("Error processing model in row %d: %s", idx + 1, e)
                 continue
                 
-        _logger.info("Aircraft model transformation complete. Generated %d unique models.", len(transformed_data) - 1)
         return transformed_data

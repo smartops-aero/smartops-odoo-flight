@@ -20,13 +20,9 @@ class ImportExtended(models.TransientModel):
     @api.model
     def update_transformation_preview(self, id):
         """Log and skip transformation for now"""
-        _logger.info("update_transformation_preview called with ID: %s", id)
         record = self.browse(id)
-        _logger.info("Record: %s, Model: %s, Transformer: %s",
-                     record, record.res_model, record.transformer_id.name if record.transformer_id else 'None')
         
         if record.res_model != 'flight.flight':
-            _logger.info("Skipping: Not importing into flight.flight model")
             return {'status': 'success'}
 
         try:
@@ -43,7 +39,6 @@ class ImportExtended(models.TransientModel):
     def parse_preview(self, options, count=10):
         """Follow base parse_preview pattern with optional transformation"""
         self.ensure_one()
-        _logger.info("parse_preview called with transformer: %s", self.transformer_id.name if self.transformer_id else 'None')
         
         if not self.transformer_id:
             return super(ImportExtended, self).parse_preview(options, count)
@@ -56,17 +51,14 @@ class ImportExtended(models.TransientModel):
                     
                 # Apply transformation if transformer is selected
                 if self.transformer_id:
-                    _logger.info("Applying transformation using %s", self.transformer_id.name)
                     
                     # Extract headers if present
                     original_headers = []
                     if options.get('has_headers') and rows:
                         original_headers = rows[0]
-                        _logger.info("Original headers: %s", original_headers)
                     
                     # Transform the data using the selected transformer
                     rows = self.transformer_id.transform_data(rows, original_headers, self)
-                    _logger.info("Transformation complete, got %s rows", len(rows))
                     
                     # Force has_headers to True for transformed data
                     options = dict(options)
@@ -185,9 +177,6 @@ class ImportExtended(models.TransientModel):
     def execute_import(self, fields, columns, options, dryrun=False):
         """Log and delegate to parent method"""
         self.ensure_one()  # Ensure singleton
-        _logger.info("execute_import called for record ID: %s with fields: %s, columns: %s, options: %s, dryrun: %s",
-                     self.id, fields, columns, options, dryrun)
-        
         try:
             result = super(ImportExtended, self).execute_import(fields, columns, options, dryrun)
             _logger.info("Import executed successfully, result: %s", result)
@@ -201,21 +190,17 @@ class ImportExtended(models.TransientModel):
         """Override to apply transformation before conversion"""
         # Apply transformation if transformer is selected
         if self.transformer_id:
-            _logger.info("Applying transformation using %s for import", self.transformer_id.name)
             
             # Read the original file data
             file_length, rows_to_import = self._read_file(options)
-            _logger.info("Read %d rows from file", file_length)
             
             # Extract headers if present
             original_headers = []
             if options.get('has_headers') and rows_to_import:
                 original_headers = rows_to_import[0]
-                _logger.info("Original headers: %s", original_headers)
             
             # Transform the data using the selected transformer
             transformed_rows = self.transformer_id.transform_data(rows_to_import, original_headers, self)
-            _logger.info("Transformation complete, got %s rows", len(transformed_rows))
             
             # Now continue with the standard processing, but using our transformed data
             # Get indices for non-empty fields
