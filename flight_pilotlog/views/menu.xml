@@ -80,10 +80,10 @@
   />
     <!-- Menu Item (using the server action to load logs) -->
     <menuitem
-        id="menu_flight_pilot_log_overview"
-        name="Overview"
-        parent="menu_flight_pilot_log"
-        action="action_load_pilot_logs"
-        sequence="5"
-    />
+    id="menu_flight_pilot_log_overview"
+    name="Overview"
+    parent="menu_flight_pilot_log"
+    action="action_load_pilot_logs"
+    sequence="5"
+  />
 </odoo>

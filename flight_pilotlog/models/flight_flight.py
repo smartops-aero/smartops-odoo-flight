@@ -1,7 +1,7 @@
 from odoo import fields, models
 
+
 class FlightFlight(models.Model):
-    
     _inherit = "flight.flight"
 
     remark_ids = fields.One2many(
