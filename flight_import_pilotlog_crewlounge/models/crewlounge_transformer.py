@@ -21,6 +21,22 @@ class FlightImportPIlotlogTransformer(models.Model):
         """Round duration values to a consistent number of decimal places."""
         return round(value, decimals)
 
+    def _create_full_model_name(self, make_name, model_name, variant=''):
+        """Helper method to create a standardized full model name.
+        
+        Args:
+            make_name: The aircraft make name
+            model_name: The aircraft model name
+            variant: Optional variant name
+            
+        Returns:
+            A formatted full model name string
+        """
+        full_model_name = f"{make_name} {model_name}"
+        if variant:
+            full_model_name += f" {variant}"
+        return full_model_name.strip()
+
     def flight_flight_crewlounge_transform_data(self, data_rows, headers, import_wizard=None):
         """Transform CrewLounge data to flight.flight format suitable for Odoo import.
 
@@ -299,15 +315,12 @@ class FlightImportPIlotlogTransformer(models.Model):
 
         Returns:
             Transformed data with headers as first row, structured for Odoo import
-            with nested one2many fields for aircraft models.
         """
         _logger.info("Starting CrewLounge data transformation for aircraft: %d rows", len(data_rows))
 
         # Define the transformed headers for aircraft import
         transformed_headers = [
-            'id', 'registration', 'operator_id', 
-            'model_id/id', 'model_id/name', 'model_id/make_id/id', 'model_id/make_id/name',
-            'model_id/class_id/id', 'model_id/class_id/name', 'model_id/engine_type', 'model_id/gear_type'
+            'id', 'registration', 'operator_id', 'model_id'
         ]
 
         # Create a mapping of original headers (uppercase) to their indices
@@ -320,33 +333,6 @@ class FlightImportPIlotlogTransformer(models.Model):
         transformed_data = [transformed_headers]
         skipped_rows = 0
         processed_aircraft = set()  # Track unique aircraft to avoid duplicates
-
-        # Aircraft category mapping from CrewLounge to Odoo
-        aircraft_category_mapping = {
-            'Aeroplane': 'airplane',
-            'Helicopter': 'rotorcraft',
-            'Glider': 'glider',
-            'Balloon': 'lighter_than_air',
-            # Add more mappings as needed
-        }
-
-        # Engine type mapping
-        engine_type_mapping = {
-            'Piston': 'piston',
-            'Turboprop': 'turboprop',
-            'Turbofan': 'turbofan',
-            'Turbojet': 'turbojet',
-            'Turboshaft': 'turboshaft',
-            'Electric': 'electric',
-            # Add more mappings as needed
-        }
-
-        # Gear type mapping (simplified)
-        gear_type_mapping = {
-            'Tailwheel': 'fixed_tailwheel',
-            'Tricycle': 'fixed_tricycle',
-            # Add more mappings as needed
-        }
 
         # Process each row of the original data
         for idx, row in enumerate(data_rows):
@@ -390,55 +376,26 @@ class FlightImportPIlotlogTransformer(models.Model):
                 make_idx = header_map.get('AC_MAKE')
                 model_idx = header_map.get('AC_MODEL')
                 variant_idx = header_map.get('AC_VARIANT')
-                class_idx = header_map.get('AC_CLASS')
-                engine_type_idx = header_map.get('AC_ENGTYPE')
                 
                 # Extract values with fallbacks
                 make_name = str(row[make_idx]).strip() if make_idx is not None and make_idx < len(row) and row[make_idx] else ''
                 model_name = str(row[model_idx]).strip() if model_idx is not None and model_idx < len(row) and row[model_idx] else ''
                 variant = str(row[variant_idx]).strip() if variant_idx is not None and variant_idx < len(row) and row[variant_idx] else ''
-                aircraft_class = str(row[class_idx]).strip() if class_idx is not None and class_idx < len(row) and row[class_idx] else ''
-                engine_type = str(row[engine_type_idx]).strip() if engine_type_idx is not None and engine_type_idx < len(row) and row[engine_type_idx] else ''
                 
-                # Create unique IDs for related records
-                make_id = f"make_{make_name.lower().replace(' ', '_')}" if make_name else ''
-                model_id = f"model_{make_name.lower().replace(' ', '_')}_{model_name.lower().replace(' ', '_')}" if make_name and model_name else ''
-                
-                # Determine aircraft category from class
-                aircraft_category = aircraft_category_mapping.get(aircraft_class, '')
-                class_id = f"class_{aircraft_category}" if aircraft_category else ''
-                
-                # Map engine type
-                odoo_engine_type = engine_type_mapping.get(engine_type, '')
+                full_model_name = self._create_full_model_name(make_name, model_name, variant)
                 
                 # --- Extract Operator ---
                 operator_idx = header_map.get('OPERATOR')
                 operator_name = str(row[operator_idx]).strip() if operator_idx is not None and operator_idx < len(row) and row[operator_idx] else ''
                 
-                # Determine if aircraft is tailwheel
-                tailwheel_idx = header_map.get('AC_TAILWHEEL')
-                is_tailwheel = False
-                if tailwheel_idx is not None and tailwheel_idx < len(row):
-                    is_tailwheel = str(row[tailwheel_idx]).strip().upper() in ('TRUE', 'YES', '1')
-                
-                # Determine gear type
-                gear_type = 'fixed_tailwheel' if is_tailwheel else 'fixed_tricycle'  # Default to tricycle if not tailwheel
-                
                 # Create the transformed row
                 aircraft_id = f"aircraft_import_{aircraft_reg.replace('-', '_')}"
                 
                 transformed_row = [
-                    aircraft_id,                     # id
-                    aircraft_reg,                    # registration
-                    operator_name,                   # operator_id (name lookup)
-                    model_id,                        # model_id/id
-                    f"{make_name} {model_name} {variant}".strip(),  # model_id/name
-                    make_id,                         # model_id/make_id/id
-                    make_name,                       # model_id/make_id/name
-                    class_id,                        # model_id/class_id/id
-                    aircraft_class,                  # model_id/class_id/name
-                    odoo_engine_type,                # model_id/engine_type
-                    gear_type                        # model_id/gear_type
+                    aircraft_id,        # id
+                    aircraft_reg,       # registration
+                    operator_name,      # operator_id (name lookup)
+                    full_model_name     # model_id (name lookup)
                 ]
                 
                 transformed_data.append(transformed_row)
@@ -528,15 +485,6 @@ class FlightImportPIlotlogTransformer(models.Model):
             for idx, col in enumerate(headers):
                 header_map[col.upper()] = idx
         
-        # Aircraft category mapping
-        aircraft_category_mapping = {
-            'Aeroplane': 'airplane',
-            'Helicopter': 'rotorcraft',
-            'Glider': 'glider',
-            'Balloon': 'lighter_than_air',
-            # Add more mappings as needed
-        }
-        
         # Engine type mapping
         engine_type_mapping = {
             'Piston': 'piston',
@@ -545,7 +493,6 @@ class FlightImportPIlotlogTransformer(models.Model):
             'Turbojet': 'turbojet',
             'Turboshaft': 'turboshaft',
             'Electric': 'electric',
-            # Add more mappings as needed
         }
         
         transformed_data = [transformed_headers]
@@ -578,11 +525,7 @@ class FlightImportPIlotlogTransformer(models.Model):
                 model_name = str(row[model_idx]).strip()
                 variant = str(row[variant_idx]).strip() if variant_idx is not None and variant_idx < len(row) and row[variant_idx] else ''
                 
-                # Create full model name
-                full_model_name = f"{make_name} {model_name}"
-                if variant:
-                    full_model_name += f" {variant}"
-                full_model_name = full_model_name.strip()
+                full_model_name = self._create_full_model_name(make_name, model_name, variant)
                 
                 # Skip if already processed
                 if full_model_name in processed_models:
