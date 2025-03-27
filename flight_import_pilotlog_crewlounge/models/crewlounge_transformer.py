@@ -16,6 +16,11 @@ class FlightImportPIlotlogTransformer(models.Model):
         implementations = super(FlightImportPIlotlogTransformer, self)._get_available_implementations()
         return implementations + [('crewlounge', 'CrewLounge Format')]
 
+    # Helper function to round duration values consistently
+    def _round_duration(self, value, decimals=4):
+        """Round duration values to a consistent number of decimal places."""
+        return round(value, decimals)
+
     def flight_flight_crewlounge_transform_data(self, data_rows, headers, import_wizard=None):
         """Transform CrewLounge data to flight.flight format suitable for Odoo import.
 
@@ -31,21 +36,26 @@ class FlightImportPIlotlogTransformer(models.Model):
         _logger.info("Starting CrewLounge data transformation for %d rows", len(data_rows))
 
         TIME_CODE_MAPPING = {
-            'TIME_TOTAL': ('flight_pilotlog.flight_pilot_time_code_total', 60.0), # Total Block Time
-            'TIME_PIC': ('flight_pilotlog.flight_pilot_time_code_pic', 60.0),     # Pilot in Command
-            'TIME_SIC': ('flight_pilotlog.flight_pilot_time_code_sic', 60.0),     # Second in Command
-            'TIME_DUAL': ('flight_pilotlog.flight_pilot_time_code_dual', 60.0),    # Dual Received
-            'TIME_PICUS': ('flight_pilotlog.flight_pilot_time_code_picus', 60.0),  # PIC Under Supervision
-            'TIME_INSTRUCTOR': ('flight_pilotlog.flight_pilot_time_code_instructor', 60.0), # Instructor Time
-            'TIME_EXAMINER': ('flight_pilotlog.flight_pilot_time_code_examiner', 60.0),  # Examiner Time
-            'TIME_NIGHT': ('flight_pilotlog.flight_pilot_time_code_night', 60.0),    # Night Time
-            'TIME_XC': ('flight_pilotlog.flight_pilot_time_code_xc', 60.0),       # Cross Country
-            'TIME_IFR': ('flight_pilotlog.flight_pilot_time_code_ifr', 60.0),       # IFR Time (Simulated or Actual)
-            'TIME_HOOD': ('flight_pilotlog.flight_pilot_time_code_hood', 60.0),     # Simulated Instrument (Hood)
-            'TIME_ACTUAL': ('flight_pilotlog.flight_pilot_time_code_actual', 60.0),  # Actual Instrument (IMC)
-            'TIME_RELIEF': ('flight_pilotlog.flight_pilot_time_code_relief', 60.0),  # Relief Pilot Time
-            'TIME_AIR': ('flight_pilotlog.flight_pilot_time_code_air', 60.0),       # Airborne Time
+            'TIME_TOTAL': 'flight_pilotlog.flight_pilot_time_code_total',     # Total Block Time
+            'TIME_PIC': 'flight_pilotlog.flight_pilot_time_code_pic',         # Pilot in Command
+            'TIME_SIC': 'flight_pilotlog.flight_pilot_time_code_sic',         # Second in Command
+            'TIME_DUAL': 'flight_pilotlog.flight_pilot_time_code_dual',       # Dual Instruction Received
+            'TIME_PICUS': 'flight_pilotlog.flight_pilot_time_code_picus',     # PICUS Time
+            'TIME_INSTRUCTOR': 'flight_pilotlog.flight_pilot_time_code_instructor', # Instructor Time
+            'TIME_EXAMINER': 'flight_pilotlog.flight_pilot_time_code_examiner',    # Examiner Time
+            'TIME_NIGHT': 'flight_pilotlog.flight_pilot_time_code_night',     # Night Time
+            'TIME_XC': 'flight_pilotlog.flight_pilot_time_code_xc',           # Cross Country
+            'TIME_IFR': 'flight_pilotlog.flight_pilot_time_code_ifr',         # IFR Time (Simulated or Actual)
+            'TIME_HOOD': 'flight_pilotlog.flight_pilot_time_code_hood',       # Simulated Instrument (Hood)
+            'TIME_ACTUAL': 'flight_pilotlog.flight_pilot_time_code_actual',   # Actual Instrument (IMC)
+            'TIME_RELIEF': 'flight_pilotlog.flight_pilot_time_code_relief',   # Relief Pilot Time
+            'TIME_AIR': 'flight_pilotlog.flight_pilot_time_code_air',         # Airborne Time
             # Add other TIME_* fields if needed and corresponding codes exist in Odoo
+        }
+
+        # Special format fields
+        TIME_FORMAT_MAPPING = {
+            'TIME_AIR': 'HH:MM',  # Airborne Time is in HH:MM format
         }
 
         EVENT_CODE_MAPPING = {
@@ -75,6 +85,8 @@ class FlightImportPIlotlogTransformer(models.Model):
 
         transformed_data = [transformed_headers]
         skipped_rows = 0
+
+        
 
         # Process each row of the original data
         for idx, row in enumerate(data_rows):
@@ -161,13 +173,29 @@ class FlightImportPIlotlogTransformer(models.Model):
 
                 # Times
                 time_counter = 0
-                for csv_col, (odoo_code_xmlid, divisor) in TIME_CODE_MAPPING.items():
+                for csv_col, odoo_code_xmlid in TIME_CODE_MAPPING.items():
                     col_idx = header_map.get(csv_col)
                     if col_idx is not None and col_idx < len(row) and row[col_idx]:
                         try:
-                            duration_minutes = float(row[col_idx])
-                            if duration_minutes > 0:
-                                duration_hours = round(duration_minutes / divisor, 4) # Use 4 decimal places for precision
+                            # Check if this field has a special format
+                            special_format = TIME_FORMAT_MAPPING.get(csv_col)
+                            
+                            if special_format == 'HH:MM':
+                                # Handle HH:MM format (e.g., "0:12", "0:16")
+                                time_str = str(row[col_idx]).strip()
+                                if ':' in time_str:
+                                    hours, minutes = time_str.split(':')
+                                    duration_hours = self._round_duration(float(hours) + float(minutes) / 60.0)
+                                else:
+                                    # Fallback to treating as minutes if not in HH:MM format
+                                    duration_hours = self._round_duration(float(time_str) / 60.0)
+                            else:
+                                # Standard processing for minute values
+                                duration_minutes = float(row[col_idx])
+                                duration_hours = self._round_duration(duration_minutes / 60.0)
+                            _logger.info("TIME DURATION")
+                            _logger.info(duration_hours)
+                            if duration_hours > 0:
                                 times_data.append({
                                     'id': f"time_{flight_id}_{time_counter}",
                                     'partner_id': partner_ref,
