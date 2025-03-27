@@ -62,14 +62,15 @@ class FlightImportPIlotlogTransformer(models.Model):
         """Hook method for registering transformer implementations"""
         return []
 
-    def transform_data(self, data_rows, headers):
+    def transform_data(self, data_rows, headers, import_wizard=None):
         """Transform data using this transformer's implementation
         
         Args:
             data_rows: List of data rows to transform
             headers: Headers for the data rows
+            import_wizard: The import wizard record containing configuration
             
         Returns:
             Transformed data with headers as first row
         """
-        return self._dispatch("transform_data", data_rows, headers)
+        return self._dispatch("transform_data", data_rows, headers, import_wizard)

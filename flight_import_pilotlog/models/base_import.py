@@ -65,7 +65,7 @@ class ImportExtended(models.TransientModel):
                         _logger.info("Original headers: %s", original_headers)
                     
                     # Transform the data using the selected transformer
-                    rows = self.transformer_id.transform_data(rows, original_headers)
+                    rows = self.transformer_id.transform_data(rows, original_headers, self)
                     _logger.info("Transformation complete, got %s rows", len(rows))
                     
                     # Force has_headers to True for transformed data
@@ -214,7 +214,7 @@ class ImportExtended(models.TransientModel):
                 _logger.info("Original headers: %s", original_headers)
             
             # Transform the data using the selected transformer
-            transformed_rows = self.transformer_id.transform_data(rows_to_import, original_headers)
+            transformed_rows = self.transformer_id.transform_data(rows_to_import, original_headers, self)
             _logger.info("Transformation complete, got %s rows", len(transformed_rows))
             
             # Now continue with the standard processing, but using our transformed data

@@ -16,27 +16,25 @@ class FlightImportPIlotlogTransformer(models.Model):
         implementations = super(FlightImportPIlotlogTransformer, self)._get_available_implementations()
         return implementations + [('crewlounge', 'CrewLounge Format')]
 
-    def flight_flight_crewlounge_transform_data(self, data_rows, headers):
+    def flight_flight_crewlounge_transform_data(self, data_rows, headers, import_wizard=None):
         """Transform CrewLounge data to flight.flight format suitable for Odoo import.
 
         Args:
             data_rows: List of data rows to transform
             headers: Headers for the data rows
+            import_wizard: The import wizard record containing configuration like base_pilot_id
 
         Returns:
             Transformed data with headers as first row, structured for Odoo import
             with nested one2many fields.
         """
-        _logger.info("Starting transformation of CrewLounge data with %d rows", len(data_rows))
+        _logger.info("Starting CrewLounge data transformation for %d rows", len(data_rows))
 
         # --- Mappings from CSV Column Name (UPPERCASE) to Odoo Info ---
         # Assumes flight_pilotlog module XML IDs are loaded
-        # Using placeholders like base.partner_admin for pilot, adjust as needed
         # Duration needs conversion from minutes (CSV) to hours (Odoo)
 
-        # Placeholder for the pilot - replace with actual logic if needed
-        # e.g., map PILOT1_ID=='SELF' to self.env.user.partner_id.id
-        # or look up based on PILOT1_ID/PILOT1_NAME
+        # Default partner XML ID to use if no base_pilot_id is provided
         DEFAULT_PARTNER_XMLID = "base.partner_admin"
 
         TIME_CODE_MAPPING = {
@@ -70,9 +68,9 @@ class FlightImportPIlotlogTransformer(models.Model):
         # --- Define the Full Transformed Headers ---
         transformed_headers = [
             'id', 'date', 'aircraft_id/registration', 'departure_id/icao', 'arrival_id/icao',
-            'remark_ids/id', 'remark_ids/partner_id/id', 'remark_ids/remark',
-            'pilot_time_ids/id', 'pilot_time_ids/partner_id/id', 'pilot_time_ids/code_id/id', 'pilot_time_ids/duration',
-            'pilot_event_ids/id', 'pilot_event_ids/partner_id/id', 'pilot_event_ids/event_code_id/id', 'pilot_event_ids/count'
+            'remark_ids/id', 'remark_ids/partner_id', 'remark_ids/remark',
+            'pilot_time_ids/id', 'pilot_time_ids/partner_id', 'pilot_time_ids/code_id/id', 'pilot_time_ids/duration',
+            'pilot_event_ids/id', 'pilot_event_ids/partner_id', 'pilot_event_ids/event_code_id/id', 'pilot_event_ids/count'
         ]
 
         # Create a mapping of original headers (uppercase) to their indices
@@ -148,12 +146,22 @@ class FlightImportPIlotlogTransformer(models.Model):
                 times_data = []
                 events_data = []
 
-                # Pilot Identification (Replace with your logic)
-                # pilot1_id_csv = row[header_map.get('PILOT1_ID')] if 'PILOT1_ID' in header_map else 'UNKNOWN'
-                # if pilot1_id_csv == 'SELF':
-                #     partner_xml_id = 'base.partner_user_{}'.format(self.env.user.id) # Example for current user
-                # else: # Look up partner by ID or Name, fallback to default
-                partner_xml_id = DEFAULT_PARTNER_XMLID
+                # Determine the partner to use
+                if import_wizard and import_wizard.base_pilot_id:
+                    # For Odoo imports with Many2one fields, use the display_name
+                    # This is more reliable as it includes additional context like company
+                    partner_ref = import_wizard.base_pilot_id.display_name
+                    _logger.info("Using partner display_name: %s", partner_ref)
+                else:
+                    # Fallback to default partner display_name
+                    # Get the display_name from the XML ID
+                    default_partner = self.env.ref(DEFAULT_PARTNER_XMLID, raise_if_not_found=False)
+                    if default_partner:
+                        partner_ref = default_partner.display_name
+                        _logger.info("Using default partner display_name: %s", partner_ref)
+                    else:
+                        partner_ref = "Administrator"  # Fallback name
+                        _logger.warning("Default partner not found, using fallback name: %s", partner_ref)
 
                 # Remarks
                 remark_idx = header_map.get('REMARKS')
@@ -162,7 +170,7 @@ class FlightImportPIlotlogTransformer(models.Model):
                     if remark_text:
                         remarks_data.append({
                             'id': f"remark_{flight_id}_0",
-                            'partner_id': partner_xml_id,
+                            'partner_id': partner_ref,
                             'remark': remark_text
                         })
 
@@ -177,7 +185,7 @@ class FlightImportPIlotlogTransformer(models.Model):
                                 duration_hours = round(duration_minutes / divisor, 4) # Use 4 decimal places for precision
                                 times_data.append({
                                     'id': f"time_{flight_id}_{time_counter}",
-                                    'partner_id': partner_xml_id,
+                                    'partner_id': partner_ref,
                                     'code_id': odoo_code_xmlid,
                                     'duration': duration_hours
                                 })
@@ -195,7 +203,7 @@ class FlightImportPIlotlogTransformer(models.Model):
                             if count > 0:
                                 events_data.append({
                                     'id': f"event_{flight_id}_{event_counter}",
-                                    'partner_id': partner_xml_id,
+                                    'partner_id': partner_ref,
                                     'code_id': odoo_code_xmlid,
                                     'count': count
                                 })

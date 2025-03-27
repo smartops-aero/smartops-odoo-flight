@@ -156,7 +156,7 @@ odoo.define('flight_import_pilotlog.import', function (require) {
             this._rpc({
                 model: 'res.partner',
                 method: 'search_read',
-                args: [[['is_company', '=', false]], ['id', 'name']],
+                args: [[['is_company', '=', false]], ['id', 'display_name']],
                 kwargs: {limit: 100}
             }).then(partners => {
                 const $select = $('<select>', {
@@ -170,7 +170,7 @@ odoo.define('flight_import_pilotlog.import', function (require) {
                 _.each(partners, partner => {
                     $select.append($('<option>', {
                         value: partner.id,
-                        text: partner.name
+                        text: partner.display_name
                     }));
                 });
                 
