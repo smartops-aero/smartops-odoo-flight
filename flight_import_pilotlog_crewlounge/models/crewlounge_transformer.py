@@ -68,9 +68,9 @@ class FlightImportPIlotlogTransformer(models.Model):
         # --- Define the Full Transformed Headers ---
         transformed_headers = [
             'id', 'date', 'aircraft_id/registration', 'departure_id/icao', 'arrival_id/icao',
-            'remark_ids/id', 'remark_ids/partner_id', 'remark_ids/remark',
-            'pilot_time_ids/id', 'pilot_time_ids/partner_id', 'pilot_time_ids/code_id/id', 'pilot_time_ids/duration',
-            'pilot_event_ids/id', 'pilot_event_ids/partner_id', 'pilot_event_ids/event_code_id/id', 'pilot_event_ids/count'
+            'remark_ids/id', 'remark_ids/partner_id/id', 'remark_ids/remark',
+            'pilot_time_ids/id', 'pilot_time_ids/partner_id/id', 'pilot_time_ids/code_id/id', 'pilot_time_ids/duration',
+            'pilot_event_ids/id', 'pilot_event_ids/partner_id/id', 'pilot_event_ids/event_code_id/id', 'pilot_event_ids/count'
         ]
 
         # Create a mapping of original headers (uppercase) to their indices
@@ -148,20 +148,12 @@ class FlightImportPIlotlogTransformer(models.Model):
 
                 # Determine the partner to use
                 if import_wizard and import_wizard.base_pilot_id:
-                    # For Odoo imports with Many2one fields, use the display_name
-                    # This is more reliable as it includes additional context like company
-                    partner_ref = import_wizard.base_pilot_id.display_name
-                    _logger.info("Using partner display_name: %s", partner_ref)
+                    # For Odoo imports, use the database ID directly
+                    partner_ref = import_wizard.base_pilot_id.id
+                    _logger.info("Using partner ID: %s", partner_ref)
                 else:
-                    # Fallback to default partner display_name
-                    # Get the display_name from the XML ID
-                    default_partner = self.env.ref(DEFAULT_PARTNER_XMLID, raise_if_not_found=False)
-                    if default_partner:
-                        partner_ref = default_partner.display_name
-                        _logger.info("Using default partner display_name: %s", partner_ref)
-                    else:
-                        partner_ref = "Administrator"  # Fallback name
-                        _logger.warning("Default partner not found, using fallback name: %s", partner_ref)
+                    partner_ref = self.env.user.partner_id.id
+                    _logger.info("Using current user's partner ID: %s", partner_ref)
 
                 # Remarks
                 remark_idx = header_map.get('REMARKS')
