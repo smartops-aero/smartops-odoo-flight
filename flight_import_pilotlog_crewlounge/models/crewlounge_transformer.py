@@ -208,13 +208,19 @@ class FlightImportPIlotlogTransformer(models.Model):
                 num_times = len(times_data)
                 num_events = len(events_data)
                 max_lines = max(1, num_remarks, num_times, num_events) # Need at least 1 row for the flight
-
+                first_remark_id, first_remark_partner, first_remark_text = '', '', ''
+                if num_remarks > 0:
+                    first_remark_id = remarks_data[0]['id']
+                    first_remark_partner = remarks_data[0]['partner_id']
+                    first_remark_text = remarks_data[0]['remark']
                 for i in range(max_lines):
                     remark_id, remark_partner, remark_text = '', '', ''
-                    if i < num_remarks:
-                        remark_id = remarks_data[i]['id']
-                        remark_partner = remarks_data[i]['partner_id']
-                        remark_text = remarks_data[i]['remark']
+                     # Check if it's the last iteration AND remarks exist in the original data
+                    if num_remarks > 0 and i == max_lines - 1:
+                        remark_id = first_remark_id
+                        remark_partner = first_remark_partner
+                        remark_text = first_remark_text
+
 
                     time_id, time_partner, time_code, time_duration = '', '', '', ''
                     if i < num_times:
