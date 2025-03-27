@@ -22,7 +22,7 @@ class FlightImportPIlotlogTransformer(models.Model):
         string="Target Model",
         required=True,
         ondelete='cascade',
-        domain=[('model', 'in', ['flight.flight', 'flight.aircraft'])],
+        domain=[('model', 'in', ['flight.flight', 'flight.aircraft', 'flight.aircraft.model', 'flight.aircraft.make'])],
         help="The model that this transformer will import data into"
     )
 

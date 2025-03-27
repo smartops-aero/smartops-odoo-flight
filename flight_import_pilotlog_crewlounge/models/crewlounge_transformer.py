@@ -86,8 +86,6 @@ class FlightImportPIlotlogTransformer(models.Model):
         transformed_data = [transformed_headers]
         skipped_rows = 0
 
-        
-
         # Process each row of the original data
         for idx, row in enumerate(data_rows):
             # Skip header row if present in data_rows (robust check)
@@ -289,4 +287,376 @@ class FlightImportPIlotlogTransformer(models.Model):
         if skipped_rows > 0:
              _logger.warning("%d rows were skipped due to errors or missing essential data. Please check logs.", skipped_rows)
 
+        return transformed_data
+
+    def flight_aircraft_crewlounge_transform_data(self, data_rows, headers, import_wizard=None):
+        """Transform CrewLounge data to flight.aircraft format suitable for Odoo import.
+
+        Args:
+            data_rows: List of data rows to transform
+            headers: Headers for the data rows
+            import_wizard: The import wizard record containing configuration
+
+        Returns:
+            Transformed data with headers as first row, structured for Odoo import
+            with nested one2many fields for aircraft models.
+        """
+        _logger.info("Starting CrewLounge data transformation for aircraft: %d rows", len(data_rows))
+
+        # Define the transformed headers for aircraft import
+        transformed_headers = [
+            'id', 'registration', 'operator_id', 
+            'model_id/id', 'model_id/name', 'model_id/make_id/id', 'model_id/make_id/name',
+            'model_id/class_id/id', 'model_id/class_id/name', 'model_id/engine_type', 'model_id/gear_type'
+        ]
+
+        # Create a mapping of original headers (uppercase) to their indices
+        header_map = {}
+        if headers:
+            for idx, col in enumerate(headers):
+                header_map[col.upper()] = idx
+            _logger.debug("Created header map: %s", header_map)
+
+        transformed_data = [transformed_headers]
+        skipped_rows = 0
+        processed_aircraft = set()  # Track unique aircraft to avoid duplicates
+
+        # Aircraft category mapping from CrewLounge to Odoo
+        aircraft_category_mapping = {
+            'Aeroplane': 'airplane',
+            'Helicopter': 'rotorcraft',
+            'Glider': 'glider',
+            'Balloon': 'lighter_than_air',
+            # Add more mappings as needed
+        }
+
+        # Engine type mapping
+        engine_type_mapping = {
+            'Piston': 'piston',
+            'Turboprop': 'turboprop',
+            'Turbofan': 'turbofan',
+            'Turbojet': 'turbojet',
+            'Turboshaft': 'turboshaft',
+            'Electric': 'electric',
+            # Add more mappings as needed
+        }
+
+        # Gear type mapping (simplified)
+        gear_type_mapping = {
+            'Tailwheel': 'fixed_tailwheel',
+            'Tricycle': 'fixed_tricycle',
+            # Add more mappings as needed
+        }
+
+        # Process each row of the original data
+        for idx, row in enumerate(data_rows):
+            # Skip header row if present in data_rows
+            if headers and idx == 0 and len(row) == len(headers) and all(str(row[i]).upper() == str(headers[i]).upper() for i in range(len(headers))):
+                continue
+
+            # Skip empty rows
+            if not row or all(not cell for cell in row):
+                skipped_rows += 1
+                continue
+
+            # Make sure row has a minimum number of elements based on mapped headers
+            min_cols_needed = 1  # At least one column expected
+            if header_map:
+                min_cols_needed = max(header_map.values()) + 1
+            if len(row) < min_cols_needed:
+                _logger.warning("Row %d has insufficient columns (%d found, %d expected based on headers), skipping", 
+                               idx + 1, len(row), min_cols_needed)
+                skipped_rows += 1
+                continue
+
+            try:
+                # --- Extract Aircraft Registration ---
+                reg_idx = header_map.get('AC_REG')
+                if reg_idx is None or reg_idx >= len(row) or not row[reg_idx]:
+                    _logger.warning("Row %d: Missing aircraft registration. Skipping row.", idx + 1)
+                    skipped_rows += 1
+                    continue
+
+                aircraft_reg = str(row[reg_idx]).strip()
+                
+                # Skip if we've already processed this aircraft
+                if aircraft_reg in processed_aircraft:
+                    _logger.info("Skipping duplicate aircraft registration: %s", aircraft_reg)
+                    continue
+                
+                processed_aircraft.add(aircraft_reg)
+
+                # --- Extract Aircraft Make/Model ---
+                make_idx = header_map.get('AC_MAKE')
+                model_idx = header_map.get('AC_MODEL')
+                variant_idx = header_map.get('AC_VARIANT')
+                class_idx = header_map.get('AC_CLASS')
+                engine_type_idx = header_map.get('AC_ENGTYPE')
+                
+                # Extract values with fallbacks
+                make_name = str(row[make_idx]).strip() if make_idx is not None and make_idx < len(row) and row[make_idx] else ''
+                model_name = str(row[model_idx]).strip() if model_idx is not None and model_idx < len(row) and row[model_idx] else ''
+                variant = str(row[variant_idx]).strip() if variant_idx is not None and variant_idx < len(row) and row[variant_idx] else ''
+                aircraft_class = str(row[class_idx]).strip() if class_idx is not None and class_idx < len(row) and row[class_idx] else ''
+                engine_type = str(row[engine_type_idx]).strip() if engine_type_idx is not None and engine_type_idx < len(row) and row[engine_type_idx] else ''
+                
+                # Create unique IDs for related records
+                make_id = f"make_{make_name.lower().replace(' ', '_')}" if make_name else ''
+                model_id = f"model_{make_name.lower().replace(' ', '_')}_{model_name.lower().replace(' ', '_')}" if make_name and model_name else ''
+                
+                # Determine aircraft category from class
+                aircraft_category = aircraft_category_mapping.get(aircraft_class, '')
+                class_id = f"class_{aircraft_category}" if aircraft_category else ''
+                
+                # Map engine type
+                odoo_engine_type = engine_type_mapping.get(engine_type, '')
+                
+                # --- Extract Operator ---
+                operator_idx = header_map.get('OPERATOR')
+                operator_name = str(row[operator_idx]).strip() if operator_idx is not None and operator_idx < len(row) and row[operator_idx] else ''
+                
+                # Determine if aircraft is tailwheel
+                tailwheel_idx = header_map.get('AC_TAILWHEEL')
+                is_tailwheel = False
+                if tailwheel_idx is not None and tailwheel_idx < len(row):
+                    is_tailwheel = str(row[tailwheel_idx]).strip().upper() in ('TRUE', 'YES', '1')
+                
+                # Determine gear type
+                gear_type = 'fixed_tailwheel' if is_tailwheel else 'fixed_tricycle'  # Default to tricycle if not tailwheel
+                
+                # Create the transformed row
+                aircraft_id = f"aircraft_import_{aircraft_reg.replace('-', '_')}"
+                
+                transformed_row = [
+                    aircraft_id,                     # id
+                    aircraft_reg,                    # registration
+                    operator_name,                   # operator_id (name lookup)
+                    model_id,                        # model_id/id
+                    f"{make_name} {model_name} {variant}".strip(),  # model_id/name
+                    make_id,                         # model_id/make_id/id
+                    make_name,                       # model_id/make_id/name
+                    class_id,                        # model_id/class_id/id
+                    aircraft_class,                  # model_id/class_id/name
+                    odoo_engine_type,                # model_id/engine_type
+                    gear_type                        # model_id/gear_type
+                ]
+                
+                transformed_data.append(transformed_row)
+
+            except Exception as e:
+                _logger.error("Error processing row %d: %s. Row data: %s. Skipping row.", 
+                             idx + 1, e, row, exc_info=True)
+                skipped_rows += 1
+                continue  # Skip to the next row on unexpected errors
+
+        _logger.info("Aircraft transformation complete. Generated %d data rows (excluding header). Skipped %d rows.", 
+                    len(transformed_data) - 1, skipped_rows)
+        if skipped_rows > 0:
+            _logger.warning("%d rows were skipped due to errors or missing essential data. Please check logs.", 
+                           skipped_rows)
+
+        return transformed_data
+
+    def flight_aircraft_make_crewlounge_transform_data(self, data_rows, headers, import_wizard=None):
+        """Transform CrewLounge data to flight.aircraft.make format.
+        
+        Extracts unique aircraft makes from the data.
+        """
+        _logger.info("Starting CrewLounge data transformation for aircraft makes: %d rows", len(data_rows))
+        
+        # Define headers for make import
+        transformed_headers = ['id', 'name']
+        
+        # Create a mapping of original headers to their indices
+        header_map = {}
+        if headers:
+            for idx, col in enumerate(headers):
+                header_map[col.upper()] = idx
+        
+        transformed_data = [transformed_headers]
+        processed_makes = set()  # Track unique makes
+        
+        # Process each row to extract unique makes
+        for idx, row in enumerate(data_rows):
+            # Skip header row if present
+            if headers and idx == 0 and len(row) == len(headers):
+                continue
+                
+            # Skip empty rows
+            if not row or all(not cell for cell in row):
+                continue
+                
+            try:
+                # Extract make
+                make_idx = header_map.get('AC_MAKE')
+                if make_idx is None or make_idx >= len(row) or not row[make_idx]:
+                    continue
+                    
+                make_name = str(row[make_idx]).strip()
+                if not make_name or make_name in processed_makes:
+                    continue
+                    
+                processed_makes.add(make_name)
+                
+                # Create unique ID for the make
+                make_id = f"make_{make_name.lower().replace(' ', '_')}"
+                
+                transformed_data.append([make_id, make_name])
+                
+            except Exception as e:
+                _logger.error("Error processing make in row %d: %s", idx + 1, e)
+                continue
+                
+        _logger.info("Aircraft make transformation complete. Generated %d unique makes.", len(transformed_data) - 1)
+        return transformed_data
+        
+    def flight_aircraft_model_crewlounge_transform_data(self, data_rows, headers, import_wizard=None):
+        """Transform CrewLounge data to flight.aircraft.model format.
+        
+        Extracts unique aircraft models from the data with references to makes and classes.
+        """
+        _logger.info("Starting CrewLounge data transformation for aircraft models: %d rows", len(data_rows))
+        
+        # Define headers for model import
+        transformed_headers = [
+            'id', 'name', 'make_id', 'class_id', 'engine_type', 'gear_type'
+        ]
+        
+        # Create a mapping of original headers to their indices
+        header_map = {}
+        if headers:
+            for idx, col in enumerate(headers):
+                header_map[col.upper()] = idx
+        
+        # Aircraft category mapping
+        aircraft_category_mapping = {
+            'Aeroplane': 'airplane',
+            'Helicopter': 'rotorcraft',
+            'Glider': 'glider',
+            'Balloon': 'lighter_than_air',
+            # Add more mappings as needed
+        }
+        
+        # Engine type mapping
+        engine_type_mapping = {
+            'Piston': 'piston',
+            'Turboprop': 'turboprop',
+            'Turbofan': 'turbofan',
+            'Turbojet': 'turbojet',
+            'Turboshaft': 'turboshaft',
+            'Electric': 'electric',
+            # Add more mappings as needed
+        }
+        
+        transformed_data = [transformed_headers]
+        processed_models = set()  # Track unique models
+        
+        # Process each row to extract unique models
+        for idx, row in enumerate(data_rows):
+            # Skip header row if present
+            if headers and idx == 0 and len(row) == len(headers):
+                continue
+                
+            # Skip empty rows
+            if not row or all(not cell for cell in row):
+                continue
+                
+            try:
+                # Extract make, model, variant
+                make_idx = header_map.get('AC_MAKE')
+                model_idx = header_map.get('AC_MODEL')
+                variant_idx = header_map.get('AC_VARIANT')
+                engine_type_idx = header_map.get('AC_ENGTYPE')
+                tailwheel_idx = header_map.get('AC_TAILWHEEL')
+                
+                # Skip if missing essential data
+                if (make_idx is None or make_idx >= len(row) or not row[make_idx] or
+                    model_idx is None or model_idx >= len(row) or not row[model_idx]):
+                    continue
+                    
+                make_name = str(row[make_idx]).strip()
+                model_name = str(row[model_idx]).strip()
+                variant = str(row[variant_idx]).strip() if variant_idx is not None and variant_idx < len(row) and row[variant_idx] else ''
+                
+                # Create full model name
+                full_model_name = f"{make_name} {model_name}"
+                if variant:
+                    full_model_name += f" {variant}"
+                full_model_name = full_model_name.strip()
+                
+                # Skip if already processed
+                if full_model_name in processed_models:
+                    continue
+                    
+                processed_models.add(full_model_name)
+                
+                # Extract engine type and count
+                engine_type_idx = header_map.get('AC_ENGTYPE')
+                engine_type = str(row[engine_type_idx]).strip() if engine_type_idx is not None and engine_type_idx < len(row) and row[engine_type_idx] else ''
+                odoo_engine_type = engine_type_mapping.get(engine_type, '')
+                
+                # Extract engine count (Single/Multi)
+                engines_idx = header_map.get('AC_ENGINES')
+                engine_count = str(row[engines_idx]).strip() if engines_idx is not None and engines_idx < len(row) and row[engines_idx] else ''
+                is_multi_engine = engine_count.lower() == 'multi'
+                
+                # Check if seaplane
+                sea_idx = header_map.get('AC_SEA')
+                is_seaplane = False
+                if sea_idx is not None and sea_idx < len(row) and row[sea_idx]:
+                    is_seaplane = str(row[sea_idx]).strip().upper() in ('TRUE', 'YES', '1')
+                
+                # Determine gear type
+                tailwheel_idx = header_map.get('AC_TAILWHEEL')
+                is_tailwheel = False
+                if tailwheel_idx is not None and tailwheel_idx < len(row):
+                    is_tailwheel = str(row[tailwheel_idx]).strip().upper() in ('TRUE', 'YES', '1')
+                    
+                gear_type = 'fixed_tailwheel' if is_tailwheel else 'fixed_tricycle'
+                
+                # Map to the correct class ID based on aircraft category and characteristics
+                # Map class IDs to display names
+                class_display_names = {
+                    'class_airplane_mes': 'Multi-Engine Sea',
+                    'class_airplane_mel': 'Multi-Engine Land',
+                    'class_airplane_ses': 'Single-Engine Sea',
+                    'class_airplane_sel': 'Single-Engine Land',
+                    'class_rotorcraft_helicopter': 'Helicopter',
+                    'class_rotorcraft_gyroplane': 'Gyroplane',
+                    'class_glider': 'Glider',
+                    'class_lighter_than_air_balloon': 'Balloon',
+                    'class_lighter_than_air_airship': 'Airship',
+                    'class_powered_lift': 'Powered Lift',
+                    'class_powered_parachute': 'Powered Parachute',
+                    'class_weight_shift_control': 'Weight Shift Control'
+                }
+                
+                class_id = ''
+                if is_multi_engine and is_seaplane:
+                    class_id = class_display_names['class_airplane_mes']  # Multi-Engine Sea
+                elif is_multi_engine:
+                    class_id = class_display_names['class_airplane_mel']  # Multi-Engine Land
+                elif is_seaplane:
+                    class_id = class_display_names['class_airplane_ses']  # Single-Engine Sea
+                else:
+                    class_id = class_display_names['class_airplane_sel']  # Single-Engine Land
+                
+                # Create IDs for references
+                make_id = make_name
+                model_id = f"model_{make_name.lower().replace(' ', '_')}_{model_name.lower().replace(' ', '_')}"
+                
+                transformed_data.append([
+                    model_id,
+                    full_model_name,
+                    make_id,
+                    class_id,
+                    odoo_engine_type,
+                    gear_type
+                ])
+                
+            except Exception as e:
+                _logger.error("Error processing model in row %d: %s", idx + 1, e)
+                continue
+                
+        _logger.info("Aircraft model transformation complete. Generated %d unique models.", len(transformed_data) - 1)
         return transformed_data

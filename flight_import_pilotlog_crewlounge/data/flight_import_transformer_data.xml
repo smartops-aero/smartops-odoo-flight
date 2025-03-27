@@ -8,5 +8,29 @@
             <field name="model_id" ref="flight.model_flight_flight"/>
             <field name="active" eval="True"/>
         </record>
+
+        <!-- CrewLounge Transformer for flight.aircraft model -->
+        <record id="flight_import_transformer_crewlounge_aircraft" model="flight.import.pilotlog.transformer">
+            <field name="name">CrewLounge Aircraft Format</field>
+            <field name="implementation">crewlounge</field>
+            <field name="model_id" ref="flight.model_flight_aircraft"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- CrewLounge Transformer for flight.aircraft.make model -->
+        <record id="flight_import_transformer_crewlounge_aircraft_make" model="flight.import.pilotlog.transformer">
+            <field name="name">CrewLounge Aircraft Make Format</field>
+            <field name="implementation">crewlounge</field>
+            <field name="model_id" ref="flight.model_flight_aircraft_make"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- CrewLounge Transformer for flight.aircraft.model model -->
+        <record id="flight_import_transformer_crewlounge_aircraft_model" model="flight.import.pilotlog.transformer">
+            <field name="name">CrewLounge Aircraft Model Format</field>
+            <field name="implementation">crewlounge</field>
+            <field name="model_id" ref="flight.model_flight_aircraft_model"/>
+            <field name="active" eval="True"/>
+        </record>
     </data>
 </odoo>

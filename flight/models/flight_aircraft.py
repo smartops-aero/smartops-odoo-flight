@@ -83,6 +83,7 @@ class FlightAircraftModel(models.Model):
     code = fields.Char("ICAO type code")
 
     tag_ids = fields.Many2many("flight.aircraft.model.tag")
+    aircraft_ids = fields.One2many("flight.aircraft", "model_id", string="Aircraft")
 
 
 

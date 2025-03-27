@@ -96,6 +96,22 @@
   />
 
   <menuitem
+    id="menu_flight_aircraft_make"
+    name="Aircraft Makes"
+    parent="menu_flight_aircraft_configuration"
+    action="action_flight_aircraft_make_list"
+    sequence="30"
+  />
+
+  <menuitem
+    id="menu_flight_aircraft_class"
+    name="Aircraft Classes"
+    parent="menu_flight_aircraft_configuration"
+    action="action_flight_aircraft_class_list"
+    sequence="40"
+  />
+
+  <menuitem
     id="menu_flight_flight_configuration"
     name="Flights"
     parent="menu_flight_configuration"

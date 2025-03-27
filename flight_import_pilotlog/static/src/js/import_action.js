@@ -7,6 +7,14 @@ odoo.define('flight_import_pilotlog.import', function (require) {
     const _t = core._t;
     const session = require('web.session');
     
+    // List of supported flight-related models
+    const FLIGHT_MODELS = [
+        'flight.flight', 
+        'flight.aircraft', 
+        'flight.aircraft.model', 
+        'flight.aircraft.make'
+    ];
+    
     // Extend DataImport for flight models
     DataImport.include({
         events: _.extend({}, DataImport.prototype.events, {
@@ -125,7 +133,7 @@ odoo.define('flight_import_pilotlog.import', function (require) {
             const self = this;
             return this._super().then(function () {
                 // Only show flight-specific options for flight models
-                if (['flight.flight', 'flight.aircraft'].includes(self.res_model)) {
+                if (FLIGHT_MODELS.includes(self.res_model)) {
                     self._addFlightImportOptions();
                 }
             });
@@ -141,41 +149,46 @@ odoo.define('flight_import_pilotlog.import', function (require) {
                 class: 'mt-3 flight_import_section'
             }).append($('<h4>', {text: _t('Flight Data Import')}));
             
-            // Add base pilot selection
-            const $basePilotDiv = $('<div>', {class: 'mb-3'})
-                .append($('<label>', {
-                    class: 'mb-1 d-block',
-                    text: _t('Base Pilot')
-                }))
-                .append($('<div>', {
-                    class: 'text-muted small mb-1',
-                    text: _t('Default pilot to use for imported flights')
-                }));
-            
-            // Fetch pilots with a separate RPC call
-            this._rpc({
-                model: 'res.partner',
-                method: 'search_read',
-                args: [[['is_company', '=', false]], ['id', 'display_name']],
-                kwargs: {limit: 100}
-            }).then(partners => {
-                const $select = $('<select>', {
-                    class: 'flight_import_base_pilot form-select'
-                }).append($('<option>', {
-                    value: '',
-                    text: _t('Select a pilot...')
-                }));
-                
-                // Add partners to select
-                _.each(partners, partner => {
-                    $select.append($('<option>', {
-                        value: partner.id,
-                        text: partner.display_name
+            // Only show pilot selection for flight.flight model
+            if (this.res_model === 'flight.flight') {
+                // Add base pilot selection
+                const $basePilotDiv = $('<div>', {class: 'mb-3'})
+                    .append($('<label>', {
+                        class: 'mb-1 d-block',
+                        text: _t('Base Pilot')
+                    }))
+                    .append($('<div>', {
+                        class: 'text-muted small mb-1',
+                        text: _t('Default pilot to use for imported flights')
                     }));
+                
+                // Fetch pilots with a separate RPC call
+                this._rpc({
+                    model: 'res.partner',
+                    method: 'search_read',
+                    args: [[['is_company', '=', false]], ['id', 'display_name']],
+                    kwargs: {limit: 100}
+                }).then(partners => {
+                    const $select = $('<select>', {
+                        class: 'flight_import_base_pilot form-select'
+                    }).append($('<option>', {
+                        value: '',
+                        text: _t('Select a pilot...')
+                    }));
+                    
+                    // Add partners to select
+                    _.each(partners, partner => {
+                        $select.append($('<option>', {
+                            value: partner.id,
+                            text: partner.display_name
+                        }));
+                    });
+                    
+                    $basePilotDiv.append($select);
                 });
                 
-                $basePilotDiv.append($select);
-            });
+                $importSection.append($basePilotDiv);
+            }
             
             // Add transformer selection
             const $transformerDiv = $('<div>', {class: 'mb-3'})
@@ -213,7 +226,7 @@ odoo.define('flight_import_pilotlog.import', function (require) {
                 $transformerDiv.append($transformerSelect);
             });
             
-            $importSection.append($basePilotDiv).append($transformerDiv);
+            $importSection.append($transformerDiv);
             $advancedSection.append($importSection);
         },
         
@@ -221,15 +234,15 @@ odoo.define('flight_import_pilotlog.import', function (require) {
             this._super(event, from, to, result);
             
             // If this is a flight model and we have transformer info
-            if (['flight.flight', 'flight.aircraft'].includes(this.res_model)) {
+            if (FLIGHT_MODELS.includes(this.res_model)) {
                 // Set transformer if available
                 if (result.transformer_id) {
                     this.$('select.flight_import_transformer').val(result.transformer_id.id);
                     this.transformer_id = result.transformer_id.id;
                 }
                 
-                // Set base pilot if available
-                if (result.base_pilot_id) {
+                // Set base pilot if available (only for flight.flight)
+                if (this.res_model === 'flight.flight' && result.base_pilot_id) {
                     this.$('select.flight_import_base_pilot').val(result.base_pilot_id.id);
                 }
                 
@@ -254,7 +267,7 @@ odoo.define('flight_import_pilotlog.import', function (require) {
             const options = this._super();
             
             // Add flight-specific options
-            if (['flight.flight', 'flight.aircraft'].includes(this.res_model)) {
+            if (this.res_model === 'flight.flight') {
                 // Add base pilot if selected
                 const basePilotId = parseInt(this.$('select.flight_import_base_pilot').val(), 10);
                 if (basePilotId) {
