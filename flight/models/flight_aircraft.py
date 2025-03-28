@@ -22,8 +22,6 @@ class FlightAircraftClass(models.Model):
     )
 
     name = fields.Char("Aircraft class")
-    model_ids = fields.One2many("flight.aircraft.model", "class_id", "Aircraft Models")
-
 
 class FlightAircraftMake(models.Model):
     _name = "flight.aircraft.make"
@@ -31,15 +29,11 @@ class FlightAircraftMake(models.Model):
 
     name = fields.Char()
 
-    model_ids = fields.One2many("flight.aircraft.model", "make_id", "Aircraft Models")
-
-
 class FlightAircraftModelTag(models.Model):
     _name = "flight.aircraft.model.tag"
     _description = "Aircraft Model Tag"
 
     name = fields.Char()
-
 
 class FlightAircraftModel(models.Model):
     _name = "flight.aircraft.model"
@@ -83,8 +77,6 @@ class FlightAircraftModel(models.Model):
     code = fields.Char("ICAO type code")
 
     tag_ids = fields.Many2many("flight.aircraft.model.tag")
-    aircraft_ids = fields.One2many("flight.aircraft", "model_id", string="Aircraft")
-
 
 class FlightAircraft(models.Model):
     _name = "flight.aircraft"
@@ -130,7 +122,6 @@ class FlightAircraft(models.Model):
         required=True,
         tracking=True,
     )
-    flight_ids = fields.One2many("flight.flight", "aircraft_id", string="Flights")
 
     _sql_constraints = [
         (
