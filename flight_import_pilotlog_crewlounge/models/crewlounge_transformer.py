@@ -43,11 +43,11 @@ CREWLOUNGE_EVENT_CODE_MAPPING = {
 
 # Headers for the transformed flight.flight data structure expected by Odoo import
 FLIGHT_TRANSFORMED_HEADERS = [
-    "id", "date", "aircraft_id/registration", "departure_id/icao",
-    "arrival_id/icao", "remark_ids/id", "remark_ids/partner_id/id",
-    "remark_ids/remark", "pilot_time_ids/id", "pilot_time_ids/partner_id/id",
+    "id", "date", "aircraft_id", "departure_id",
+    "arrival_id", "remark_ids/id", "remark_ids/partner_id/.id",
+    "remark_ids/remark", "pilot_time_ids/id", "pilot_time_ids/partner_id/.id",
     "pilot_time_ids/code_id/id", "pilot_time_ids/duration",
-    "pilot_event_ids/id", "pilot_event_ids/partner_id/id",
+    "pilot_event_ids/id", "pilot_event_ids/partner_id/.id",
     "pilot_event_ids/event_code_id/id", "pilot_event_ids/count",
 ]
 
