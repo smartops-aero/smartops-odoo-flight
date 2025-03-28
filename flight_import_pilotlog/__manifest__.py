@@ -25,4 +25,7 @@ Base module for importing pilot log data with flexible transformers.
     "application": False,
     "auto_install": False,
     "license": "LGPL-3",
+    "images": [
+        "static/description/banner.jpeg",
+    ],
 }

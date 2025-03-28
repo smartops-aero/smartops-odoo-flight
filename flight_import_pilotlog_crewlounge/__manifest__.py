@@ -18,4 +18,7 @@ Adds support for importing pilot log data from CrewLounge format.
     "application": False,
     "auto_install": False,
     "license": "LGPL-3",
+    "images": [
+        "static/description/banner.jpeg",
+    ],
 }
