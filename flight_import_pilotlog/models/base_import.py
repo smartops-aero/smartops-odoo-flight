@@ -19,7 +19,7 @@ class ImportExtended(models.TransientModel):
         help="Transformer to use for data conversion",
     )
 
-    base_pilot_id = fields.Many2one(
+    pilot_id = fields.Many2one(
         "res.partner",
         string="Base Pilot",
         help="Default pilot to use for imported flights",
@@ -200,9 +200,9 @@ class ImportExtended(models.TransientModel):
                 result["transformer_id"] = self._format_record_for_response(self, "transformer_id")
                 result["is_transformed"] = bool(self.transformer_id)
 
-            # Add base_pilot_id if available
-            if self.base_pilot_id:
-                result["base_pilot_id"] = self._format_record_for_response(self, "base_pilot_id")
+            # Add pilot_id if available
+            if self.pilot_id:
+                result["pilot_id"] = self._format_record_for_response(self, "pilot_id")
 
             return result
 
@@ -215,7 +215,7 @@ class ImportExtended(models.TransientModel):
                 "error": str(error),
                 "preview": preview,
                 "transformer_id": self._format_record_for_response(self, "transformer_id"),
-                "base_pilot_id": self._format_record_for_response(self, "base_pilot_id"),
+                "pilot_id": self._format_record_for_response(self, "pilot_id"),
             }
 
     @api.model

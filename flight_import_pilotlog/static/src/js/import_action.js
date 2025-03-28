@@ -80,7 +80,7 @@ odoo.define("flight_import_pilotlog.import", function (require) {
         this._rpc({
           model: "base_import.import",
           method: "write",
-          args: [[this.id], { base_pilot_id: pilotId }],
+          args: [[this.id], { pilot_id: pilotId }],
         })
           .then(() => {
             if (this.transformer_id) {
@@ -289,9 +289,9 @@ odoo.define("flight_import_pilotlog.import", function (require) {
         }
 
         // Set base pilot if available (only for flight.flight)
-        if (this.res_model === "flight.flight" && result.base_pilot_id) {
+        if (this.res_model === "flight.flight" && result.pilot_id) {
           this.$("select.flight_import_base_pilot").val(
-            result.base_pilot_id.id
+            result.pilot_id.id
           );
         }
 
@@ -327,7 +327,7 @@ odoo.define("flight_import_pilotlog.import", function (require) {
           10
         );
         if (basePilotId) {
-          options.base_pilot_id = basePilotId;
+          options.pilot_id = basePilotId;
         }
       }
 

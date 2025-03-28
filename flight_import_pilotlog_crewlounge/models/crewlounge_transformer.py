@@ -177,8 +177,8 @@ class FlightImportPIlotlogTransformer(models.Model):
 
     def _get_partner_ref(self, import_wizard):
         """Determine the partner ID to use for related records."""
-        if import_wizard and import_wizard.base_pilot_id:
-            return import_wizard.base_pilot_id.id
+        if import_wizard and import_wizard.pilot_id:
+            return import_wizard.pilot_id.id
         # Fallback to current user's partner, though wizard context is preferred
         return self.env.user.partner_id.id
 
