@@ -23,17 +23,20 @@ class FlightAircraftClass(models.Model):
 
     name = fields.Char("Aircraft class")
 
+
 class FlightAircraftMake(models.Model):
     _name = "flight.aircraft.make"
     _description = "Aircraft Make"
 
     name = fields.Char()
 
+
 class FlightAircraftModelTag(models.Model):
     _name = "flight.aircraft.model.tag"
     _description = "Aircraft Model Tag"
 
     name = fields.Char()
+
 
 class FlightAircraftModel(models.Model):
     _name = "flight.aircraft.model"
@@ -77,6 +80,7 @@ class FlightAircraftModel(models.Model):
     code = fields.Char("ICAO type code")
 
     tag_ids = fields.Many2many("flight.aircraft.model.tag")
+
 
 class FlightAircraft(models.Model):
     _name = "flight.aircraft"
