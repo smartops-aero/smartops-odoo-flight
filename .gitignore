@@ -75,3 +75,7 @@ docs/_build/
 
 .ruff_cache
 .claudesync
+
+
+/flight_import_pilotlog/
+/flight_import_pilotlog_crewlounge/
