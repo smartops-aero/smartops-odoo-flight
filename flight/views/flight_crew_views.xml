@@ -21,7 +21,10 @@
                 <sheet>
                     <group>
                         <group string="Crew Member">
-                            <field name="partner_id" domain="[('is_company', '=', False)]" />
+                            <field
+                name="partner_id"
+                domain="[('is_company', '=', False)]"
+              />
                         </group>
                         <group string="Assignment">
                             <field name="role_id" />
