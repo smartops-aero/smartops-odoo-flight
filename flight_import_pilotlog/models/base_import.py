@@ -55,7 +55,7 @@ class ImportExtended(models.TransientModel):
         options["has_headers"] = True
         
         return transformed_rows, options
-
+    # TODO check if this method is needed at all
     @api.model
     def update_transformation_preview(self, id):
         """Log and skip transformation for now"""
