@@ -71,7 +71,7 @@
                             <field name="sequence" />
                             <field
                 name="default_uom_id"
-                attrs="{'invisible': [('code_type', '!=', 'float')]}"
+                invisible="code_type != 'float'"
               />
                         </group>
                     </group>
@@ -113,19 +113,19 @@
                         <group>
                             <field
                 name="value_bool"
-                attrs="{'invisible': [('code_type', '!=', 'bool')]}"
+                invisible="code_type != 'bool'"
               />
                             <field
                 name="value_text"
-                attrs="{'invisible': [('code_type', '!=', 'text')]}"
+                invisible="code_type != 'text'"
               />
                             <field
                 name="value_float"
-                attrs="{'invisible': [('code_type', '!=', 'float')]}"
+                invisible="code_type != 'float'"
               />
                             <field
                 name="uom_id"
-                attrs="{'invisible': [('code_type', '!=', 'float')]}"
+                invisible="code_type != 'float'"
               />
                         </group>
                     </group>

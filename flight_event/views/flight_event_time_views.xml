@@ -84,7 +84,7 @@
           type="object"
           icon="fa-history"
           title="View Time Changes"
-          attrs="{'invisible': [('has_history', '=', False)]}"
+          invisible="not has_history"
         />
             </list>
         </field>

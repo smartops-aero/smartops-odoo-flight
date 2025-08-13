@@ -26,14 +26,14 @@
             name="toggle_locked"
             type="object"
             string="Lock"
-            attrs="{'invisible': [('locked', '=', True)]}"
+            invisible="locked"
             groups="flight.group_flight_manager"
           />
                     <button
             name="toggle_locked"
             type="object"
             string="Unlock"
-            attrs="{'invisible': [('locked', '=', False)]}"
+            invisible="not locked"
             groups="flight.group_flight_manager"
           />
                 </header>

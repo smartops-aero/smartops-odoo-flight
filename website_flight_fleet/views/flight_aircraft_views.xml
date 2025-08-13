@@ -42,7 +42,7 @@
                 string="Generate Static Content"
                 type="object"
                 name="regenerate_website_description"
-                attrs="{'invisible': [('website_description', 'not in', ['', False])]}"
+                invisible="website_description not in ['', False]"
                 class="oe_highlight"
               />
             </group>
