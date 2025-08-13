@@ -12,7 +12,7 @@
             name="spec_ids"
             context="{'default_aircraft_id': active_id}"
           >
-                        <tree
+                        <list
               editable="bottom"
               create="true"
               delete="true"
@@ -42,7 +42,7 @@
                 name="uom_id"
                 attrs="{'invisible': [('code_type', '!=', 'float')]}"
               />
-                        </tree>
+                        </list>
                     </field>
                 </page>
                 <page string="Images" name="images">

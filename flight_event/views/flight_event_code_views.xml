@@ -2,14 +2,14 @@
 <odoo>
     <!-- Flight Event Code Tree View -->
     <record id="view_flight_event_code_tree" model="ir.ui.view">
-        <field name="name">flight.event.code.tree</field>
+        <field name="name">flight.event.code.list</field>
         <field name="model">flight.event.code</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="code" />
                 <field name="name" />
                 <field name="sequence" widget="handle" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -35,6 +35,6 @@
     <record id="action_flight_event_code_list" model="ir.actions.act_window">
         <field name="name">Flight Event Codes</field>
         <field name="res_model">flight.event.code</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>

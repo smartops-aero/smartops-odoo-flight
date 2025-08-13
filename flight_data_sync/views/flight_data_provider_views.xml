@@ -2,16 +2,16 @@
 <odoo>
     <!-- Tree View for Flight Data Provider -->
     <record id="view_flight_data_provider_tree" model="ir.ui.view">
-        <field name="name">flight.data.provider.tree</field>
+        <field name="name">flight.data.provider.list</field>
         <field name="model">flight.data.provider</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
                 <field name="service" />
                 <field name="company_id" groups="base.group_multi_company" />
                 <field name="api_base" />
                 <field name="active" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -68,7 +68,7 @@
                     <notebook>
                         <page string="Sync Schedules">
                             <field name="schedule_ids">
-                                <tree decoration-muted="not active">
+                                <list decoration-muted="not active">
                                     <field name="name" />
                                     <field name="model" />
                                     <field name="interval_number" />
@@ -85,7 +85,7 @@
                     type="object"
                     icon="fa-list"
                   />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -131,7 +131,7 @@
     <record id="action_flight_data_provider" model="ir.actions.act_window">
         <field name="name">Flight Data Providers</field>
         <field name="res_model">flight.data.provider</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_flight_data_provider_search" />
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -145,14 +145,14 @@
 
     <!-- Tree View for Flight Data Sync Logs -->
     <record id="view_flight_data_sync_log_tree" model="ir.ui.view">
-        <field name="name">flight.data.sync.log.tree</field>
+        <field name="name">flight.data.sync.log.list</field>
         <field name="model">flight.data.sync.log</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="schedule_name" />
                 <field name="timestamp" />
                 <field name="direction" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -179,7 +179,7 @@
     <record id="action_flight_data_sync_log" model="ir.actions.act_window">
         <field name="name">Sync Logs</field>
         <field name="res_model">flight.data.sync.log</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="view_id" ref="view_flight_data_sync_log_tree" />
         <field name="domain">[('schedule_id', '=', active_id)]</field>
         <field name="context">{'default_schedule_id': active_id}</field>

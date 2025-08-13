@@ -2,15 +2,15 @@
 <odoo>
     <!-- Category Views -->
     <record id="view_flight_aircraft_spec_category_tree" model="ir.ui.view">
-        <field name="name">flight.aircraft.spec.category.tree</field>
+        <field name="name">flight.aircraft.spec.category.list</field>
         <field name="model">flight.aircraft.spec.category</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="code" />
                 <field name="description" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -39,10 +39,10 @@
 
     <!-- Specification Code Views -->
     <record id="view_flight_aircraft_spec_code_tree" model="ir.ui.view">
-        <field name="name">flight.aircraft.spec.code.tree</field>
+        <field name="name">flight.aircraft.spec.code.list</field>
         <field name="model">flight.aircraft.spec.code</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="sequence" widget="handle" />
                 <field name="category_id" />
                 <field name="name" />
@@ -50,7 +50,7 @@
                 <field name="code_type" />
                 <field name="description" />
                 <field name="default_uom_id" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -85,15 +85,15 @@
 
     <!-- Specification Views -->
     <record id="view_flight_aircraft_spec_tree" model="ir.ui.view">
-        <field name="name">flight.aircraft.spec.tree</field>
+        <field name="name">flight.aircraft.spec.list</field>
         <field name="model">flight.aircraft.spec</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="sequence" widget="handle" />
                 <field name="aircraft_id" />
                 <field name="code_id" />
                 <field name="display_name" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -141,19 +141,19 @@
   >
         <field name="name">Specification Categories</field>
         <field name="res_model">flight.aircraft.spec.category</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <record id="action_flight_aircraft_spec_code" model="ir.actions.act_window">
         <field name="name">Specification Codes</field>
         <field name="res_model">flight.aircraft.spec.code</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <record id="action_flight_aircraft_spec" model="ir.actions.act_window">
         <field name="name">Aircraft Specifications</field>
         <field name="res_model">flight.aircraft.spec</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 

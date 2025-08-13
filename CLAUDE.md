@@ -74,6 +74,7 @@ coverage report
 ### Model Structure
 
 All flight-related models inherit from:
+
 - `mail.thread` - for chatter and activity tracking
 - `mail.activity.mixin` - for scheduled activities
 - `flight.lock.mixin` - custom mixin for record locking functionality
@@ -107,6 +108,7 @@ All flight-related models inherit from:
 ### Aerodrome Data
 
 The full aerodrome dataset is not included by default. To load:
+
 1. Download from: https://raw.githubusercontent.com/smartops-aero/smartops-odoo-flight/18.0/flight/data/flight.aerodrome.csv
 2. Import via Flights -> Configuration -> Aerodromes -> Import
 

@@ -1,5 +1,0 @@
-# Python version requirement
-# Python >= 3.10 (recommended 3.11+)
-
-# External dependencies (if any) for custom modules
-# Add any Python packages required by the flight modules here

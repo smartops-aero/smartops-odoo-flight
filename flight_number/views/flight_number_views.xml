@@ -1,14 +1,14 @@
 <odoo>
     <!-- Flight Number Tree View -->
     <record id="view_flight_number_tree" model="ir.ui.view">
-        <field name="name">flight.number.tree</field>
+        <field name="name">flight.number.list</field>
         <field name="model">flight.number</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="display_name" string="Flight Number" />
                 <field name="prefix_id" />
                 <field name="number" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -45,6 +45,6 @@
     <record id="action_flight_number_list" model="ir.actions.act_window">
         <field name="name">Flight Numbers</field>
         <field name="res_model">flight.number</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>

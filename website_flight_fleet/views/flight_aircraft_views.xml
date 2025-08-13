@@ -68,7 +68,7 @@
             to reorder images. Click Add a line to upload new images.
           </div>
           <field name="aircraft_image_ids" colspan="2" nolabel="1">
-            <tree editable="bottom">
+            <list editable="bottom">
               <field name="sequence" widget="handle" />
               <field name="category_id" required="1" />
               <field
@@ -85,7 +85,7 @@
                 optional="show"
                 placeholder="Optional caption"
               />
-            </tree>
+            </list>
           </field>
         </group>
       </xpath>

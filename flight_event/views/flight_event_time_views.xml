@@ -64,10 +64,10 @@
 
     <!-- Flight Event Time Tree View -->
     <record id="view_flight_event_time_tree" model="ir.ui.view">
-        <field name="name">flight.event.time.tree</field>
+        <field name="name">flight.event.time.list</field>
         <field name="model">flight.event.time</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <list editable="bottom">
                 <field name="flight_id" />
                 <field
           name="flight_id"
@@ -86,7 +86,7 @@
           title="View Time Changes"
           attrs="{'invisible': [('has_history', '=', False)]}"
         />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -107,20 +107,20 @@
     <record id="action_flight_event_time_list" model="ir.actions.act_window">
         <field name="name">Flight Event Times</field>
         <field name="res_model">flight.event.time</field>
-        <field name="view_mode">tree,calendar</field>
+        <field name="view_mode">list,calendar</field>
         <field name="search_view_id" ref="view_flight_event_time_search" />
         <field name="context">{'search_default_today': 1}</field>
     </record>
 
     <record id="view_flight_event_time_history_tree" model="ir.ui.view">
-        <field name="name">flight.event.time.history.tree</field>
+        <field name="name">flight.event.time.history.list</field>
         <field name="model">flight.event.time.history</field>
         <field name="arch" type="xml">
-            <tree create="false" edit="false" delete="false">
+            <list create="false" edit="false" delete="false">
                 <field name="write_date" string="Changed On" />
                 <field name="write_uid" string="Changed By" />
                 <field name="time" string="Time" />
-            </tree>
+            </list>
         </field>
     </record>
 </odoo>

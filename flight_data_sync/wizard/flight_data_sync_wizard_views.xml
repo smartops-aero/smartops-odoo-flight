@@ -12,10 +12,10 @@
             options="{'no_create': True}"
             context="{'active_test': False}"
           >
-                        <tree>
+                        <list>
                             <field name="name" />
                             <field name="active" invisible="1" />
-                        </tree>
+                        </list>
                     </field>
                 </group>
                 <footer>

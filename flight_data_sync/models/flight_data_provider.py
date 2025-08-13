@@ -269,7 +269,7 @@ class FlightDataSyncSchedule(models.Model):
         return {
             "name": _("Sync Logs"),
             "res_model": "flight.data.sync.log",
-            "view_mode": "tree,form",
+            "view_mode": "list,form",
             "type": "ir.actions.act_window",
             "domain": [("schedule_id", "=", self.id)],
             "context": {"default_schedule_id": self.id},

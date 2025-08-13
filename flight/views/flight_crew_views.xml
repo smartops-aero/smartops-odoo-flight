@@ -2,14 +2,14 @@
 <odoo>
     <!-- Flight Crew Views -->
     <record id="view_flight_crew_tree" model="ir.ui.view">
-        <field name="name">flight.crew.tree</field>
+        <field name="name">flight.crew.list</field>
         <field name="model">flight.crew</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="partner_id" />
                 <field name="role_id" />
                 <field name="flight_id" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -38,13 +38,13 @@
 
     <!-- Flight Crew Role Views -->
     <record id="view_flight_crew_role_tree" model="ir.ui.view">
-        <field name="name">flight.crew.role.tree</field>
+        <field name="name">flight.crew.role.list</field>
         <field name="model">flight.crew.role</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
                 <field name="description" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -67,12 +67,12 @@
     <record id="action_flight_crew" model="ir.actions.act_window">
         <field name="name">Flight Crew</field>
         <field name="res_model">flight.crew</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <record id="action_flight_crew_role" model="ir.actions.act_window">
         <field name="name">Crew Roles</field>
         <field name="res_model">flight.crew.role</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>
