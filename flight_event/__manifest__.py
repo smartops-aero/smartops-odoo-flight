@@ -9,10 +9,11 @@
     "website": "https://github.com/smartops-aero/flight",
     "license": "LGPL-3",
     "category": "Industries",
-    "version": "16.0.1.0.1",
+    "version": "18.0.1.0.0",
     "depends": [
         "base",
         "flight",
+        "web",
     ],
     "assets": {
         "web.assets_backend": [
