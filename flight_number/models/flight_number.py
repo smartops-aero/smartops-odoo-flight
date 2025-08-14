@@ -37,7 +37,9 @@ class FlightNumber(models.Model):
                 ("number", operator, name),
             ]
 
-        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)
+        # In Odoo 18.0, _search doesn't accept access_rights_uid parameter
+        # The name_get_uid parameter is maintained for API compatibility but not used
+        return self._search(domain + args, limit=limit)
 
 
 class FlightPrefix(models.Model):
