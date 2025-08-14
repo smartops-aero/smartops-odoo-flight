@@ -41,23 +41,32 @@ class FlightCommon(TransactionCase):
         })
         
         # Create test data
+        # Get or create US country
+        cls.country_us = cls.env['res.country'].search([('code', '=', 'US')], limit=1)
+        if not cls.country_us:
+            cls.country_us = cls.env['res.country'].create({
+                'name': 'United States',
+                'code': 'US',
+            })
+        
+        # Create test-specific airports that won't conflict with demo data
         cls.aerodrome_jfk = cls.env['flight.aerodrome'].create({
-            'name': 'John F Kennedy International Airport',
-            'icao': 'KJFK',
-            'iata': 'JFK',
+            'name': 'Test Airport East',
+            'icao': 'KTES',  # Unique ICAO for testing
+            'iata': 'TSE',
             'city': 'New York',
-            'country': 'US',
+            'country_id': cls.country_us.id,
             'latitude': 40.6413,
             'longitude': -73.7781,
             'elevation': 13,
         })
         
         cls.aerodrome_lax = cls.env['flight.aerodrome'].create({
-            'name': 'Los Angeles International Airport',
-            'icao': 'KLAX',
-            'iata': 'LAX',
+            'name': 'Test Airport West',
+            'icao': 'KTSW',  # Unique ICAO for testing
+            'iata': 'TSW',
             'city': 'Los Angeles',
-            'country': 'US',
+            'country_id': cls.country_us.id,
             'latitude': 33.9425,
             'longitude': -118.4081,
             'elevation': 125,
@@ -77,29 +86,29 @@ class FlightCommon(TransactionCase):
             'make_id': cls.aircraft_make.id,
             'class_id': cls.aircraft_class.id,
             'engine_type': 'turbojet',
-            'gear_type': 'tricycle_retractable',
+            'gear_type': 'retractable_tricycle',
             'code': 'B738',
         })
         
         cls.aircraft = cls.env['flight.aircraft'].create({
-            'registration': 'N12345',
+            'registration': 'TEST001',  # Unique test registration
             'model_id': cls.aircraft_model.id,
             'operator_id': cls.env.company.partner_id.id,
             'sn': 'SN123456',
             'dom': date(2020, 1, 1),
-            'equipment_type': 'standard',
+            'equipment_type': 'aircraft',
             'mtow': 79015,
             'weight_uom_id': cls.env.ref('uom.product_uom_lb').id,
         })
         
         cls.crew_role_pilot = cls.env['flight.crew.role'].create({
             'name': 'Captain',
-            'code': 'CPT',
+            'description': 'Pilot in Command',
         })
         
         cls.crew_role_copilot = cls.env['flight.crew.role'].create({
             'name': 'First Officer',
-            'code': 'FO',
+            'description': 'Second in Command',
         })
         
     def create_test_flight(self, **kwargs):

@@ -1,7 +1,8 @@
-# -*- coding: utf-8 -*-
-from odoo.tests import tagged
-from odoo.exceptions import ValidationError, UserError
 from datetime import date, timedelta
+
+from odoo.exceptions import UserError
+from odoo.tests import tagged
+
 from .common import FlightCommon
 
 
@@ -21,7 +22,7 @@ class TestFlight(FlightCommon):
     def test_02_flight_name_get(self):
         """Test flight display name generation"""
         flight = self.create_test_flight(date=date(2024, 1, 15))
-        expected_name = f"2024-01-15 / N12345: KJFK - KLAX"
+        expected_name = "2024-01-15 / TEST001: KTES - KTSW"
         self.assertEqual(flight.display_name, expected_name)
         
     def test_03_flight_lock_unlock(self):
@@ -70,7 +71,7 @@ class TestFlight(FlightCommon):
     def test_05_flight_auto_departure_from_last_arrival(self):
         """Test automatic departure setting from last aircraft arrival"""
         # Create first flight
-        flight1 = self.create_test_flight(
+        self.create_test_flight(
             date=date.today() - timedelta(days=1),
             departure_id=self.aerodrome_jfk.id,
             arrival_id=self.aerodrome_lax.id,

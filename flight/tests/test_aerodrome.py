@@ -12,19 +12,18 @@ class TestAerodrome(FlightCommon):
         """Test aerodrome creation with all fields"""
         aerodrome = self.env['flight.aerodrome'].create({
             'name': 'Test Airport',
-            'icao': 'KTES',
+            'icao': 'KTST',
             'iata': 'TST',
             'city': 'Test City',
-            'state': 'TX',
-            'country': 'US',
+            'country_id': self.country_us.id,
             'latitude': 30.1234,
             'longitude': -95.5678,
             'elevation': 150,
-            'timezone': 'America/Chicago',
+            'tz': 'America/Chicago',
         })
         
         self.assertTrue(aerodrome.id)
-        self.assertEqual(aerodrome.icao, 'KTES')
+        self.assertEqual(aerodrome.icao, 'KTST')
         self.assertEqual(aerodrome.iata, 'TST')
         self.assertEqual(aerodrome.latitude, 30.1234)
         self.assertEqual(aerodrome.longitude, -95.5678)
@@ -34,7 +33,7 @@ class TestAerodrome(FlightCommon):
         # With IATA code
         self.assertEqual(
             self.aerodrome_jfk.display_name,
-            'John F Kennedy International Airport (JFK)'
+            'KTES(TSE) - Test Airport East'
         )
         
         # Without IATA code
@@ -42,7 +41,7 @@ class TestAerodrome(FlightCommon):
             'name': 'Small Airport',
             'icao': 'KSML',
             'city': 'Small City',
-            'country': 'US',
+            'country_id': self.country_us.id,
         })
         self.assertEqual(
             aerodrome_no_iata.display_name,
@@ -87,14 +86,14 @@ class TestAerodrome(FlightCommon):
         
         # Search by country
         found = self.env['flight.aerodrome'].search([
-            ('country', '=', 'US')
+            ('country_id', '=', self.country_us.id)
         ])
         self.assertIn(self.aerodrome_jfk, found)
         self.assertIn(self.aerodrome_lax, found)
         
         # Search by ICAO
         found = self.env['flight.aerodrome'].search([
-            ('icao', '=', 'KJFK')
+            ('icao', '=', 'KTES')
         ])
         self.assertEqual(len(found), 1)
         self.assertEqual(found, self.aerodrome_jfk)
@@ -105,7 +104,7 @@ class TestAerodrome(FlightCommon):
         with self.assertRaises(ValidationError):
             self.env['flight.aerodrome'].create({
                 'name': 'Duplicate ICAO',
-                'icao': 'KJFK',  # Already exists
+                'icao': 'KTES',  # Already exists
             })
             
         # IATA can be empty but should be unique if provided
@@ -138,9 +137,9 @@ class TestAerodrome(FlightCommon):
             aerodrome = self.env['flight.aerodrome'].create({
                 'name': f'Airport {tz}',
                 'icao': f'K{tz[:3].upper()}',
-                'timezone': tz,
+                'tz': tz,
             })
-            self.assertEqual(aerodrome.timezone, tz)
+            self.assertEqual(aerodrome.tz, tz)
             
     def test_07_aerodrome_elevation(self):
         """Test aerodrome elevation handling"""
@@ -194,4 +193,4 @@ class TestAerodrome(FlightCommon):
         self.assertEqual(copy.icao, 'KCPY')
         self.assertEqual(copy.iata, 'CPY')
         self.assertEqual(copy.city, self.aerodrome_jfk.city)
-        self.assertEqual(copy.country, self.aerodrome_jfk.country)
+        self.assertEqual(copy.country_id, self.aerodrome_jfk.country_id)
