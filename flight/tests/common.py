@@ -12,32 +12,45 @@ class FlightCommon(TransactionCase):
         super().setUpClass()
         
         # Create test users with different access levels
+        # All users need base.group_user (Internal User) for mail access
         cls.user_manager = cls.env['res.users'].create({
             'name': 'Flight Manager',
             'login': 'flight_manager',
             'email': 'manager@flight.test',
-            'groups_id': [(6, 0, [cls.env.ref('flight.group_flight_manager').id])]
+            'groups_id': [(6, 0, [
+                cls.env.ref('flight.group_flight_manager').id,
+                cls.env.ref('base.group_user').id,  # Internal User
+            ])]
         })
         
         cls.user_dispatcher = cls.env['res.users'].create({
             'name': 'Flight Dispatcher', 
             'login': 'flight_dispatcher',
             'email': 'dispatcher@flight.test',
-            'groups_id': [(6, 0, [cls.env.ref('flight.group_flight_dispatcher').id])]
+            'groups_id': [(6, 0, [
+                cls.env.ref('flight.group_flight_dispatcher').id,
+                cls.env.ref('base.group_user').id,  # Internal User
+            ])]
         })
         
         cls.user_crew = cls.env['res.users'].create({
             'name': 'Flight Crew',
             'login': 'flight_crew', 
             'email': 'crew@flight.test',
-            'groups_id': [(6, 0, [cls.env.ref('flight.group_flight_crew').id])]
+            'groups_id': [(6, 0, [
+                cls.env.ref('flight.group_flight_crew').id,
+                cls.env.ref('base.group_user').id,  # Internal User
+            ])]
         })
         
         cls.user_basic = cls.env['res.users'].create({
             'name': 'Basic User',
             'login': 'basic_user',
             'email': 'basic@flight.test',
-            'groups_id': [(6, 0, [cls.env.ref('flight.group_flight_user').id])]
+            'groups_id': [(6, 0, [
+                cls.env.ref('flight.group_flight_user').id,
+                cls.env.ref('base.group_user').id,  # Internal User
+            ])]
         })
         
         # Create test data

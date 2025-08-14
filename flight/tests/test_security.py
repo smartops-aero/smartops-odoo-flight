@@ -103,10 +103,10 @@ class TestSecurity(FlightCommon):
         flight2.with_user(self.user_dispatcher).unlink()
         self.assertFalse(flight2.exists())
         
-        # Crew should be able to delete unlocked flights
+        # Crew should NOT be able to delete flights (only dispatcher/manager)
         flight3 = self.create_test_flight()
-        flight3.with_user(self.user_crew).unlink()
-        self.assertFalse(flight3.exists())
+        with self.assertRaises(AccessError):
+            flight3.with_user(self.user_crew).unlink()
         
         # Basic user should not be able to delete
         flight4 = self.create_test_flight()
