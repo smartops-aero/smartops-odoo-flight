@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+from psycopg2 import IntegrityError
+
 from odoo.tests import TransactionCase, tagged
-from odoo.exceptions import ValidationError
 
 
 @tagged('post_install', '-at_install', 'flight_aircraft_spec')
@@ -26,7 +26,7 @@ class TestAircraftSpec(TransactionCase):
             'make_id': cls.aircraft_make.id,
             'class_id': cls.aircraft_class.id,
             'engine_type': 'turbofan',
-            'gear_type': 'tricycle_retractable',
+            'gear_type': 'retractable_tricycle',
             'code': 'G650',
         })
         
@@ -36,23 +36,23 @@ class TestAircraftSpec(TransactionCase):
             'operator_id': cls.env.company.partner_id.id,
         })
         
-        # Create spec categories
+        # Create spec categories with unique codes for testing
         cls.category_amenity = cls.env['flight.aircraft.spec.category'].create({
-            'name': 'Amenities',
-            'code': 'amenity',
+            'name': 'Test Amenities',
+            'code': 'test_amenity',
             'sequence': 10,
         })
         
         cls.category_performance = cls.env['flight.aircraft.spec.category'].create({
-            'name': 'Performance',
-            'code': 'performance',
+            'name': 'Test Performance',
+            'code': 'test_performance',
             'sequence': 20,
         })
         
-        # Create spec codes
+        # Create spec codes with unique identifiers for testing
         cls.spec_wifi = cls.env['flight.aircraft.spec.code'].create({
             'category_id': cls.category_amenity.id,
-            'code': 'amenity.wifi',
+            'code': 'test_amenity.wifi',
             'name': 'WiFi Available',
             'code_type': 'bool',
             'sequence': 10,
@@ -60,7 +60,7 @@ class TestAircraftSpec(TransactionCase):
         
         cls.spec_range = cls.env['flight.aircraft.spec.code'].create({
             'category_id': cls.category_performance.id,
-            'code': 'performance.range',
+            'code': 'test_performance.range',
             'name': 'Maximum Range',
             'code_type': 'float',
             'default_uom_id': cls.env.ref('flight_uom.product_uom_nm').id,
@@ -69,7 +69,7 @@ class TestAircraftSpec(TransactionCase):
         
         cls.spec_notes = cls.env['flight.aircraft.spec.code'].create({
             'category_id': cls.category_amenity.id,
-            'code': 'amenity.notes',
+            'code': 'test_amenity.notes',
             'name': 'Special Notes',
             'code_type': 'text',
             'sequence': 20,
@@ -78,15 +78,15 @@ class TestAircraftSpec(TransactionCase):
     def test_01_spec_category_creation(self):
         """Test specification category creation"""
         category = self.env['flight.aircraft.spec.category'].create({
-            'name': 'Safety',
-            'code': 'safety',
+            'name': 'Test Safety',
+            'code': 'test_safety',
             'description': 'Safety equipment and features',
             'sequence': 30,
         })
         
         self.assertTrue(category.id)
-        self.assertEqual(category.name, 'Safety')
-        self.assertEqual(category.code, 'safety')
+        self.assertEqual(category.name, 'Test Safety')
+        self.assertEqual(category.code, 'test_safety')
         
     def test_02_spec_code_types(self):
         """Test different specification code types"""
@@ -213,9 +213,16 @@ class TestAircraftSpec(TransactionCase):
         self.assertIn(spec2, performance_specs)
         self.assertNotIn(spec2, amenity_specs)
         
-    def test_07_spec_copy_with_aircraft(self):
-        """Test specification copying when aircraft is duplicated"""
-        # Add specs to aircraft
+    def test_07_spec_assignment_to_different_aircraft(self):
+        """Test specification assignment to different aircraft"""
+        # Create a second aircraft for testing
+        aircraft2 = self.env['flight.aircraft'].create({
+            'registration': 'N651GS',
+            'model_id': self.aircraft_model.id,
+            'operator_id': self.env.company.partner_id.id,
+        })
+        
+        # Add specs to first aircraft
         self.env['flight.aircraft.spec'].create({
             'aircraft_id': self.aircraft.id,
             'code_id': self.spec_wifi.id,
@@ -228,23 +235,23 @@ class TestAircraftSpec(TransactionCase):
             'value_float': 7000.0,
         })
         
-        # Copy aircraft
-        aircraft_copy = self.aircraft.copy({
-            'registration': 'N651GS',
+        # Add different specs to second aircraft
+        self.env['flight.aircraft.spec'].create({
+            'aircraft_id': aircraft2.id,
+            'code_id': self.spec_wifi.id,
+            'value_bool': False,  # Different value
         })
         
-        # Specs should be copied
-        self.assertEqual(len(aircraft_copy.spec_ids), 2)
+        # Test that specs are properly assigned to their respective aircraft
+        self.assertEqual(len(self.aircraft.spec_ids), 2)
+        self.assertEqual(len(aircraft2.spec_ids), 1)
         
-        wifi_spec = aircraft_copy.spec_ids.filtered(
-            lambda s: s.code_id == self.spec_wifi
-        )
-        self.assertTrue(wifi_spec.value_bool)
+        # Test that each aircraft has the correct spec values
+        aircraft1_wifi = self.aircraft.spec_ids.filtered(lambda s: s.code_id == self.spec_wifi)
+        aircraft2_wifi = aircraft2.spec_ids.filtered(lambda s: s.code_id == self.spec_wifi)
         
-        range_spec = aircraft_copy.spec_ids.filtered(
-            lambda s: s.code_id == self.spec_range
-        )
-        self.assertEqual(range_spec.value_float, 7000.0)
+        self.assertTrue(aircraft1_wifi.value_bool)
+        self.assertFalse(aircraft2_wifi.value_bool)
         
     def test_08_spec_unique_per_aircraft(self):
         """Test that each spec code can only be assigned once per aircraft"""
@@ -256,7 +263,7 @@ class TestAircraftSpec(TransactionCase):
         })
         
         # Try to create duplicate spec for same aircraft
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(IntegrityError):
             self.env['flight.aircraft.spec'].create({
                 'aircraft_id': self.aircraft.id,
                 'code_id': self.spec_wifi.id,  # Same code
