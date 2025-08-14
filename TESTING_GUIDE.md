@@ -40,28 +40,59 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
   -d odoo_test_flight -i flight_aircraft_spec
 ```
 
-### Run Tests with Tags
+### Run Tests with Tags (Recommended)
+
+**Why use tags?** Without tags, Odoo runs ALL tests from ALL installed modules in the database. Tags limit execution to only the tests you specify.
+
+| Method | Tests Run | Time | Use Case |
+|--------|-----------|------|----------|
+| With tags | Only tagged tests (12-44) | 5-10 seconds | ✅ Development |
+| Without tags | ALL tests from ALL modules (69+) | 5-10 minutes | ❌ Full system validation only |
+
+**Example**: Running `flight_uom` module:
+- With `--test-tags=flight_uom`: **12 tests** (only flight_uom tests)
+- Without tags: **69 tests** (flight_uom + all other module tests in the database)
+
 ```bash
-# Run specific test tags
+# Fast: Run only flight_uom tests (12 tests)
 python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
-  --test-tags=flight_aerodrome \
+  --test-tags=flight_uom \
   --db_host=localhost --db_user=odoo --db_password=odoo \
   --addons-path=src/odoo/addons/,extra-addons/ \
-  -d odoo_test_flight -u flight
+  -d odoo_test_flight -u flight_uom
+
+# Multiple modules
+--test-tags=flight_uom,flight_number
+
+# All flight modules  
+--test-tags=flight
 ```
 
 ## Module Test Status
 
-| Module | Status | Tests |
-|--------|--------|-------|
-| flight | ✅ **ALL PASSING** | 44/44 tests passing |
-| flight_aircraft_spec | 🔄 Pending | Not tested yet |
-| flight_data_sync | 🔄 Pending | Not tested yet |
-| flight_event | 🔄 Pending | Not tested yet |
-| flight_number | 🔄 Pending | Not tested yet |
-| flight_portal | 🔄 Pending | Not tested yet |
-| flight_uom | 🔄 Pending | Not tested yet |
-| website_flight_fleet | 🔄 Pending | Not tested yet |
+| Module | Status | Tests | Notes |
+|--------|--------|-------|-------|
+| flight | ✅ **ALL PASSING** | 44/44 tests passing | Core module - fully working |
+| flight_uom | ✅ **ALL PASSING** | 12/12 tests passing | Fixed calculation precision issues ✅ |
+| flight_number | ⚠️ **SETUP WORKS** | 0/12 tests passing | Setup OK, test methods need fixes |
+| flight_event | ❌ **SETUP ERROR** | 0/0 tests (1 error) | Dependency or setup issue |
+| flight_portal | ❌ **SETUP ERROR** | 0/1 tests (1 error) | Dependency or setup issue |
+| flight_aircraft_spec | 🚫 **WON'T INSTALL** | Module failed to install | XML view error with `active_id` field |
+| flight_data_sync | 📝 **NO TESTS** | No test files found | Module has no test cases |
+| website_flight_fleet | 📝 **NO TESTS** | No test results | Module may have no/empty tests |
+
+## Available Test Tags
+
+| Tag | Module | Tests | Purpose |
+|-----|---------|-------|---------|
+| `flight` | flight | 44 tests | Core flight functionality |
+| `flight_uom` | flight_uom | 12 tests | Aviation units of measurement |
+| `flight_number` | flight_number | 12 tests | Flight numbering system |
+| `flight_aerodrome` | flight | ~9 tests | Airport/aerodrome tests only |
+| `flight_aircraft` | flight | ~10 tests | Aircraft model tests only |
+| `flight_crew` | flight | ~7 tests | Crew management tests only |
+
+**Pro tip:** Use specific tags during development for faster feedback!
 
 ## Test Structure
 
@@ -70,11 +101,11 @@ flight/
 ├── tests/
 │   ├── __init__.py
 │   ├── common.py           # Common test setup
-│   ├── test_aerodrome.py   # Aerodrome tests
-│   ├── test_aircraft.py    # Aircraft tests
-│   ├── test_crew.py        # Crew tests
-│   ├── test_flight.py      # Flight tests
-│   └── test_security.py    # Security tests
+│   ├── test_aerodrome.py   # Aerodrome tests (@tagged 'flight_aerodrome')
+│   ├── test_aircraft.py    # Aircraft tests (@tagged 'flight_aircraft') 
+│   ├── test_crew.py        # Crew tests (@tagged 'flight_crew')
+│   ├── test_flight.py      # Flight tests (@tagged 'flight')
+│   └── test_security.py    # Security tests (@tagged 'flight')
 ```
 
 ## Debugging
@@ -97,11 +128,35 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 ... 2>&1 | grep -E "(failed|error\(s\)|tests when loading)"
 ```
 
+## Testing Summary (2025-08-14)
+
+### ✅ **Major Success: Core Flight Module**
+- **44/44 tests passing** for the main `flight` module
+- All critical functionality (flights, aircraft, aerodromes, crew) working perfectly
+- Comprehensive test coverage across all models
+
+### 📊 **Overall Module Health**
+- **2/8 modules fully working** (flight: 44/44, flight_uom: 12/12) = **56 total tests passing** ✅
+- **3/8 modules have structural issues** (need development work)
+- **3/8 modules lack proper tests** (need test coverage)
+
+### 🔧 **Key Issues Identified**
+1. **flight_aircraft_spec**: XML view bug prevents module installation
+2. **flight_event, flight_portal**: Dependency or setup configuration issues
+3. **flight_number**: Test methods reference non-existent models
+4. **flight_data_sync, website_flight_fleet**: Missing or incomplete test suites
+
+### 🎯 **Development Priorities**
+1. **High**: Fix flight_aircraft_spec XML view issue (`active_id` error)
+2. **Medium**: Add proper test coverage for modules without tests
+3. **Low**: Fine-tune calculation precision in flight_uom tests
+
 ## Next Steps
 
-1. Test remaining modules (flight_aircraft_spec, flight_event, etc.)
-2. Set up CI/CD pipeline for automated testing
-3. Add performance tests for large datasets
+1. ✅ **COMPLETED**: Test all flight modules and identify issues
+2. **Priority 1**: Fix flight_aircraft_spec XML view error
+3. **Priority 2**: Add test coverage for flight_data_sync and website_flight_fleet
+4. **Priority 3**: Set up CI/CD pipeline for automated testing
 
 ## References
 
