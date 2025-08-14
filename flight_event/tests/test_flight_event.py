@@ -177,14 +177,14 @@ class TestFlightEvent(TransactionCase):
         start_time = datetime.now()
         end_time = start_time + timedelta(hours=2, minutes=30)
         
-        start_event = self.env['flight.event.time'].create({
+        self.env['flight.event.time'].create({
             'flight_id': self.flight.id,
             'code_id': self.event_code_takeoff.id,
             'time_kind': 'A',
             'time': start_time,
         })
         
-        end_event = self.env['flight.event.time'].create({
+        self.env['flight.event.time'].create({
             'flight_id': self.flight.id,
             'code_id': self.event_code_landing.id,
             'time_kind': 'A',
