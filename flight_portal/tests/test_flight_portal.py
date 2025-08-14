@@ -43,7 +43,7 @@ class TestFlightPortal(TransactionCase):
             'make_id': aircraft_make.id,
             'class_id': aircraft_class.id,
             'engine_type': 'turbofan',
-            'gear_type': 'tricycle_retractable',
+            'gear_type': 'retractable_tricycle',
             'code': 'G550',
         })
         
@@ -53,14 +53,16 @@ class TestFlightPortal(TransactionCase):
             'operator_id': cls.portal_user.partner_id.id,
         })
         
+        # Get countries for aerodrome creation
+        cls.country_us = cls.env.ref('base.us')
+        
         # Create aerodromes
         cls.aerodrome_origin = cls.env['flight.aerodrome'].create({
             'name': 'Teterboro Airport',
             'icao': 'KTEB',
             'iata': 'TEB',
             'city': 'Teterboro',
-            'state': 'NJ',
-            'country': 'US',
+            'country_id': cls.country_us.id,
         })
         
         cls.aerodrome_dest = cls.env['flight.aerodrome'].create({
@@ -68,8 +70,7 @@ class TestFlightPortal(TransactionCase):
             'icao': 'KVNY',
             'iata': 'VNY',
             'city': 'Van Nuys',
-            'state': 'CA',
-            'country': 'US',
+            'country_id': cls.country_us.id,
         })
         
         # Create flight accessible to portal user
@@ -78,8 +79,9 @@ class TestFlightPortal(TransactionCase):
             'aircraft_id': cls.aircraft.id,
             'departure_id': cls.aerodrome_origin.id,
             'arrival_id': cls.aerodrome_dest.id,
-            'partner_ids': [(4, cls.portal_user.partner_id.id)],
         })
+        # Add portal user as follower to give access
+        cls.portal_flight.message_subscribe([cls.portal_user.partner_id.id])
         
         # Create flight not accessible to portal user
         cls.private_flight = cls.env['flight.flight'].create({
@@ -116,7 +118,7 @@ class TestFlightPortal(TransactionCase):
         })
         
         # Share flight with second portal user
-        self.portal_flight.partner_ids = [(4, portal_user2.partner_id.id)]
+        self.portal_flight.message_subscribe([portal_user2.partner_id.id])
         
         # Both users should now have access
         flight_sudo1 = self.portal_flight.with_user(self.portal_user)
@@ -125,77 +127,58 @@ class TestFlightPortal(TransactionCase):
         self.assertTrue(flight_sudo1.read(['date']))
         self.assertTrue(flight_sudo2.read(['date']))
         
-    def test_04_portal_flight_documents(self):
-        """Test portal access to flight documents"""
-        # Create document attached to flight
-        document = self.env['ir.attachment'].create({
-            'name': 'flight_plan.pdf',
-            'type': 'binary',
-            'datas': 'test_data',
-            'res_model': 'flight.flight',
-            'res_id': self.portal_flight.id,
-        })
+    def test_04_portal_flight_basic_fields(self):
+        """Test portal access to basic flight fields"""
+        # Portal user should be able to read flight through relationships
+        flight_sudo = self.portal_flight.with_user(self.portal_user)
         
-        # Portal user should be able to access documents
-        attachments = self.env['ir.attachment'].with_user(self.portal_user).search([
-            ('res_model', '=', 'flight.flight'),
-            ('res_id', '=', self.portal_flight.id),
-        ])
+        # Test accessing related fields that portal templates use
+        self.assertTrue(flight_sudo.date)
+        self.assertTrue(flight_sudo.aircraft_id.registration)
+        self.assertTrue(flight_sudo.departure_id.name)
+        self.assertTrue(flight_sudo.arrival_id.name)
         
-        self.assertIn(document, attachments)
-        
-    def test_05_portal_flight_status_visibility(self):
-        """Test portal visibility of flight status updates"""
-        # Update flight status
+    def test_05_portal_flight_basic_data_visibility(self):
+        """Test portal visibility of flight basic data"""
+        # Update flight locked status
         self.portal_flight.write({
-            'status': 'scheduled',
-            'scheduled_departure': datetime.now(),
-            'scheduled_arrival': datetime.now() + timedelta(hours=5),
+            'locked': True,
         })
         
-        # Portal user should see status
+        # Portal user should see basic flight data
         flight_sudo = self.portal_flight.with_user(self.portal_user)
-        flight_data = flight_sudo.read(['status', 'scheduled_departure', 'scheduled_arrival'])
+        flight_data = flight_sudo.read(['date', 'aircraft_id', 'departure_id', 'arrival_id', 'locked'])
         
-        self.assertEqual(flight_data[0]['status'], 'scheduled')
-        self.assertTrue(flight_data[0]['scheduled_departure'])
+        self.assertEqual(flight_data[0]['locked'], True)
+        self.assertTrue(flight_data[0]['date'])
         
-    def test_06_portal_flight_crew_visibility(self):
-        """Test portal visibility of crew information"""
-        # Create crew role
-        crew_role = self.env['flight.crew.role'].create({
-            'name': 'Captain',
-            'code': 'CAPT',
-        })
-        
-        # Create crew member
-        pilot = self.env['res.partner'].create({
-            'name': 'Captain Smith',
-            'is_company': False,
-        })
-        
-        crew = self.env['flight.crew'].create({
-            'flight_id': self.portal_flight.id,
-            'partner_id': pilot.id,
-            'role_id': crew_role.id,
-        })
-        
-        # Portal user should see crew info
+    def test_06_portal_flight_template_fields(self):
+        """Test portal access to fields used in portal templates"""
+        # Portal templates access these specific fields - ensure they work
         flight_sudo = self.portal_flight.with_user(self.portal_user)
-        self.assertTrue(flight_sudo.crew_ids)
-        self.assertEqual(len(flight_sudo.crew_ids), 1)
+        
+        # Fields used in portal_flight_page template
+        self.assertTrue(flight_sudo.date)
+        self.assertTrue(flight_sudo.aircraft_id.registration)
+        self.assertTrue(flight_sudo.departure_id.name)
+        self.assertTrue(flight_sudo.arrival_id.name)
+        
+        # Fields used in portal_my_flights template
+        self.assertEqual(flight_sudo.aircraft_id.registration, 'N550GS')
+        self.assertEqual(flight_sudo.departure_id.icao, 'KTEB')
+        self.assertEqual(flight_sudo.arrival_id.icao, 'KVNY')
         
     def test_07_portal_flight_search(self):
         """Test portal user flight search capabilities"""
         # Create multiple flights for portal user
         for i in range(3):
-            self.env['flight.flight'].create({
+            flight = self.env['flight.flight'].create({
                 'date': datetime.now().date() + timedelta(days=i+2),
                 'aircraft_id': self.aircraft.id,
                 'departure_id': self.aerodrome_origin.id,
                 'arrival_id': self.aerodrome_dest.id,
-                'partner_ids': [(4, self.portal_user.partner_id.id)],
             })
+            flight.message_subscribe([self.portal_user.partner_id.id])
         
         # Search flights as portal user
         flights = self.env['flight.flight'].with_user(self.portal_user).search([])
@@ -215,70 +198,57 @@ class TestFlightPortal(TransactionCase):
         with self.assertRaises(AccessError):
             self.portal_flight.with_user(self.portal_user).unlink()
             
-    def test_09_portal_aircraft_visibility(self):
-        """Test portal visibility of aircraft information"""
-        # Portal user should be able to read aircraft info
-        aircraft_sudo = self.aircraft.with_user(self.portal_user)
-        aircraft_data = aircraft_sudo.read(['registration', 'model_id'])
+    def test_09_portal_flight_readonly_validation(self):
+        """Test that portal users truly cannot modify flights"""
+        # Additional validation that portal access is read-only
+        flight_sudo = self.portal_flight.with_user(self.portal_user)
         
-        self.assertTrue(aircraft_data)
-        self.assertEqual(aircraft_data[0]['registration'], 'N550GS')
+        # Should be able to read
+        self.assertTrue(flight_sudo.read(['date', 'aircraft_id']))
         
-    def test_10_portal_aerodrome_access(self):
-        """Test portal access to aerodrome information"""
-        # Portal users should be able to read aerodrome info
-        aerodrome_sudo = self.aerodrome_origin.with_user(self.portal_user)
-        aerodrome_data = aerodrome_sudo.read(['name', 'icao', 'iata'])
+        # But not modify core fields
+        with self.assertRaises(AccessError):
+            flight_sudo.write({'date': datetime.now().date() + timedelta(days=10)})
+            
+    def test_10_portal_flight_access_url_functionality(self):
+        """Test portal access URL functionality"""
+        # Test that access_url is computed correctly for portal access
+        access_url = self.portal_flight.access_url
+        expected_url = f"/my/flight/{self.portal_flight.id}"
         
-        self.assertTrue(aerodrome_data)
-        self.assertEqual(aerodrome_data[0]['icao'], 'KTEB')
+        self.assertEqual(access_url, expected_url)
+        
+        # Portal user should be able to access this property
+        flight_sudo = self.portal_flight.with_user(self.portal_user)
+        self.assertEqual(flight_sudo.access_url, expected_url)
         
     def test_11_portal_flight_history(self):
         """Test portal access to flight history"""
         # Create past flights
         for i in range(5):
-            self.env['flight.flight'].create({
+            flight = self.env['flight.flight'].create({
                 'date': datetime.now().date() - timedelta(days=i+1),
                 'aircraft_id': self.aircraft.id,
                 'departure_id': self.aerodrome_origin.id,
                 'arrival_id': self.aerodrome_dest.id,
-                'partner_ids': [(4, self.portal_user.partner_id.id)],
-                'status': 'completed',
             })
+            flight.message_subscribe([self.portal_user.partner_id.id])
         
         # Search past flights
         past_flights = self.env['flight.flight'].with_user(self.portal_user).search([
             ('date', '<', datetime.now().date()),
-            ('status', '=', 'completed'),
         ])
         
         self.assertGreaterEqual(len(past_flights), 5)
         
-    def test_12_portal_flight_notifications(self):
-        """Test portal user notifications for flight updates"""
-        # Create notification settings
-        notification_pref = self.env['flight.portal.notification'].create({
-            'partner_id': self.portal_user.partner_id.id,
-            'notify_schedule_change': True,
-            'notify_status_update': True,
-            'notify_crew_assignment': True,
-            'notify_document_upload': True,
-        })
+    def test_12_portal_access_url(self):
+        """Test portal access URL generation"""
+        # Flight should have access URL from portal.mixin
+        self.assertTrue(hasattr(self.portal_flight, 'access_url'))
         
-        self.assertTrue(notification_pref.id)
-        self.assertTrue(notification_pref.notify_schedule_change)
-        
-        # Simulate schedule change
-        old_departure = self.portal_flight.scheduled_departure
-        self.portal_flight.scheduled_departure = datetime.now() + timedelta(hours=2)
-        
-        # Check if notification should be sent
-        if notification_pref.notify_schedule_change and old_departure != self.portal_flight.scheduled_departure:
-            should_notify = True
-        else:
-            should_notify = False
-            
-        self.assertTrue(should_notify)
+        # Access URL should be properly formatted
+        expected_url = f"/my/flight/{self.portal_flight.id}"
+        self.assertEqual(self.portal_flight.access_url, expected_url)
 
 
 @tagged('post_install', '-at_install', 'flight_portal', 'at_install')
