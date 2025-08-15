@@ -79,7 +79,7 @@ class FlightAircraft(models.Model):
     ]
 
     def _compute_website_url(self):
-        IrHttp = self.env['ir.http']
+        IrHttp = self.env["ir.http"]
         for aircraft in self:
             aircraft.website_url = f"/aircraft/{IrHttp._slug(aircraft)}"
 

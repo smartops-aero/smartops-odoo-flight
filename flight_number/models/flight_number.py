@@ -10,11 +10,11 @@ class FlightNumber(models.Model):
     prefix_id = fields.Many2one("flight.prefix")
     number = fields.Char()
 
-    @api.depends('prefix_id.name', 'number')
+    @api.depends("prefix_id.name", "number")
     def _compute_display_name(self):
         for record in self:
-            prefix_name = record.prefix_id.name if record.prefix_id else ''
-            number = record.number if record.number else ''
+            prefix_name = record.prefix_id.name if record.prefix_id else ""
+            number = record.number if record.number else ""
             record.display_name = f"{prefix_name}{number}"
 
     @api.model
