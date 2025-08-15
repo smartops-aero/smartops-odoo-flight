@@ -19,11 +19,11 @@ class TestFlight(FlightCommon):
         self.assertEqual(flight.arrival_id, self.aerodrome_lax)
         self.assertFalse(flight.locked)
         
-    def test_02_flight_name_get(self):
+    def test_02_flight_display_name(self):
         """Test flight display name generation"""
         flight = self.create_test_flight(date=date(2024, 1, 15))
         expected_name = "2024-01-15 / TEST001: KTES - KTSW"
-        self.assertEqual(flight.name_get()[0][1], expected_name)
+        self.assertEqual(flight.display_name, expected_name)
         
     def test_03_flight_lock_unlock(self):
         """Test flight locking mechanism"""

@@ -132,19 +132,35 @@ class TestSecurity(FlightCommon):
         aircraft.with_user(self.user_dispatcher).write({'registration': 'N44444'})
         
         # Crew can read but not create
-        aircraft_read = self.aircraft.with_user(self.user_crew).read(['registration'])
+        # Create aircraft that crew can read (set website_published if field exists)
+        crew_aircraft_vals = vals.copy()
+        crew_aircraft_vals['registration'] = 'N55555'
+        # Check if website_published field exists (from website_flight_fleet module)
+        if 'website_published' in self.env['flight.aircraft']._fields:
+            crew_aircraft_vals['website_published'] = True
+        crew_aircraft = self.env['flight.aircraft'].with_user(self.user_manager).create(crew_aircraft_vals)
+        
+        aircraft_read = crew_aircraft.with_user(self.user_crew).read(['registration'])
         self.assertTrue(aircraft_read)
         
-        vals['registration'] = 'N55555'
+        vals['registration'] = 'N66666'
         with self.assertRaises(AccessError):
             self.env['flight.aircraft'].with_user(self.user_crew).create(vals)
             
-        # Basic user can only read
-        aircraft_read = self.aircraft.with_user(self.user_basic).read(['registration'])
+        # Basic user can only read aircraft they have access to
+        # Create aircraft that basic user can read (set website_published if field exists)
+        basic_aircraft_vals = vals.copy()
+        basic_aircraft_vals['registration'] = 'N77777'
+        # Check if website_published field exists (from website_flight_fleet module)
+        if 'website_published' in self.env['flight.aircraft']._fields:
+            basic_aircraft_vals['website_published'] = True
+        basic_aircraft = self.env['flight.aircraft'].with_user(self.user_manager).create(basic_aircraft_vals)
+        
+        aircraft_read = basic_aircraft.with_user(self.user_basic).read(['registration'])
         self.assertTrue(aircraft_read)
         
         with self.assertRaises(AccessError):
-            self.aircraft.with_user(self.user_basic).write({'registration': 'N66666'})
+            basic_aircraft.with_user(self.user_basic).write({'registration': 'N88888'})
             
     def test_07_aerodrome_access_rights(self):
         """Test access rights for aerodrome model"""

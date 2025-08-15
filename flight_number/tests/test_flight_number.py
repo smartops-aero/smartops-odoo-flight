@@ -97,7 +97,7 @@ class TestFlightNumber(TransactionCase):
             self.assertEqual(flight_num.number, number)
             self.assertEqual(flight_num.prefix_id, self.prefix_aa)
             
-    def test_03_flight_number_name_get(self):
+    def test_03_flight_number_display_name(self):
         """Test flight number display name generation"""
         # Create flight number
         flight_num = self.env['flight.number'].create({
@@ -105,9 +105,8 @@ class TestFlightNumber(TransactionCase):
             'number': '100',
         })
         
-        # Test name_get method
-        name_result = flight_num.name_get()[0]
-        self.assertEqual(name_result[1], 'AA100')
+        # Test display_name field
+        self.assertEqual(flight_num.display_name, 'AA100')
         
         # Test with different prefix
         flight_num2 = self.env['flight.number'].create({
@@ -115,8 +114,7 @@ class TestFlightNumber(TransactionCase):
             'number': '200',
         })
         
-        name_result2 = flight_num2.name_get()[0]
-        self.assertEqual(name_result2[1], 'UA200')
+        self.assertEqual(flight_num2.display_name, 'UA200')
             
     def test_04_flight_number_search(self):
         """Test flight number name search"""
@@ -159,8 +157,8 @@ class TestFlightNumber(TransactionCase):
         
         self.assertEqual(flight.number_id, flight_num)
         
-        # Test flight name_get includes flight number
-        flight_name = flight.name_get()[0][1]
+        # Test flight display_name includes flight number
+        flight_name = flight.display_name
         self.assertIn('AA500', flight_name)
         
     def test_06_multiple_prefixes(self):
@@ -190,7 +188,7 @@ class TestFlightNumber(TransactionCase):
         
         # Test different display names
         expected_names = ['AA100', 'UA100', 'BA100', 'LH100']
-        actual_names = [fn.name_get()[0][1] for fn in flight_numbers]
+        actual_names = [fn.display_name for fn in flight_numbers]
         self.assertEqual(actual_names, expected_names)
         
     def test_07_flight_number_empty_prefix(self):
@@ -247,7 +245,7 @@ class TestFlightNumber(TransactionCase):
             'number': '123A',
         })
         
-        self.assertEqual(flight_num1.name_get()[0][1], 'AA123A')
+        self.assertEqual(flight_num1.display_name, 'AA123A')
         
         # Test with very long number
         flight_num2 = self.env['flight.number'].create({
@@ -255,7 +253,7 @@ class TestFlightNumber(TransactionCase):
             'number': '123456789',
         })
         
-        self.assertEqual(flight_num2.name_get()[0][1], 'UA123456789')
+        self.assertEqual(flight_num2.display_name, 'UA123456789')
         
     def test_11_flight_prefix_validation(self):
         """Test flight prefix validation and constraints"""
