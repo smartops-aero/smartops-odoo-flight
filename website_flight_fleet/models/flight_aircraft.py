@@ -3,7 +3,7 @@ import logging
 from odoo import fields, models
 from odoo.tools.translate import html_translate
 
-from odoo.addons.http_routing.models.ir_http import slug
+# In Odoo 18.0, slug is accessed through ir.http model's _slug method
 
 _logger = logging.getLogger(__name__)
 
@@ -79,8 +79,9 @@ class FlightAircraft(models.Model):
     ]
 
     def _compute_website_url(self):
+        IrHttp = self.env['ir.http']
         for aircraft in self:
-            aircraft.website_url = f"/aircraft/{slug(aircraft)}"
+            aircraft.website_url = f"/aircraft/{IrHttp._slug(aircraft)}"
 
     def regenerate_website_description(self):
         for record in self:
