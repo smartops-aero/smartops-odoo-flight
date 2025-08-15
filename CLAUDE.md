@@ -83,6 +83,28 @@ All flight-related models inherit from:
 - `mail.activity.mixin` - for scheduled activities
 - `flight.lock.mixin` - custom mixin for record locking functionality
 
+### Odoo 18.0 Specific Patterns
+
+**Display Name (ALWAYS use this pattern):**
+```python
+@api.depends('field1', 'field2')  # Include all fields used
+def _compute_display_name(self):
+    for record in self:
+        record.display_name = f"{record.field1} - {record.field2}"
+```
+
+**Chatter in Views:**
+```xml
+<!-- Simple tag replaces verbose structure -->
+<chatter />
+```
+
+**Slug Generation for URLs:**
+```python
+IrHttp = self.env['ir.http']
+url = f"/path/{IrHttp._slug(record)}"
+```
+
 ### Security Model
 
 - Uses Odoo's standard access control with `ir.model.access.csv` files
