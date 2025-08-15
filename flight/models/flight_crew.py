@@ -24,6 +24,7 @@ class FlightCrew(models.Model):
         "flight.flight", string="Flight", required=True, ondelete="cascade"
     )
 
+    @api.depends("partner_id", "role_id")
     def _compute_display_name(self):
         """Compute display name to show partner name and role"""
         for record in self:
