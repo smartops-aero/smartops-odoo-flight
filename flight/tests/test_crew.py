@@ -67,9 +67,10 @@ class TestCrew(FlightCommon):
             }
         )
 
-        # Crew model uses default display_name format (model,id)
-        self.assertTrue(crew.display_name.startswith("flight.crew,"))
-        # Test the individual components instead
+        # Crew model uses custom display_name format (partner name and role)
+        expected_display_name = "John Smith (Captain)"
+        self.assertEqual(crew.display_name, expected_display_name)
+        # Test the individual components
         self.assertEqual(crew.partner_id.name, "John Smith")
         self.assertEqual(crew.role_id.name, "Captain")
 
