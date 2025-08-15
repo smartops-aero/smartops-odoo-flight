@@ -257,12 +257,13 @@ class FlightDataSyncSchedule(models.Model):
     last_success = fields.Datetime(string="Last Successful Run")
     next_run = fields.Datetime(string="Next Run", compute="_compute_next_run")
 
-    def name_get(self):
-        result = []
+    @api.depends('provider_id.name', 'provider_id.service', 'name')
+    def _compute_display_name(self):
         for record in self:
-            name = f"{record.provider_id.name} ({record.provider_id.service}): {record.name}"
-            result.append((record.id, name))
-        return result
+            provider_name = record.provider_id.name if record.provider_id else 'No Provider'
+            provider_service = record.provider_id.service if record.provider_id else 'No Service'
+            schedule_name = record.name if record.name else 'No Name'
+            record.display_name = f"{provider_name} ({provider_service}): {schedule_name}"
 
     def action_view_logs(self):
         self.ensure_one()
