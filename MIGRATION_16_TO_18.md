@@ -221,6 +221,37 @@ target-version = "py311"
 **Cause:** Old verbose chatter syntax deprecated
 **Solution:** Replace with simple `<chatter />` tag
 
+## Files Modified During Migration
+
+### Manifest Files
+- All `__manifest__.py` files updated to version 18.0.1.0.0
+
+### View Files Updated for tree→list
+- flight/views/*.xml
+- flight_aircraft_spec/views/*.xml
+- flight_data_sync/views/*.xml
+- flight_data_sync/wizard/*.xml
+- flight_event/views/*.xml
+- flight_number/views/*.xml
+- website_flight_fleet/views/*.xml
+
+### Python Files Updated
+- flight_data_sync/models/flight_data_provider.py
+- flight_event/models/flight_event.py
+
+### Configuration Files
+- .ruff.toml (Python 3.11 target)
+- .pre-commit-config.yaml (Python 3.11, Node 18)
+- CLAUDE.md (Updated documentation)
+
+## Known Non-Critical Issues
+
+### Warnings That Don't Affect Functionality
+1. **ESLint warnings in relative_datetimepicker.js** (prefer-const)
+2. **Website template warning about oe_structure class**
+
+These warnings don't affect functionality and can be addressed in future updates.
+
 ## Best Practices for Future Development
 
 1. **Always use `_compute_display_name()`** for record display names

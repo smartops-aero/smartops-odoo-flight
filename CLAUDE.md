@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is an Odoo 18.0 module suite for aviation/flight management called SmartOps Flight. It provides comprehensive functionality for managing flights, aircraft, aerodromes, crew, and related aviation operations.
 
-**Note:** Recently migrated from Odoo 16.0 to 18.0. See MIGRATION_16_TO_18.md for details.
+**Note:** Recently migrated from Odoo 16.0 to 18.0. See [MIGRATION_16_TO_18.md](MIGRATION_16_TO_18.md) for complete migration details.
 
 ## Module Architecture
 
@@ -65,13 +65,16 @@ odoo -c odoo.conf --dev=reload
 ### Testing
 
 ```bash
-# Run tests for a specific module
-odoo -c odoo.conf --test-enable --stop-after-init -u flight
+# Run all tests using the test runner
+./run_tests.sh
 
-# Run tests with coverage
-coverage run odoo -c odoo.conf --test-enable --stop-after-init -u flight
-coverage report
+# Run tests for a specific module with tags
+python src/odoo/odoo-bin --test-enable --stop-after-init --test-tags=flight \
+  --db_host=localhost --db_user=odoo --db_password=odoo \
+  --addons-path=src/odoo/addons/,extra-addons/ -d odoo_test_flight -u flight
 ```
+
+**See [TESTING.md](TESTING.md) for comprehensive testing documentation.**
 
 ## Key Technical Patterns
 
