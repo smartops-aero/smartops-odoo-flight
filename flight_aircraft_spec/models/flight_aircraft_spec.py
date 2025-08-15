@@ -29,6 +29,8 @@ class FlightAircraftSpec(models.Model):
     value_float = fields.Float(string="Float Value")
 
     uom_id = fields.Many2one("uom.uom", string="Unit of Measure")
+    
+    display_name = fields.Char(string="Display Name", compute="_compute_display_name", store=True)
 
     _sql_constraints = [
         (
@@ -38,7 +40,7 @@ class FlightAircraftSpec(models.Model):
         ),
     ]
 
-    @api.onchange("code_id", "value_bool", "value_text", "value_float", "uom_id")
+    @api.depends("code_id", "value_bool", "value_text", "value_float", "uom_id")
     def _compute_display_name(self):
         for spec in self:
             if not spec.code_id:
