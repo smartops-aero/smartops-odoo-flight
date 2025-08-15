@@ -148,7 +148,7 @@ class TestAircraft(FlightCommon):
     def test_08_aircraft_weight_conversion(self):
         """Test aircraft weight with different units"""
         kg_uom = self.env.ref("uom.product_uom_kgm")
-        lb_uom = self.env.ref("uom.product_uom_lb")
+        self.env.ref("uom.product_uom_lb")
 
         aircraft_kg = self.env["flight.aircraft"].create(
             {

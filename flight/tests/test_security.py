@@ -217,7 +217,7 @@ class TestSecurity(FlightCommon):
 
         # Other users cannot use toggle_locked (button is hidden)
         # But they could try to call the method directly
-        for user in [self.user_dispatcher, self.user_crew, self.user_basic]:
+        for _user in [self.user_dispatcher, self.user_crew, self.user_basic]:
             # The button visibility is controlled by groups in XML
             # Here we test if they try to call the method directly
             # It should check for manager group

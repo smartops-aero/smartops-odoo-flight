@@ -101,7 +101,7 @@ class TestAerodrome(FlightCommon):
         """Test ICAO and IATA code uniqueness"""
         # Create a unique aerodrome for this test only
         unique_icao = "KUQT"  # Unique Test ICAO code
-        test_aerodrome = self.env["flight.aerodrome"].create(
+        self.env["flight.aerodrome"].create(
             {
                 "name": "Unique Test Airport",
                 "icao": unique_icao,
@@ -201,11 +201,11 @@ class TestAerodrome(FlightCommon):
 
     def test_08_aerodrome_as_departure_arrival(self):
         """Test aerodrome usage in flights"""
-        flights_from_jfk = self.env["flight.flight"].search(
+        self.env["flight.flight"].search(
             [("departure_id", "=", self.aerodrome_jfk.id)]
         )
 
-        flights_to_lax = self.env["flight.flight"].search(
+        self.env["flight.flight"].search(
             [("arrival_id", "=", self.aerodrome_lax.id)]
         )
 
