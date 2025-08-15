@@ -20,12 +20,32 @@ class FlightFlight(models.Model):
         "flight.crew", "flight_id", string="Crew Members", copy=True
     )
 
-    def name_get(self):
-        result = []
+    @api.depends(
+        "date", "aircraft_id.registration", "departure_id.icao", "arrival_id.icao"
+    )
+    def _compute_display_name(self):
         for record in self:
-            name = f"{record.date} / {record.aircraft_id.registration}: {record.departure_id.icao} - {record.arrival_id.icao}"
-            result.append((record.id, name))
-        return result
+            # Build display name with safe field access
+            date_str = record.date.strftime("%Y-%m-%d") if record.date else "No Date"
+            aircraft_str = (
+                record.aircraft_id.registration
+                if record.aircraft_id and record.aircraft_id.registration
+                else "No Aircraft"
+            )
+            departure_str = (
+                record.departure_id.icao
+                if record.departure_id and record.departure_id.icao
+                else "No Departure"
+            )
+            arrival_str = (
+                record.arrival_id.icao
+                if record.arrival_id and record.arrival_id.icao
+                else "No Arrival"
+            )
+
+            record.display_name = (
+                f"{date_str} / {aircraft_str}: {departure_str} - {arrival_str}"
+            )
 
     def toggle_locked(self):
         self.ensure_one()

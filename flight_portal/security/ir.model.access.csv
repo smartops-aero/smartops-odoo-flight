@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_flight_flight_portal,flight.flight portal,flight.model_flight_flight,base.group_portal,1,0,0,0
+access_flight_aircraft_portal,flight.aircraft portal,flight.model_flight_aircraft,base.group_portal,1,0,0,0
+access_flight_aerodrome_portal,flight.aerodrome portal,flight.model_flight_aerodrome,base.group_portal,1,0,0,0

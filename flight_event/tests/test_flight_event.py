@@ -1,348 +1,467 @@
-# -*- coding: utf-8 -*-
-from odoo.tests import TransactionCase, tagged
-from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta
 
+from psycopg2 import IntegrityError
 
-@tagged('post_install', '-at_install', 'flight_event')
+from odoo.tests import TransactionCase, tagged
+
+
+@tagged("post_install", "-at_install", "flight_event")
 class TestFlightEvent(TransactionCase):
     """Test cases for flight event management"""
-    
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        
-        # Create base data
+
         cls.company = cls.env.company
-        
+
         # Create aircraft data
-        aircraft_class = cls.env['flight.aircraft.class'].create({
-            'name': 'Business Jet',
-            'aircraft_category': 'airplane',
-        })
-        
-        aircraft_make = cls.env['flight.aircraft.make'].create({
-            'name': 'Cessna',
-        })
-        
-        aircraft_model = cls.env['flight.aircraft.model'].create({
-            'name': 'Citation X',
-            'make_id': aircraft_make.id,
-            'class_id': aircraft_class.id,
-            'engine_type': 'turbofan',
-            'gear_type': 'tricycle_retractable',
-            'code': 'C750',
-        })
-        
-        cls.aircraft = cls.env['flight.aircraft'].create({
-            'registration': 'N750CX',
-            'model_id': aircraft_model.id,
-            'operator_id': cls.company.partner_id.id,
-        })
-        
+        aircraft_class = cls.env["flight.aircraft.class"].create(
+            {
+                "name": "Business Jet",
+                "aircraft_category": "airplane",
+            }
+        )
+
+        aircraft_make = cls.env["flight.aircraft.make"].create(
+            {
+                "name": "Cessna",
+            }
+        )
+
+        aircraft_model = cls.env["flight.aircraft.model"].create(
+            {
+                "name": "Citation X",
+                "make_id": aircraft_make.id,
+                "class_id": aircraft_class.id,
+                "engine_type": "turbofan",
+                "gear_type": "retractable_tricycle",
+                "code": "C750",
+            }
+        )
+
+        cls.aircraft = cls.env["flight.aircraft"].create(
+            {
+                "registration": "N750CX",
+                "model_id": aircraft_model.id,
+                "operator_id": cls.company.partner_id.id,
+            }
+        )
+
+        # Get countries for aerodrome creation
+        cls.country_us = cls.env.ref("base.us")
+
         # Create aerodromes
-        cls.aerodrome_origin = cls.env['flight.aerodrome'].create({
-            'name': 'Miami International Airport',
-            'icao': 'KMIA',
-            'iata': 'MIA',
-            'city': 'Miami',
-            'state': 'FL',
-            'country': 'US',
-        })
-        
-        cls.aerodrome_dest = cls.env['flight.aerodrome'].create({
-            'name': 'Chicago O\'Hare International Airport',
-            'icao': 'KORD',
-            'iata': 'ORD',
-            'city': 'Chicago',
-            'state': 'IL',
-            'country': 'US',
-        })
-        
+        cls.aerodrome_origin = cls.env["flight.aerodrome"].create(
+            {
+                "name": "Miami International Airport",
+                "icao": "KEVM",  # Use unique ICAO to avoid conflicts
+                "iata": "EVM",
+                "city": "Miami",
+                "country_id": cls.country_us.id,
+            }
+        )
+
+        cls.aerodrome_dest = cls.env["flight.aerodrome"].create(
+            {
+                "name": "Chicago O'Hare International Airport",
+                "icao": "KEVT",  # Use unique ICAO to avoid conflicts
+                "iata": "EVT",
+                "city": "Chicago",
+                "country_id": cls.country_us.id,
+            }
+        )
+
         # Create flight
-        cls.flight = cls.env['flight.flight'].create({
-            'date': datetime.now().date(),
-            'aircraft_id': cls.aircraft.id,
-            'departure_id': cls.aerodrome_origin.id,
-            'arrival_id': cls.aerodrome_dest.id,
-            'scheduled_departure': datetime.now(),
-            'scheduled_arrival': datetime.now() + timedelta(hours=3),
-        })
-        
-        # Create event types
-        cls.event_type_delay = cls.env['flight.event.type'].create({
-            'name': 'Delay',
-            'code': 'DELAY',
-            'category': 'operational',
-            'severity': 'medium',
-            'active': True,
-        })
-        
-        cls.event_type_emergency = cls.env['flight.event.type'].create({
-            'name': 'Emergency',
-            'code': 'EMERG',
-            'category': 'safety',
-            'severity': 'high',
-            'active': True,
-        })
-        
-        cls.event_type_maintenance = cls.env['flight.event.type'].create({
-            'name': 'Maintenance',
-            'code': 'MAINT',
-            'category': 'technical',
-            'severity': 'low',
-            'active': True,
-        })
-        
-    def test_01_event_type_creation(self):
-        """Test event type creation and validation"""
-        event_type = self.env['flight.event.type'].create({
-            'name': 'Weather Diversion',
-            'code': 'WX_DIV',
-            'category': 'operational',
-            'severity': 'medium',
-            'description': 'Flight diverted due to weather conditions',
-            'active': True,
-        })
-        
-        self.assertTrue(event_type.id)
-        self.assertEqual(event_type.code, 'WX_DIV')
-        self.assertEqual(event_type.severity, 'medium')
-        
-    def test_02_flight_event_creation(self):
-        """Test flight event creation"""
-        event = self.env['flight.event'].create({
-            'flight_id': self.flight.id,
-            'event_type_id': self.event_type_delay.id,
-            'event_date': datetime.now(),
-            'description': 'Flight delayed due to weather',
-            'duration_minutes': 45,
-            'status': 'active',
-        })
-        
-        self.assertTrue(event.id)
-        self.assertEqual(event.flight_id, self.flight)
-        self.assertEqual(event.event_type_id, self.event_type_delay)
-        self.assertEqual(event.duration_minutes, 45)
-        
-    def test_03_event_severity_levels(self):
-        """Test different event severity levels"""
-        severities = ['low', 'medium', 'high', 'critical']
-        
-        for severity in severities:
-            event_type = self.env['flight.event.type'].create({
-                'name': f'{severity.capitalize()} Event',
-                'code': f'EVT_{severity.upper()}',
-                'category': 'operational',
-                'severity': severity,
-            })
-            
-            self.assertEqual(event_type.severity, severity)
-            
-            # Create event with this type
-            event = self.env['flight.event'].create({
-                'flight_id': self.flight.id,
-                'event_type_id': event_type.id,
-                'event_date': datetime.now(),
-                'description': f'Test {severity} severity event',
-            })
-            
-            self.assertEqual(event.event_type_id.severity, severity)
-            
-    def test_04_event_categories(self):
-        """Test event categorization"""
-        categories = {
-            'operational': 'Flight Operations',
-            'technical': 'Aircraft Technical',
-            'safety': 'Safety Related',
-            'regulatory': 'Regulatory Compliance',
-            'commercial': 'Commercial Operations',
-        }
-        
-        for code, name in categories.items():
-            event_type = self.env['flight.event.type'].create({
-                'name': name,
-                'code': f'CAT_{code.upper()}',
-                'category': code,
-                'severity': 'low',
-            })
-            
-            self.assertEqual(event_type.category, code)
-            
-    def test_05_event_status_workflow(self):
-        """Test event status workflow"""
-        event = self.env['flight.event'].create({
-            'flight_id': self.flight.id,
-            'event_type_id': self.event_type_emergency.id,
-            'event_date': datetime.now(),
-            'description': 'Medical emergency on board',
-            'status': 'active',
-        })
-        
-        # Active status
-        self.assertEqual(event.status, 'active')
-        
-        # Resolve event
-        event.status = 'resolved'
-        self.assertEqual(event.status, 'resolved')
-        
-        # Close event
-        event.status = 'closed'
-        self.assertEqual(event.status, 'closed')
-        
-    def test_06_event_timeline(self):
-        """Test event timeline and ordering"""
-        events = []
-        base_time = datetime.now()
-        
-        # Create events at different times
-        for i in range(5):
-            event = self.env['flight.event'].create({
-                'flight_id': self.flight.id,
-                'event_type_id': self.event_type_delay.id,
-                'event_date': base_time + timedelta(minutes=i*10),
-                'description': f'Event {i}',
-                'sequence': i,
-            })
-            events.append(event)
-        
-        # Check ordering
-        sorted_events = self.flight.event_ids.sorted('event_date')
-        for i, event in enumerate(sorted_events):
-            self.assertEqual(event.description, f'Event {i}')
-            
-    def test_07_event_attachments(self):
-        """Test event documentation and attachments"""
-        event = self.env['flight.event'].create({
-            'flight_id': self.flight.id,
-            'event_type_id': self.event_type_maintenance.id,
-            'event_date': datetime.now(),
-            'description': 'Routine maintenance check',
-        })
-        
-        # Create attachment
-        attachment = self.env['ir.attachment'].create({
-            'name': 'maintenance_report.pdf',
-            'type': 'binary',
-            'datas': 'test_data',
-            'res_model': 'flight.event',
-            'res_id': event.id,
-        })
-        
-        self.assertTrue(attachment.id)
-        self.assertEqual(attachment.res_id, event.id)
-        
-        # Check attachment is linked to event
-        attachments = self.env['ir.attachment'].search([
-            ('res_model', '=', 'flight.event'),
-            ('res_id', '=', event.id),
-        ])
-        
-        self.assertIn(attachment, attachments)
-        
-    def test_08_event_impact_assessment(self):
-        """Test event impact on flight operations"""
-        # Create delay event
-        delay_event = self.env['flight.event'].create({
-            'flight_id': self.flight.id,
-            'event_type_id': self.event_type_delay.id,
-            'event_date': self.flight.scheduled_departure,
-            'description': 'ATC delay',
-            'duration_minutes': 90,
-            'impact': 'high',
-        })
-        
-        self.assertEqual(delay_event.impact, 'high')
-        self.assertEqual(delay_event.duration_minutes, 90)
-        
-        # Calculate new departure time
-        original_departure = self.flight.scheduled_departure
-        delayed_departure = original_departure + timedelta(minutes=90)
-        
-        # Update flight with delay
-        self.flight.actual_departure = delayed_departure
-        self.assertGreater(self.flight.actual_departure, self.flight.scheduled_departure)
-        
-    def test_09_recurring_events(self):
-        """Test recurring event patterns"""
-        # Create recurring maintenance event
-        recurring_event = self.env['flight.event.recurring'].create({
-            'event_type_id': self.event_type_maintenance.id,
-            'aircraft_id': self.aircraft.id,
-            'recurrence_type': 'hours',
-            'recurrence_value': 100,
-            'last_occurrence': datetime.now(),
-            'next_due': datetime.now() + timedelta(hours=100),
-            'active': True,
-        })
-        
-        self.assertTrue(recurring_event.id)
-        self.assertEqual(recurring_event.recurrence_type, 'hours')
-        self.assertEqual(recurring_event.recurrence_value, 100)
-        
-    def test_10_event_notifications(self):
-        """Test event notification triggers"""
-        # Create high severity event
-        critical_event = self.env['flight.event'].create({
-            'flight_id': self.flight.id,
-            'event_type_id': self.event_type_emergency.id,
-            'event_date': datetime.now(),
-            'description': 'Engine failure',
-            'status': 'active',
-            'notify_required': True,
-        })
-        
-        self.assertTrue(critical_event.notify_required)
-        
-        # Check notification recipients based on severity
-        if critical_event.event_type_id.severity in ['high', 'critical']:
-            self.assertTrue(critical_event.notify_required)
-        
-    def test_11_event_statistics(self):
-        """Test event statistics and reporting"""
-        # Create multiple events
-        for i in range(10):
-            event_type = self.event_type_delay if i % 2 == 0 else self.event_type_maintenance
-            self.env['flight.event'].create({
-                'flight_id': self.flight.id,
-                'event_type_id': event_type.id,
-                'event_date': datetime.now() - timedelta(days=i),
-                'description': f'Event {i}',
-            })
-        
-        # Count events by type
-        delay_events = self.env['flight.event'].search_count([
-            ('flight_id', '=', self.flight.id),
-            ('event_type_id', '=', self.event_type_delay.id),
-        ])
-        
-        maintenance_events = self.env['flight.event'].search_count([
-            ('flight_id', '=', self.flight.id),
-            ('event_type_id', '=', self.event_type_maintenance.id),
-        ])
-        
-        self.assertEqual(delay_events, 5)
-        self.assertEqual(maintenance_events, 5)
-        
-    def test_12_event_resolution_tracking(self):
-        """Test event resolution and closure tracking"""
-        event = self.env['flight.event'].create({
-            'flight_id': self.flight.id,
-            'event_type_id': self.event_type_emergency.id,
-            'event_date': datetime.now(),
-            'description': 'Passenger medical emergency',
-            'status': 'active',
-        })
-        
-        # Add resolution details
-        event.write({
-            'status': 'resolved',
-            'resolution_date': datetime.now() + timedelta(hours=1),
-            'resolution_notes': 'Passenger treated by medical team at gate',
-            'resolved_by': self.env.user.id,
-        })
-        
-        self.assertEqual(event.status, 'resolved')
-        self.assertTrue(event.resolution_date)
-        self.assertTrue(event.resolution_notes)
-        self.assertEqual(event.resolved_by, self.env.user)
+        cls.flight = cls.env["flight.flight"].create(
+            {
+                "date": datetime.now().date(),
+                "aircraft_id": cls.aircraft.id,
+                "departure_id": cls.aerodrome_origin.id,
+                "arrival_id": cls.aerodrome_dest.id,
+            }
+        )
+
+        # Create event codes
+        cls.event_code_pushback = cls.env["flight.event.code"].create(
+            {
+                "name": "Pushback",
+                "code": "OUT",
+                "description": "Aircraft pushback from gate",
+                "sequence": 10,
+            }
+        )
+
+        cls.event_code_takeoff = cls.env["flight.event.code"].create(
+            {
+                "name": "Takeoff",
+                "code": "OFF",
+                "description": "Aircraft wheels off ground",
+                "sequence": 20,
+            }
+        )
+
+        cls.event_code_landing = cls.env["flight.event.code"].create(
+            {
+                "name": "Landing",
+                "code": "ON",
+                "description": "Aircraft wheels on ground",
+                "sequence": 30,
+            }
+        )
+
+        cls.event_code_arrival = cls.env["flight.event.code"].create(
+            {
+                "name": "Arrival at Gate",
+                "code": "IN",
+                "description": "Aircraft arrival at gate",
+                "sequence": 40,
+            }
+        )
+
+    def test_01_event_code_creation(self):
+        """Test event code creation and validation"""
+        event_code = self.env["flight.event.code"].create(
+            {
+                "name": "Weather Diversion",
+                "code": "WX_DIV",
+                "description": "Weather related diversion",
+                "sequence": 50,
+            }
+        )
+
+        self.assertTrue(event_code.id)
+        self.assertEqual(event_code.code, "WX_DIV")
+        self.assertEqual(event_code.name, "Weather Diversion")
+        self.assertEqual(event_code.sequence, 50)
+
+    def test_02_event_code_uniqueness(self):
+        """Test event code uniqueness constraint"""
+        # Try to create duplicate code
+        with self.assertRaises(IntegrityError):
+            self.env["flight.event.code"].create(
+                {
+                    "name": "Duplicate Pushback",
+                    "code": "OUT",  # Same code as existing
+                    "description": "Duplicate code test",
+                }
+            )
+
+    def test_03_flight_event_time_creation(self):
+        """Test flight event time creation"""
+        event_time = self.env["flight.event.time"].create(
+            {
+                "flight_id": self.flight.id,
+                "code_id": self.event_code_pushback.id,
+                "time_kind": "S",  # Scheduled
+                "time": datetime.now(),
+            }
+        )
+
+        self.assertTrue(event_time.id)
+        self.assertEqual(event_time.flight_id, self.flight)
+        self.assertEqual(event_time.code_id, self.event_code_pushback)
+        self.assertEqual(event_time.time_kind, "S")
+
+    def test_04_flight_event_time_kinds(self):
+        """Test different event time kinds"""
+        time_kinds = [
+            "A",
+            "S",
+            "R",
+            "T",
+            "E",
+        ]  # Actual, Scheduled, Requested, Target, Estimated
+
+        for i, kind in enumerate(time_kinds):
+            event_time = self.env["flight.event.time"].create(
+                {
+                    "flight_id": self.flight.id,
+                    "code_id": self.event_code_pushback.id,
+                    "time_kind": kind,
+                    "time": datetime.now()
+                    + timedelta(minutes=i),  # Different times to avoid conflicts
+                }
+            )
+
+            self.assertEqual(event_time.time_kind, kind)
+
+    def test_05_flight_phase_creation(self):
+        """Test flight phase creation"""
+        phase = self.env["flight.phase"].create(
+            {
+                "name": "Taxi Out",
+                "start_event_code_id": self.event_code_pushback.id,
+                "end_event_code_id": self.event_code_takeoff.id,
+                "sequence": 10,
+            }
+        )
+
+        self.assertTrue(phase.id)
+        self.assertEqual(phase.name, "Taxi Out")
+        self.assertEqual(phase.start_event_code_id, self.event_code_pushback)
+        self.assertEqual(phase.end_event_code_id, self.event_code_takeoff)
+
+    def test_06_flight_phase_duration_creation(self):
+        """Test flight phase duration creation and calculation"""
+        # Create a flight phase
+        phase = self.env["flight.phase"].create(
+            {
+                "name": "Flight Time",
+                "start_event_code_id": self.event_code_takeoff.id,
+                "end_event_code_id": self.event_code_landing.id,
+                "sequence": 20,
+            }
+        )
+
+        # Create start and end events - this should automatically create phase duration
+        start_time = datetime.now()
+        end_time = start_time + timedelta(hours=2, minutes=30)
+
+        self.env["flight.event.time"].create(
+            {
+                "flight_id": self.flight.id,
+                "code_id": self.event_code_takeoff.id,
+                "time_kind": "A",
+                "time": start_time,
+            }
+        )
+
+        self.env["flight.event.time"].create(
+            {
+                "flight_id": self.flight.id,
+                "code_id": self.event_code_landing.id,
+                "time_kind": "A",
+                "time": end_time,
+            }
+        )
+
+        # Check that phase duration was automatically created
+        phase_durations = self.env["flight.phase.duration"].search(
+            [
+                ("flight_id", "=", self.flight.id),
+                ("phase_id", "=", phase.id),
+                ("time_kind", "=", "A"),
+            ]
+        )
+
+        self.assertEqual(len(phase_durations), 1)
+        phase_duration = phase_durations[0]
+
+        self.assertEqual(phase_duration.flight_id, self.flight)
+        self.assertEqual(phase_duration.phase_id, phase)
+        self.assertEqual(phase_duration.duration, 2.5)  # 2.5 hours
+
+    def test_07_flight_phase_duration_uniqueness(self):
+        """Test flight phase duration uniqueness constraint"""
+        # Create a new flight to avoid conflicts with automatic durations
+        test_flight = self.env["flight.flight"].create(
+            {
+                "date": datetime.now().date(),
+                "aircraft_id": self.aircraft.id,
+                "departure_id": self.aerodrome_origin.id,
+                "arrival_id": self.aerodrome_dest.id,
+            }
+        )
+
+        # Create a flight phase
+        phase = self.env["flight.phase"].create(
+            {
+                "name": "Test Phase Unique",
+                "start_event_code_id": self.event_code_pushback.id,
+                "end_event_code_id": self.event_code_takeoff.id,
+                "sequence": 10,
+            }
+        )
+
+        # Create events - this will automatically create one phase duration
+        start_event = self.env["flight.event.time"].create(
+            {
+                "flight_id": test_flight.id,
+                "code_id": self.event_code_pushback.id,
+                "time_kind": "A",
+                "time": datetime.now(),
+            }
+        )
+
+        end_event = self.env["flight.event.time"].create(
+            {
+                "flight_id": test_flight.id,
+                "code_id": self.event_code_takeoff.id,
+                "time_kind": "A",
+                "time": datetime.now() + timedelta(minutes=30),
+            }
+        )
+
+        # Verify the automatic duration was created
+        existing_durations = self.env["flight.phase.duration"].search(
+            [
+                ("flight_id", "=", test_flight.id),
+                ("phase_id", "=", phase.id),
+                ("time_kind", "=", "A"),
+            ]
+        )
+        self.assertEqual(len(existing_durations), 1)
+
+        # Try to manually create duplicate - should fail
+        with self.assertRaises(IntegrityError):
+            self.env["flight.phase.duration"].create(
+                {
+                    "flight_id": test_flight.id,
+                    "phase_id": phase.id,
+                    "start_event_id": start_event.id,
+                    "end_event_id": end_event.id,
+                    "time_kind": "A",
+                }
+            )
+
+    def test_08_event_time_history(self):
+        """Test event time history tracking"""
+        # Create an event time
+        event_time = self.env["flight.event.time"].create(
+            {
+                "flight_id": self.flight.id,
+                "code_id": self.event_code_pushback.id,
+                "time_kind": "S",
+                "time": datetime.now(),
+            }
+        )
+
+        # Update the time - should create history record
+        new_time = datetime.now() + timedelta(hours=1)
+        event_time.write({"time": new_time})
+
+        # Check history was created
+        self.assertTrue(event_time.history_ids)
+        self.assertTrue(event_time.has_history)
+
+    def test_09_event_time_write_restrictions(self):
+        """Test that only time field can be updated"""
+        event_time = self.env["flight.event.time"].create(
+            {
+                "flight_id": self.flight.id,
+                "code_id": self.event_code_pushback.id,
+                "time_kind": "S",
+                "time": datetime.now(),
+            }
+        )
+
+        # Should be able to update time
+        event_time.write({"time": datetime.now() + timedelta(hours=1)})
+
+        # Should not be able to update other fields
+        from odoo.exceptions import UserError
+
+        with self.assertRaises(UserError):
+            event_time.write({"time_kind": "A"})
+
+    def test_10_display_time_calculation(self):
+        """Test display time calculation with day offsets"""
+        flight_date = datetime.now().date()
+
+        # Create flight with specific date
+        test_flight = self.env["flight.flight"].create(
+            {
+                "date": flight_date,
+                "aircraft_id": self.aircraft.id,
+                "departure_id": self.aerodrome_origin.id,
+                "arrival_id": self.aerodrome_dest.id,
+            }
+        )
+
+        # Event on same day
+        same_day_time = datetime.combine(flight_date, datetime.min.time()) + timedelta(
+            hours=10
+        )
+        event_same_day = self.env["flight.event.time"].create(
+            {
+                "flight_id": test_flight.id,
+                "code_id": self.event_code_pushback.id,
+                "time_kind": "S",
+                "time": same_day_time,
+            }
+        )
+
+        # Event next day
+        next_day_time = same_day_time + timedelta(days=1)
+        event_next_day = self.env["flight.event.time"].create(
+            {
+                "flight_id": test_flight.id,
+                "code_id": self.event_code_landing.id,
+                "time_kind": "S",
+                "time": next_day_time,
+            }
+        )
+
+        # Check display times
+        self.assertEqual(event_same_day.display_time, "10:00")
+        self.assertEqual(event_next_day.display_time, "10:00 (+1)")
+
+    def test_11_event_code_phase_relationships(self):
+        """Test event code relationships with phases"""
+        # Create phases that use our event codes
+        taxi_out_phase = self.env["flight.phase"].create(
+            {
+                "name": "Taxi Out",
+                "start_event_code_id": self.event_code_pushback.id,
+                "end_event_code_id": self.event_code_takeoff.id,
+            }
+        )
+
+        flight_phase = self.env["flight.phase"].create(
+            {
+                "name": "Flight",
+                "start_event_code_id": self.event_code_takeoff.id,
+                "end_event_code_id": self.event_code_landing.id,
+            }
+        )
+
+        # Check relationships
+        self.assertIn(taxi_out_phase, self.event_code_pushback.start_phase_ids)
+        self.assertIn(taxi_out_phase, self.event_code_takeoff.end_phase_ids)
+        self.assertIn(flight_phase, self.event_code_takeoff.start_phase_ids)
+        self.assertIn(flight_phase, self.event_code_landing.end_phase_ids)
+
+    def test_12_automatic_phase_duration_creation(self):
+        """Test automatic phase duration creation when events are created"""
+        # Create a phase
+        phase = self.env["flight.phase"].create(
+            {
+                "name": "Auto Test Phase",
+                "start_event_code_id": self.event_code_pushback.id,
+                "end_event_code_id": self.event_code_takeoff.id,
+            }
+        )
+
+        # Create start event
+        start_event = self.env["flight.event.time"].create(
+            {
+                "flight_id": self.flight.id,
+                "code_id": self.event_code_pushback.id,
+                "time_kind": "A",
+                "time": datetime.now(),
+            }
+        )
+
+        # Create end event - this should trigger automatic phase duration creation
+        end_event = self.env["flight.event.time"].create(
+            {
+                "flight_id": self.flight.id,
+                "code_id": self.event_code_takeoff.id,
+                "time_kind": "A",
+                "time": datetime.now() + timedelta(minutes=30),
+            }
+        )
+
+        # Check that phase duration was automatically created
+        phase_durations = self.env["flight.phase.duration"].search(
+            [
+                ("flight_id", "=", self.flight.id),
+                ("phase_id", "=", phase.id),
+                ("time_kind", "=", "A"),
+            ]
+        )
+
+        self.assertEqual(len(phase_durations), 1)
+        self.assertEqual(phase_durations.start_event_id, start_event)
+        self.assertEqual(phase_durations.end_event_id, end_event)

@@ -10,7 +10,7 @@
                 <page string="Specifications" name="specifications">
                     <field
             name="spec_ids"
-            context="{'default_aircraft_id': active_id}"
+            context="{'default_aircraft_id': id}"
           >
                         <list
               editable="bottom"
