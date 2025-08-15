@@ -34,8 +34,12 @@ Modules inherit from `flight` base module and follow Odoo's dependency chain. Th
 pre-commit run --all-files
 
 # Run ruff for Python linting and formatting
-ruff check . --fix
-ruff format .
+ruff format .                               # Format Python code
+ruff check . --fix                          # Fix linting issues (safe fixes only)
+ruff check . --fix --unsafe-fixes           # Fix all issues including unused variables
+
+# Combined ruff command for complete cleanup
+ruff format . && ruff check . --fix --unsafe-fixes
 
 # Run eslint for JavaScript
 npx eslint . --fix
