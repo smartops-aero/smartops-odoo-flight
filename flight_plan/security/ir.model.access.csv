@@ -1,0 +1,17 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_flight_plan_manager,flight.plan.manager,model_flight_plan,flight.group_flight_manager,1,1,1,1
+access_flight_plan_dispatcher,flight.plan.dispatcher,model_flight_plan,flight.group_flight_dispatcher,1,1,1,1
+access_flight_plan_crew,flight.plan.crew,model_flight_plan,flight.group_flight_crew,1,0,0,0
+access_flight_plan_user,flight.plan.user,model_flight_plan,flight.group_flight_user,1,0,0,0
+access_flight_plan_route_manager,flight.plan.route.manager,model_flight_plan_route,flight.group_flight_manager,1,1,1,1
+access_flight_plan_route_dispatcher,flight.plan.route.dispatcher,model_flight_plan_route,flight.group_flight_dispatcher,1,1,1,1
+access_flight_plan_route_crew,flight.plan.route.crew,model_flight_plan_route,flight.group_flight_crew,1,0,0,0
+access_flight_plan_route_user,flight.plan.route.user,model_flight_plan_route,flight.group_flight_user,1,0,0,0
+access_flight_route_waypoint_manager,flight.route.waypoint.manager,model_flight_route_waypoint,flight.group_flight_manager,1,1,1,1
+access_flight_route_waypoint_dispatcher,flight.route.waypoint.dispatcher,model_flight_route_waypoint,flight.group_flight_dispatcher,1,1,1,1
+access_flight_route_waypoint_crew,flight.route.waypoint.crew,model_flight_route_waypoint,flight.group_flight_crew,1,0,0,0
+access_flight_route_waypoint_user,flight.route.waypoint.user,model_flight_route_waypoint,flight.group_flight_user,1,0,0,0
+access_flight_plan_aerodrome_manager,flight.plan.aerodrome.manager,model_flight_plan_aerodrome,flight.group_flight_manager,1,1,1,1
+access_flight_plan_aerodrome_dispatcher,flight.plan.aerodrome.dispatcher,model_flight_plan_aerodrome,flight.group_flight_dispatcher,1,1,1,1
+access_flight_plan_aerodrome_crew,flight.plan.aerodrome.crew,model_flight_plan_aerodrome,flight.group_flight_crew,1,0,0,0
+access_flight_plan_aerodrome_user,flight.plan.aerodrome.user,model_flight_plan_aerodrome,flight.group_flight_user,1,0,0,0
