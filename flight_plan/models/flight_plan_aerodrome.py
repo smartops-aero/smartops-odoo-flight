@@ -12,7 +12,7 @@ class FlightPlanAerodrome(models.Model):
             ("departure", "Departure"),
             ("arrival", "Arrival"),
             ("departure_alternate", "Departure Alternate"),
-            ("primary_arrival_alternate", "Primary Arrival Alternate"),
+            ("arrival_alternate", "Arrival Alternate"),
         ],
         required=True,
     )

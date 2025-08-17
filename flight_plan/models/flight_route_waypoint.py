@@ -14,4 +14,4 @@ class FlightRouteWaypoint(models.Model):
     description = fields.Char()
     latitude = fields.Float()
     longitude = fields.Float()
-    icao_country_code = fields.Char(size=2)
+    icao_country_code = fields.Char()
