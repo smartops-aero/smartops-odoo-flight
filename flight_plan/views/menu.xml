@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+  <!-- Flight Plans Menu Item -->
+  <menuitem
+    id="menu_flight_plan"
+    name="Flight Plans"
+    parent="flight.menu_flight"
+    action="action_flight_plan_list"
+    sequence="20"
+  />
+
+  <!-- Flight Routes Menu Item -->
+  <menuitem
+    id="menu_flight_route"
+    name="Flight Routes"
+    parent="flight.menu_flight"
+    action="action_flight_plan_route_list"
+    sequence="30"
+  />
+</odoo>

@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class FlightPlan(models.Model):
@@ -17,13 +17,20 @@ class FlightPlan(models.Model):
 
     route_id = fields.Many2one("flight.plan.route")
     alternate_route_ids = fields.Many2many(
-        "flight.route",
-        "flight_route_alternate_rel",
-        "route_id",
-        "alternate_id",
+        "flight.plan.route",
+        "flight_plan_route_alternate_rel",
+        "plan_id",
+        "alternate_route_id",
         string="Alternate Routes",
+        domain="[('route_type', '=', 'alternate')]",
     )
 
     aerodrome_ids = fields.One2many(
         "flight.plan.aerodrome", "plan_id", string="Aerodromes"
     )
+
+    @api.depends("flight_id", "version_number", "route_id")
+    def _compute_display_name(self):
+        for record in self:
+            route_name = record.route_id.name or "No Route"
+            record.display_name = f"{record.flight_id.display_name} v{record.version_number} - {route_name}"

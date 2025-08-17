@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class FlightPlanAerodrome(models.Model):
@@ -18,3 +18,11 @@ class FlightPlanAerodrome(models.Model):
     )
     planned_runway = fields.Char()
     terminal_procedure = fields.Json()
+
+    @api.depends("aerodrome_id", "function", "planned_runway")
+    def _compute_display_name(self):
+        for record in self:
+            aerodrome_name = record.aerodrome_id.display_name if record.aerodrome_id else "Unknown"
+            function_name = dict(record._fields["function"].selection).get(record.function, record.function)
+            runway = f" RW{record.planned_runway}" if record.planned_runway else ""
+            record.display_name = f"{aerodrome_name} ({function_name}){runway}"
