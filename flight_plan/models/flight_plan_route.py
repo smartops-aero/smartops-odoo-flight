@@ -6,10 +6,11 @@ class FlightPlanRoute(models.Model):
     _description = "Flight Plan Route"
 
     plan_id = fields.Many2one("flight.plan", required=True, ondelete="cascade")
+    name = fields.Char()
+    fms_name = fields.Char()
     route_type = fields.Selection(
         [
             ("flight", "Flight"),
-            ("fms", "FMS"),
             ("alternate", "Alternate"),
         ],
         default="flight",

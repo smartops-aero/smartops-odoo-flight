@@ -7,7 +7,7 @@ class FlightPlan(models.Model):
     _inherit = ["flight.lock.mixin"]
 
     flight_id = fields.Many2one("flight.flight", required=True, index=True)
-    version_number = fields.Integer()
+    version_number = fields.Integer(default=1)
     timestamp = fields.Datetime()
 
     remarks = fields.Json()
