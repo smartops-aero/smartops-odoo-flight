@@ -4,7 +4,7 @@ from odoo import api, fields, models
 class FlightPlan(models.Model):
     _name = "flight.plan"
     _description = "Flight Plan"
-    _inherit = ["flight.lock.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin", "flight.lock.mixin"]
 
     flight_id = fields.Many2one("flight.flight", required=True, index=True)
     version_number = fields.Integer(default=1)
