@@ -29,16 +29,36 @@
                     </group>
                     <notebook>
                         <page string="Remarks" name="remarks">
-                            <field name="remarks" />
+                            <group string="Formatted View">
+                                <field name="remarks_text" widget="text" readonly="1" />
+                            </group>
+                            <group string="Raw JSON (Advanced)" groups="base.group_no_one">
+                                <field name="remarks" widget="json" />
+                            </group>
                         </page>
                         <page string="Flight Plan Header" name="flight_plan_header">
-                            <field name="flight_plan_header" />
+                            <group string="Formatted View">
+                                <field name="flight_plan_header_text" widget="text" readonly="1" />
+                            </group>
+                            <group string="Raw JSON (Advanced)" groups="base.group_no_one">
+                                <field name="flight_plan_header" widget="json" />
+                            </group>
                         </page>
                         <page string="Weight Header" name="weight_header">
-                            <field name="weight_header" />
+                            <group string="Formatted View">
+                                <field name="weight_header_text" widget="text" readonly="1" />
+                            </group>
+                            <group string="Raw JSON (Advanced)" groups="base.group_no_one">
+                                <field name="weight_header" widget="json" />
+                            </group>
                         </page>
                         <page string="Fuel Header" name="fuel_header">
-                            <field name="fuel_header" />
+                            <group string="Formatted View">
+                                <field name="fuel_header_text" widget="text" readonly="1" />
+                            </group>
+                            <group string="Raw JSON (Advanced)" groups="base.group_no_one">
+                                <field name="fuel_header" widget="json" />
+                            </group>
                         </page>
                         <page string="Route" name="route">
                             <group>
@@ -70,7 +90,8 @@
                                     <field name="aerodrome_id" />
                                     <field name="function" />
                                     <field name="planned_runway" />
-                                    <field name="terminal_procedure" widget="json" />
+                                    <field name="terminal_procedure_text" string="Terminal Procedure" />
+                                    <field name="terminal_procedure" widget="json" groups="base.group_no_one" />
                                 </list>
                             </field>
                         </page>
