@@ -29,16 +29,16 @@
                     </group>
                     <notebook>
                         <page string="Remarks" name="remarks">
-                            <field name="remarks" widget="json" />
+                            <field name="remarks" />
                         </page>
                         <page string="Flight Plan Header" name="flight_plan_header">
-                            <field name="flight_plan_header" widget="json" />
+                            <field name="flight_plan_header" />
                         </page>
                         <page string="Weight Header" name="weight_header">
-                            <field name="weight_header" widget="json" />
+                            <field name="weight_header" />
                         </page>
                         <page string="Fuel Header" name="fuel_header">
-                            <field name="fuel_header" widget="json" />
+                            <field name="fuel_header" />
                         </page>
                         <page string="Route" name="route">
                             <group>
