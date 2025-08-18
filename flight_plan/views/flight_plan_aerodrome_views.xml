@@ -10,7 +10,7 @@
                 <field name="aerodrome_id" />
                 <field name="function" />
                 <field name="planned_runway" />
-                <field name="terminal_procedure" widget="json" />
+                <field name="terminal_procedure" widget="flight_json" />
             </list>
         </field>
     </record>
@@ -30,7 +30,7 @@
                         <field name="planned_runway" />
                     </group>
                     <group string="Terminal Procedure">
-                        <field name="terminal_procedure" widget="json" />
+                        <field name="terminal_procedure" widget="flight_json" />
                     </group>
                 </sheet>
             </form>
