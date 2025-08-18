@@ -34,6 +34,12 @@ class FlightPlan(models.Model):
     aerodrome_ids = fields.One2many(
         "flight.plan.aerodrome", "plan_id", string="Aerodromes"
     )
+    
+    # Computed field to show main route waypoints directly
+    main_route_waypoint_ids = fields.One2many(
+        "flight.route.waypoint", compute="_compute_main_route_waypoints", 
+        string="Main Route Waypoints", readonly=True
+    )
 
     @api.depends("flight_id", "version_number", "route_id")
     def _compute_display_name(self):
@@ -60,3 +66,11 @@ class FlightPlan(models.Model):
     def _compute_weight_header_text(self):
         for record in self:
             record.weight_header_text = record.json2text(record.weight_header)
+    
+    @api.depends('route_id', 'route_id.waypoint_ids')
+    def _compute_main_route_waypoints(self):
+        for record in self:
+            if record.route_id:
+                record.main_route_waypoint_ids = record.route_id.waypoint_ids
+            else:
+                record.main_route_waypoint_ids = False
