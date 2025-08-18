@@ -4,7 +4,7 @@
     "version": "18.0.1.0.0",
     "license": "LGPL-3",
     "author": "Apexive Solutions LLC",
-    "depends": ["flight", "flight_event"],
+    "depends": ["flight", "flight_event", "flight_json_widget"],
     "data": [
         "security/ir.model.access.csv",
         "views/flight_plan_views.xml",
