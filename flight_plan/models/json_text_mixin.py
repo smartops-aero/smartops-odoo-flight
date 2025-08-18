@@ -1,4 +1,5 @@
 import json
+
 from odoo import models
 
 
@@ -10,7 +11,7 @@ class JsonTextMixin(models.AbstractModel):
 
     def json2text(self, json_data, indent=2):
         """
-        Convert JSON data to formatted text.
+        Convert JSON data to formatted text with proper newline handling.
         
         Args:
             json_data: JSON data (dict, list, or None)
@@ -28,8 +29,27 @@ class JsonTextMixin(models.AbstractModel):
                 parsed_data = json.loads(json_data)
             else:
                 parsed_data = json_data
+            
+            # Convert to formatted JSON
+            formatted_json = json.dumps(parsed_data, indent=indent, ensure_ascii=False, separators=(',', ': '))
+            
+            # Process the JSON string to convert \n to actual newlines in text values
+            # This handles cases where text content contains newline characters
+            def process_newlines(text):
+                """Replace literal \\n with actual newlines in JSON string values"""
+                import re
+                # Find all string values and replace \n with actual newlines
+                def replace_newlines(match):
+                    content = match.group(1)
+                    # Replace literal \n with actual newlines
+                    content = content.replace('\\n', '\n')
+                    return f'"{content}"'
                 
-            return json.dumps(parsed_data, indent=indent, ensure_ascii=False, separators=(',', ': '))
+                # Match quoted strings and process newlines within them
+                return re.sub(r'"([^"]*(?:\\.[^"]*)*)"', replace_newlines, text)
+            
+            return process_newlines(formatted_json)
+            
         except (json.JSONDecodeError, TypeError):
             # If parsing fails, return the original data as string
             return str(json_data) if json_data is not None else ""
