@@ -5,10 +5,39 @@ class FlightPlan(models.Model):
     _name = "flight.plan"
     _description = "Flight Plan"
     _inherit = ["mail.thread", "mail.activity.mixin", "flight.lock.mixin"]
+    
+    _sql_constraints = [
+        ('unique_flight_period_plan_type', 
+         'unique(flight_id, period, plan_type)',
+         'Only one flight plan allowed per flight, period, and plan type combination')
+    ]
 
     flight_id = fields.Many2one("flight.flight", required=True, index=True)
     version_number = fields.Integer(default=1)
     timestamp = fields.Datetime()
+    
+    # Period and strategy classification
+    period = fields.Selection([
+        ('jan', 'January'),
+        ('feb', 'February'), 
+        ('mar', 'March'),
+        ('apr', 'April'),
+        ('may', 'May'),
+        ('jun', 'June'),
+        ('jul', 'July'),
+        ('aug', 'August'),
+        ('sep', 'September'),
+        ('oct', 'October'),
+        ('nov', 'November'),
+        ('dec', 'December'),
+        ('summer', 'Summer'),
+        ('winter', 'Winter'),
+    ], string="Period")
+    
+    plan_type = fields.Selection([
+        ('default', 'Default Strategy'),
+        ('avoid', 'Avoid Strategy'),
+    ], string="Plan Type")
 
     remarks = fields.Json()
     flight_plan_header = fields.Json()
@@ -36,11 +65,25 @@ class FlightPlan(models.Model):
         string="Main Route Waypoints", readonly=True
     )
 
-    @api.depends("flight_id", "version_number", "route_id")
+    @api.depends("flight_id", "version_number", "route_id", "period", "plan_type")
     def _compute_display_name(self):
         for record in self:
             route_name = record.route_id.name or "No Route"
-            record.display_name = f"{record.flight_id.display_name} v{record.version_number} - {route_name}"
+            parts = [record.flight_id.display_name]
+            
+            # Add period and plan type if available
+            if record.period:
+                period_name = dict(record._fields['period'].selection).get(record.period, record.period)
+                parts.append(period_name)
+            
+            if record.plan_type:
+                plan_type_name = dict(record._fields['plan_type'].selection).get(record.plan_type, record.plan_type)
+                parts.append(plan_type_name)
+            
+            parts.append(f"v{record.version_number}")
+            parts.append(route_name)
+            
+            record.display_name = " - ".join(parts)
 
     
     @api.depends('route_id', 'route_id.waypoint_ids')
