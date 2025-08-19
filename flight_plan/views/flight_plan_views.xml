@@ -7,6 +7,8 @@
         <field name="arch" type="xml">
             <list>
                 <field name="flight_id" />
+                <field name="period" />
+                <field name="plan_type" />
                 <field name="timestamp" />
                 <field name="version_number" />
                 <field name="route_id" string="Main Route" />
@@ -24,6 +26,8 @@
                     <div name="button_box" class="oe_button_box" />
                     <group>
                         <field name="flight_id" />
+                        <field name="period" />
+                        <field name="plan_type" />
                         <field name="version_number" />
                         <field name="timestamp" />
                     </group>
@@ -89,6 +93,8 @@
         <field name="arch" type="xml">
             <search>
                 <field name="flight_id" />
+                <field name="period" />
+                <field name="plan_type" />
                 <field name="timestamp" />
                 <field name="version_number" />
                 <field name="route_id" />
@@ -97,6 +103,16 @@
                         string="Flight"
                         name="group_by_flight"
                         context="{'group_by': 'flight_id'}"
+                    />
+                    <filter
+                        string="Period"
+                        name="group_by_period"
+                        context="{'group_by': 'period'}"
+                    />
+                    <filter
+                        string="Plan Type"
+                        name="group_by_plan_type"
+                        context="{'group_by': 'plan_type'}"
                     />
                     <filter
                         string="Version"
