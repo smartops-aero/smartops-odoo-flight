@@ -549,6 +549,84 @@ registry.category("actions").add("custom_action", CustomActionComponent);
 registry.category("services").add("custom_service", customService);
 ```
 
+#### C. Field Widget Migration (16.0 → 18.0)
+
+**Critical Changes for Custom Field Widgets:**
+
+1. **Component Registration Pattern Changed**
+```javascript
+// Before (16.0) - Direct component registration
+registry.category("fields").add("my_widget", MyWidgetComponent);
+
+// After (18.0) - Must wrap in object with component key
+registry.category("fields").add("my_widget", {
+    component: MyWidgetComponent,
+    displayName: "My Widget",
+    supportedTypes: ["char", "text"], // Optional: specify field types
+});
+```
+
+2. **Component Property Syntax**
+```javascript
+// Before (16.0) - External property assignment
+MyWidgetComponent.template = "module.MyWidgetTemplate";
+MyWidgetComponent.props = { ...standardFieldProps };
+MyWidgetComponent.components = { SubComponent };
+
+// After (18.0) - Static class properties
+export class MyWidgetComponent extends Component {
+    static template = "module.MyWidgetTemplate";
+    static props = { ...standardFieldProps };
+    static components = { SubComponent };
+}
+```
+
+3. **Field Value Access**
+```javascript
+// Before (16.0)
+this.props.value  // Often undefined
+
+// After (18.0) - Access from record data
+this.props.record.data[this.props.name]  // Correct way to get field value
+```
+
+4. **Template Attributes**
+```xml
+<!-- Before (16.0) -->
+<t t-name="module.Template" owl="1">
+
+<!-- After (18.0) - Remove owl attribute -->
+<t t-name="module.Template">
+```
+
+5. **Import Path Changes**
+```javascript
+// Before (16.0)
+import { DateTimePicker } from "@web/core/datepicker/datepicker";
+
+// After (18.0)
+import { DateTimePicker } from "@web/core/datetime/datetime_picker";
+```
+
+6. **Template Names for Extended Components**
+```javascript
+// When extending existing Odoo components
+export class CustomDatePicker extends DateTimePicker {
+    // Must use the parent's template name if reusing it
+    static template = "web.DateTimePicker";  // Not "web.DatePicker"
+}
+```
+
+**Common Widget Migration Errors and Solutions:**
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| `'component' is missing` | Old registration pattern | Wrap component in object with `component` key |
+| `Cannot read properties of undefined (reading 'name')` | Missing static properties | Add static template/props/components inside class |
+| `Missing template: "web.DatePicker"` | Wrong template name | Use `"web.DateTimePicker"` for date/time components |
+| `this.props.value is undefined` | Wrong field value access | Use `this.props.record.data[this.props.name]` |
+| `Cannot read properties of undefined (reading 'records')` | One2many not initialized | Add null checks: `fieldValue?.records || []` |
+
 ### 8. Website-Specific Changes
 
 #### A. Snippet Structure Rename
