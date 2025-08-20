@@ -24,8 +24,6 @@ export class FlightEventTimeMatrixRenderer extends Component {
   }
 
   _updateProps(newProps) {
-    console.log("FlightEventTimeMatrixRenderer _updateProps - newProps:", newProps);
-    
     this.timeKinds = newProps.timeKinds;
     this.eventCodes = newProps.eventCodes;
     

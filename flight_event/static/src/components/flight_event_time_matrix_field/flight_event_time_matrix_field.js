@@ -12,8 +12,6 @@ export class FlightEventTimeMatrixField extends Component {
   static components = { FlightEventTimeMatrixRenderer };
 
   setup() {
-    console.log("FlightEventTimeMatrixField props:", this.props);
-    
     this.orm = useService("orm");
     this.notification = useService("notification");
 
@@ -50,11 +48,6 @@ export class FlightEventTimeMatrixField extends Component {
   getList() {
     // Access the One2many field data from the record
     const fieldValue = this.props.record.data[this.props.name];
-    console.log("getList - fieldValue:", fieldValue);
-    if (fieldValue) {
-      console.log("getList - fieldValue.records:", fieldValue.records);
-      console.log("getList - fieldValue.records.length:", fieldValue.records?.length);
-    }
     return fieldValue;
   }
 
