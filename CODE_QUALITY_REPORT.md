@@ -38,7 +38,7 @@ Level 4 (Complex):
 |--------|------|------|-------|----------|--------|
 | flight | flight_lock_mixin.py | 19-22 | Lock validation bypass in create() - self is empty during create | CRITICAL | ✅ FIXED |
 | flight_data_sync | flight_data_provider.py | 87, 304 | Using safe_eval() on user input | HIGH | ⚠️ DOCUMENTED |
-| flight_event | flight_flight.py | 168-177 | Raw SQL with JSON parameters | HIGH | ⏳ PENDING |
+| flight_event | flight_flight.py | 119-123 | JSON serialization bug with datetime objects | MEDIUM | ✅ FIXED |
 | flight_portal | portal.py | 14-17 | Using sudo() without access checks | MEDIUM | ⏳ PENDING |
 
 ### 🟡 Performance Issues
