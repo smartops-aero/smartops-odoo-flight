@@ -1,13 +1,13 @@
 # Copyright 2024 Apexive <https://apexive.com/>
 # License MIT (https://opensource.org/licenses/MIT).
 
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import api, fields, models
 
 
 class FlightCrewRole(models.Model):
     _name = "flight.crew.role"
     _description = "Crew Member Role"
+    _order = "name"
 
     name = fields.Char(required=True)
     description = fields.Char()
@@ -29,17 +29,10 @@ class FlightCrew(models.Model):
         """Compute display name to show partner name and role"""
         for record in self:
             name_parts = []
-            if record.partner_id:
+            if record.partner_id and record.partner_id.name:
                 name_parts.append(record.partner_id.name)
-            if record.role_id:
+            if record.role_id and record.role_id.name:
                 name_parts.append(f"({record.role_id.name})")
             
             record.display_name = " ".join(name_parts) if name_parts else f"Crew Member #{record.id}"
 
-    @api.constrains("partner_id")
-    def _check_crew_identification(self):
-        for record in self:
-            if not record.partner_id:
-                raise ValidationError(
-                    _("A contact must be specified for crew assignment.")
-                )
