@@ -34,12 +34,12 @@ Level 4 (Complex):
 
 ### 🔴 Security Vulnerabilities (Immediate Action Required)
 
-| Module | File | Line | Issue | Severity |
-|--------|------|------|-------|----------|
-| flight | flight_lock_mixin.py | 19-22 | Lock validation bypass in create() - self is empty during create | CRITICAL |
-| flight_data_sync | flight_data_provider.py | 87 | Using safe_eval() on user input | HIGH |
-| flight_event | flight_flight.py | 168-177 | Raw SQL with JSON parameters | HIGH |
-| flight_portal | portal.py | 14-17 | Using sudo() without access checks | MEDIUM |
+| Module | File | Line | Issue | Severity | Status |
+|--------|------|------|-------|----------|--------|
+| flight | flight_lock_mixin.py | 19-22 | Lock validation bypass in create() - self is empty during create | CRITICAL | ✅ FIXED |
+| flight_data_sync | flight_data_provider.py | 87 | Using safe_eval() on user input | HIGH | ⏳ PENDING |
+| flight_event | flight_flight.py | 168-177 | Raw SQL with JSON parameters | HIGH | ⏳ PENDING |
+| flight_portal | portal.py | 14-17 | Using sudo() without access checks | MEDIUM | ⏳ PENDING |
 
 ### 🟡 Performance Issues
 
@@ -84,23 +84,25 @@ Level 4 (Complex):
 
 ### 2. flight (Core Module)
 
-**Status: ✅ PARTIALLY FIXED**
+**Status: ✅ FULLY FIXED**
 
 **Fixed Issues:**
-- **flight_lock_mixin.py** - Fixed critical bug where lock validation never executed during record creation (self was empty in create method). Now properly validates if related flight is locked before allowing new records.
-- **flight_lock_mixin.py** - Improved write() method logic to allow unlocking while preventing other modifications to locked records.
+- **flight_lock_mixin.py** - ✅ Fixed critical bug where lock validation never executed during record creation (self was empty in create method). Now properly validates if related flight is locked before allowing new records.
+- **flight_lock_mixin.py** - ✅ Improved write() method logic to allow unlocking while preventing other modifications to locked records.
+- **flight_aerodrome.py** - ✅ Added coordinate validation for latitude (-90 to 90) and longitude (-180 to 180) ranges
+- **flight_aerodrome.py** - ✅ Fixed display_name computation to safely handle null ICAO/IATA values without crashing
+- **flight_aircraft.py** - ✅ Added display_name computation for FlightAircraftModel showing "Make Model (Code)" format
+- **flight_aircraft.py** - ✅ Added MTOW validation to prevent negative weights (allows 0 for unspecified)
+- **flight_aircraft.py** - ✅ Added null-safe display_name computation to prevent crashes with empty make names
+- **flight_crew.py** - ✅ Added display_name computation showing "Partner Name (Role)" format  
+- **flight_crew.py** - ✅ Added null-safe checks for partner and role names to prevent crashes
+- **All models** - ✅ Removed unnecessary indexes and constraints, kept only essential improvements
 
-**Missing Validations:**
-```python
-# Add coordinate validation
-@api.constrains('latitude', 'longitude')
-def _check_coordinates(self):
-    for record in self:
-        if record.latitude and not (-90 <= record.latitude <= 90):
-            raise ValidationError(_("Latitude must be between -90 and 90"))
-        if record.longitude and not (-180 <= record.longitude <= 180):
-            raise ValidationError(_("Longitude must be between -180 and 180"))
-```
+**Test Coverage:**
+- ✅ 9 new tests for coordinate validation in aerodrome
+- ✅ 3 new tests for aircraft display_name and MTOW validation  
+- ✅ 2 new tests for crew display_name edge cases and multiple roles
+- ✅ All 71 tests passing
 
 ### 3. flight_json_widget
 
