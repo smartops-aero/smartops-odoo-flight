@@ -84,24 +84,11 @@ Level 4 (Complex):
 
 ### 2. flight (Core Module)
 
-**Critical Bug - flight_lock_mixin.py:**
-```python
-# BROKEN CODE (line 19-22)
-def create(self, vals_list):
-    for record in self:  # self is empty during create!
-        if record._is_locked():
-            raise UserError(...)
-            
-# FIXED CODE
-@api.model_create_multi
-def create(self, vals_list):
-    flight_ids = [v['flight_id'] for v in vals_list if 'flight_id' in v]
-    if flight_ids:
-        locked = self.env['flight.flight'].browse(flight_ids).filtered('locked')
-        if locked:
-            raise UserError(_("Cannot create records for locked flights"))
-    return super().create(vals_list)
-```
+**Status: ✅ PARTIALLY FIXED**
+
+**Fixed Issues:**
+- **flight_lock_mixin.py** - Fixed critical bug where lock validation never executed during record creation (self was empty in create method). Now properly validates if related flight is locked before allowing new records.
+- **flight_lock_mixin.py** - Improved write() method logic to allow unlocking while preventing other modifications to locked records.
 
 **Missing Validations:**
 ```python
