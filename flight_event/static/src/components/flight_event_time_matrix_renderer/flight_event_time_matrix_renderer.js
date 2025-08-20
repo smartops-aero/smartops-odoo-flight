@@ -7,18 +7,34 @@ import { areDateEquals } from "@web/core/l10n/dates";
 const { DateTime } = luxon;
 
 export class FlightEventTimeMatrixRenderer extends Component {
+  static template = "flight_event.FlightEventTimeMatrixRenderer";
+  static components = { RelativeDateTimePicker };
+  static props = {
+    list: Object,
+    eventCodes: Array,
+    timeKinds: Array,
+    date: DateTime,
+    onUpdate: Function,
+    readonly: Boolean,
+  };
+
   setup() {
     this._updateProps(this.props);
     onWillUpdateProps((newProps) => this._updateProps(newProps));
   }
 
   _updateProps(newProps) {
+    console.log("FlightEventTimeMatrixRenderer _updateProps - newProps:", newProps);
+    
     this.timeKinds = newProps.timeKinds;
     this.eventCodes = newProps.eventCodes;
-    this.matrix = this._getMatrix(newProps.list.records);
+    
+    // Handle case where list might be null/undefined
+    const records = newProps.list?.records || [];
+    this.matrix = this._getMatrix(records);
   }
 
-  _getMatrix(records = this.list.records) {
+  _getMatrix(records = []) {
     // Initialize the matrix using map and fill
     const matrix = Object.fromEntries(
       this.eventCodes.map((eventCode) => [
@@ -53,15 +69,3 @@ export class FlightEventTimeMatrixRenderer extends Component {
   }
 }
 
-FlightEventTimeMatrixRenderer.components = { RelativeDateTimePicker };
-FlightEventTimeMatrixRenderer.template =
-  "flight_event.FlightEventTimeMatrixRenderer";
-
-FlightEventTimeMatrixRenderer.props = {
-  list: Object,
-  eventCodes: Array,
-  timeKinds: Array,
-  date: DateTime,
-  onUpdate: Function,
-  readonly: Boolean,
-};

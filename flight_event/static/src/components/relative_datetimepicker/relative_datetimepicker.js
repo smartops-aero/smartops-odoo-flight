@@ -5,7 +5,7 @@ import {
   luxonToMoment,
   parseDateTime,
 } from "@web/core/l10n/dates";
-import { DateTimePicker } from "@web/core/datepicker/datepicker";
+import { DateTimePicker } from "@web/core/datetime/datetime_picker";
 
 const { DateTime } = luxon;
 
@@ -22,6 +22,23 @@ function wrapError(fn, defaultValue) {
 }
 
 export class RelativeDateTimePicker extends DateTimePicker {
+  static template = "web.DateTimePicker";
+  static props = {
+    ...DateTimePicker.props,
+    baseDate: { type: DateTime, optional: true },
+  };
+  static defaultProps = {
+    ...DateTimePicker.defaultProps,
+    sideBySide: true,
+    format: "HH:mm %R",
+    defaultFormat: "YYYY-MM-DD HH:mm",
+    buttons: {
+      showToday: true,
+      showClear: true,
+      showClose: true,
+    },
+  };
+
   setup() {
     this.baseDate = this.props.baseDate;
     super.setup();
@@ -112,21 +129,3 @@ export class RelativeDateTimePicker extends DateTimePicker {
   }
 }
 
-RelativeDateTimePicker.template = "web.DatePicker";
-
-RelativeDateTimePicker.props = {
-  ...DateTimePicker.props,
-  baseDate: { type: DateTime, optional: true },
-};
-
-RelativeDateTimePicker.defaultProps = {
-  ...DateTimePicker.defaultProps,
-  sideBySide: true,
-  format: "HH:mm %R",
-  defaultFormat: "YYYY-MM-DD HH:mm",
-  buttons: {
-    showToday: true,
-    showClear: true,
-    showClose: true,
-  },
-};

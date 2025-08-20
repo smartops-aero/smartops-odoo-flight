@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
-    <t t-name="flight_event.FlightEventTimeMatrixField" owl="1">
+    <t t-name="flight_event.FlightEventTimeMatrixField">
         <div class="table-responsive">
             <t t-if="state.date">
                 <FlightEventTimeMatrixRenderer

@@ -7,6 +7,10 @@ import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { useService } from "@web/core/utils/hooks";
 
 export class FlightEventTimeMatrixField extends Component {
+  static template = "flight_event.FlightEventTimeMatrixField";
+  static props = { ...standardFieldProps };
+  static components = { FlightEventTimeMatrixRenderer };
+
   setup() {
     this.orm = useService("orm");
     this.notification = useService("notification");
@@ -75,10 +79,8 @@ export class FlightEventTimeMatrixField extends Component {
   }
 }
 
-FlightEventTimeMatrixField.template = "flight_event.FlightEventTimeMatrixField";
-FlightEventTimeMatrixField.props = { ...standardFieldProps };
-FlightEventTimeMatrixField.components = { FlightEventTimeMatrixRenderer };
-
 registry
   .category("fields")
-  .add("flight_event_time_matrix", FlightEventTimeMatrixField);
+  .add("flight_event_time_matrix", {
+    component: FlightEventTimeMatrixField,
+  });

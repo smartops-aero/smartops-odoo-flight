@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
-    <t t-name="flight_event.FlightEventTimeMatrixRenderer" owl="1">
+    <t t-name="flight_event.FlightEventTimeMatrixRenderer">
         <table
       class="o_list_table table table-responsive table-sm table-hover position-relative mb-0 o_list_table_ungrouped table-striped"
       t-if="eventCodes.length > 0"
