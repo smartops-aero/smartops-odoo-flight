@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
     <t t-name="flight_event.FlightEventTimeMatrixField">
         <div class="table-responsive">
-            <t t-if="state.date">
+            <t t-if="state.date and list and this.eventCodes.length > 0">
                 <FlightEventTimeMatrixRenderer
           list="list"
           date="state.date"

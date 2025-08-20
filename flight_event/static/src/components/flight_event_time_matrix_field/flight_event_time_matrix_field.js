@@ -12,14 +12,22 @@ export class FlightEventTimeMatrixField extends Component {
   static components = { FlightEventTimeMatrixRenderer };
 
   setup() {
+    console.log("FlightEventTimeMatrixField props:", this.props);
+    
     this.orm = useService("orm");
     this.notification = useService("notification");
+
+    // Initialize eventCodes as empty array to prevent undefined errors
+    this.eventCodes = [];
 
     this.state = useState({
       date: this.props.record.data.date,
     });
 
-    this.activeField = this.props.record.activeFields[this.props.name];
+    // Check if props.name exists before using it
+    if (this.props.name && this.props.record.activeFields) {
+      this.activeField = this.props.record.activeFields[this.props.name];
+    }
 
     this.timeKinds = [
       { key: "A", label: "Actual" },
@@ -40,7 +48,14 @@ export class FlightEventTimeMatrixField extends Component {
   }
 
   getList() {
-    return this.props.value;
+    // Access the One2many field data from the record
+    const fieldValue = this.props.record.data[this.props.name];
+    console.log("getList - fieldValue:", fieldValue);
+    if (fieldValue) {
+      console.log("getList - fieldValue.records:", fieldValue.records);
+      console.log("getList - fieldValue.records.length:", fieldValue.records?.length);
+    }
+    return fieldValue;
   }
 
   get list() {
@@ -79,8 +94,12 @@ export class FlightEventTimeMatrixField extends Component {
   }
 }
 
+export const flightEventTimeMatrixField = {
+  component: FlightEventTimeMatrixField,
+  displayName: "Flight Event Time Matrix",
+  supportedTypes: ["one2many"],
+};
+
 registry
   .category("fields")
-  .add("flight_event_time_matrix", {
-    component: FlightEventTimeMatrixField,
-  });
+  .add("flight_event_time_matrix", flightEventTimeMatrixField);
