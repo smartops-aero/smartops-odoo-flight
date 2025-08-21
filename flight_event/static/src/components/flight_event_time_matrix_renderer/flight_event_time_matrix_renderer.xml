@@ -3,7 +3,7 @@
     <t t-name="flight_event.FlightEventTimeMatrixRenderer">
         <table
       class="o_list_table table table-responsive table-sm table-hover position-relative mb-0 o_list_table_ungrouped table-striped"
-      t-if="eventCodes.length > 0"
+      t-if="eventCodes.length > 0 and matrix"
     >
             <thead>
                 <tr>
@@ -32,12 +32,16 @@
             t-as="timeKind"
             t-key="timeKind.key"
             class="o_matrix_cell"
-            t-att-class="{'cursor-pointer': !props.readonly}"
-            t-on-click="() => this.openPickerForCell(eventCode, timeKind)"
           >
-                        <span
-              class="o_matrix_cell_value"
-              t-esc="getFormattedValue(matrix[eventCode.code][timeKind.key].value)"
+                        <FlightEventTimeMatrixCell
+              t-props="{
+                value: this.getCellValue(eventCode, timeKind),
+                eventCode: eventCode,
+                timeKind: timeKind,
+                date: props.date,
+                onUpdate: (timeKind, eventCode, value) => this.onCellUpdate(timeKind, eventCode, value),
+                readonly: props.readonly
+              }"
             />
                     </td>
                 </tr>
@@ -46,7 +50,5 @@
         <div t-else="" class="alert alert-info">
             Nothing to display.
         </div>
-        <!-- Hidden target for datetime picker -->
-        <div t-ref="picker-target" style="display: none;"></div>
     </t>
 </templates>

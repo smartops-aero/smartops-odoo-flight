@@ -1,13 +1,13 @@
 /** @odoo-module **/
 
-import { Component, onWillUpdateProps, useState } from "@odoo/owl";
-import { formatDateTime } from "@web/core/l10n/dates";
-import { useDateTimePicker } from "@web/core/datetime/datetime_hook";
+import { Component, onWillUpdateProps } from "@odoo/owl";
+import { FlightEventTimeMatrixCell } from "@flight_event/components/flight_event_time_matrix_cell/flight_event_time_matrix_cell";
 
 const { DateTime } = luxon;
 
 export class FlightEventTimeMatrixRenderer extends Component {
   static template = "flight_event.FlightEventTimeMatrixRenderer";
+  static components = { FlightEventTimeMatrixCell };
   static props = {
     list: Object,
     eventCodes: Array,
@@ -18,58 +18,6 @@ export class FlightEventTimeMatrixRenderer extends Component {
   };
 
   setup() {
-    this.state = useState({
-      pickerEventCode: null,
-      pickerTimeKind: null,
-    });
-    
-    const getPickerProps = () => {
-      if (!this.state.pickerEventCode || !this.state.pickerTimeKind) {
-        return { value: null, type: "datetime" };
-      }
-      
-      const currentValue = this.matrix[this.state.pickerEventCode.code][this.state.pickerTimeKind.key].value;
-      
-      return {
-        value: currentValue || this.props.date || DateTime.local(),
-        type: "datetime",
-      };
-    };
-    
-    // Setup datetime picker hook
-    const dateTimePicker = useDateTimePicker({
-      target: "picker-target",
-      get pickerProps() {
-        return getPickerProps();
-      },
-      onChange: (value) => {
-        console.log("onChange called with value:", value);
-        // Don't update matrix here - let onApply handle the actual update
-        // This is just for any UI feedback during selection
-      },
-      onApply: (value) => {
-        console.log("onApply called with value:", value);
-        console.log("Picker state:", this.state.pickerEventCode, this.state.pickerTimeKind);
-        console.log("Hook state value:", this.pickerState?.value);
-        
-        // Get the final value from the hook's state and commit to database
-        const finalValue = value || this.pickerState?.value;
-        if (this.state.pickerEventCode && this.state.pickerTimeKind && finalValue) {
-          console.log("Calling updateCell with:", finalValue);
-          this.updateCell(this.state.pickerTimeKind, this.state.pickerEventCode, finalValue);
-          // Clear picker state
-          this.state.pickerEventCode = null;
-          this.state.pickerTimeKind = null;
-        } else {
-          console.log("onApply: Missing required data for updateCell");
-        }
-      },
-    });
-    
-    // Subscribe to the hook's state
-    this.pickerState = useState(dateTimePicker.state);
-    this.openPicker = dateTimePicker.open;
-    
     this._updateProps(this.props);
     onWillUpdateProps((newProps) => this._updateProps(newProps));
   }
@@ -80,6 +28,15 @@ export class FlightEventTimeMatrixRenderer extends Component {
     
     // Handle case where list might be null/undefined
     const records = newProps.list?.records || [];
+    console.log("_updateProps - newProps.list:", newProps.list);
+    console.log("_updateProps - records:", records);
+    console.log("_updateProps - records length:", records.length);
+    
+    if (records.length > 0) {
+      console.log("Sample record:", records[0]);
+      console.log("Sample record data:", records[0].data);
+    }
+    
     this.matrix = this._getMatrix(records);
   }
 
@@ -95,13 +52,27 @@ export class FlightEventTimeMatrixRenderer extends Component {
     );
 
     // Fill the matrix with actual values from records
-    records.forEach((record) => {
+    console.log("_getMatrix processing", records.length, "records");
+    records.forEach((record, index) => {
       // Data.code_id[1] is the event code
       const eventCode = record.data.code_id[1];
       const timeKind = record.data.time_kind;
+      const time = record.data.time;
+      
+      console.log(`Record ${index}:`, {
+        eventCode,
+        timeKind, 
+        time,
+        timeType: typeof time,
+        isDateTime: time instanceof DateTime
+      });
+      
       if (matrix[eventCode] && matrix[eventCode][timeKind] !== undefined) {
         matrix[eventCode][timeKind].value = record.data.time;
         matrix[eventCode][timeKind].record = record;
+        console.log(`Set matrix[${eventCode}][${timeKind}] =`, record.data.time);
+      } else {
+        console.log(`Skipped record - eventCode: ${eventCode}, timeKind: ${timeKind} not found in matrix`);
       }
     });
 
@@ -109,68 +80,38 @@ export class FlightEventTimeMatrixRenderer extends Component {
   }
 
   /**
-   * Format the datetime value for display in the cell
-   * Shows time and relative day offset (e.g., "14:30 +1")
+   * Safely get the cell value for a specific event code and time kind
    */
-  getFormattedValue(value) {
-    if (!value) {
-      return "-";
+  getCellValue(eventCode, timeKind) {
+    console.log("getCellValue called for:", eventCode.code, timeKind.key);
+    console.log("Matrix exists:", !!this.matrix);
+    console.log("full matrix:" , this.matrix);
+    
+    if (!this.matrix) {
+      console.log("Matrix not initialized yet");
+      return false;
     }
     
-    try {
-      // Format as HH:mm
-      let formatted = formatDateTime(value, { format: "HH:mm" });
-      
-      // Add relative day if different from base date
-      if (this.props.date && value) {
-        const dayDiff = Math.floor(
-          value.startOf("day").diff(this.props.date.startOf("day"), "days").days
-        );
-        if (dayDiff !== 0) {
-          formatted += ` ${dayDiff > 0 ? '+' : ''}${dayDiff}`;
-        }
-      }
-      
-      return formatted;
-    } catch (error) {
-      console.error("Error formatting date:", error);
-      return "-";
-    }
+    const cellData = this.matrix[eventCode.code]?.[timeKind.key];
+    console.log("Cell data:", cellData);
+    
+    // Return the actual value (which could be DateTime or false)
+    // Don't convert to false if it's a valid DateTime
+    const value = cellData?.value;
+    console.log("Returning value:", value, "Type:", typeof value, "Is DateTime:", value instanceof DateTime);
+    
+    return value !== undefined ? value : false;
   }
 
   /**
-   * Open the date picker popover for a specific cell
+   * Handle cell update from MatrixCell component
    */
-  openPickerForCell(eventCode, timeKind) {
-    if (this.props.readonly) {
-      return;
-    }
+  onCellUpdate(timeKind, eventCode, value) {
+    console.log("Matrix renderer onCellUpdate:", { timeKind: timeKind.key, eventCode: eventCode.code, value });
     
-    // Set up picker context - getPickerProps() will read from this
-    this.state.pickerEventCode = eventCode;
-    this.state.pickerTimeKind = timeKind;
-    
-    // Open the picker (uses the hook's open method)
-    this.openPicker(0);
-  }
-
-  /**
-   * Update a cell value
-   */
-  updateCell(timeKind, eventCode, value) {
-    console.log("updateCell called with:", { timeKind: timeKind.key, eventCode: eventCode.code, value });
-    
-    const currentValue = this.matrix[eventCode.code][timeKind.key].value;
-    console.log("Current matrix value:", currentValue);
-    
-    // Only update if value changed
-    if (!currentValue || !value || !currentValue.equals(value)) {
-      console.log("Value changed, updating matrix and calling onUpdate");
-      this.matrix[eventCode.code][timeKind.key].value = value;
-      this.props.onUpdate(timeKind, eventCode, value);
-    } else {
-      console.log("Value unchanged, skipping update");
-    }
+    // Update the matrix and propagate to parent
+    this.matrix[eventCode.code][timeKind.key].value = value;
+    this.props.onUpdate(timeKind, eventCode, value);
   }
 }
 
