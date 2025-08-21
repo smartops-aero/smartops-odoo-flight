@@ -7,13 +7,13 @@ class FlightPlan(models.Model):
     _inherit = ["mail.thread", "mail.activity.mixin", "flight.lock.mixin"]
 
     flight_id = fields.Many2one("flight.flight", required=True, index=True)
-    version_number = fields.Integer(default=1)
-    timestamp = fields.Datetime()
+    version_number = fields.Integer(string="Version Number", default=1)
+    timestamp = fields.Datetime(string="Timestamp")
 
-    remarks = fields.Json()
-    flight_plan_header = fields.Json()
-    fuel_header = fields.Json()
-    weight_header = fields.Json()
+    remarks = fields.Json(string="Remarks")
+    flight_plan_header = fields.Json(string="Flight Plan Header")
+    fuel_header = fields.Json(string="Fuel Header")
+    weight_header = fields.Json(string="Weight Header")
 
 
     route_id = fields.Many2one("flight.plan.route", index=True)

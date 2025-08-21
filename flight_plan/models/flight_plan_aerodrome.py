@@ -16,8 +16,8 @@ class FlightPlanAerodrome(models.Model):
         ],
         required=True,
     )
-    planned_runway = fields.Char()
-    terminal_procedure = fields.Json()
+    planned_runway = fields.Char(string="Planned Runway")
+    terminal_procedure = fields.Json(string="Terminal Procedure")
 
     @api.depends("aerodrome_id", "function", "planned_runway")
     def _compute_display_name(self):
