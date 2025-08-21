@@ -28,15 +28,6 @@ export class FlightEventTimeMatrixRenderer extends Component {
     
     // Handle case where list might be null/undefined
     const records = newProps.list?.records || [];
-    console.log("_updateProps - newProps.list:", newProps.list);
-    console.log("_updateProps - records:", records);
-    console.log("_updateProps - records length:", records.length);
-    
-    if (records.length > 0) {
-      console.log("Sample record:", records[0]);
-      console.log("Sample record data:", records[0].data);
-    }
-    
     this.matrix = this._getMatrix(records);
   }
 
@@ -52,27 +43,14 @@ export class FlightEventTimeMatrixRenderer extends Component {
     );
 
     // Fill the matrix with actual values from records
-    console.log("_getMatrix processing", records.length, "records");
-    records.forEach((record, index) => {
+    records.forEach((record) => {
       // Data.code_id[1] is the event code
       const eventCode = record.data.code_id[1];
       const timeKind = record.data.time_kind;
-      const time = record.data.time;
-      
-      console.log(`Record ${index}:`, {
-        eventCode,
-        timeKind, 
-        time,
-        timeType: typeof time,
-        isDateTime: time instanceof DateTime
-      });
       
       if (matrix[eventCode] && matrix[eventCode][timeKind] !== undefined) {
         matrix[eventCode][timeKind].value = record.data.time;
         matrix[eventCode][timeKind].record = record;
-        console.log(`Set matrix[${eventCode}][${timeKind}] =`, record.data.time);
-      } else {
-        console.log(`Skipped record - eventCode: ${eventCode}, timeKind: ${timeKind} not found in matrix`);
       }
     });
 
@@ -83,22 +61,12 @@ export class FlightEventTimeMatrixRenderer extends Component {
    * Safely get the cell value for a specific event code and time kind
    */
   getCellValue(eventCode, timeKind) {
-    console.log("getCellValue called for:", eventCode.code, timeKind.key);
-    console.log("Matrix exists:", !!this.matrix);
-    console.log("full matrix:" , this.matrix);
-    
     if (!this.matrix) {
-      console.log("Matrix not initialized yet");
       return false;
     }
     
     const cellData = this.matrix[eventCode.code]?.[timeKind.key];
-    console.log("Cell data:", cellData);
-    
-    // Return the actual value (which could be DateTime or false)
-    // Don't convert to false if it's a valid DateTime
     const value = cellData?.value;
-    console.log("Returning value:", value, "Type:", typeof value, "Is DateTime:", value instanceof DateTime);
     
     return value !== undefined ? value : false;
   }
@@ -107,8 +75,6 @@ export class FlightEventTimeMatrixRenderer extends Component {
    * Handle cell update from MatrixCell component
    */
   onCellUpdate(timeKind, eventCode, value) {
-    console.log("Matrix renderer onCellUpdate:", { timeKind: timeKind.key, eventCode: eventCode.code, value });
-    
     // Update the matrix and propagate to parent
     this.matrix[eventCode.code][timeKind.key].value = value;
     this.props.onUpdate(timeKind, eventCode, value);

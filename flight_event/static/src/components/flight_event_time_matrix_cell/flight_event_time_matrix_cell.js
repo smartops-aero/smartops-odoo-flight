@@ -20,9 +20,7 @@ export class FlightEventTimeMatrixCell extends Component {
   setup() {
     // Setup datetime picker hook for this specific cell  
     const getPickerProps = () => {
-      console.log("MatrixCell getPickerProps - this.props:", this.props);
       const value = this.props?.value || this.props?.date || DateTime.local();
-      console.log("MatrixCell pickerProps - value:", value, "eventCode:", this.props?.eventCode?.code, "timeKind:", this.props?.timeKind?.key);
       return {
         value: value,
         type: "datetime",
@@ -35,11 +33,9 @@ export class FlightEventTimeMatrixCell extends Component {
         return getPickerProps();
       },
       onChange: (value) => {
-        console.log("Cell onChange:", this.props.eventCode.code, this.props.timeKind.key, value);
         // Don't update here - let onApply handle it
       },
       onApply: (value) => {
-        console.log("Cell onApply:", this.props.eventCode.code, this.props.timeKind.key, value);
         if (value) {
           this.props.onUpdate(this.props.timeKind, this.props.eventCode, value);
         }
@@ -55,7 +51,6 @@ export class FlightEventTimeMatrixCell extends Component {
    */
   getFormattedValue() {
     const value = this.props.value;
-    console.log("MatrixCell getFormattedValue - value:", value, "type:", typeof value, "eventCode:", this.props.eventCode?.code, "timeKind:", this.props.timeKind?.key);
     
     // Check for falsy values or specifically false
     if (!value || value === false) {
@@ -76,10 +71,9 @@ export class FlightEventTimeMatrixCell extends Component {
         }
       }
       
-      console.log("MatrixCell formatted value:", formatted);
       return formatted;
     } catch (error) {
-      console.error("Error formatting date:", error, "for value:", value);
+      console.error("Error formatting date:", error);
       return "-";
     }
   }
