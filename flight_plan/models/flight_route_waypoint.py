@@ -7,6 +7,11 @@ class FlightRouteWaypoint(models.Model):
     _description = "Flight Route Waypoint"
     _order = "sequence, id"
 
+    _sql_constraints = [
+        ("unique_sequence_per_route", "unique(route_id, sequence)", 
+         "Sequence numbers must be unique within each route."),
+    ]
+
     route_id = fields.Many2one(
         "flight.plan.route", required=True, ondelete="cascade", index=True
     )
