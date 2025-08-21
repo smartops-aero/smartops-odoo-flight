@@ -42,19 +42,26 @@ export class FlightEventTimeMatrixRenderer extends Component {
       get pickerProps() {
         return getPickerProps();
       },
-      onChange: () => {
-        // Update the matrix with the live picker value for immediate feedback
-        if (this.state.pickerEventCode && this.state.pickerTimeKind && this.pickerState.value) {
-          this.matrix[this.state.pickerEventCode.code][this.state.pickerTimeKind.key].value = this.pickerState.value;
-        }
+      onChange: (value) => {
+        console.log("onChange called with value:", value);
+        // Don't update matrix here - let onApply handle the actual update
+        // This is just for any UI feedback during selection
       },
-      onApply: () => {
+      onApply: (value) => {
+        console.log("onApply called with value:", value);
+        console.log("Picker state:", this.state.pickerEventCode, this.state.pickerTimeKind);
+        console.log("Hook state value:", this.pickerState?.value);
+        
         // Get the final value from the hook's state and commit to database
-        if (this.state.pickerEventCode && this.state.pickerTimeKind && this.pickerState.value) {
-          this.updateCell(this.state.pickerTimeKind, this.state.pickerEventCode, this.pickerState.value);
+        const finalValue = value || this.pickerState?.value;
+        if (this.state.pickerEventCode && this.state.pickerTimeKind && finalValue) {
+          console.log("Calling updateCell with:", finalValue);
+          this.updateCell(this.state.pickerTimeKind, this.state.pickerEventCode, finalValue);
           // Clear picker state
           this.state.pickerEventCode = null;
           this.state.pickerTimeKind = null;
+        } else {
+          console.log("onApply: Missing required data for updateCell");
         }
       },
     });
@@ -151,12 +158,18 @@ export class FlightEventTimeMatrixRenderer extends Component {
    * Update a cell value
    */
   updateCell(timeKind, eventCode, value) {
+    console.log("updateCell called with:", { timeKind: timeKind.key, eventCode: eventCode.code, value });
+    
     const currentValue = this.matrix[eventCode.code][timeKind.key].value;
+    console.log("Current matrix value:", currentValue);
     
     // Only update if value changed
     if (!currentValue || !value || !currentValue.equals(value)) {
+      console.log("Value changed, updating matrix and calling onUpdate");
       this.matrix[eventCode.code][timeKind.key].value = value;
       this.props.onUpdate(timeKind, eventCode, value);
+    } else {
+      console.log("Value unchanged, skipping update");
     }
   }
 }
