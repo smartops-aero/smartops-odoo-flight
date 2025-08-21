@@ -247,8 +247,7 @@ target-version = "py311"
 ## Known Non-Critical Issues
 
 ### Warnings That Don't Affect Functionality
-1. **ESLint warnings in relative_datetimepicker.js** (prefer-const)
-2. **Website template warning about oe_structure class**
+1. **Website template warning about oe_structure class**
 
 These warnings don't affect functionality and can be addressed in future updates.
 

@@ -17,7 +17,6 @@
     ],
     "assets": {
         "web.assets_backend": [
-            "flight_event/static/src/components/relative_datetimepicker/relative_datetimepicker.js",
             "flight_event/static/src/scss/flight_event_time_matrix.scss",
             "flight_event/static/src/components/flight_event_time_matrix_cell/flight_event_time_matrix_cell.js",
             "flight_event/static/src/components/flight_event_time_matrix_field/flight_event_time_matrix_field.js",
