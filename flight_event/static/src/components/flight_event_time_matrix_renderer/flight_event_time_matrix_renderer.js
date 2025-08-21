@@ -1,9 +1,8 @@
 /** @odoo-module **/
 
-import { Component, onWillUpdateProps, useRef, useState } from "@odoo/owl";
-import { DateTimePickerPopover } from "@web/core/datetime/datetime_picker_popover";
+import { Component, onWillUpdateProps, useState } from "@odoo/owl";
 import { formatDateTime } from "@web/core/l10n/dates";
-import { useService } from "@web/core/utils/hooks";
+import { useDateTimePicker } from "@web/core/datetime/datetime_hook";
 
 const { DateTime } = luxon;
 
@@ -19,10 +18,50 @@ export class FlightEventTimeMatrixRenderer extends Component {
   };
 
   setup() {
-    this.popover = useService("popover");
     this.state = useState({
-      currentCell: null,
+      pickerEventCode: null,
+      pickerTimeKind: null,
     });
+    
+    const getPickerProps = () => {
+      if (!this.state.pickerEventCode || !this.state.pickerTimeKind) {
+        return { value: null, type: "datetime" };
+      }
+      
+      const currentValue = this.matrix[this.state.pickerEventCode.code][this.state.pickerTimeKind.key].value;
+      
+      return {
+        value: currentValue || this.props.date || DateTime.local(),
+        type: "datetime",
+      };
+    };
+    
+    // Setup datetime picker hook
+    const dateTimePicker = useDateTimePicker({
+      target: "picker-target",
+      get pickerProps() {
+        return getPickerProps();
+      },
+      onChange: () => {
+        // Update the matrix with the live picker value for immediate feedback
+        if (this.state.pickerEventCode && this.state.pickerTimeKind && this.pickerState.value) {
+          this.matrix[this.state.pickerEventCode.code][this.state.pickerTimeKind.key].value = this.pickerState.value;
+        }
+      },
+      onApply: () => {
+        // Get the final value from the hook's state and commit to database
+        if (this.state.pickerEventCode && this.state.pickerTimeKind && this.pickerState.value) {
+          this.updateCell(this.state.pickerTimeKind, this.state.pickerEventCode, this.pickerState.value);
+          // Clear picker state
+          this.state.pickerEventCode = null;
+          this.state.pickerTimeKind = null;
+        }
+      },
+    });
+    
+    // Subscribe to the hook's state
+    this.pickerState = useState(dateTimePicker.state);
+    this.openPicker = dateTimePicker.open;
     
     this._updateProps(this.props);
     onWillUpdateProps((newProps) => this._updateProps(newProps));
@@ -95,41 +134,17 @@ export class FlightEventTimeMatrixRenderer extends Component {
   /**
    * Open the date picker popover for a specific cell
    */
-  openPicker(eventCode, timeKind, event) {
+  openPickerForCell(eventCode, timeKind) {
     if (this.props.readonly) {
       return;
     }
     
-    const target = event.target;
-    const currentValue = this.matrix[eventCode.code][timeKind.key].value;
+    // Set up picker context - getPickerProps() will read from this
+    this.state.pickerEventCode = eventCode;
+    this.state.pickerTimeKind = timeKind;
     
-    // Create a close function for the popover
-    const close = () => {
-      if (this.popoverCloser) {
-        this.popoverCloser();
-        this.popoverCloser = null;
-      }
-    };
-    
-    // Open the popover with DateTimePicker
-    this.popoverCloser = this.popover.add(
-      target,
-      DateTimePickerPopover,
-      {
-        pickerProps: {
-          value: currentValue || this.props.date || DateTime.local(),
-          type: "datetime",
-          onSelect: (value) => {
-            this.updateCell(timeKind, eventCode, value);
-            close();
-          },
-        },
-        close: close,
-      },
-      {
-        popoverClass: "o_datetime_picker_popover",
-      }
-    );
+    // Open the picker (uses the hook's open method)
+    this.openPicker(0);
   }
 
   /**
