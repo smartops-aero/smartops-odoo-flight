@@ -10,9 +10,9 @@ class FlightFlight(models.Model):
     date = fields.Date(
         "Flight Date", help="Scheduled date of flight", required=True, tracking=True
     )
-    aircraft_id = fields.Many2one("flight.aircraft", required=True, tracking=True)
-    departure_id = fields.Many2one("flight.aerodrome", required=True, tracking=True)
-    arrival_id = fields.Many2one("flight.aerodrome", required=True, tracking=True)
+    aircraft_id = fields.Many2one("flight.aircraft", required=True, tracking=True, index=True)
+    departure_id = fields.Many2one("flight.aerodrome", required=True, tracking=True, index=True)
+    arrival_id = fields.Many2one("flight.aerodrome", required=True, tracking=True, index=True)
     locked = fields.Boolean(default=False, tracking=True)
 
     # Added crew relationship

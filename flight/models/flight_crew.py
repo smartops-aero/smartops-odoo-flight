@@ -21,7 +21,7 @@ class FlightCrew(models.Model):
     partner_id = fields.Many2one("res.partner", string="Contact", required=True)
     role_id = fields.Many2one("flight.crew.role")
     flight_id = fields.Many2one(
-        "flight.flight", string="Flight", required=True, ondelete="cascade"
+        "flight.flight", string="Flight", required=True, ondelete="cascade", index=True
     )
 
     @api.depends("partner_id", "role_id")
