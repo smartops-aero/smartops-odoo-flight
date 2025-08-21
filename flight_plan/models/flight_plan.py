@@ -16,7 +16,7 @@ class FlightPlan(models.Model):
     weight_header = fields.Json()
 
 
-    route_id = fields.Many2one("flight.plan.route")
+    route_id = fields.Many2one("flight.plan.route", index=True)
     alternate_route_ids = fields.Many2many(
         "flight.plan.route",
         "flight_plan_route_alternate_rel",

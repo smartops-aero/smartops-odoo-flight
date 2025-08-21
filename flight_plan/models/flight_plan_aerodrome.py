@@ -5,8 +5,8 @@ class FlightPlanAerodrome(models.Model):
     _name = "flight.plan.aerodrome"
     _description = "Flight Plan Aerodrome"
 
-    plan_id = fields.Many2one("flight.plan", required=True, ondelete="cascade")
-    aerodrome_id = fields.Many2one("flight.aerodrome", required=True)
+    plan_id = fields.Many2one("flight.plan", required=True, ondelete="cascade", index=True)
+    aerodrome_id = fields.Many2one("flight.aerodrome", required=True, index=True)
     function = fields.Selection(
         [
             ("departure", "Departure"),
