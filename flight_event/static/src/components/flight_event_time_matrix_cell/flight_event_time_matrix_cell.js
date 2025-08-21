@@ -73,7 +73,6 @@ export class FlightEventTimeMatrixCell extends Component {
       
       return formatted;
     } catch (error) {
-      console.error("Error formatting date:", error);
       return "-";
     }
   }

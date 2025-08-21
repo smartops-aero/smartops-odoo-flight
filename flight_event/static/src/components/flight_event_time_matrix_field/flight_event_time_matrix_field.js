@@ -56,38 +56,23 @@ export class FlightEventTimeMatrixField extends Component {
   }
 
   async commitChange(timeKind, eventCode, value) {
-    console.log("commitChange called with:", { 
-      timeKind: timeKind.key, 
-      eventCode: eventCode.code, 
-      eventCodeId: eventCode.id,
-      value 
-    });
-
     if (!value) {
-      console.log("commitChange: No value provided, returning");
       return;
     }
 
     if (!this.list) {
-      console.warn('One2many field not yet initialized');
       return;
     }
 
-    console.log("commitChange: Searching for matching records...");
     const matchingRecords = this.list.records.filter(
       (record) =>
         record.data.time_kind === timeKind.key &&
         record.data.code_id[0] === eventCode.id
     );
     
-    console.log("commitChange: Found", matchingRecords.length, "matching records");
-    
     if (matchingRecords.length === 1) {
-      console.log("commitChange: Updating existing record");
       await matchingRecords[0].update({ time: value });
-      console.log("commitChange: Record updated successfully");
     } else if (matchingRecords.length === 0) {
-      console.log("commitChange: Creating new record");
       // Use the correct method name
       const record = await this.list.addNewRecord({
         mode: "edit",
@@ -98,14 +83,11 @@ export class FlightEventTimeMatrixField extends Component {
         code_id: [eventCode.id, eventCode.code],
         flight_id: this.props.record.id || this.props.record.resId,
       };
-      console.log("commitChange: Setting values on new record:", values);
       await record.update(values);
-      console.log("commitChange: New record created and updated successfully");
       
       // Force UI update by triggering a re-render
       this.render();
     } else {
-      console.log("commitChange: Multiple records found, showing error");
       await this.notification.add(
         "Multiple records found for the same event code and time kind",
         { type: "danger" }
