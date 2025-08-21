@@ -53,12 +53,17 @@ Level 4 (Complex):
 
 ### 🟠 Code Quality Issues
 
-| Module | Pattern | Occurrences | 
-|--------|---------|-------------|
-| All modules | Missing display_name computation | 15+ models |
-| Multiple | Inconsistent error handling | 20+ instances |
-| flight_data_sync | Code duplication (DRY violations) | 50+ lines |
-| Multiple | Hard-coded values without config | 30+ instances |
+**Status: ✅ NO SIGNIFICANT ISSUES FOUND**
+
+The free flight modules demonstrate good code organization and quality:
+- No significant DRY violations found
+- No problematic hardcoded values identified  
+- Error handling patterns are consistent and appropriate
+- Most repetitive patterns are standard Odoo development practices
+
+### ❓ Questions for Alexis
+
+1. **Event Time Kinds Mismatch**: The backend model has 5 EVENT_TIME_KINDS (`A`, `S`, `E`, `P`, `T`) but the JavaScript widget in `flight_event_time_matrix_field.js` only shows 2 (`A` - Actual, `S` - Scheduled). Should the frontend display all 5 time kinds or is this intentional filtering? Are `E` (Estimated), `P` (Planned), and `T` (Target) deliberately hidden from the UI?
 
 ## Module-Specific Analysis
 
@@ -199,7 +204,9 @@ def _onchange_spec_code_id(self):
 
 ### 7. flight_data_sync
 
-**Security Fix:**
+**Status: ⚠️ SECURITY ISSUE PENDING**
+
+**Security Fix Needed:**
 ```python
 # Replace safe_eval with JSON
 def _parse_kwargs(self):
@@ -212,6 +219,8 @@ def _parse_kwargs(self):
     except json.JSONDecodeError as e:
         raise ValidationError(_("Invalid JSON in kwargs: %s") % e)
 ```
+
+**Note:** The abstract method pattern in this module (16 stub methods) is **NOT a DRY violation** - it's proper object-oriented design for extensibility. The real DRY issues are in the concrete implementations (flight_data_sync_noc module).
 
 ### 8. flight_portal
 
