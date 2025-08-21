@@ -31,12 +31,13 @@
             t-foreach="timeKinds"
             t-as="timeKind"
             t-key="timeKind.key"
+            class="o_matrix_cell"
+            t-att-class="{'cursor-pointer': !props.readonly}"
+            t-on-click="(event) => this.openPicker(eventCode, timeKind, event)"
           >
-                        <RelativeDateTimePicker
-              baseDate="props.date"
-              date="matrix[eventCode.code][timeKind.key].value"
-              onDateTimeChanged="(value) => this.update(timeKind, eventCode, value)"
-              readonly="props.readonly"
+                        <span
+              class="o_matrix_cell_value"
+              t-esc="getFormattedValue(matrix[eventCode.code][timeKind.key].value)"
             />
                     </td>
                 </tr>

@@ -1,14 +1,14 @@
 /** @odoo-module **/
 
-import { Component, onWillUpdateProps } from "@odoo/owl";
-import { RelativeDateTimePicker } from "@flight_event/components/relative_datetimepicker/relative_datetimepicker";
-import { areDateEquals } from "@web/core/l10n/dates";
+import { Component, onWillUpdateProps, useRef, useState } from "@odoo/owl";
+import { DateTimePickerPopover } from "@web/core/datetime/datetime_picker_popover";
+import { formatDateTime } from "@web/core/l10n/dates";
+import { useService } from "@web/core/utils/hooks";
 
 const { DateTime } = luxon;
 
 export class FlightEventTimeMatrixRenderer extends Component {
   static template = "flight_event.FlightEventTimeMatrixRenderer";
-  static components = { RelativeDateTimePicker };
   static props = {
     list: Object,
     eventCodes: Array,
@@ -19,6 +19,11 @@ export class FlightEventTimeMatrixRenderer extends Component {
   };
 
   setup() {
+    this.popover = useService("popover");
+    this.state = useState({
+      currentCell: null,
+    });
+    
     this._updateProps(this.props);
     onWillUpdateProps((newProps) => this._updateProps(newProps));
   }
@@ -57,10 +62,84 @@ export class FlightEventTimeMatrixRenderer extends Component {
     return matrix;
   }
 
-  update(timeKind, eventCode, value) {
-    if (
-      !areDateEquals(this.matrix[eventCode.code][timeKind.key].value, value)
-    ) {
+  /**
+   * Format the datetime value for display in the cell
+   * Shows time and relative day offset (e.g., "14:30 +1")
+   */
+  getFormattedValue(value) {
+    if (!value) {
+      return "-";
+    }
+    
+    try {
+      // Format as HH:mm
+      let formatted = formatDateTime(value, { format: "HH:mm" });
+      
+      // Add relative day if different from base date
+      if (this.props.date && value) {
+        const dayDiff = Math.floor(
+          value.startOf("day").diff(this.props.date.startOf("day"), "days").days
+        );
+        if (dayDiff !== 0) {
+          formatted += ` ${dayDiff > 0 ? '+' : ''}${dayDiff}`;
+        }
+      }
+      
+      return formatted;
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "-";
+    }
+  }
+
+  /**
+   * Open the date picker popover for a specific cell
+   */
+  openPicker(eventCode, timeKind, event) {
+    if (this.props.readonly) {
+      return;
+    }
+    
+    const target = event.target;
+    const currentValue = this.matrix[eventCode.code][timeKind.key].value;
+    
+    // Create a close function for the popover
+    const close = () => {
+      if (this.popoverCloser) {
+        this.popoverCloser();
+        this.popoverCloser = null;
+      }
+    };
+    
+    // Open the popover with DateTimePicker
+    this.popoverCloser = this.popover.add(
+      target,
+      DateTimePickerPopover,
+      {
+        pickerProps: {
+          value: currentValue || this.props.date || DateTime.local(),
+          type: "datetime",
+          onSelect: (value) => {
+            this.updateCell(timeKind, eventCode, value);
+            close();
+          },
+        },
+        close: close,
+      },
+      {
+        popoverClass: "o_datetime_picker_popover",
+      }
+    );
+  }
+
+  /**
+   * Update a cell value
+   */
+  updateCell(timeKind, eventCode, value) {
+    const currentValue = this.matrix[eventCode.code][timeKind.key].value;
+    
+    // Only update if value changed
+    if (!currentValue || !value || !currentValue.equals(value)) {
       this.matrix[eventCode.code][timeKind.key].value = value;
       this.props.onUpdate(timeKind, eventCode, value);
     }

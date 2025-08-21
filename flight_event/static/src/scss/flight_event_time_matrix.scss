@@ -47,6 +47,28 @@
         }
       }
     }
+    
+    // Matrix cell styling
+    .o_matrix_cell {
+      text-align: center;
+      padding: 8px;
+      
+      &.cursor-pointer:hover {
+        background-color: mix($o-brand-primary, $o-view-background-color, 15%);
+      }
+      
+      .o_matrix_cell_value {
+        display: inline-block;
+        min-width: 80px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        
+        &:empty::after {
+          content: "-";
+          color: $text-muted;
+        }
+      }
+    }
   }
 
   // Fade-out effect for bottom of the table
