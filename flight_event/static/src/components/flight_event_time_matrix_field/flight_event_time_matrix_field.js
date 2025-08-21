@@ -58,6 +58,11 @@ export class FlightEventTimeMatrixField extends Component {
   async commitChange(timeKind, eventCode, value) {
     if (!value) return;
 
+    if (!this.list) {
+      console.warn('One2many field not yet initialized');
+      return;
+    }
+
     const matchingRecords = this.list.records.filter(
       (record) =>
         record.data.time_kind === timeKind.key &&
@@ -66,7 +71,8 @@ export class FlightEventTimeMatrixField extends Component {
     if (matchingRecords.length === 1) {
       await matchingRecords[0].update({ time: value });
     } else if (matchingRecords.length === 0) {
-      const record = await this.list.addNew({
+      // Use the correct method name
+      const record = await this.list.addNewRecord({
         mode: "edit",
       });
       const values = {
@@ -76,6 +82,9 @@ export class FlightEventTimeMatrixField extends Component {
         flight_id: this.props.record.id || this.props.record.resId,
       };
       await record.update(values);
+      
+      // Force UI update by triggering a re-render
+      this.render();
     } else {
       await this.notification.add(
         "Multiple records found for the same event code and time kind",
