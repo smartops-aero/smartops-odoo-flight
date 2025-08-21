@@ -48,7 +48,7 @@ Level 4 (Complex):
 |--------|------|-------|--------|--------|
 | ~~flight~~ | ~~flight_flight.py:54-70~~ | ~~N+1 queries in _onchange_aircraft_id~~ | ~~LOW~~ | ✅ **RESOLVED - infrequent UI interaction, already optimized** |
 | ~~flight_event~~ | ~~flight_event.py:204-212~~ | ~~Loading all records into memory with filtered()~~ | ~~HIGH~~ | ✅ **RESOLVED - filtered() is 3.3x faster than search()** |
-| flight | Multiple models | Missing database indexes on foreign keys | MEDIUM | ⏳ PENDING |
+| ~~flight~~ | ~~Multiple models~~ | ~~Missing database indexes on foreign keys~~ | ~~MEDIUM~~ | ✅ **RESOLVED - added index=True to critical foreign keys** |
 | flight_plan | flight_plan.py:46-53 | Computed fields without store=True | MEDIUM | ⏳ PENDING |
 
 ### 🟠 Code Quality Issues
