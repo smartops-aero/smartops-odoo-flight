@@ -39,6 +39,7 @@ Level 4 (Complex):
 | flight | flight_lock_mixin.py | 19-22 | Lock validation bypass in create() - self is empty during create | CRITICAL | ✅ FIXED |
 | flight_data_sync | flight_data_provider.py | 87, 304 | Using safe_eval() on user input | HIGH | ⚠️ DOCUMENTED |
 | flight_event | flight_flight.py | 119-123 | JSON serialization bug with datetime objects | MEDIUM | ✅ FIXED |
+| flight_event | JavaScript widgets | Multiple | Odoo 16 to 18 migration issues with datetime pickers | MEDIUM | ✅ FIXED |
 | flight_portal | portal.py | 14-17 | Using sudo() without access checks | MEDIUM | ⏳ PENDING |
 
 ### 🟡 Performance Issues
@@ -133,7 +134,23 @@ get formattedValue() {
 
 ### 4. flight_event
 
-**Performance Optimization:**
+**Status: ✅ PARTIALLY FIXED**
+
+**Fixed Issues:**
+- **JavaScript Widget Migration** - ✅ Successfully migrated Flight Event Time Matrix widget from Odoo 16 to 18 patterns
+- **Component Architecture** - ✅ Implemented clean component-based architecture with individual MatrixCell components
+- **DateTime Picker UX** - ✅ Fixed auto-closing popover issues using standard `useDateTimePicker` hook
+- **Code Cleanup** - ✅ Removed deprecated `RelativeDateTimePicker` component and all references
+- **Debug Logging** - ✅ Cleaned up all console.log statements for production readiness
+
+**Completed Migration:**
+- Replaced manual popover management with standard Odoo 18 `useDateTimePicker` hooks
+- Created individual `FlightEventTimeMatrixCell` components with proper target references
+- Implemented proper aviation time format display (e.g., "14:30 +1" for relative days)
+- Ensured Apply/Close button UX without auto-closing behavior
+- Updated manifest assets and documentation
+
+**Remaining Performance Issues:**
 ```python
 # Replace filtered() with search()
 def _find_matching_end_event(self, flight, phase, time_kind):
