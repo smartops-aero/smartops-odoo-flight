@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class FlightRouteWaypoint(models.Model):
@@ -25,3 +26,11 @@ class FlightRouteWaypoint(models.Model):
                 record.display_name = f"{record.sequence:03d} - {record.latitude:.4f},{record.longitude:.4f}"
             else:
                 record.display_name = f"{record.sequence:03d} - Waypoint"
+
+    @api.constrains("latitude", "longitude")
+    def _check_coordinates(self):
+        for record in self:
+            if record.latitude is not False and (record.latitude < -90 or record.latitude > 90):
+                raise ValidationError("Latitude must be between -90.0 and +90.0 degrees.")
+            if record.longitude is not False and (record.longitude < -180 or record.longitude > 180):
+                raise ValidationError("Longitude must be between -180.0 and +180.0 degrees.")
