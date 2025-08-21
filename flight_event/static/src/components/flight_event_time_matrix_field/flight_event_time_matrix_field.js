@@ -83,7 +83,7 @@ export class FlightEventTimeMatrixField extends Component {
       );
       return;
     }
-    this.props.setDirty(false);
+    // No need to call setDirty - the record update handles this automatically
   }
 }
 
