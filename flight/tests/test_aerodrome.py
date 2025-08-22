@@ -93,6 +93,21 @@ class TestAerodrome(FlightCommon):
         self.assertEqual(edge_aerodrome.latitude, 90.0)
         self.assertEqual(edge_aerodrome.longitude, 180.0)
 
+        # Test zero coordinates (Gulf of Guinea/Null Island)
+        zero_aerodrome = self.env["flight.aerodrome"].create(
+            {
+                "name": "Null Island Airport",
+                "icao": "KNUL",
+                "latitude": 0.0,
+                "longitude": 0.0,
+                "country_id": self.country_us.id,
+            }
+        )
+
+        self.assertTrue(zero_aerodrome.id)
+        self.assertEqual(zero_aerodrome.latitude, 0.0)
+        self.assertEqual(zero_aerodrome.longitude, 0.0)
+
     def test_03b_aerodrome_coordinate_validation(self):
         """Test coordinate validation constraints"""
         from odoo.exceptions import ValidationError
@@ -108,7 +123,7 @@ class TestAerodrome(FlightCommon):
                     "country_id": self.country_us.id,
                 }
             )
-        self.assertIn("Latitude must be between -90 and 90", str(cm.exception))
+        self.assertIn("Latitude must be between -90.0 and +90.0", str(cm.exception))
 
         # Test invalid latitude (too low)
         with self.assertRaises(ValidationError) as cm:
@@ -121,7 +136,7 @@ class TestAerodrome(FlightCommon):
                     "country_id": self.country_us.id,
                 }
             )
-        self.assertIn("Latitude must be between -90 and 90", str(cm.exception))
+        self.assertIn("Latitude must be between -90.0 and +90.0", str(cm.exception))
 
         # Test invalid longitude (too high)
         with self.assertRaises(ValidationError) as cm:
@@ -134,7 +149,7 @@ class TestAerodrome(FlightCommon):
                     "country_id": self.country_us.id,
                 }
             )
-        self.assertIn("Longitude must be between -180 and 180", str(cm.exception))
+        self.assertIn("Longitude must be between -180.0 and +180.0", str(cm.exception))
 
         # Test invalid longitude (too low)
         with self.assertRaises(ValidationError) as cm:
@@ -147,7 +162,7 @@ class TestAerodrome(FlightCommon):
                     "country_id": self.country_us.id,
                 }
             )
-        self.assertIn("Longitude must be between -180 and 180", str(cm.exception))
+        self.assertIn("Longitude must be between -180.0 and +180.0", str(cm.exception))
 
     def test_04_aerodrome_search_by_location(self):
         """Test searching aerodromes by city, state, country"""
