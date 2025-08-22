@@ -385,7 +385,7 @@ def get_aircraft_images(self, category_id=None, aircraft_id=None):
 **Components**:
 - `FlightEventTimeMatrixField` - Main field widget
 - `FlightEventTimeMatrixRenderer` - Matrix renderer
-- `RelativeDateTimePicker` - Custom datetime picker
+- `FlightEventTimeMatrixCell` - Individual matrix cell component
 
 **Usage**:
 ```javascript

@@ -567,21 +567,40 @@ export class FlightEventTimeMatrixField extends Component {
 registry.category("fields").add("flight_event_time_matrix", FlightEventTimeMatrixField);
 ```
 
-### Relative DateTime Picker
+### Flight Event Time Matrix Cell
 
 ```javascript
 /** @odoo-module **/
-import { DateTimeField } from "@web/views/fields/datetime/datetime_field";
+import { Component } from "@odoo/owl";
+import { useDateTimePicker } from "@web/core/datetime/datetime_hook";
 
-export class RelativeDateTimePicker extends DateTimeField {
-    static template = "flight_event.RelativeDateTimePicker";
+export class FlightEventTimeMatrixCell extends Component {
+    static template = "flight_event.FlightEventTimeMatrixCell";
+    static props = {
+        value: { type: [DateTime, Boolean], optional: true },
+        eventCode: Object,
+        timeKind: Object,
+        date: DateTime,
+        onUpdate: Function,
+        readonly: Boolean,
+    };
     
-    get relativeTime() {
-        // Calculate relative time from flight date
-        const flightDate = this.props.record.data.flight_id.date;
-        const eventTime = this.props.value;
-        // ... calculation logic
-        return formattedRelativeTime;
+    setup() {
+        const dateTimePicker = useDateTimePicker({
+            target: "cell",
+            get pickerProps() {
+                return {
+                    value: this.props?.value || this.props?.date || DateTime.local(),
+                    type: "datetime"
+                };
+            },
+            onApply: (value) => {
+                if (value) {
+                    this.props.onUpdate(this.props.timeKind, this.props.eventCode, value);
+                }
+            },
+        });
+        this.openPicker = dateTimePicker.open;
     }
 }
 ```

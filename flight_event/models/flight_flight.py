@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from odoo import api, fields, models
 
@@ -116,7 +117,11 @@ class FlightFlight(models.Model):
 
             for command in event_time_vals:
                 if command[0] == 1 and "time" in command[2]:  # Update
-                    updates[str(command[1])] = command[2]["time"]
+                    # Convert datetime to string for JSON serialization
+                    time_value = command[2]["time"]
+                    if isinstance(time_value, datetime):
+                        time_value = time_value.isoformat()
+                    updates[str(command[1])] = time_value
                 elif command[0] == 2:  # Delete
                     deletes.append(command[1])
                 elif command[0] == 0:  # Create

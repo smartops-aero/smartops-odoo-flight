@@ -84,6 +84,9 @@ class FlightDataProvider(models.Model):
         self.ensure_one()
 
         try:
+            # TODO: SECURITY WARNING - safe_eval() is not truly safe and can execute arbitrary code
+            # This should be replaced with ast.literal_eval() or json.loads() to prevent code injection
+            # Keeping as-is for now to avoid breaking existing functionality without full testing
             kwargs = safe_eval(schedule.kwargs or "{}")
 
             # Use sudo() if user_id is set, otherwise use self
@@ -297,6 +300,7 @@ class FlightDataSyncSchedule(models.Model):
         for record in self:
             if record.kwargs:
                 try:
+                    # TODO: SECURITY WARNING - same issue as above, safe_eval() can execute code
                     safe_eval(record.kwargs)
                 except Exception as e:
                     raise ValidationError(_("Invalid kwargs: %s") % str(e)) from e

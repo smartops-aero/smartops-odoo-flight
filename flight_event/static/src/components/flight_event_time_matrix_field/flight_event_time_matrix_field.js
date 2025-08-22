@@ -6,16 +6,42 @@ import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { useService } from "@web/core/utils/hooks";
 
+/**
+ * Field widget for displaying and editing flight event times in a matrix format.
+ * Manages the relationship between flight events (e.g., takeoff, landing) and their time kinds (actual/scheduled).
+ * 
+ * The widget displays a grid where:
+ * - Rows represent event codes (takeoff, landing, etc.)
+ * - Columns represent time kinds (Actual, Scheduled)
+ * - Cells contain datetime values with relative day offset display
+ * 
+ * @extends Component
+ */
 export class FlightEventTimeMatrixField extends Component {
+  static template = "flight_event.FlightEventTimeMatrixField";
+  static props = { ...standardFieldProps };
+  static components = { FlightEventTimeMatrixRenderer };
+
   setup() {
     this.orm = useService("orm");
     this.notification = useService("notification");
 
+    // Initialize eventCodes as empty array to prevent undefined errors
+    this.eventCodes = [];
+
+    /**
+     * Local state for the flight date.
+     * NOTE: onWillUpdateProps doesn't trigger when date field changes,
+     * causing matrix not to update relative day displays automatically.
+     */
     this.state = useState({
       date: this.props.record.data.date,
     });
 
-    this.activeField = this.props.record.activeFields[this.props.name];
+    // Check if props.name exists before using it
+    if (this.props.name && this.props.record.activeFields) {
+      this.activeField = this.props.record.activeFields[this.props.name];
+    }
 
     this.timeKinds = [
       { key: "A", label: "Actual" },
@@ -23,6 +49,7 @@ export class FlightEventTimeMatrixField extends Component {
     ];
 
     onWillStart(async () => {
+      // Fetch all available event codes for the matrix rows
       this.eventCodes = await this.orm.searchRead(
         "flight.event.code",
         [],
@@ -31,30 +58,54 @@ export class FlightEventTimeMatrixField extends Component {
     });
 
     onWillUpdateProps((nextProps) => {
+      // Attempt to update date when props change - currently not working as expected
       this.state.date = nextProps.record.data.date;
     });
   }
 
+  /**
+   * @returns {Object} The One2many field value containing flight.event.time records
+   */
   getList() {
-    return this.props.value;
+    // Access the One2many field data from the record
+    const fieldValue = this.props.record.data[this.props.name];
+    return fieldValue;
   }
 
   get list() {
     return this.getList();
   }
 
+  /**
+   * Commits a datetime value change to the database.
+   * Either updates an existing flight.event.time record or creates a new one.
+   * 
+   * @param {Object} timeKind - Time kind object with key ('A' or 'S') and label
+   * @param {Object} eventCode - Event code object with id, code, and name
+   * @param {luxon.DateTime} value - The new datetime value
+   */
   async commitChange(timeKind, eventCode, value) {
-    if (!value) return;
+    if (!value) {
+      return;
+    }
 
+    if (!this.list) {
+      return;
+    }
+
+    // Find existing record for this event/time combination
     const matchingRecords = this.list.records.filter(
       (record) =>
         record.data.time_kind === timeKind.key &&
         record.data.code_id[0] === eventCode.id
     );
+    
     if (matchingRecords.length === 1) {
+      // Update existing record
       await matchingRecords[0].update({ time: value });
     } else if (matchingRecords.length === 0) {
-      const record = await this.list.addNew({
+      // Create new record
+      const record = await this.list.addNewRecord({
         mode: "edit",
       });
       const values = {
@@ -64,21 +115,27 @@ export class FlightEventTimeMatrixField extends Component {
         flight_id: this.props.record.id || this.props.record.resId,
       };
       await record.update(values);
+      
+      // Force UI update by triggering a re-render
+      this.render();
     } else {
+      // Data integrity issue - shouldn't have duplicates
       await this.notification.add(
         "Multiple records found for the same event code and time kind",
         { type: "danger" }
       );
       return;
     }
-    this.props.setDirty(false);
+    // No need to call setDirty - the record update handles this automatically
   }
 }
 
-FlightEventTimeMatrixField.template = "flight_event.FlightEventTimeMatrixField";
-FlightEventTimeMatrixField.props = { ...standardFieldProps };
-FlightEventTimeMatrixField.components = { FlightEventTimeMatrixRenderer };
+export const flightEventTimeMatrixField = {
+  component: FlightEventTimeMatrixField,
+  displayName: "Flight Event Time Matrix",
+  supportedTypes: ["one2many"],
+};
 
 registry
   .category("fields")
-  .add("flight_event_time_matrix", FlightEventTimeMatrixField);
+  .add("flight_event_time_matrix", flightEventTimeMatrixField);
