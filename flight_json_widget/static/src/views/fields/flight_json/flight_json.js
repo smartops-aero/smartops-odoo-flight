@@ -1,7 +1,7 @@
 /** @odoo-module */
 
-import { registry } from "@web/core/registry";
 import { JsonField, jsonField } from "@web/views/fields/jsonb/jsonb";
+import { registry } from "@web/core/registry";
 
 /**
  * Extended JSON field widget with pretty formatting

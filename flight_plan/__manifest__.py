@@ -4,6 +4,7 @@
     "version": "18.0.1.0.0",
     "license": "LGPL-3",
     "author": "Apexive Solutions LLC",
+    "website": "https://github.com/smartops-aero/flight",
     "depends": ["flight", "flight_event", "flight_json_widget"],
     "data": [
         "security/ir.model.access.csv",

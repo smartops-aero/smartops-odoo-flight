@@ -41,7 +41,7 @@ export class FlightEventTimeMatrixCell extends Component {
       get pickerProps() {
         return getPickerProps();
       },
-      onChange: (value) => {
+      onChange: () => {
         // Intentionally empty - we handle updates in onApply
       },
       onApply: (value) => {
@@ -56,7 +56,7 @@ export class FlightEventTimeMatrixCell extends Component {
 
   /**
    * Formats datetime for display with relative day offset.
-   * @returns {string} Formatted time like "14:30" or "14:30 +1" for next day
+   * @returns {String} Formatted time like "14:30" or "14:30 +1" for next day
    */
   getFormattedValue() {
     const value = this.props.value;

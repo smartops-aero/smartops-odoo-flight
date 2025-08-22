@@ -80,7 +80,7 @@ export class FlightEventTimeMatrixRenderer extends Component {
     const cellData = this.matrix[eventCode.code]?.[timeKind.key];
     const value = cellData?.value;
 
-    return value !== undefined ? value : false;
+    return value === undefined ? false : value;
   }
 
   /**
