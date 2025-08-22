@@ -3,17 +3,20 @@
 ## Quick Start
 
 ### Prerequisites
+
 - Odoo 18.0 installed at `/path/to/kzr-odoo`
 - PostgreSQL running with user `odoo` and password `odoo`
 - Python virtual environment activated: `source .venv/bin/activate`
 
 ### Run All Tests
+
 ```bash
 # Use the test runner script
 ./run_tests.sh
 ```
 
 ### Run Specific Module Tests
+
 ```bash
 # From the kzr-odoo directory
 source .venv/bin/activate
@@ -28,6 +31,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 ## Test Commands
 
 ### Database Management
+
 ```bash
 # Create test database (first time only)
 PGPASSWORD=odoo psql -h localhost -U odoo -d postgres -c "CREATE DATABASE odoo_test_flight;"
@@ -41,12 +45,13 @@ PGPASSWORD=odoo psql -h localhost -U odoo -d postgres -c "CREATE DATABASE odoo_t
 
 **Why use tags?** Without tags, Odoo runs ALL tests from ALL installed modules in the database. Tags limit execution to only the tests you specify.
 
-| Method | Tests Run | Time | Use Case |
-|--------|-----------|------|----------|
-| With tags | Only tagged tests (12-44) | 5-10 seconds | ✅ Development |
+| Method       | Tests Run                        | Time         | Use Case                       |
+| ------------ | -------------------------------- | ------------ | ------------------------------ |
+| With tags    | Only tagged tests (12-44)        | 5-10 seconds | ✅ Development                 |
 | Without tags | ALL tests from ALL modules (69+) | 5-10 minutes | ❌ Full system validation only |
 
 **Example**: Running `flight_uom` module:
+
 - With `--test-tags=flight_uom`: **12 tests** (only flight_uom tests)
 - Without tags: **69 tests** (flight_uom + all other module tests in the database)
 
@@ -61,7 +66,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 # Multiple modules
 --test-tags=flight_uom,flight_number
 
-# All flight modules  
+# All flight modules
 --test-tags=flight
 ```
 
@@ -69,34 +74,35 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 
 ### Current Module Status
 
-| Module | Status | Tests | Notes |
-|--------|--------|-------|-------|
-| flight | ✅ **ALL PASSING** | 44/44 tests passing | Core module - fully working |
-| flight_uom | ✅ **ALL PASSING** | 12/12 tests passing | Fixed calculation precision issues ✅ |
-| flight_number | ✅ **ALL PASSING** | 12/12 tests passing | Fixed model references and API compatibility ✅ |
-| flight_event | ✅ **ALL PASSING** | 12/12 tests passing | Comprehensive test coverage restored ✅ |
-| flight_portal | ✅ **ALL PASSING** | 13/13 tests passing | Portal access functionality working ✅ |
-| flight_aircraft_spec | ✅ **ALL PASSING** | 9/9 tests passing | Fixed XML view error and test logic issues ✅ |
-| flight_data_sync | ✅ **ALL PASSING** | 8/8 tests passing | Fixed migration issues and test models ✅ |
-| website_flight_fleet | ✅ **ALL PASSING** | 13/13 tests passing | Website integration working ✅ |
+| Module               | Status             | Tests               | Notes                                           |
+| -------------------- | ------------------ | ------------------- | ----------------------------------------------- |
+| flight               | ✅ **ALL PASSING** | 44/44 tests passing | Core module - fully working                     |
+| flight_uom           | ✅ **ALL PASSING** | 12/12 tests passing | Fixed calculation precision issues ✅           |
+| flight_number        | ✅ **ALL PASSING** | 12/12 tests passing | Fixed model references and API compatibility ✅ |
+| flight_event         | ✅ **ALL PASSING** | 12/12 tests passing | Comprehensive test coverage restored ✅         |
+| flight_portal        | ✅ **ALL PASSING** | 13/13 tests passing | Portal access functionality working ✅          |
+| flight_aircraft_spec | ✅ **ALL PASSING** | 9/9 tests passing   | Fixed XML view error and test logic issues ✅   |
+| flight_data_sync     | ✅ **ALL PASSING** | 8/8 tests passing   | Fixed migration issues and test models ✅       |
+| website_flight_fleet | ✅ **ALL PASSING** | 13/13 tests passing | Website integration working ✅                  |
 
 ### Available Test Tags
 
-| Tag | Module | Tests | Purpose |
-|-----|---------|-------|---------|
-| `flight` | flight | 44 tests | Core flight functionality |
-| `flight_uom` | flight_uom | 12 tests | Aviation units of measurement |
-| `flight_number` | flight_number | 12 tests | Flight numbering system |
-| `flight_aerodrome` | flight | ~9 tests | Airport/aerodrome tests only |
-| `flight_aircraft` | flight | ~10 tests | Aircraft model tests only |
-| `flight_crew` | flight | ~7 tests | Crew management tests only |
-| `flight_security` | flight | 8 tests | Security and access control |
+| Tag                | Module        | Tests     | Purpose                       |
+| ------------------ | ------------- | --------- | ----------------------------- |
+| `flight`           | flight        | 44 tests  | Core flight functionality     |
+| `flight_uom`       | flight_uom    | 12 tests  | Aviation units of measurement |
+| `flight_number`    | flight_number | 12 tests  | Flight numbering system       |
+| `flight_aerodrome` | flight        | ~9 tests  | Airport/aerodrome tests only  |
+| `flight_aircraft`  | flight        | ~10 tests | Aircraft model tests only     |
+| `flight_crew`      | flight        | ~7 tests  | Crew management tests only    |
+| `flight_security`  | flight        | 8 tests   | Security and access control   |
 
 ## Detailed Test Coverage
 
 ### 1. Flight Base Module (`flight/tests/`)
 
 **test_flight.py**: Core flight operations (9 test methods)
+
 - Flight creation and validation
 - Display name generation
 - Lock/unlock functionality
@@ -108,6 +114,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 - Locked flight deletion constraints
 
 **test_aircraft.py**: Aircraft management (8 test methods)
+
 - Aircraft creation and validation
 - Model/make relationships
 - Registration uniqueness
@@ -118,6 +125,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 - Constraint validation
 
 **test_aerodrome.py**: Airport operations (9 test methods)
+
 - Aerodrome creation
 - Coordinate validation
 - ICAO/IATA code uniqueness
@@ -128,6 +136,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 - Flight associations
 
 **test_crew.py**: Crew management (7 test methods)
+
 - Crew role creation
 - Flight assignment
 - Role validation
@@ -137,6 +146,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 - Assignment constraints
 
 **test_security.py**: Access control (8 test methods)
+
 - User group hierarchy
 - Flight CRUD permissions
 - Aircraft access rights
@@ -148,6 +158,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 ### 2. Aircraft Specifications Module (`flight_aircraft_spec/tests/`)
 
 **test_aircraft_spec.py**: Specification management (9 test methods)
+
 - Spec category creation
 - Value type handling (bool, float, text)
 - UOM conversions
@@ -161,6 +172,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 ### 3. Data Sync Module (`flight_data_sync/tests/`)
 
 **test_data_sync.py**: External data synchronization (8 test methods)
+
 - Provider configuration
 - Sync service testing
 - Error handling
@@ -173,6 +185,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 ### 4. Event Module (`flight_event/tests/`)
 
 **test_flight_event.py**: Event tracking (12 test methods)
+
 - Event type creation
 - Severity levels
 - Status workflow
@@ -189,6 +202,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 ### 5. Flight Number Module (`flight_number/tests/`)
 
 **test_flight_number.py**: Flight number management (12 test methods)
+
 - Prefix creation and validation
 - Number format handling
 - Display name generation
@@ -205,6 +219,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 ### 6. Portal Module (`flight_portal/tests/`)
 
 **test_flight_portal.py**: Portal access (13 test methods)
+
 - Portal user permissions
 - Flight sharing mechanisms
 - Document access control
@@ -222,6 +237,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 ### 7. UOM Module (`flight_uom/tests/`)
 
 **test_flight_uom.py**: Aviation units (12 test methods)
+
 - Nautical mile conversions
 - Altitude calculations
 - Fuel consumption metrics
@@ -238,6 +254,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 ### 8. Website Fleet Module (`website_flight_fleet/tests/`)
 
 **test_website_flight_fleet.py**: Fleet display (13 test methods)
+
 - Publishing control
 - Category filtering
 - Website visibility
@@ -260,7 +277,7 @@ flight/
 │   ├── __init__.py
 │   ├── common.py           # Common test setup and utilities
 │   ├── test_aerodrome.py   # Aerodrome tests (@tagged 'flight_aerodrome')
-│   ├── test_aircraft.py    # Aircraft tests (@tagged 'flight_aircraft') 
+│   ├── test_aircraft.py    # Aircraft tests (@tagged 'flight_aircraft')
 │   ├── test_crew.py        # Crew tests (@tagged 'flight_crew')
 │   ├── test_flight.py      # Flight tests (@tagged 'flight')
 │   └── test_security.py    # Security tests (@tagged 'flight_security')
@@ -269,6 +286,7 @@ flight/
 ## Debugging and Troubleshooting
 
 ### Verbose Output
+
 ```bash
 # Get detailed test output
 python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
@@ -278,6 +296,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 ```
 
 ### Filter Output
+
 ```bash
 # Filter for errors only
 ... 2>&1 | grep -E "(ERROR|FAIL)"
@@ -295,6 +314,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init --http-port=8071 \
 5. **Port Conflicts**: Use different ports with `--http-port=8071`
 
 ### Debug Mode
+
 ```bash
 python src/odoo/odoo-bin --test-enable --stop-after-init \
   --log-level=debug --test-tags=module_name \
@@ -304,6 +324,7 @@ python src/odoo/odoo-bin --test-enable --stop-after-init \
 ## Test Patterns and Best Practices
 
 ### Model Creation Test
+
 ```python
 def test_01_model_creation(self):
     """Test model creation and validation"""
@@ -315,6 +336,7 @@ def test_01_model_creation(self):
 ```
 
 ### Permission Test
+
 ```python
 def test_02_access_rights(self):
     """Test access rights"""
@@ -323,6 +345,7 @@ def test_02_access_rights(self):
 ```
 
 ### Workflow Test
+
 ```python
 def test_03_workflow(self):
     """Test status workflow"""
@@ -334,12 +357,14 @@ def test_03_workflow(self):
 ## Test Database Management
 
 Tests use `TransactionCase` which:
+
 - Creates a fresh transaction for each test
 - Automatically rolls back changes
 - Ensures test isolation
 - Provides consistent test environment
 
 Each test module includes:
+
 - `setUpClass()`: Creates shared test data
 - Individual test methods: Test specific functionality
 - Proper cleanup via transaction rollback
@@ -365,6 +390,7 @@ Each test module includes:
 ## Continuous Integration
 
 The test suite is designed for CI/CD integration:
+
 - Exit code 0 on success
 - Exit code 1 on failure
 - Detailed logging to `test_results.log`
@@ -374,6 +400,7 @@ The test suite is designed for CI/CD integration:
 ## Migration Testing
 
 ### Post-Migration Validation
+
 ```bash
 # Test all modules after migration
 ./run_tests.sh
@@ -384,7 +411,8 @@ python src/odoo/odoo-bin --test-enable --test-tags=flight_security \
 ```
 
 ### Migration-Specific Tests
-- Display name functionality (name_get → _compute_display_name)
+
+- Display name functionality (name_get → \_compute_display_name)
 - Security rule compatibility with website modules
 - View rendering with new chatter syntax
 - Tree → List view functionality
@@ -392,6 +420,7 @@ python src/odoo/odoo-bin --test-enable --test-tags=flight_security \
 ## Performance Testing
 
 ### Benchmark Commands
+
 ```bash
 # Time test execution
 time python src/odoo/odoo-bin --test-enable --stop-after-init \
@@ -420,4 +449,5 @@ time python src/odoo/odoo-bin --test-enable --stop-after-init \
 - [PostgreSQL Testing Best Practices](https://www.postgresql.org/docs/current/regress.html)
 
 ---
-*Last Updated: 2025-08-15*
+
+_Last Updated: 2025-08-15_

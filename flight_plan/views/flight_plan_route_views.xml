@@ -58,26 +58,26 @@
                 <field name="route_type" />
                 <field name="plan_id" />
                 <filter
-                    string="Flight Routes"
-                    name="flight_routes"
-                    domain="[('route_type', '=', 'flight')]"
-                />
+          string="Flight Routes"
+          name="flight_routes"
+          domain="[('route_type', '=', 'flight')]"
+        />
                 <filter
-                    string="Alternate Routes"
-                    name="alternate_routes"
-                    domain="[('route_type', '=', 'alternate')]"
-                />
+          string="Alternate Routes"
+          name="alternate_routes"
+          domain="[('route_type', '=', 'alternate')]"
+        />
                 <group expand="0" string="Group By">
                     <filter
-                        string="Route Type"
-                        name="group_by_route_type"
-                        context="{'group_by': 'route_type'}"
-                    />
+            string="Route Type"
+            name="group_by_route_type"
+            context="{'group_by': 'route_type'}"
+          />
                     <filter
-                        string="Flight Plan"
-                        name="group_by_plan"
-                        context="{'group_by': 'plan_id'}"
-                    />
+            string="Flight Plan"
+            name="group_by_plan"
+            context="{'group_by': 'plan_id'}"
+          />
                 </group>
             </search>
         </field>

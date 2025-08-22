@@ -89,6 +89,7 @@ All flight-related models inherit from:
 ### Odoo 18.0 Specific Patterns
 
 **Display Name (ALWAYS use this pattern):**
+
 ```python
 @api.depends('field1', 'field2')  # Include all fields used
 def _compute_display_name(self):
@@ -97,12 +98,14 @@ def _compute_display_name(self):
 ```
 
 **Chatter in Views:**
+
 ```xml
 <!-- Simple tag replaces verbose structure -->
 <chatter />
 ```
 
 **Slug Generation for URLs:**
+
 ```python
 IrHttp = self.env['ir.http']
 url = f"/path/{IrHttp._slug(record)}"

@@ -56,14 +56,14 @@ from odoo import fields, models
 
 class FlightFlight(models.Model):
     _inherit = 'flight.flight'
-    
+
     custom_field = fields.Char("Custom Field")
     computed_field = fields.Float(
         "Computed Field",
         compute='_compute_computed_field',
         store=True
     )
-    
+
     @api.depends('departure_id', 'arrival_id')
     def _compute_computed_field(self):
         for record in self:
@@ -80,22 +80,22 @@ class FlightFlight(models.Model):
     <record id="flight_form_inherit" model="ir.ui.view">
         <field name="name">flight.flight.form.inherit</field>
         <field name="model">flight.flight</field>
-        <field name="inherit_id" ref="flight.flight_form_view"/>
+        <field name="inherit_id" ref="flight.flight_form_view" />
         <field name="arch" type="xml">
             <field name="date" position="after">
-                <field name="custom_field"/>
+                <field name="custom_field" />
             </field>
         </arch>
     </record>
-    
+
     <!-- Create new view -->
     <record id="flight_custom_tree" model="ir.ui.view">
         <field name="name">flight.custom.tree</field>
         <field name="model">flight.flight</field>
         <field name="arch" type="xml">
             <list string="Custom Flights">
-                <field name="date"/>
-                <field name="custom_field"/>
+                <field name="date" />
+                <field name="custom_field" />
             </list>
         </field>
     </record>
@@ -119,25 +119,25 @@ from odoo import api, models
 
 class CustomDataProvider(models.Model):
     _inherit = 'flight.data.provider'
-    
+
     @api.model
     def _get_available_services(self):
         res = super()._get_available_services()
         res.append(('custom_api', 'Custom API'))
         return res
-    
+
     def get_client(self, schedule):
         if self.service == 'custom_api':
             # Return your API client
             return CustomAPIClient(self.api_base, self.username, self.password)
         return super().get_client(schedule)
-    
+
     def _receive_flight_data(self, client, schedule, **kwargs):
         if self.service == 'custom_api':
             # Implement data reception
             return client.get_flights(**kwargs)
         return super()._receive_flight_data(client, schedule, **kwargs)
-    
+
     def _process_flight_data(self, client, schedule, data):
         if self.service == 'custom_api':
             # Process received data
@@ -160,20 +160,20 @@ from odoo import http
 from odoo.http import request
 
 class FlightCustomController(http.Controller):
-    
+
     @http.route('/flight/custom', type='http', auth='public', website=True)
     def custom_page(self, **kwargs):
         flights = request.env['flight.flight'].sudo().search(
             [('date', '>=', fields.Date.today())],
             limit=10
         )
-        
+
         values = {
             'flights': flights,
         }
-        
+
         return request.render('flight_custom.custom_page_template', values)
-    
+
     @http.route('/api/flight/custom', type='json', auth='public')
     def api_endpoint(self, date_from=None, date_to=None):
         domain = []
@@ -181,13 +181,13 @@ class FlightCustomController(http.Controller):
             domain.append(('date', '>=', date_from))
         if date_to:
             domain.append(('date', '<=', date_to))
-        
+
         flights = request.env['flight.flight'].sudo().search_read(
             domain,
             ['date', 'aircraft_id', 'departure_id', 'arrival_id'],
             limit=100
         )
-        
+
         return {'flights': flights}
 ```
 
@@ -200,40 +200,40 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
 export class FlightCustomWidget extends Component {
-    static template = "flight_custom.Widget";
-    static props = {
-        flightId: Number,
-        readonly: { type: Boolean, optional: true },
-    };
-    
-    setup() {
-        this.orm = useService("orm");
-        this.action = useService("action");
-        this.flightData = null;
-        
-        onWillStart(async () => {
-            await this.loadFlightData();
-        });
-    }
-    
-    async loadFlightData() {
-        const result = await this.orm.read(
-            "flight.flight",
-            [this.props.flightId],
-            ["date", "aircraft_id", "departure_id", "arrival_id"]
-        );
-        this.flightData = result[0];
-    }
-    
-    onFlightClick() {
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            res_model: 'flight.flight',
-            res_id: this.props.flightId,
-            views: [[false, 'form']],
-            target: 'current',
-        });
-    }
+  static template = "flight_custom.Widget";
+  static props = {
+    flightId: Number,
+    readonly: { type: Boolean, optional: true },
+  };
+
+  setup() {
+    this.orm = useService("orm");
+    this.action = useService("action");
+    this.flightData = null;
+
+    onWillStart(async () => {
+      await this.loadFlightData();
+    });
+  }
+
+  async loadFlightData() {
+    const result = await this.orm.read(
+      "flight.flight",
+      [this.props.flightId],
+      ["date", "aircraft_id", "departure_id", "arrival_id"]
+    );
+    this.flightData = result[0];
+  }
+
+  onFlightClick() {
+    this.action.doAction({
+      type: "ir.actions.act_window",
+      res_model: "flight.flight",
+      res_id: this.props.flightId,
+      views: [[false, "form"]],
+      target: "current",
+    });
+  }
 }
 
 // Register as field widget
@@ -250,21 +250,21 @@ from odoo.tests import TransactionCase
 from odoo import fields
 
 class TestFlightCustom(TransactionCase):
-    
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        
+
         # Create test data
         cls.aircraft = cls.env['flight.aircraft'].create({
             'registration': 'TEST-001',
         })
-        
+
         cls.aerodrome = cls.env['flight.aerodrome'].create({
             'icao': 'TEST',
             'name': 'Test Airport',
         })
-    
+
     def test_custom_field(self):
         """Test custom field functionality"""
         flight = self.env['flight.flight'].create({
@@ -274,9 +274,9 @@ class TestFlightCustom(TransactionCase):
             'arrival_id': self.aerodrome.id,
             'custom_field': 'Test Value',
         })
-        
+
         self.assertEqual(flight.custom_field, 'Test Value')
-    
+
     def test_computed_field(self):
         """Test computed field calculation"""
         flight = self.env['flight.flight'].create({
@@ -285,10 +285,10 @@ class TestFlightCustom(TransactionCase):
             'departure_id': self.aerodrome.id,
             'arrival_id': self.aerodrome.id,
         })
-        
+
         # Trigger computation
         flight._compute_computed_field()
-        
+
         self.assertIsNotNone(flight.computed_field)
 ```
 
@@ -320,7 +320,7 @@ _logger = logging.getLogger(__name__)
 def my_method(self):
     _logger.info("Starting my_method")
     _logger.debug(f"Processing record: {self.id}")
-    
+
     try:
         # Your code
         pass
@@ -358,7 +358,7 @@ debugger;
 
 // Conditional breakpoint
 if (condition) {
-    debugger;
+  debugger;
 }
 ```
 
@@ -369,7 +369,7 @@ if (condition) {
 ```python
 class FlightFlight(models.Model):
     _name = 'flight.flight'
-    
+
     # Add index to frequently queried fields
     date = fields.Date(index=True)
     aircraft_id = fields.Many2one('flight.aircraft', index=True)
@@ -473,7 +473,7 @@ def migrate(cr, version):
     """Pre-migration script"""
     # Add column before ORM loads
     cr.execute("""
-        ALTER TABLE flight_flight 
+        ALTER TABLE flight_flight
         ADD COLUMN IF NOT EXISTS new_field VARCHAR
     """)
 
@@ -483,7 +483,7 @@ from odoo import api, SUPERUSER_ID
 def migrate(cr, version):
     """Post-migration script"""
     env = api.Environment(cr, SUPERUSER_ID, {})
-    
+
     # Data migration
     flights = env['flight.flight'].search([])
     for flight in flights:
@@ -550,21 +550,24 @@ git cherry-pick commit_hash
 ## Resources
 
 ### Documentation
+
 - [Odoo 18.0 Docs](https://www.odoo.com/documentation/18.0/)
 - [OWL Framework](https://github.com/odoo/owl)
 - [Python API](https://www.odoo.com/documentation/18.0/developer/reference/backend.html)
 
 ### Tools
+
 - [Odoo.sh](https://www.odoo.sh/) - Cloud deployment
 - [Runbot](http://runbot.odoo.com/) - Test instances
 - [OCA Tools](https://github.com/OCA/maintainer-tools) - Module management
 
 ### Community
+
 - [Odoo Forums](https://www.odoo.com/forum)
 - [GitHub Issues](https://github.com/smartops-aero/smartops-odoo-flight/issues)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/odoo)
 
 ---
 
-*Quick Reference Version: 18.0.1.0.0*
-*Last Updated: 2025-08-13*
+_Quick Reference Version: 18.0.1.0.0_
+_Last Updated: 2025-08-13_

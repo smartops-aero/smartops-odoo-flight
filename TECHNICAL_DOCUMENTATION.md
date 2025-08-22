@@ -1,6 +1,7 @@
 # SmartOps Flight - Technical Documentation
 
 ## Table of Contents
+
 1. [Overview](#overview)
 2. [Architecture](#architecture)
 3. [Module Structure](#module-structure)
@@ -17,6 +18,7 @@
 SmartOps Flight is a comprehensive Odoo 18.0 module suite designed for aviation and flight management. It provides enterprise-grade functionality for managing flights, aircraft, aerodromes, crew members, and related aviation operations.
 
 ### Key Features
+
 - Complete flight operations management
 - Aircraft fleet tracking and specifications
 - Aerodrome database with ICAO/IATA codes
@@ -28,8 +30,9 @@ SmartOps Flight is a comprehensive Odoo 18.0 module suite designed for aviation 
 - Data synchronization with external providers
 
 ### Technology Stack
+
 - **Platform**: Odoo 18.0 Community Edition
-- **Python**: 3.11+ 
+- **Python**: 3.11+
 - **Frontend**: OWL Framework 2.0 (Odoo Web Library)
 - **Database**: PostgreSQL
 - **Build System**: Whool (Python package management)
@@ -37,6 +40,7 @@ SmartOps Flight is a comprehensive Odoo 18.0 module suite designed for aviation 
 ## Architecture
 
 ### Module Dependency Graph
+
 ```
 flight_uom (base units)
     ↓
@@ -50,7 +54,9 @@ flight (core module)
 ```
 
 ### Design Patterns
+
 - **Mixin Inheritance**: All models inherit from standard Odoo mixins
+
   - `mail.thread` - Chatter and messaging
   - `mail.activity.mixin` - Activity scheduling
   - `flight.lock.mixin` - Custom record locking
@@ -64,6 +70,7 @@ flight (core module)
 ## Module Structure
 
 ### Directory Layout
+
 ```
 smartops/flight/
 ├── flight/                  # Core module
@@ -90,12 +97,14 @@ smartops/flight/
 **Purpose**: Core foundation providing base models and functionality
 
 **Key Models**:
+
 - `flight.flight` - Flight records
 - `flight.aircraft` - Aircraft registry
 - `flight.aerodrome` - Airport database
 - `flight.crew` - Crew management
 
 **Features**:
+
 - Flight scheduling and tracking
 - Aircraft registration and management
 - Aerodrome database (ICAO/IATA)
@@ -107,11 +116,13 @@ smartops/flight/
 **Purpose**: Detailed aircraft specifications and amenities
 
 **Key Models**:
+
 - `flight.aircraft.spec` - Specification records
 - `flight.aircraft.spec.category` - Specification categories
 - `flight.aircraft.spec.code` - Specification codes
 
 **Features**:
+
 - Aircraft amenities management
 - Specification categorization
 - Custom specification codes
@@ -122,10 +133,12 @@ smartops/flight/
 **Purpose**: Synchronization with external data providers
 
 **Key Models**:
+
 - `flight.data.provider` - External provider configuration
 - `flight.data.registry` - Sync registry and status
 
 **Features**:
+
 - Configurable data providers
 - Scheduled synchronization (cron)
 - Sync status tracking
@@ -137,12 +150,14 @@ smartops/flight/
 **Purpose**: Flight event tracking and phase management
 
 **Key Models**:
+
 - `flight.event.code` - Event type definitions
 - `flight.event.time` - Event timestamps
 - `flight.phase` - Flight phases
 - `flight.phase.duration` - Phase duration calculation
 
 **Features**:
+
 - Event code management (takeoff, landing, etc.)
 - Multiple time types (Actual, Scheduled, Estimated)
 - Phase duration tracking
@@ -154,10 +169,12 @@ smartops/flight/
 **Purpose**: Flight number management and prefix configuration
 
 **Key Models**:
+
 - `flight.number` - Flight number records
 - `flight.prefix` - Airline prefix configuration
 
 **Features**:
+
 - Airline prefix management
 - Flight number validation
 - Automatic number generation
@@ -168,6 +185,7 @@ smartops/flight/
 **Purpose**: External stakeholder access via portal
 
 **Features**:
+
 - Portal user authentication
 - Limited read-only access
 - Flight information display
@@ -179,6 +197,7 @@ smartops/flight/
 **Purpose**: Aviation-specific units of measurement
 
 **Features**:
+
 - Aviation units (nautical miles, feet, knots)
 - Weight units (pounds, kilograms)
 - Volume units (gallons, liters)
@@ -190,11 +209,13 @@ smartops/flight/
 **Purpose**: Public website features for fleet display
 
 **Key Models**:
+
 - `flight.aircraft.image` - Aircraft images
 - `flight.aircraft.image.category` - Image categories
 - `website.snippet.filter` - Dynamic content filters
 
 **Features**:
+
 - Public fleet listing page
 - Aircraft detail pages
 - Image galleries
@@ -232,6 +253,7 @@ flight.crew
 ### Key Model Fields
 
 #### flight.flight
+
 - `date` (Date): Scheduled flight date
 - `aircraft_id` (Many2one): Aircraft reference
 - `departure_id` (Many2one): Departure aerodrome
@@ -240,6 +262,7 @@ flight.crew
 - `locked` (Boolean): Record lock status
 
 #### flight.aircraft
+
 - `registration` (Char): Aircraft registration number
 - `model_id` (Many2one): Aircraft model
 - `operator_id` (Many2one): Operating company
@@ -249,6 +272,7 @@ flight.crew
 - `mtow` (Float): Maximum takeoff weight
 
 #### flight.aerodrome
+
 - `icao` (Char): ICAO code
 - `iata` (Char): IATA code
 - `name` (Char): Airport name
@@ -272,14 +296,15 @@ Flight Management
 
 ### Group Permissions
 
-| Group | Read | Write | Create | Delete | Configure |
-|-------|------|-------|--------|--------|-----------|
-| User | ✓ | - | - | - | - |
-| Crew | ✓ | ✓ | - | - | - |
-| Dispatcher | ✓ | ✓ | ✓ | - | - |
-| Manager | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Group      | Read | Write | Create | Delete | Configure |
+| ---------- | ---- | ----- | ------ | ------ | --------- |
+| User       | ✓    | -     | -      | -      | -         |
+| Crew       | ✓    | ✓     | -      | -      | -         |
+| Dispatcher | ✓    | ✓     | ✓      | -      | -         |
+| Manager    | ✓    | ✓     | ✓      | ✓      | ✓         |
 
 ### Portal Access
+
 - Limited to read-only operations
 - Restricted to published records
 - Separate security group: `flight.group_portal_user`
@@ -337,16 +362,16 @@ def action_view_time_changes(self):
 #### Website Flight Fleet
 
 ```python
-@http.route(['/fleet', '/fleet/page/<int:page>'], 
+@http.route(['/fleet', '/fleet/page/<int:page>'],
             type='http', auth='public', website=True)
 def fleet(self, page=1, model=None, search=None):
     """Public fleet listing page
-    
+
     Args:
         page: Page number for pagination
         model: Filter by aircraft model
         search: Search term for filtering
-    
+
     Returns: Rendered fleet page template
     """
 
@@ -354,22 +379,22 @@ def fleet(self, page=1, model=None, search=None):
             type='http', auth='public', website=True)
 def aircraft_detail(self, aircraft):
     """Aircraft detail page
-    
+
     Args:
         aircraft: Aircraft record
-    
+
     Returns: Rendered detail page template
     """
 
-@http.route(['/flight/aircraft/images'], 
+@http.route(['/flight/aircraft/images'],
             type='json', auth='public')
 def get_aircraft_images(self, category_id=None, aircraft_id=None):
     """AJAX endpoint for aircraft images
-    
+
     Args:
         category_id: Filter by image category
         aircraft_id: Filter by specific aircraft
-    
+
     Returns: JSON with image data
     """
 ```
@@ -383,32 +408,36 @@ def get_aircraft_images(self, category_id=None, aircraft_id=None):
 **Location**: `flight_event/static/src/components/`
 
 **Components**:
+
 - `FlightEventTimeMatrixField` - Main field widget
 - `FlightEventTimeMatrixRenderer` - Matrix renderer
-- `RelativeDateTimePicker` - Custom datetime picker
+- `FlightEventTimeMatrixCell` - Individual matrix cell component
 
 **Usage**:
+
 ```javascript
 /** @odoo-module **/
 import { Component } from "@odoo/owl";
 
 export class FlightEventTimeMatrixField extends Component {
-    static template = "flight_event.TimeMatrixField";
-    
-    setup() {
-        // Component initialization
-    }
+  static template = "flight_event.TimeMatrixField";
+
+  setup() {
+    // Component initialization
+  }
 }
 ```
 
 ### Website Snippets
 
 **Dynamic Aircraft Images Snippet**:
+
 - Displays aircraft images dynamically
 - Filterable by category and aircraft
 - AJAX-powered content loading
 
 **Multiple Carousel Snippet**:
+
 - Responsive image carousel
 - Touch-enabled navigation
 - Auto-play functionality
@@ -431,6 +460,7 @@ pip install -r requirements.txt
 ### Installation Steps
 
 1. **Clone Repository**
+
 ```bash
 git clone https://github.com/smartops-aero/smartops-odoo-flight.git
 cd smartops-odoo-flight
@@ -438,6 +468,7 @@ git checkout 18.0
 ```
 
 2. **Configure Odoo**
+
 ```bash
 # Add to odoo.conf
 [options]
@@ -445,6 +476,7 @@ addons_path = /path/to/smartops-odoo-flight,/path/to/odoo/addons
 ```
 
 3. **Install Modules**
+
 ```bash
 # Install base module and dependencies
 odoo -c odoo.conf -i flight_uom,flight
@@ -454,6 +486,7 @@ odoo -c odoo.conf -i flight_event,flight_aircraft_spec,website_flight_fleet
 ```
 
 4. **Load Aerodrome Data**
+
 ```bash
 # Download large dataset
 wget https://raw.githubusercontent.com/smartops-aero/smartops-odoo-flight/18.0/flight/data/flight.aerodrome.csv
@@ -491,6 +524,7 @@ coverage html
 ### Code Style
 
 **Python**:
+
 - Use Ruff for linting and formatting
 - Target Python 3.11+ features
 - Follow Odoo coding conventions
@@ -504,6 +538,7 @@ ruff check . --fix
 ```
 
 **JavaScript**:
+
 - ES6+ modules with `/** @odoo-module **/`
 - OWL Framework 2.0 patterns
 - ESLint with Odoo config
@@ -514,6 +549,7 @@ npx eslint . --fix
 ```
 
 **XML/HTML**:
+
 - Prettier for formatting
 - Proper indentation (4 spaces)
 - Semantic HTML5
@@ -539,11 +575,13 @@ pre-commit run --all-files
 ### Git Workflow
 
 **Branch Strategy**:
+
 - Main branch: `18.0` (current version)
 - Feature branches: `18.0-feature-name`
 - Hotfix branches: `18.0-hotfix-description`
 
 **Commit Messages**:
+
 ```
 [MODULE] Brief description
 
@@ -557,11 +595,13 @@ Fixes #issue_number
 ### Migration Guidelines
 
 **Version Migrations**:
+
 - Place scripts in `migrations/{version}/`
 - Use `pre-migrate.py` for schema changes
 - Use `post-migrate.py` for data migration
 
 **Example Migration**:
+
 ```python
 # migrations/18.0.1.0.0/post-migrate.py
 from odoo import api, SUPERUSER_ID
@@ -574,11 +614,13 @@ def migrate(cr, version):
 ### Security Best Practices
 
 1. **Access Control**:
+
    - Define explicit access rights in CSV
    - Use record rules for row-level security
    - Test with different user roles
 
 2. **Data Validation**:
+
    - Use constraints for data integrity
    - Validate user inputs
    - Sanitize external data
@@ -591,11 +633,13 @@ def migrate(cr, version):
 ### Performance Optimization
 
 1. **Database**:
+
    - Add indexes for frequently queried fields
    - Use SQL constraints where possible
    - Optimize domain filters
 
 2. **Python**:
+
    - Use `@api.depends_context` for context-dependent computes
    - Batch operations with `create()` and `write()`
    - Avoid N+1 queries with prefetch
@@ -610,6 +654,7 @@ def migrate(cr, version):
 ### Common Issues
 
 **Module Not Found**:
+
 ```bash
 # Check addons path
 odoo shell -c odoo.conf
@@ -618,18 +663,21 @@ odoo shell -c odoo.conf
 ```
 
 **Access Rights Error**:
+
 ```bash
 # Regenerate access rights
 odoo -c odoo.conf -u flight --stop-after-init
 ```
 
 **JavaScript Errors**:
+
 ```bash
 # Clear assets
 odoo -c odoo.conf --dev=xml,reload,qweb
 ```
 
 **Migration Failures**:
+
 ```bash
 # Check migration scripts
 ls migrations/*/
@@ -639,21 +687,24 @@ ls migrations/*/
 ## Support & Resources
 
 ### Documentation
+
 - [Odoo 18.0 Documentation](https://www.odoo.com/documentation/18.0/)
 - [OWL Framework Guide](https://github.com/odoo/owl)
 - [Project Repository](https://github.com/smartops-aero/smartops-odoo-flight)
 
 ### Community
+
 - GitHub Issues: Report bugs and request features
 - Discussions: Technical questions and best practices
 - Wiki: Additional guides and tutorials
 
 ### License
+
 - **Code**: LGPL-3.0
 - **Documentation**: CC BY-SA 4.0
 - **Assets**: See individual licenses
 
 ---
 
-*Last updated: 2025-08-13*
-*Version: 18.0.1.0.0*
+_Last updated: 2025-08-13_
+_Version: 18.0.1.0.0_

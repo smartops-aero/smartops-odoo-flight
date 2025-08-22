@@ -35,8 +35,14 @@
                         <page string="Remarks" name="remarks">
                             <field name="remarks" widget="flight_json" />
                         </page>
-                        <page string="Flight Plan Header" name="flight_plan_header">
-                            <field name="flight_plan_header" widget="flight_json" />
+                        <page
+              string="Flight Plan Header"
+              name="flight_plan_header"
+            >
+                            <field
+                name="flight_plan_header"
+                widget="flight_json"
+              />
                         </page>
                         <page string="Weight Header" name="weight_header">
                             <field name="weight_header" widget="flight_json" />
@@ -46,7 +52,10 @@
                         </page>
                         <page string="Route" name="route">
                             <group>
-                                <field name="route_id" options="{'no_create': True}" />
+                                <field
+                  name="route_id"
+                  options="{'no_create': True}"
+                />
                             </group>
                             <separator string="Main Route Waypoints" />
                             <field name="main_route_waypoint_ids">
@@ -66,7 +75,11 @@
                                     <field name="aerodrome_id" />
                                     <field name="function" />
                                     <field name="planned_runway" />
-                                    <field name="terminal_procedure" widget="flight_json" string="Terminal Procedure" />
+                                    <field
+                    name="terminal_procedure"
+                    widget="flight_json"
+                    string="Terminal Procedure"
+                  />
                                 </list>
                             </field>
                         </page>
@@ -100,10 +113,10 @@
                 <field name="route_id" />
                 <group expand="0" string="Group By">
                     <filter
-                        string="Flight"
-                        name="group_by_flight"
-                        context="{'group_by': 'flight_id'}"
-                    />
+            string="Flight"
+            name="group_by_flight"
+            context="{'group_by': 'flight_id'}"
+          />
                     <filter
                         string="Period"
                         name="group_by_period"
