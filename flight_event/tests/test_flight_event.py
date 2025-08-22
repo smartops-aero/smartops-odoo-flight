@@ -483,15 +483,16 @@ class TestFlightEvent(TransactionCase):
 
         # Test valid update command - should work and log
         new_time = datetime.now() + timedelta(hours=1)
-        valid_commands = [
-            (1, event_time.id, {"time": new_time})
-        ]
+        valid_commands = [(1, event_time.id, {"time": new_time})]
         self.flight.write({"event_time_ids": valid_commands})
 
         # Check that change was logged
         message_count_after = len(self.flight.message_ids)
-        self.assertGreater(message_count_after, message_count_before, 
-                          "Event time changes should generate tracking messages")
+        self.assertGreater(
+            message_count_after,
+            message_count_before,
+            "Event time changes should generate tracking messages",
+        )
 
     def test_14_event_time_logging_validation(self):
         """Test that logging method handles data validation correctly"""
@@ -504,12 +505,12 @@ class TestFlightEvent(TransactionCase):
                 "time": datetime.now(),
             }
         )
-        
+
         event2 = self.env["flight.event.time"].create(
             {
                 "flight_id": self.flight.id,
                 "code_id": self.event_code_takeoff.id,
-                "time_kind": "S", 
+                "time_kind": "S",
                 "time": datetime.now() + timedelta(minutes=30),
             }
         )
@@ -517,7 +518,7 @@ class TestFlightEvent(TransactionCase):
         # Test that logging method can handle valid integer IDs properly
         time1 = datetime.now() + timedelta(hours=1)
         time2 = datetime.now() + timedelta(hours=2)
-        
+
         # Use valid commands only - this tests our JSON serialization fix
         valid_commands = [
             (1, event1.id, {"time": time1}),
@@ -526,11 +527,14 @@ class TestFlightEvent(TransactionCase):
 
         # Count messages before
         message_count_before = len(self.flight.message_ids)
-        
+
         # Execute commands - should work without errors
         self.flight.write({"event_time_ids": valid_commands})
-        
+
         # Verify logging worked
         message_count_after = len(self.flight.message_ids)
-        self.assertGreater(message_count_after, message_count_before, 
-                          "Valid commands should have generated tracking messages")
+        self.assertGreater(
+            message_count_after,
+            message_count_before,
+            "Valid commands should have generated tracking messages",
+        )

@@ -23,7 +23,9 @@ class FlightAerodrome(models.Model):
     city = fields.Char(index=True)
     municipality = fields.Char()
 
-    country_id = fields.Many2one("res.country", string="Country", ondelete="restrict", index=True)
+    country_id = fields.Many2one(
+        "res.country", string="Country", ondelete="restrict", index=True
+    )
     country_code = fields.Char(related="country_id.code", string="Country Code")
 
     elevation = fields.Integer("Aerodrome elevation in feet")
@@ -37,17 +39,19 @@ class FlightAerodrome(models.Model):
         ("icao_unique", "unique(icao)", "Aerodrome with this ICAO already exists!"),
     ]
 
-    @api.constrains('latitude', 'longitude')
+    @api.constrains("latitude", "longitude")
     def _check_coordinates(self):
         """Validate latitude and longitude are within valid ranges"""
         for record in self:
             if record.latitude and not (-90 <= record.latitude <= 90):
                 raise ValidationError(
-                    _("Latitude must be between -90 and 90 degrees. Got: %s") % record.latitude
+                    _("Latitude must be between -90 and 90 degrees. Got: %s")
+                    % record.latitude
                 )
             if record.longitude and not (-180 <= record.longitude <= 180):
                 raise ValidationError(
-                    _("Longitude must be between -180 and 180 degrees. Got: %s") % record.longitude
+                    _("Longitude must be between -180 and 180 degrees. Got: %s")
+                    % record.longitude
                 )
 
     @api.depends("icao", "iata", "name")
@@ -55,7 +59,7 @@ class FlightAerodrome(models.Model):
         for record in self:
             # Build display name with safe field access
             parts = []
-            
+
             # Add ICAO/IATA identifier part
             if record.iata and record.icao:
                 parts.append(f"{record.icao}({record.iata})")
@@ -63,10 +67,12 @@ class FlightAerodrome(models.Model):
                 parts.append(record.icao)
             elif record.iata:
                 parts.append(record.iata)
-            
+
             # Add name if available
             if record.name:
                 parts.append(record.name)
-            
+
             # Join non-empty parts
-            record.display_name = " - ".join(parts) if parts else f"Aerodrome #{record.id}"
+            record.display_name = (
+                " - ".join(parts) if parts else f"Aerodrome #{record.id}"
+            )

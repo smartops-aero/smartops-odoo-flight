@@ -27,15 +27,18 @@
                             <field name="display_name" readonly="1" />
                             <field
                 name="value_bool"
-                invisible="code_type != 'bool'" required="code_type == 'bool'"
+                invisible="code_type != 'bool'"
+                required="code_type == 'bool'"
               />
                             <field
                 name="value_text"
-                invisible="code_type != 'text'" required="code_type == 'text'"
+                invisible="code_type != 'text'"
+                required="code_type == 'text'"
               />
                             <field
                 name="value_float"
-                invisible="code_type != 'float'" required="code_type == 'float'"
+                invisible="code_type != 'float'"
+                required="code_type == 'float'"
               />
                             <field
                 name="uom_id"

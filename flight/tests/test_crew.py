@@ -209,76 +209,89 @@ class TestCrew(FlightCommon):
 
     def test_09_crew_display_name_edge_cases(self):
         """Test crew display name with missing role"""
-        pilot = self.env["res.partner"].create({
-            "name": "Jane Doe",
-            "is_company": False,
-        })
-        
+        pilot = self.env["res.partner"].create(
+            {
+                "name": "Jane Doe",
+                "is_company": False,
+            }
+        )
+
         flight = self.create_test_flight()
-        
+
         # Test crew without role (role_id is not required)
-        crew_no_role = self.env["flight.crew"].create({
-            "flight_id": flight.id,
-            "partner_id": pilot.id,
-            # No role_id specified
-        })
-        
+        crew_no_role = self.env["flight.crew"].create(
+            {
+                "flight_id": flight.id,
+                "partner_id": pilot.id,
+                # No role_id specified
+            }
+        )
+
         # Should show just the partner name when no role
         self.assertEqual(crew_no_role.display_name, "Jane Doe")
-        
+
         # Test fallback when partner has empty name (edge case)
-        empty_partner = self.env["res.partner"].create({
-            "name": "",  # Empty name
-            "is_company": False,
-        })
-        
-        crew_empty_name = self.env["flight.crew"].create({
-            "flight_id": flight.id,
-            "partner_id": empty_partner.id,
-            "role_id": self.crew_role_pilot.id,
-        })
-        
+        empty_partner = self.env["res.partner"].create(
+            {
+                "name": "",  # Empty name
+                "is_company": False,
+            }
+        )
+
+        crew_empty_name = self.env["flight.crew"].create(
+            {
+                "flight_id": flight.id,
+                "partner_id": empty_partner.id,
+                "role_id": self.crew_role_pilot.id,
+            }
+        )
+
         # When partner name is empty, should show just the role
         self.assertEqual(crew_empty_name.display_name, "(Captain)")
 
     def test_10_multiple_roles_same_person_same_flight(self):
         """Test that one person can have multiple roles on same flight"""
-        pilot = self.env["res.partner"].create({
-            "name": "Multi Role Pilot",
-            "is_company": False,
-        })
-        
+        pilot = self.env["res.partner"].create(
+            {
+                "name": "Multi Role Pilot",
+                "is_company": False,
+            }
+        )
+
         flight = self.create_test_flight()
-        
+
         # Create safety officer role
-        safety_role = self.env["flight.crew.role"].create({
-            "name": "Safety Officer",
-            "description": "Safety oversight"
-        })
-        
+        safety_role = self.env["flight.crew.role"].create(
+            {"name": "Safety Officer", "description": "Safety oversight"}
+        )
+
         # Same person as pilot
-        crew_pilot = self.env["flight.crew"].create({
-            "flight_id": flight.id,
-            "partner_id": pilot.id,
-            "role_id": self.crew_role_pilot.id,
-        })
-        
+        crew_pilot = self.env["flight.crew"].create(
+            {
+                "flight_id": flight.id,
+                "partner_id": pilot.id,
+                "role_id": self.crew_role_pilot.id,
+            }
+        )
+
         # Same person as safety officer
-        crew_safety = self.env["flight.crew"].create({
-            "flight_id": flight.id,
-            "partner_id": pilot.id,
-            "role_id": safety_role.id,
-        })
-        
+        crew_safety = self.env["flight.crew"].create(
+            {
+                "flight_id": flight.id,
+                "partner_id": pilot.id,
+                "role_id": safety_role.id,
+            }
+        )
+
         # Both should be valid and different records
         self.assertNotEqual(crew_pilot.id, crew_safety.id)
         self.assertEqual(crew_pilot.partner_id, crew_safety.partner_id)
         self.assertEqual(crew_pilot.flight_id, crew_safety.flight_id)
         self.assertNotEqual(crew_pilot.role_id, crew_safety.role_id)
-        
+
         # Check display names
         self.assertEqual(crew_pilot.display_name, "Multi Role Pilot (Captain)")
         self.assertEqual(crew_safety.display_name, "Multi Role Pilot (Safety Officer)")
-        
+
         # Flight should have 2 crew records
         self.assertEqual(len(flight.crew_ids), 2)

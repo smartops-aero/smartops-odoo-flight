@@ -6,10 +6,7 @@
     inherit_id="website.snippets"
     name="Website Flight Snippets"
   >
-    <xpath
-      expr="//snippets[@id='snippet_structure']"
-      position="inside"
-    >
+    <xpath expr="//snippets[@id='snippet_structure']" position="inside">
       <t
         t-snippet="website_flight_fleet.s_website_flight_fleet_accordion"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_accordion.png"
@@ -25,10 +22,7 @@
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_multiple_carousel.png"
       />
     </xpath>
-    <xpath
-      expr="//snippets[@id='snippet_structure']"
-      position="inside"
-    >
+    <xpath expr="//snippets[@id='snippet_structure']" position="inside">
       <t
         t-snippet="website_flight_fleet.s_website_flight_fleet_dynamic_aircraft_images"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_accordion.png"

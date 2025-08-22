@@ -86,7 +86,7 @@ class FlightAircraftModel(models.Model):
 
     tag_ids = fields.Many2many("flight.aircraft.model.tag")
 
-    @api.depends('name', 'make_id.name', 'code')
+    @api.depends("name", "make_id.name", "code")
     def _compute_display_name(self):
         for record in self:
             parts = []
@@ -152,11 +152,12 @@ class FlightAircraft(models.Model):
         )
     ]
 
-    @api.constrains('mtow')
+    @api.constrains("mtow")
     def _check_mtow(self):
         """Validate maximum take-off weight is not negative"""
         for record in self:
             if record.mtow and record.mtow < 0:
                 raise ValidationError(
-                    _("Maximum take-off weight cannot be negative. Got: %s") % record.mtow
+                    _("Maximum take-off weight cannot be negative. Got: %s")
+                    % record.mtow
                 )

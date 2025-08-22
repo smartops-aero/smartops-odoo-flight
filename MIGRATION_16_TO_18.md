@@ -3,6 +3,7 @@
 This document outlines all the changes required when migrating SmartOps Flight modules from Odoo 16.0 to 18.0.
 
 ## Table of Contents
+
 - [Core API Changes](#core-api-changes)
 - [View and UI Changes](#view-and-ui-changes)
 - [Security and Access Control](#security-and-access-control)
@@ -15,6 +16,7 @@ This document outlines all the changes required when migrating SmartOps Flight m
 ### 1. Display Name Implementation
 
 **Odoo 16.0 (Deprecated):**
+
 ```python
 def name_get(self):
     result = []
@@ -25,6 +27,7 @@ def name_get(self):
 ```
 
 **Odoo 18.0 (New):**
+
 ```python
 @api.depends('field1', 'field2')  # List all fields used in display name
 def _compute_display_name(self):
@@ -33,8 +36,9 @@ def _compute_display_name(self):
 ```
 
 **Affected Models:**
+
 - `flight.flight`
-- `flight.aircraft` 
+- `flight.aircraft`
 - `flight.aerodrome`
 - `flight.number`
 
@@ -43,6 +47,7 @@ def _compute_display_name(self):
 The `ir.cron` model has removed deprecated fields:
 
 **Removed Fields:**
+
 - `numbercall` - No longer supported
 - `doall` - No longer supported
 
@@ -54,15 +59,20 @@ Remove these fields from any `ir.cron` data XML files.
 ### 1. Chatter Widget
 
 **Odoo 16.0 (Deprecated):**
+
 ```xml
 <div class="oe_chatter">
-    <field name="message_follower_ids" options="{'post_refresh': 'recipients'}"/>
-    <field name="activity_ids"/>
-    <field name="message_ids"/>
+    <field
+    name="message_follower_ids"
+    options="{'post_refresh': 'recipients'}"
+  />
+    <field name="activity_ids" />
+    <field name="message_ids" />
 </div>
 ```
 
 **Odoo 18.0 (New):**
+
 ```xml
 <chatter />
 ```
@@ -70,6 +80,7 @@ Remove these fields from any `ir.cron` data XML files.
 The new `<chatter />` tag automatically includes all messaging functionality.
 
 **Affected Views:**
+
 - All form views with chatter functionality
 - `flight_views.xml`
 - `aircraft_views.xml`
@@ -80,12 +91,14 @@ The new `<chatter />` tag automatically includes all messaging functionality.
 #### Slug Function Import
 
 **Odoo 16.0 (Deprecated):**
+
 ```python
 from odoo.addons.http_routing.models.ir_http import slug
 # Use: slug(record)
 ```
 
 **Odoo 18.0 (New):**
+
 ```python
 def _compute_website_url(self):
     IrHttp = self.env['ir.http']
@@ -96,6 +109,7 @@ def _compute_website_url(self):
 #### XML Structure Changes
 
 **Website snippet paths changed:**
+
 - `snippet_feature` → `snippet_structure`
 
 ## Security and Access Control
@@ -109,11 +123,12 @@ When `website_flight_fleet` module is installed, it adds domain rules that restr
     <field name="domain_force">
         ['|', ('website_published', '=', True), ('create_uid', '=', user.id)]
     </field>
-    <field name="groups" eval="[(4, ref('flight.group_flight_user'))]"/>
+    <field name="groups" eval="[(4, ref('flight.group_flight_user'))]" />
 </record>
 ```
 
 **Important:** Tests must account for this by:
+
 1. Setting `website_published = True` on test records
 2. Or creating records with the test user
 3. Or checking for field existence: `if 'website_published' in self.env['model']._fields:`
@@ -123,6 +138,7 @@ When `website_flight_fleet` module is installed, it adds domain rules that restr
 ### flight_data_sync
 
 **ir.cron configuration updates:**
+
 - Removed `numbercall` field
 - Removed `doall` field
 - Updated to use new scheduling syntax
@@ -130,11 +146,13 @@ When `website_flight_fleet` module is installed, it adds domain rules that restr
 ### website_flight_fleet
 
 **Model changes:**
+
 - Added `website_published` field to `flight.aircraft`
 - Updated slug generation to use `IrHttp._slug()`
 - Fixed xpath selectors for website templates
 
 **Controller changes:**
+
 - Updated domain filters to check `website_published`
 - Modified slug handling in routes
 
@@ -145,6 +163,7 @@ No significant changes required for 18.0 migration.
 ### flight_number
 
 **Display name:**
+
 - Migrated from `name_get()` to `_compute_display_name()`
 - Added proper field dependencies
 
@@ -153,6 +172,7 @@ No significant changes required for 18.0 migration.
 ### Test Updates Required
 
 1. **Replace name_get() calls:**
+
 ```python
 # Old
 name = record.name_get()[0][1]
@@ -162,6 +182,7 @@ name = record.display_name
 ```
 
 2. **Handle website_published field:**
+
 ```python
 # Check if field exists (when website module installed)
 if 'website_published' in self.env['flight.aircraft']._fields:
@@ -169,6 +190,7 @@ if 'website_published' in self.env['flight.aircraft']._fields:
 ```
 
 3. **Update test data:**
+
 - Remove deprecated fields from test data
 - Add required fields for new constraints
 
@@ -195,6 +217,7 @@ ruff format . && ruff check . --fix --unsafe-fixes
 ```
 
 Configuration in `.ruff.toml`:
+
 ```toml
 target-version = "py311"
 ```
@@ -202,44 +225,53 @@ target-version = "py311"
 ## Common Migration Issues and Solutions
 
 ### Issue 1: AccessError in Tests
+
 **Cause:** Website module adds domain rules
 **Solution:** Set `website_published = True` on test records
 
 ### Issue 2: AttributeError: 'Model' object has no attribute 'name_get'
+
 **Cause:** Method deprecated in Odoo 18.0
 **Solution:** Use `display_name` field instead
 
 ### Issue 3: ValueError: Invalid field 'numbercall' on model 'ir.cron'
+
 **Cause:** Field removed in Odoo 18.0
 **Solution:** Remove field from XML data files
 
 ### Issue 4: ImportError: cannot import name 'slug'
+
 **Cause:** Function moved to IrHttp model
 **Solution:** Use `self.env['ir.http']._slug(record)`
 
 ### Issue 5: Chatter not displaying correctly
+
 **Cause:** Old verbose chatter syntax deprecated
 **Solution:** Replace with simple `<chatter />` tag
 
 ## Files Modified During Migration
 
 ### Manifest Files
+
 - All `__manifest__.py` files updated to version 18.0.1.0.0
 
 ### View Files Updated for tree→list
-- flight/views/*.xml
-- flight_aircraft_spec/views/*.xml
-- flight_data_sync/views/*.xml
-- flight_data_sync/wizard/*.xml
-- flight_event/views/*.xml
-- flight_number/views/*.xml
-- website_flight_fleet/views/*.xml
+
+- flight/views/\*.xml
+- flight_aircraft_spec/views/\*.xml
+- flight_data_sync/views/\*.xml
+- flight_data_sync/wizard/\*.xml
+- flight_event/views/\*.xml
+- flight_number/views/\*.xml
+- website_flight_fleet/views/\*.xml
 
 ### Python Files Updated
+
 - flight_data_sync/models/flight_data_provider.py
 - flight_event/models/flight_event.py
 
 ### Configuration Files
+
 - .ruff.toml (Python 3.11 target)
 - .pre-commit-config.yaml (Python 3.11, Node 18)
 - CLAUDE.md (Updated documentation)
@@ -247,6 +279,7 @@ target-version = "py311"
 ## Known Non-Critical Issues
 
 ### Warnings That Don't Affect Functionality
+
 1. **Website template warning about oe_structure class**
 
 These warnings don't affect functionality and can be addressed in future updates.
@@ -267,6 +300,7 @@ These warnings don't affect functionality and can be addressed in future updates
 **Error you'll see:** `ValueError: Wrong value for ir.ui.view.type: 'tree'`
 
 #### A. XML View Roots
+
 ```xml
 <!-- Before (16.0) -->
 <tree editable="bottom">
@@ -280,6 +314,7 @@ These warnings don't affect functionality and can be addressed in future updates
 ```
 
 #### B. Inline x2many Subviews
+
 ```xml
 <!-- Before -->
 <field name="line_ids">
@@ -297,6 +332,7 @@ These warnings don't affect functionality and can be addressed in future updates
 ```
 
 #### C. Actions (ir.actions.act_window)
+
 ```xml
 <!-- Before -->
 <field name="view_mode">tree,form</field>
@@ -306,6 +342,7 @@ These warnings don't affect functionality and can be addressed in future updates
 ```
 
 #### D. Python Action Dictionaries
+
 ```python
 # Before
 return {
@@ -323,6 +360,7 @@ return {
 ```
 
 #### E. Context Keys
+
 ```xml
 <!-- Before -->
 <field name="line_ids" context="{'tree_view_ref': 'module.view_id'}"/>
@@ -332,6 +370,7 @@ return {
 ```
 
 #### F. XPath in Inherited Views
+
 ```xml
 <!-- Before -->
 <xpath expr="//tree/field[@name='date']" position="after">
@@ -341,6 +380,7 @@ return {
 ```
 
 #### G. Remove Explicit Type Field
+
 ```xml
 <!-- Before -->
 <record id="view_id" model="ir.ui.view">
@@ -364,6 +404,7 @@ return {
 **Error you'll see:** `Since 17.0, the "attrs" and "states" attributes are no longer used.`
 
 #### A. Field Modifiers
+
 ```xml
 <!-- Before (16.0) -->
 <field name="departure_id" attrs="{'invisible': [('locked','=',True)]}"/>
@@ -377,6 +418,7 @@ return {
 ```
 
 #### B. Complex Conditions
+
 ```xml
 <!-- Before: Polish notation with | and & -->
 attrs="{'invisible': ['|', ('a','=',1), ('b','=',2)]}"
@@ -388,6 +430,7 @@ readonly="(x != 0) and (not y)"
 ```
 
 #### C. Button States
+
 ```xml
 <!-- Before -->
 <button name="action_confirm" states="draft,sent" string="Confirm"/>
@@ -397,6 +440,7 @@ readonly="(x != 0) and (not y)"
 ```
 
 #### D. Page/Group Visibility
+
 ```xml
 <!-- Before -->
 <page name="settings" attrs="{'invisible': [('is_company','=',False)]}">
@@ -406,6 +450,7 @@ readonly="(x != 0) and (not y)"
 ```
 
 #### E. List Column Visibility
+
 ```xml
 <!-- Before (in list/tree views) -->
 <field name="amount" attrs="{'column_invisible': [('parent.type','=','service')]}"/>
@@ -415,23 +460,25 @@ readonly="(x != 0) and (not y)"
 ```
 
 #### F. Domain Syntax Conversion Table
-| 16.0 Domain | 18.0 Expression |
-|-------------|-----------------|
-| `('x','=',1)` | `x == 1` |
-| `('x','!=',1)` | `x != 1` |
-| `('x','>',1)` | `x > 1` |
-| `('x','>=',1)` | `x >= 1` |
-| `('x','<',1)` | `x < 1` |
-| `('x','<=',1)` | `x <= 1` |
-| `('x','in',['a','b'])` | `x in ['a','b']` |
+
+| 16.0 Domain                | 18.0 Expression      |
+| -------------------------- | -------------------- |
+| `('x','=',1)`              | `x == 1`             |
+| `('x','!=',1)`             | `x != 1`             |
+| `('x','>',1)`              | `x > 1`              |
+| `('x','>=',1)`             | `x >= 1`             |
+| `('x','<',1)`              | `x < 1`              |
+| `('x','<=',1)`             | `x <= 1`             |
+| `('x','in',['a','b'])`     | `x in ['a','b']`     |
 | `('x','not in',['a','b'])` | `x not in ['a','b']` |
-| `('x','=',True)` | `x` |
-| `('x','=',False)` | `not x` |
-| `('x','like','%test%')` | `'test' in x` |
+| `('x','=',True)`           | `x`                  |
+| `('x','=',False)`          | `not x`              |
+| `('x','like','%test%')`    | `'test' in x`        |
 
 ### 3. QWeb Changes
 
 #### t-raw Deprecated
+
 ```xml
 <!-- Before -->
 <t t-raw="html_content"/>
@@ -441,6 +488,7 @@ readonly="(x != 0) and (not y)"
 ```
 
 In Python, ensure:
+
 ```python
 from markupsafe import Markup
 # Pass Markup(content) when you need unescaped HTML
@@ -481,6 +529,7 @@ The following changes require manual review and conversion:
 ### 6. Manifest Changes
 
 #### A. Version Update
+
 ```python
 # __manifest__.py
 {
@@ -490,6 +539,7 @@ The following changes require manual review and conversion:
 ```
 
 #### B. Assets Declaration (Important!)
+
 ```python
 # Before (16.0) - might use old patterns
 {
@@ -515,7 +565,9 @@ The following changes require manual review and conversion:
 ```
 
 #### C. Data Files Order
+
 Ensure views are loaded before menus that reference them:
+
 ```python
 'data': [
     'security/security.xml',
@@ -528,6 +580,7 @@ Ensure views are loaded before menus that reference them:
 ### 7. JavaScript/OWL Changes
 
 #### A. Module Declaration
+
 ```javascript
 // Use ES module format with Odoo module marker
 /** @odoo-module **/
@@ -537,6 +590,7 @@ import { Component } from "@odoo/owl";
 ```
 
 #### B. Registry Pattern for Extensions
+
 ```javascript
 // Register custom fields
 registry.category("fields").add("custom_field", CustomFieldComponent);
@@ -553,19 +607,21 @@ registry.category("services").add("custom_service", customService);
 **Critical Changes for Custom Field Widgets:**
 
 1. **Component Registration Pattern Changed**
+
 ```javascript
 // Before (16.0) - Direct component registration
 registry.category("fields").add("my_widget", MyWidgetComponent);
 
 // After (18.0) - Must wrap in object with component key
 registry.category("fields").add("my_widget", {
-    component: MyWidgetComponent,
-    displayName: "My Widget",
-    supportedTypes: ["char", "text"], // Optional: specify field types
+  component: MyWidgetComponent,
+  displayName: "My Widget",
+  supportedTypes: ["char", "text"], // Optional: specify field types
 });
 ```
 
 2. **Component Property Syntax**
+
 ```javascript
 // Before (16.0) - External property assignment
 MyWidgetComponent.template = "module.MyWidgetTemplate";
@@ -574,22 +630,24 @@ MyWidgetComponent.components = { SubComponent };
 
 // After (18.0) - Static class properties
 export class MyWidgetComponent extends Component {
-    static template = "module.MyWidgetTemplate";
-    static props = { ...standardFieldProps };
-    static components = { SubComponent };
+  static template = "module.MyWidgetTemplate";
+  static props = { ...standardFieldProps };
+  static components = { SubComponent };
 }
 ```
 
 3. **Field Value Access**
+
 ```javascript
 // Before (16.0)
-this.props.value  // Often undefined
+this.props.value; // Often undefined
 
 // After (18.0) - Access from record data
-this.props.record.data[this.props.name]  // Correct way to get field value
+this.props.record.data[this.props.name]; // Correct way to get field value
 ```
 
 4. **Template Attributes**
+
 ```xml
 <!-- Before (16.0) -->
 <t t-name="module.Template" owl="1">
@@ -599,6 +657,7 @@ this.props.record.data[this.props.name]  // Correct way to get field value
 ```
 
 5. **Import Path Changes**
+
 ```javascript
 // Before (16.0)
 import { DateTimePicker } from "@web/core/datepicker/datepicker";
@@ -608,27 +667,29 @@ import { DateTimePicker } from "@web/core/datetime/datetime_picker";
 ```
 
 6. **Template Names for Extended Components**
+
 ```javascript
 // When extending existing Odoo components
 export class CustomDatePicker extends DateTimePicker {
-    // Must use the parent's template name if reusing it
-    static template = "web.DateTimePicker";  // Not "web.DatePicker"
+  // Must use the parent's template name if reusing it
+  static template = "web.DateTimePicker"; // Not "web.DatePicker"
 }
 ```
 
 **Common Widget Migration Errors and Solutions:**
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `'component' is missing` | Old registration pattern | Wrap component in object with `component` key |
-| `Cannot read properties of undefined (reading 'name')` | Missing static properties | Add static template/props/components inside class |
-| `Missing template: "web.DatePicker"` | Wrong template name | Use `"web.DateTimePicker"` for date/time components |
-| `this.props.value is undefined` | Wrong field value access | Use `this.props.record.data[this.props.name]` |
-| `Cannot read properties of undefined (reading 'records')` | One2many not initialized | Add null checks: `fieldValue?.records || []` |
+| Error                                                     | Cause                     | Solution                                            |
+| --------------------------------------------------------- | ------------------------- | --------------------------------------------------- | --- | --- |
+| `'component' is missing`                                  | Old registration pattern  | Wrap component in object with `component` key       |
+| `Cannot read properties of undefined (reading 'name')`    | Missing static properties | Add static template/props/components inside class   |
+| `Missing template: "web.DatePicker"`                      | Wrong template name       | Use `"web.DateTimePicker"` for date/time components |
+| `this.props.value is undefined`                           | Wrong field value access  | Use `this.props.record.data[this.props.name]`       |
+| `Cannot read properties of undefined (reading 'records')` | One2many not initialized  | Add null checks: `fieldValue?.records               |     | []` |
 
 ### 8. Website-Specific Changes
 
 #### A. Snippet Structure Rename
+
 ```xml
 <!-- Before -->
 <xpath expr="//div[@id='snippet_feature']" position="inside">
@@ -638,6 +699,7 @@ export class CustomDatePicker extends DateTimePicker {
 ```
 
 #### B. New Page Templates (18.0 feature)
+
 ```python
 # In __manifest__.py for website modules
 {
@@ -653,7 +715,8 @@ export class CustomDatePicker extends DateTimePicker {
 
 ### 9. ORM Deprecations
 
-#### A. _flush_search() Removed
+#### A. \_flush_search() Removed
+
 ```python
 # Before (16.0)
 self._flush_search()  # Deprecated
@@ -663,6 +726,7 @@ self._flush_search()  # Deprecated
 ```
 
 #### B. Modifiers Attribute (Do NOT use)
+
 ```xml
 <!-- NEVER manually set modifiers -->
 <field name="field" modifiers="{}"/>  <!-- DON'T DO THIS -->

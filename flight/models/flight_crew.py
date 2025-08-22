@@ -33,6 +33,7 @@ class FlightCrew(models.Model):
                 name_parts.append(record.partner_id.name)
             if record.role_id and record.role_id.name:
                 name_parts.append(f"({record.role_id.name})")
-            
-            record.display_name = " ".join(name_parts) if name_parts else f"Crew Member #{record.id}"
 
+            record.display_name = (
+                " ".join(name_parts) if name_parts else f"Crew Member #{record.id}"
+            )
