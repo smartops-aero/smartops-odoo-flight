@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
-    <t t-name="flight_event.FlightEventTimeMatrixRenderer" owl="1">
+    <t t-name="flight_event.FlightEventTimeMatrixRenderer">
         <table
       class="o_list_table table table-responsive table-sm table-hover position-relative mb-0 o_list_table_ungrouped table-striped"
-      t-if="eventCodes.length > 0"
+      t-if="eventCodes.length > 0 and matrix"
     >
             <thead>
                 <tr>
@@ -31,12 +31,17 @@
             t-foreach="timeKinds"
             t-as="timeKind"
             t-key="timeKind.key"
+            class="o_matrix_cell"
           >
-                        <RelativeDateTimePicker
-              baseDate="props.date"
-              date="matrix[eventCode.code][timeKind.key].value"
-              onDateTimeChanged="(value) => this.update(timeKind, eventCode, value)"
-              readonly="props.readonly"
+                        <FlightEventTimeMatrixCell
+              t-props="{
+                value: this.getCellValue(eventCode, timeKind),
+                eventCode: eventCode,
+                timeKind: timeKind,
+                date: props.date,
+                onUpdate: (timeKind, eventCode, value) => this.onCellUpdate(timeKind, eventCode, value),
+                readonly: props.readonly
+              }"
             />
                     </td>
                 </tr>

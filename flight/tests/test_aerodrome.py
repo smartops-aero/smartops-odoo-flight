@@ -47,9 +47,21 @@ class TestAerodrome(FlightCommon):
         )
         self.assertEqual(aerodrome_no_iata.display_name, "KSML - Small Airport")
 
+        # With IATA but no ICAO (edge case)
+        aerodrome_iata_only = self.env["flight.aerodrome"].create(
+            {
+                "name": "IATA Only Airport",
+                "icao": "KIOA",  # Required field, so we need it
+                "iata": "IOA",
+                "city": "IATA City",
+                "country_id": self.country_us.id,
+            }
+        )
+        self.assertEqual(aerodrome_iata_only.display_name, "KIOA(IOA) - IATA Only Airport")
+
     def test_03_aerodrome_coordinates_handling(self):
         """Test latitude and longitude field handling"""
-        # Test valid coordinates (no validation constraints in model currently)
+        # Test valid coordinates
         aerodrome = self.env["flight.aerodrome"].create(
             {
                 "name": "Polar Airport",
@@ -64,7 +76,7 @@ class TestAerodrome(FlightCommon):
         self.assertEqual(aerodrome.latitude, 89.9999)
         self.assertEqual(aerodrome.longitude, -179.9999)
 
-        # Test edge case coordinates (model accepts any float values)
+        # Test edge case coordinates (valid limits)
         edge_aerodrome = self.env["flight.aerodrome"].create(
             {
                 "name": "Edge Case Airport",
@@ -78,6 +90,54 @@ class TestAerodrome(FlightCommon):
         self.assertTrue(edge_aerodrome.id)
         self.assertEqual(edge_aerodrome.latitude, 90.0)
         self.assertEqual(edge_aerodrome.longitude, 180.0)
+
+    def test_03b_aerodrome_coordinate_validation(self):
+        """Test coordinate validation constraints"""
+        from odoo.exceptions import ValidationError
+        
+        # Test invalid latitude (too high)
+        with self.assertRaises(ValidationError) as cm:
+            self.env["flight.aerodrome"].create({
+                "name": "Invalid Lat High",
+                "icao": "KILH",
+                "latitude": 91.0,  # Invalid: > 90
+                "longitude": 0.0,
+                "country_id": self.country_us.id,
+            })
+        self.assertIn("Latitude must be between -90 and 90", str(cm.exception))
+
+        # Test invalid latitude (too low)
+        with self.assertRaises(ValidationError) as cm:
+            self.env["flight.aerodrome"].create({
+                "name": "Invalid Lat Low",
+                "icao": "KILL",
+                "latitude": -91.0,  # Invalid: < -90
+                "longitude": 0.0,
+                "country_id": self.country_us.id,
+            })
+        self.assertIn("Latitude must be between -90 and 90", str(cm.exception))
+
+        # Test invalid longitude (too high)
+        with self.assertRaises(ValidationError) as cm:
+            self.env["flight.aerodrome"].create({
+                "name": "Invalid Lon High",
+                "icao": "KILG",
+                "latitude": 0.0,
+                "longitude": 181.0,  # Invalid: > 180
+                "country_id": self.country_us.id,
+            })
+        self.assertIn("Longitude must be between -180 and 180", str(cm.exception))
+
+        # Test invalid longitude (too low)
+        with self.assertRaises(ValidationError) as cm:
+            self.env["flight.aerodrome"].create({
+                "name": "Invalid Lon Low",
+                "icao": "KILW",
+                "latitude": 0.0,
+                "longitude": -181.0,  # Invalid: < -180
+                "country_id": self.country_us.id,
+            })
+        self.assertIn("Longitude must be between -180 and 180", str(cm.exception))
 
     def test_04_aerodrome_search_by_location(self):
         """Test searching aerodromes by city, state, country"""

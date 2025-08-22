@@ -23,6 +23,7 @@ class FlightAircraftSpec(models.Model):
         string="Aircraft",
         required=True,
         ondelete="cascade",
+        index=True,
     )
     value_bool = fields.Boolean(string="Boolean Value")
     value_text = fields.Text(string="Text Value")

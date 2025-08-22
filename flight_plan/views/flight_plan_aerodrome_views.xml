@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Flight Plan Aerodrome List View -->
+    <record id="view_flight_plan_aerodrome_tree" model="ir.ui.view">
+        <field name="name">flight.plan.aerodrome.list</field>
+        <field name="model">flight.plan.aerodrome</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="plan_id" />
+                <field name="aerodrome_id" />
+                <field name="function" />
+                <field name="planned_runway" />
+                <field name="terminal_procedure" widget="flight_json" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Flight Plan Aerodrome Form View -->
+    <record id="view_flight_plan_aerodrome_form" model="ir.ui.view">
+        <field name="name">flight.plan.aerodrome.form</field>
+        <field name="model">flight.plan.aerodrome</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div name="button_box" class="oe_button_box" />
+                    <group>
+                        <field name="plan_id" />
+                        <field name="aerodrome_id" />
+                        <field name="function" />
+                        <field name="planned_runway" />
+                    </group>
+                    <group string="Terminal Procedure">
+                        <field name="terminal_procedure" widget="flight_json" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Flight Plan Aerodrome Search View -->
+    <record id="view_flight_plan_aerodrome_search" model="ir.ui.view">
+        <field name="name">flight.plan.aerodrome.search</field>
+        <field name="model">flight.plan.aerodrome</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="plan_id" />
+                <field name="aerodrome_id" />
+                <field name="function" />
+                <field name="planned_runway" />
+                <filter
+                    string="Departure"
+                    name="departure"
+                    domain="[('function', '=', 'departure')]"
+                />
+                <filter
+                    string="Arrival"
+                    name="arrival"
+                    domain="[('function', '=', 'arrival')]"
+                />
+                <filter
+                    string="Departure Alternate"
+                    name="departure_alternate"
+                    domain="[('function', '=', 'departure_alternate')]"
+                />
+                <filter
+                    string="Arrival Alternate"
+                    name="arrival_alternate"
+                    domain="[('function', '=', 'arrival_alternate')]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Function"
+                        name="group_by_function"
+                        context="{'group_by': 'function'}"
+                    />
+                    <filter
+                        string="Aerodrome"
+                        name="group_by_aerodrome"
+                        context="{'group_by': 'aerodrome_id'}"
+                    />
+                    <filter
+                        string="Flight Plan"
+                        name="group_by_plan"
+                        context="{'group_by': 'plan_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Flight Plan Aerodrome Action Window -->
+    <record id="action_flight_plan_aerodrome_list" model="ir.actions.act_window">
+        <field name="name">Flight Plan Aerodromes</field>
+        <field name="res_model">flight.plan.aerodrome</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_flight_plan_aerodrome_search" />
+    </record>
+</odoo>
