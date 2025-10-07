@@ -73,6 +73,14 @@
   />
 
   <menuitem
+    id="menu_flight_aerodrome_runway"
+    name="Runways"
+    parent="menu_flight_configuration"
+    action="action_flight_aerodrome_runway"
+    sequence="15"
+  />
+
+  <menuitem
     id="menu_flight_aircraft_configuration"
     name="Aircraft"
     parent="menu_flight_configuration"

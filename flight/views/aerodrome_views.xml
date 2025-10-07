@@ -67,6 +67,20 @@
                             <field name="longitude" />
                         </group>
                     </group>
+                    <notebook>
+                        <page string="Runways">
+                            <field name="runway_ids">
+                                <list editable="bottom">
+                                    <field name="code" />
+                                    <field name="length" />
+                                    <field name="length_uom_id" />
+                                    <field name="width" />
+                                    <field name="width_uom_id" />
+                                    <field name="name" />
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
                 <chatter />
             </form>

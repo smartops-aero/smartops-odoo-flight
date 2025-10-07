@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Runway List View -->
+    <record id="view_flight_aerodrome_runway_list" model="ir.ui.view">
+        <field name="name">flight.aerodrome.runway.list</field>
+        <field name="model">flight.aerodrome.runway</field>
+        <field name="arch" type="xml">
+            <list string="Runways" editable="bottom">
+                <field name="aerodrome_id" />
+                <field name="code" />
+                <field name="length" />
+                <field name="length_uom_id" />
+                <field name="width" />
+                <field name="width_uom_id" />
+                <field name="name" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Runway Form View -->
+    <record id="view_flight_aerodrome_runway_form" model="ir.ui.view">
+        <field name="name">flight.aerodrome.runway.form</field>
+        <field name="model">flight.aerodrome.runway</field>
+        <field name="arch" type="xml">
+            <form string="Runway">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="aerodrome_id" />
+                            <field name="code" />
+                            <field name="name" />
+                        </group>
+                        <group>
+                            <label for="length" />
+                            <div class="o_row">
+                                <field name="length" />
+                                <field name="length_uom_id" />
+                            </div>
+                            <label for="width" />
+                            <div class="o_row">
+                                <field name="width" />
+                                <field name="width_uom_id" />
+                            </div>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Runway Search View -->
+    <record id="view_flight_aerodrome_runway_search" model="ir.ui.view">
+        <field name="name">flight.aerodrome.runway.search</field>
+        <field name="model">flight.aerodrome.runway</field>
+        <field name="arch" type="xml">
+            <search string="Search Runways">
+                <field name="code" string="Runway Code" />
+                <field name="name" string="Runway Name" />
+                <field name="aerodrome_id" string="Aerodrome" />
+                <separator />
+                <group expand="1" string="Group By">
+                    <filter
+                        string="Aerodrome"
+                        name="group_aerodrome"
+                        context="{'group_by': 'aerodrome_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Runway Action -->
+    <record id="action_flight_aerodrome_runway" model="ir.actions.act_window">
+        <field name="name">Runways</field>
+        <field name="res_model">flight.aerodrome.runway</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_group_aerodrome': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Runway
+            </p>
+            <p>
+                Runways define landing and takeoff strips at aerodromes. Each runway has a unique code (e.g., 05R, 23L).
+            </p>
+        </field>
+    </record>
+</odoo>

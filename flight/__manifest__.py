@@ -17,7 +17,7 @@
     "website": "https://github.com/smartops-aero/flight",
     "license": "LGPL-3",
     "category": "Industries",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.1.0",
     "images": [
         "static/description/banner.jpeg",
     ],
@@ -36,6 +36,7 @@
         "views/flight_views.xml",
         "views/aircraft_views.xml",
         "views/aerodrome_views.xml",
+        "views/flight_aerodrome_runway_views.xml",
         "views/flight_crew_views.xml",
         "views/menu.xml",
         "data/flight.aircraft.class.csv",

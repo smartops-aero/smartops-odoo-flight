@@ -33,6 +33,14 @@ class FlightAerodrome(models.Model):
     latitude = fields.Float(string="Geo Latitude", digits=(10, 7))
     longitude = fields.Float(string="Geo Longitude", digits=(10, 7))
 
+    # Runways
+    runway_ids = fields.One2many(
+        "flight.aerodrome.runway",
+        "aerodrome_id",
+        string="Runways",
+        help="Available runways at this aerodrome"
+    )
+
     _sql_constraints = [
         ("icao_unique", "unique(icao)", "Aerodrome with this ICAO already exists!"),
     ]
