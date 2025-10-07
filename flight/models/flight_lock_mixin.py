@@ -19,18 +19,21 @@ class FlightLockMixin(models.AbstractModel):
         # Check if any related flight is locked before creation
         # Note: self is empty during create, so we need to check the vals_list
         for vals in vals_list:
-            if 'flight_id' in vals and vals['flight_id']:
-                flight = self.env['flight.flight'].browse(vals['flight_id'])
+            if "flight_id" in vals and vals["flight_id"]:
+                flight = self.env["flight.flight"].browse(vals["flight_id"])
                 if flight.exists() and flight.locked:
-                    raise UserError(_("You cannot create records for locked flight: %s") % flight.display_name)
+                    raise UserError(
+                        _("You cannot create records for locked flight: %s")
+                        % flight.display_name
+                    )
         return super().create(vals_list)
 
     def write(self, vals):
         # Allow unlocking without lock check, but validate all other changes
         # If only changing 'locked' field to False, allow it
-        if vals.keys() == {'locked'} and not vals.get('locked', True):
+        if vals.keys() == {"locked"} and not vals.get("locked", True):
             return super().write(vals)
-        
+
         # For all other changes, check if records are locked
         for record in self:
             if record._is_locked():

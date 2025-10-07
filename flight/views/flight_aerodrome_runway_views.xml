@@ -60,10 +60,10 @@
                 <separator />
                 <group expand="1" string="Group By">
                     <filter
-                        string="Aerodrome"
-                        name="group_aerodrome"
-                        context="{'group_by': 'aerodrome_id'}"
-                    />
+            string="Aerodrome"
+            name="group_aerodrome"
+            context="{'group_by': 'aerodrome_id'}"
+          />
                 </group>
             </search>
         </field>

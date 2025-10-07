@@ -8,41 +8,31 @@ class FlightAerodromeRunway(models.Model):
     _order = "code"
 
     name = fields.Char(
-        compute="_compute_name",
-        store=True,
-        help="Runway name (e.g., KORD 05R)"
+        compute="_compute_name", store=True, help="Runway name (e.g., KORD 05R)"
     )
-    code = fields.Char(
-        required=True,
-        size=3,
-        help="Runway code (e.g., 05R, 23L, 88)"
-    )
+    code = fields.Char(required=True, size=3, help="Runway code (e.g., 05R, 23L, 88)")
     aerodrome_id = fields.Many2one(
-        "flight.aerodrome",
-        required=True,
-        ondelete="cascade"
+        "flight.aerodrome", required=True, ondelete="cascade"
     )
-    length = fields.Float(
-        string="Length",
-        help="Runway length"
-    )
+    length = fields.Float(string="Length", help="Runway length")
     length_uom_id = fields.Many2one(
         "uom.uom",
         string="Length UoM",
         domain="[('category_id.name', '=', 'Length')]",
-        default=lambda self: self.env.ref('uom.product_uom_meter', raise_if_not_found=False),
-        help="Unit of measure for runway length"
+        default=lambda self: self.env.ref(
+            "uom.product_uom_meter", raise_if_not_found=False
+        ),
+        help="Unit of measure for runway length",
     )
-    width = fields.Float(
-        string="Width",
-        help="Runway width"
-    )
+    width = fields.Float(string="Width", help="Runway width")
     width_uom_id = fields.Many2one(
         "uom.uom",
         string="Width UoM",
         domain="[('category_id.name', '=', 'Length')]",
-        default=lambda self: self.env.ref('uom.product_uom_meter', raise_if_not_found=False),
-        help="Unit of measure for runway width"
+        default=lambda self: self.env.ref(
+            "uom.product_uom_meter", raise_if_not_found=False
+        ),
+        help="Unit of measure for runway width",
     )
 
     _sql_constraints = [
@@ -73,17 +63,11 @@ class FlightAerodromeRunway(models.Model):
             try:
                 runway_num = int(record.code[:2])
                 if runway_num < 1 or runway_num > 36:
-                    raise ValidationError(
-                        _("Runway number must be between 01 and 36")
-                    )
+                    raise ValidationError(_("Runway number must be between 01 and 36"))
             except ValueError as e:
-                raise ValidationError(
-                    _("First two characters must be digits")
-                ) from e
+                raise ValidationError(_("First two characters must be digits")) from e
 
             # Check optional third character (L/R/C)
             if len(record.code) == 3:
                 if record.code[2] not in ["L", "R", "C"]:
-                    raise ValidationError(
-                        _("Third character must be L, R, or C")
-                    )
+                    raise ValidationError(_("Third character must be L, R, or C"))

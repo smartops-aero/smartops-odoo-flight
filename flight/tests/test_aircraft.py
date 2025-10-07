@@ -215,48 +215,50 @@ class TestAircraft(FlightCommon):
     def test_11_aircraft_model_display_name(self):
         """Test aircraft model display name computation"""
         # Test with make, name, and code
-        model_full = self.env["flight.aircraft.model"].create({
-            "name": "737-800",
-            "make_id": self.aircraft_make.id,  # Boeing
-            "code": "B738"
-        })
+        model_full = self.env["flight.aircraft.model"].create(
+            {
+                "name": "737-800",
+                "make_id": self.aircraft_make.id,  # Boeing
+                "code": "B738",
+            }
+        )
         self.assertEqual(model_full.display_name, "Boeing 737-800 (B738)")
-        
+
         # Test with make and name only
-        model_no_code = self.env["flight.aircraft.model"].create({
-            "name": "A320",
-            "make_id": self.aircraft_make.id,  # Boeing (reusing for test)
-        })
+        model_no_code = self.env["flight.aircraft.model"].create(
+            {
+                "name": "A320",
+                "make_id": self.aircraft_make.id,  # Boeing (reusing for test)
+            }
+        )
         self.assertEqual(model_no_code.display_name, "Boeing A320")
-        
+
         # Test with name only (no make)
-        model_name_only = self.env["flight.aircraft.model"].create({
-            "name": "Generic Aircraft"
-        })
+        model_name_only = self.env["flight.aircraft.model"].create(
+            {"name": "Generic Aircraft"}
+        )
         self.assertEqual(model_name_only.display_name, "Generic Aircraft")
-        
+
         # Test with code only (no make, no name)
-        model_code_only = self.env["flight.aircraft.model"].create({
-            "code": "TEST"
-        })
+        model_code_only = self.env["flight.aircraft.model"].create({"code": "TEST"})
         self.assertEqual(model_code_only.display_name, "(TEST)")
 
     def test_12_aircraft_model_display_name_null_handling(self):
         """Test aircraft model display name with null/empty values"""
         # Create a make with empty name to test null handling
-        empty_make = self.env["flight.aircraft.make"].create({
-            "name": ""  # Empty name
-        })
-        
+        empty_make = self.env["flight.aircraft.make"].create(
+            {
+                "name": ""  # Empty name
+            }
+        )
+
         # Test model with make that has empty name
-        model_empty_make = self.env["flight.aircraft.model"].create({
-            "name": "Test Model",
-            "make_id": empty_make.id,
-            "code": "TM01"
-        })
+        model_empty_make = self.env["flight.aircraft.model"].create(
+            {"name": "Test Model", "make_id": empty_make.id, "code": "TM01"}
+        )
         # Should skip the empty make name and show only name and code
         self.assertEqual(model_empty_make.display_name, "Test Model (TM01)")
-        
+
         # Test completely empty model (fallback to ID)
         empty_model = self.env["flight.aircraft.model"].create({})
         self.assertTrue(empty_model.display_name.startswith("Model #"))
@@ -265,40 +267,48 @@ class TestAircraft(FlightCommon):
     def test_13_aircraft_mtow_validation(self):
         """Test MTOW validation constraint"""
         from odoo.exceptions import ValidationError
-        
+
         # Test negative MTOW should fail during creation
         with self.assertRaises(ValidationError) as cm:
-            self.env["flight.aircraft"].create({
-                "registration": "N-NEG",
-                "model_id": self.aircraft_model.id,
-                "mtow": -1000,  # Negative weight
-                "weight_uom_id": self.env.ref("uom.product_uom_lb").id,
-            })
+            self.env["flight.aircraft"].create(
+                {
+                    "registration": "N-NEG",
+                    "model_id": self.aircraft_model.id,
+                    "mtow": -1000,  # Negative weight
+                    "weight_uom_id": self.env.ref("uom.product_uom_lb").id,
+                }
+            )
         self.assertIn("Maximum take-off weight cannot be negative", str(cm.exception))
-        
+
         # Test zero MTOW should be allowed
-        aircraft_zero = self.env["flight.aircraft"].create({
-            "registration": "N-ZERO", 
-            "model_id": self.aircraft_model.id,
-            "mtow": 0,  # Zero weight should be allowed
-            "weight_uom_id": self.env.ref("uom.product_uom_lb").id,
-        })
+        aircraft_zero = self.env["flight.aircraft"].create(
+            {
+                "registration": "N-ZERO",
+                "model_id": self.aircraft_model.id,
+                "mtow": 0,  # Zero weight should be allowed
+                "weight_uom_id": self.env.ref("uom.product_uom_lb").id,
+            }
+        )
         self.assertEqual(aircraft_zero.mtow, 0)
-        
+
         # Test positive MTOW should succeed
-        aircraft_positive = self.env["flight.aircraft"].create({
-            "registration": "N-POS",
-            "model_id": self.aircraft_model.id,
-            "mtow": 75000,  # Positive weight
-            "weight_uom_id": self.env.ref("uom.product_uom_lb").id,
-        })
+        aircraft_positive = self.env["flight.aircraft"].create(
+            {
+                "registration": "N-POS",
+                "model_id": self.aircraft_model.id,
+                "mtow": 75000,  # Positive weight
+                "weight_uom_id": self.env.ref("uom.product_uom_lb").id,
+            }
+        )
         self.assertEqual(aircraft_positive.mtow, 75000)
-        
+
         # Test empty MTOW should be allowed (constraint only checks if mtow exists)
-        aircraft_empty = self.env["flight.aircraft"].create({
-            "registration": "N-EMPTY",
-            "model_id": self.aircraft_model.id,
-            # No mtow specified
-            "weight_uom_id": self.env.ref("uom.product_uom_lb").id,
-        })
+        aircraft_empty = self.env["flight.aircraft"].create(
+            {
+                "registration": "N-EMPTY",
+                "model_id": self.aircraft_model.id,
+                # No mtow specified
+                "weight_uom_id": self.env.ref("uom.product_uom_lb").id,
+            }
+        )
         self.assertFalse(aircraft_empty.mtow)
