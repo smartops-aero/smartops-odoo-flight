@@ -51,12 +51,16 @@ class FlightAerodrome(models.Model):
     def _check_coordinates(self):
         """Validate latitude and longitude are within valid ranges"""
         for record in self:
-            if record.latitude and not (-90 <= record.latitude <= 90):
+            if record.latitude is not False and (
+                record.latitude < -90 or record.latitude > 90
+            ):
                 raise ValidationError(
                     _("Latitude must be between -90 and 90 degrees. Got: %s")
                     % record.latitude
                 )
-            if record.longitude and not (-180 <= record.longitude <= 180):
+            if record.longitude is not False and (
+                record.longitude < -180 or record.longitude > 180
+            ):
                 raise ValidationError(
                     _("Longitude must be between -180 and 180 degrees. Got: %s")
                     % record.longitude

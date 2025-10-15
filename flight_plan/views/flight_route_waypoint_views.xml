@@ -53,22 +53,25 @@
                 <field name="icao_country_code" />
                 <group expand="0" string="Group By">
                     <filter
-                        string="Route"
-                        name="group_by_route"
-                        context="{'group_by': 'route_id'}"
-                    />
+            string="Route"
+            name="group_by_route"
+            context="{'group_by': 'route_id'}"
+          />
                     <filter
-                        string="Country"
-                        name="group_by_country"
-                        context="{'group_by': 'icao_country_code'}"
-                    />
+            string="Country"
+            name="group_by_country"
+            context="{'group_by': 'icao_country_code'}"
+          />
                 </group>
             </search>
         </field>
     </record>
 
     <!-- Flight Route Waypoint Action Window -->
-    <record id="action_flight_route_waypoint_list" model="ir.actions.act_window">
+    <record
+    id="action_flight_route_waypoint_list"
+    model="ir.actions.act_window"
+  >
         <field name="name">Flight Route Waypoints</field>
         <field name="res_model">flight.route.waypoint</field>
         <field name="view_mode">list,form</field>

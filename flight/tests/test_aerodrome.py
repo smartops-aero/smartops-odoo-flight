@@ -93,6 +93,21 @@ class TestAerodrome(FlightCommon):
         self.assertEqual(edge_aerodrome.latitude, 90.0)
         self.assertEqual(edge_aerodrome.longitude, 180.0)
 
+        # Test zero coordinates (Gulf of Guinea/Null Island)
+        zero_aerodrome = self.env["flight.aerodrome"].create(
+            {
+                "name": "Null Island Airport",
+                "icao": "KNUL",
+                "latitude": 0.0,
+                "longitude": 0.0,
+                "country_id": self.country_us.id,
+            }
+        )
+
+        self.assertTrue(zero_aerodrome.id)
+        self.assertEqual(zero_aerodrome.latitude, 0.0)
+        self.assertEqual(zero_aerodrome.longitude, 0.0)
+
     def test_03b_aerodrome_coordinate_validation(self):
         """Test coordinate validation constraints"""
         from odoo.exceptions import ValidationError

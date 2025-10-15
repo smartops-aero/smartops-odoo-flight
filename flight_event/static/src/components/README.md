@@ -13,6 +13,7 @@ FlightEventTimeMatrixField (Main Field Widget)
 ## Component Responsibilities
 
 ### FlightEventTimeMatrixField
+
 - **Location**: `flight_event_time_matrix_field/`
 - **Purpose**: Bridge between Odoo form view and the matrix display
 - **Key Responsibilities**:
@@ -22,6 +23,7 @@ FlightEventTimeMatrixField (Main Field Widget)
   - Provides time kinds (Actual/Scheduled)
 
 ### FlightEventTimeMatrixRenderer
+
 - **Location**: `flight_event_time_matrix_renderer/`
 - **Purpose**: Manages the table layout and data structure
 - **Key Responsibilities**:
@@ -31,6 +33,7 @@ FlightEventTimeMatrixField (Main Field Widget)
   - Propagates cell updates to parent field
 
 ### FlightEventTimeMatrixCell
+
 - **Location**: `flight_event_time_matrix_cell/`
 - **Purpose**: Individual cell with datetime picker
 - **Key Responsibilities**:
@@ -49,11 +52,13 @@ FlightEventTimeMatrixField (Main Field Widget)
 ## Known Issues
 
 ### Date Update Not Refreshing Matrix
+
 - **Problem**: When flight date changes, matrix doesn't update relative day displays
 - **Cause**: `onWillUpdateProps` not triggered for field component when other fields change
 - **Workaround**: Manual form refresh or save/reload
 
 ### Technical Details
+
 - Field components in Odoo 18 don't automatically receive new props when sibling fields change
 - The state.date in FlightEventTimeMatrixField doesn't sync with record.data.date changes
 - Potential solutions require deeper integration with Odoo's field update system
@@ -63,7 +68,7 @@ FlightEventTimeMatrixField (Main Field Widget)
 The widget is registered as `flight_event_time_matrix` and used in views like:
 
 ```xml
-<field name="flight_event_time_ids" widget="flight_event_time_matrix"/>
+<field name="flight_event_time_ids" widget="flight_event_time_matrix" />
 ```
 
 ## Dependencies
@@ -76,6 +81,7 @@ The widget is registered as `flight_event_time_matrix` and used in views like:
 ## Testing
 
 To test the matrix:
+
 1. Create/edit a flight record
 2. Set a flight date
 3. Click on matrix cells to add event times

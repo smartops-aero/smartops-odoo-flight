@@ -8,7 +8,7 @@ const { DateTime } = luxon;
 /**
  * Renders the flight event time matrix as a table.
  * Manages the layout and data flow to individual cell components.
- * 
+ *
  * @extends Component
  */
 export class FlightEventTimeMatrixRenderer extends Component {
@@ -34,7 +34,7 @@ export class FlightEventTimeMatrixRenderer extends Component {
   _updateProps(newProps) {
     this.timeKinds = newProps.timeKinds;
     this.eventCodes = newProps.eventCodes;
-    
+
     const records = newProps.list?.records || [];
     this.matrix = this._getMatrix(records);
   }
@@ -57,7 +57,7 @@ export class FlightEventTimeMatrixRenderer extends Component {
     records.forEach((record) => {
       const eventCode = record.data.code_id[1];
       const timeKind = record.data.time_kind;
-      
+
       if (matrix[eventCode] && matrix[eventCode][timeKind] !== undefined) {
         matrix[eventCode][timeKind].value = record.data.time;
         matrix[eventCode][timeKind].record = record;
@@ -76,16 +76,16 @@ export class FlightEventTimeMatrixRenderer extends Component {
     if (!this.matrix) {
       return false;
     }
-    
+
     const cellData = this.matrix[eventCode.code]?.[timeKind.key];
     const value = cellData?.value;
-    
-    return value !== undefined ? value : false;
+
+    return value === undefined ? false : value;
   }
 
   /**
    * @param {Object} timeKind
-   * @param {Object} eventCode  
+   * @param {Object} eventCode
    * @param {luxon.DateTime} value
    */
   onCellUpdate(timeKind, eventCode, value) {
@@ -93,4 +93,3 @@ export class FlightEventTimeMatrixRenderer extends Component {
     this.props.onUpdate(timeKind, eventCode, value);
   }
 }
-

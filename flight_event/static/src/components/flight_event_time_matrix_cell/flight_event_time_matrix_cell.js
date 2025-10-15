@@ -9,7 +9,7 @@ const { DateTime } = luxon;
 /**
  * Individual cell component for the flight event time matrix.
  * Each cell manages its own datetime picker and displays formatted time with relative day offset.
- * 
+ *
  * @extends Component
  */
 export class FlightEventTimeMatrixCell extends Component {
@@ -41,7 +41,7 @@ export class FlightEventTimeMatrixCell extends Component {
       get pickerProps() {
         return getPickerProps();
       },
-      onChange: (value) => {
+      onChange: () => {
         // Intentionally empty - we handle updates in onApply
       },
       onApply: (value) => {
@@ -50,33 +50,33 @@ export class FlightEventTimeMatrixCell extends Component {
         }
       },
     });
-    
+
     this.openPicker = dateTimePicker.open;
   }
 
   /**
    * Formats datetime for display with relative day offset.
-   * @returns {string} Formatted time like "14:30" or "14:30 +1" for next day
+   * @returns {String} Formatted time like "14:30" or "14:30 +1" for next day
    */
   getFormattedValue() {
     const value = this.props.value;
-    
+
     if (!value || value === false) {
       return "-";
     }
-    
+
     try {
       let formatted = formatDateTime(value, { format: "HH:mm" });
-      
+
       if (this.props.date && value) {
         const dayDiff = Math.floor(
           value.startOf("day").diff(this.props.date.startOf("day"), "days").days
         );
         if (dayDiff !== 0) {
-          formatted += ` ${dayDiff > 0 ? '+' : ''}${dayDiff}`;
+          formatted += ` ${dayDiff > 0 ? "+" : ""}${dayDiff}`;
         }
       }
-      
+
       return formatted;
     } catch (error) {
       return "-";

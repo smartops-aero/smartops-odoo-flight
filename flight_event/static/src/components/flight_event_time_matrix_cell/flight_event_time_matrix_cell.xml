@@ -2,11 +2,11 @@
 <templates xml:space="preserve">
     <t t-name="flight_event.FlightEventTimeMatrixCell">
         <span
-            t-ref="cell"
-            class="o_matrix_cell_value"
-            t-att-class="{'cursor-pointer': !props.readonly}"
-            t-on-click="onClick"
-            t-esc="getFormattedValue()"
-        />
+      t-ref="cell"
+      class="o_matrix_cell_value"
+      t-att-class="{'cursor-pointer': !props.readonly}"
+      t-on-click="onClick"
+      t-esc="getFormattedValue()"
+    />
     </t>
 </templates>

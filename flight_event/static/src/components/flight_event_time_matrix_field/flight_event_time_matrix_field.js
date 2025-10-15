@@ -9,12 +9,12 @@ import { useService } from "@web/core/utils/hooks";
 /**
  * Field widget for displaying and editing flight event times in a matrix format.
  * Manages the relationship between flight events (e.g., takeoff, landing) and their time kinds (actual/scheduled).
- * 
+ *
  * The widget displays a grid where:
  * - Rows represent event codes (takeoff, landing, etc.)
  * - Columns represent time kinds (Actual, Scheduled)
  * - Cells contain datetime values with relative day offset display
- * 
+ *
  * @extends Component
  */
 export class FlightEventTimeMatrixField extends Component {
@@ -79,7 +79,7 @@ export class FlightEventTimeMatrixField extends Component {
   /**
    * Commits a datetime value change to the database.
    * Either updates an existing flight.event.time record or creates a new one.
-   * 
+   *
    * @param {Object} timeKind - Time kind object with key ('A' or 'S') and label
    * @param {Object} eventCode - Event code object with id, code, and name
    * @param {luxon.DateTime} value - The new datetime value
@@ -99,7 +99,7 @@ export class FlightEventTimeMatrixField extends Component {
         record.data.time_kind === timeKind.key &&
         record.data.code_id[0] === eventCode.id
     );
-    
+
     if (matchingRecords.length === 1) {
       // Update existing record
       await matchingRecords[0].update({ time: value });
@@ -115,7 +115,7 @@ export class FlightEventTimeMatrixField extends Component {
         flight_id: this.props.record.id || this.props.record.resId,
       };
       await record.update(values);
-      
+
       // Force UI update by triggering a re-render
       this.render();
     } else {

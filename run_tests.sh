@@ -35,11 +35,11 @@ source "$VENV_PATH/bin/activate"
 run_module_tests() {
     local module=$1
     local tags=$2
-    
+
     echo ""
     echo -e "${YELLOW}Testing module: $module${NC}"
     echo "----------------------------------------"
-    
+
     # Run the tests using the established approach from TESTING_GUIDE.md
     "$ODOO_PATH/src/odoo/odoo-bin" \
         --test-enable \
@@ -52,7 +52,7 @@ run_module_tests() {
         --addons-path="$ODOO_PATH/src/odoo/addons,$ADDONS_PATH" \
         -d "$DB_NAME" \
         -u "$module" 2>&1 | tee -a test_results.log
-    
+
     # Check exit status
     if [ ${PIPESTATUS[0]} -eq 0 ]; then
         echo -e "${GREEN}✓ $module tests passed${NC}"
@@ -88,7 +88,7 @@ else
 fi
 ((TOTAL_MODULES++))
 
-# UOM module (12 tests expected) 
+# UOM module (12 tests expected)
 if run_module_tests "flight_uom" "flight_uom"; then
     ((PASSED_MODULES++))
 else
@@ -136,7 +136,7 @@ else
 fi
 ((TOTAL_MODULES++))
 
-# Website fleet module (13 tests expected)  
+# Website fleet module (13 tests expected)
 if run_module_tests "website_flight_fleet" "website_flight_fleet"; then
     ((PASSED_MODULES++))
 else

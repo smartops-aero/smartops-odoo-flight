@@ -15,7 +15,6 @@ class FlightPlan(models.Model):
     fuel_header = fields.Json(string="Fuel Header")
     weight_header = fields.Json(string="Weight Header")
 
-
     route_id = fields.Many2one("flight.plan.route", index=True)
     alternate_route_ids = fields.Many2many(
         "flight.plan.route",
@@ -29,11 +28,13 @@ class FlightPlan(models.Model):
     aerodrome_ids = fields.One2many(
         "flight.plan.aerodrome", "plan_id", string="Aerodromes"
     )
-    
+
     # Computed field to show main route waypoints directly
     main_route_waypoint_ids = fields.One2many(
-        "flight.route.waypoint", compute="_compute_main_route_waypoints", 
-        string="Main Route Waypoints", readonly=True
+        "flight.route.waypoint",
+        compute="_compute_main_route_waypoints",
+        string="Main Route Waypoints",
+        readonly=True,
     )
 
     @api.depends("flight_id", "version_number", "route_id")
@@ -42,8 +43,7 @@ class FlightPlan(models.Model):
             route_name = record.route_id.name or "No Route"
             record.display_name = f"{record.flight_id.display_name} v{record.version_number} - {route_name}"
 
-    
-    @api.depends('route_id', 'route_id.waypoint_ids')
+    @api.depends("route_id", "route_id.waypoint_ids")
     def _compute_main_route_waypoints(self):
         for record in self:
             if record.route_id:
