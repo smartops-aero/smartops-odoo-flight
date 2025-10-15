@@ -64,7 +64,9 @@ The free flight modules demonstrate good code organization and quality:
 
 ### ❓ Questions for Alexis
 
-1. **Event Time Kinds Mismatch**: The backend model has 5 EVENT_TIME_KINDS (`A`, `S`, `E`, `P`, `T`) but the JavaScript widget in `flight_event_time_matrix_field.js` only shows 2 (`A` - Actual, `S` - Scheduled). Should the frontend display all 5 time kinds or is this intentional filtering? Are `E` (Estimated), `P` (Planned), and `T` (Target) deliberately hidden from the UI?
+**Status: ✅ ALL RESOLVED**
+
+1. ✅ **Event Time Kinds Mismatch**: The backend model has 5 EVENT_TIME_KINDS (`A`, `S`, `E`, `P`, `T`) but the JavaScript widget only shows 2 (`A` - Actual, `S` - Scheduled). **RESOLVED: This is intentional - the filtering is expected behavior per user confirmation.**
 
 ## Module-Specific Analysis
 

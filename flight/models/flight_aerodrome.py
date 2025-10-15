@@ -35,6 +35,14 @@ class FlightAerodrome(models.Model):
     latitude = fields.Float(string="Geo Latitude", digits=(10, 7))
     longitude = fields.Float(string="Geo Longitude", digits=(10, 7))
 
+    # Runways
+    runway_ids = fields.One2many(
+        "flight.aerodrome.runway",
+        "aerodrome_id",
+        string="Runways",
+        help="Available runways at this aerodrome",
+    )
+
     _sql_constraints = [
         ("icao_unique", "unique(icao)", "Aerodrome with this ICAO already exists!"),
     ]
@@ -47,13 +55,15 @@ class FlightAerodrome(models.Model):
                 record.latitude < -90 or record.latitude > 90
             ):
                 raise ValidationError(
-                    _("Latitude must be between -90.0 and +90.0 degrees.")
+                    _("Latitude must be between -90 and 90 degrees. Got: %s")
+                    % record.latitude
                 )
             if record.longitude is not False and (
                 record.longitude < -180 or record.longitude > 180
             ):
                 raise ValidationError(
-                    _("Longitude must be between -180.0 and +180.0 degrees.")
+                    _("Longitude must be between -180 and 180 degrees. Got: %s")
+                    % record.longitude
                 )
 
     @api.depends("icao", "iata", "name")
