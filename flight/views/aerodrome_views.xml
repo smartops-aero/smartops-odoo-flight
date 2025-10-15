@@ -30,16 +30,16 @@
 
     <!-- Aerodrome Tree View -->
     <record id="view_flight_aerodrome_tree" model="ir.ui.view">
-        <field name="name">flight.aerodrome.tree</field>
+        <field name="name">flight.aerodrome.list</field>
         <field name="model">flight.aerodrome</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
                 <field name="icao" />
                 <field name="iata" />
                 <field name="country_id" />
                 <field name="city" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -67,11 +67,22 @@
                             <field name="longitude" />
                         </group>
                     </group>
+                    <notebook>
+                        <page string="Runways">
+                            <field name="runway_ids">
+                                <list editable="bottom">
+                                    <field name="code" />
+                                    <field name="length" />
+                                    <field name="length_uom_id" />
+                                    <field name="width" />
+                                    <field name="width_uom_id" />
+                                    <field name="name" />
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" />
-                    <field name="message_ids" />
-                </div>
+                <chatter />
             </form>
         </field>
     </record>
@@ -81,6 +92,6 @@
     <record id="action_flight_aerodrome_list" model="ir.actions.act_window">
         <field name="name">Aerodromes</field>
         <field name="res_model">flight.aerodrome</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>

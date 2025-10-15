@@ -10,12 +10,12 @@ class FlightNumber(models.Model):
     prefix_id = fields.Many2one("flight.prefix")
     number = fields.Char()
 
-    def name_get(self):
-        result = []
+    @api.depends("prefix_id.name", "number")
+    def _compute_display_name(self):
         for record in self:
-            name = f"{record.prefix_id.name}{record.number}"
-            result.append((record.id, name))
-        return result
+            prefix_name = record.prefix_id.name if record.prefix_id else ""
+            number = record.number if record.number else ""
+            record.display_name = f"{prefix_name}{number}"
 
     @api.model
     def _name_search(
@@ -37,7 +37,9 @@ class FlightNumber(models.Model):
                 ("number", operator, name),
             ]
 
-        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)
+        # In Odoo 18.0, _search doesn't accept access_rights_uid parameter
+        # The name_get_uid parameter is maintained for API compatibility but not used
+        return self._search(domain + args, limit=limit)
 
 
 class FlightPrefix(models.Model):

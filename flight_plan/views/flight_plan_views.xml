@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Flight Plan List View -->
+    <record id="view_flight_plan_tree" model="ir.ui.view">
+        <field name="name">flight.plan.list</field>
+        <field name="model">flight.plan</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="flight_id" />
+                <field name="timestamp" />
+                <field name="version_number" />
+                <field name="route_id" string="Main Route" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Flight Plan Form View -->
+    <record id="view_flight_plan_form" model="ir.ui.view">
+        <field name="name">flight.plan.form</field>
+        <field name="model">flight.plan</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div name="button_box" class="oe_button_box" />
+                    <group>
+                        <field name="flight_id" />
+                        <field name="version_number" />
+                        <field name="timestamp" />
+                    </group>
+                    <notebook>
+                        <page string="Remarks" name="remarks">
+                            <field name="remarks" widget="flight_json" />
+                        </page>
+                        <page
+              string="Flight Plan Header"
+              name="flight_plan_header"
+            >
+                            <field
+                name="flight_plan_header"
+                widget="flight_json"
+              />
+                        </page>
+                        <page string="Weight Header" name="weight_header">
+                            <field name="weight_header" widget="flight_json" />
+                        </page>
+                        <page string="Fuel Header" name="fuel_header">
+                            <field name="fuel_header" widget="flight_json" />
+                        </page>
+                        <page string="Route" name="route">
+                            <group>
+                                <field
+                  name="route_id"
+                  options="{'no_create': True}"
+                />
+                            </group>
+                            <separator string="Main Route Waypoints" />
+                            <field name="main_route_waypoint_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" />
+                                    <field name="name" />
+                                    <field name="description" />
+                                    <field name="latitude" />
+                                    <field name="longitude" />
+                                    <field name="icao_country_code" />
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Aerodromes" name="aerodromes">
+                            <field name="aerodrome_ids">
+                                <list editable="bottom">
+                                    <field name="aerodrome_id" />
+                                    <field name="function" />
+                                    <field name="planned_runway" />
+                                    <field
+                    name="terminal_procedure"
+                    widget="flight_json"
+                    string="Terminal Procedure"
+                  />
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Alternate Routes" name="alternate_routes">
+                            <field name="alternate_route_ids">
+                                <list>
+                                    <field name="name" />
+                                    <field name="fms_name" />
+                                    <field name="route_type" />
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter />
+            </form>
+        </field>
+    </record>
+
+    <!-- Flight Plan Search View -->
+    <record id="view_flight_plan_search" model="ir.ui.view">
+        <field name="name">flight.plan.search</field>
+        <field name="model">flight.plan</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="flight_id" />
+                <field name="timestamp" />
+                <field name="version_number" />
+                <field name="route_id" />
+                <group expand="0" string="Group By">
+                    <filter
+            string="Flight"
+            name="group_by_flight"
+            context="{'group_by': 'flight_id'}"
+          />
+                    <filter
+            string="Version"
+            name="group_by_version"
+            context="{'group_by': 'version_number'}"
+          />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Flight Plan Action Window -->
+    <record id="action_flight_plan_list" model="ir.actions.act_window">
+        <field name="name">Flight Plans</field>
+        <field name="res_model">flight.plan</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_flight_plan_search" />
+    </record>
+</odoo>

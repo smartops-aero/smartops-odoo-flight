@@ -1,11 +1,13 @@
 # Copyright 2024 Apexive <https://apexive.com/>
 # License MIT (https://opensource.org/licenses/MIT).
-from odoo import fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class FlightAircraftClass(models.Model):
     _name = "flight.aircraft.class"
     _description = "Aircraft Category and Class"
+    _order = "name"
 
     aircraft_category = fields.Selection(
         [
@@ -27,6 +29,7 @@ class FlightAircraftClass(models.Model):
 class FlightAircraftMake(models.Model):
     _name = "flight.aircraft.make"
     _description = "Aircraft Make"
+    _order = "name"
 
     name = fields.Char()
 
@@ -34,6 +37,7 @@ class FlightAircraftMake(models.Model):
 class FlightAircraftModelTag(models.Model):
     _name = "flight.aircraft.model.tag"
     _description = "Aircraft Model Tag"
+    _order = "name"
 
     name = fields.Char()
 
@@ -41,6 +45,7 @@ class FlightAircraftModelTag(models.Model):
 class FlightAircraftModel(models.Model):
     _name = "flight.aircraft.model"
     _description = "Aircraft Model"
+    _order = "make_id, name"
 
     name = fields.Char()
     make_id = fields.Many2one("flight.aircraft.make")
@@ -80,6 +85,18 @@ class FlightAircraftModel(models.Model):
     code = fields.Char("ICAO type code")
 
     tag_ids = fields.Many2many("flight.aircraft.model.tag")
+
+    @api.depends("name", "make_id.name", "code")
+    def _compute_display_name(self):
+        for record in self:
+            parts = []
+            if record.make_id and record.make_id.name:
+                parts.append(record.make_id.name)
+            if record.name:
+                parts.append(record.name)
+            if record.code:
+                parts.append(f"({record.code})")
+            record.display_name = " ".join(parts) if parts else f"Model #{record.id}"
 
 
 class FlightAircraft(models.Model):
@@ -134,3 +151,13 @@ class FlightAircraft(models.Model):
             "Aircraft with this registration number already exists!",
         )
     ]
+
+    @api.constrains("mtow")
+    def _check_mtow(self):
+        """Validate maximum take-off weight is not negative"""
+        for record in self:
+            if record.mtow and record.mtow < 0:
+                raise ValidationError(
+                    _("Maximum take-off weight cannot be negative. Got: %s")
+                    % record.mtow
+                )

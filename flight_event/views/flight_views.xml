@@ -13,23 +13,23 @@
               widget="flight_event_time_matrix"
               options="{'time_kinds': 'get_time_kinds'}"
             >
-                            <tree>
+                            <list>
                                 <field name="flight_id" />
                                 <field name="time_kind" />
                                 <field name="code_id" />
                                 <field name="time" />
-                            </tree>
+                            </list>
                         </field>
                     </page>
                     <page string="Phase Durations">
                         <field name="phase_duration_ids">
-                            <tree>
+                            <list>
                                 <field name="phase_id" />
                                 <field name="time_kind" />
                                 <field name="start_event_id" />
                                 <field name="end_event_id" />
                                 <field name="duration" widget="float_time" />
-                            </tree>
+                            </list>
                         </field>
                     </page>
                 </notebook>
@@ -52,15 +52,15 @@
 
 
     <record id="view_flight_tree_inherited" model="ir.ui.view">
-        <field name="name">flight.flight.tree.inherited</field>
+        <field name="name">flight.flight.list.inherited</field>
         <field name="model">flight.flight</field>
         <field name="inherit_id" ref="flight.view_flight_tree" />
         <field name="arch" type="xml">
-            <xpath expr="//tree" position="inside">
+            <xpath expr="//list" position="inside">
                 <field name="block_duration" widget="float_time" />
                 <field name="flight_duration" widget="float_time" />
             </xpath>
-            <xpath expr="//tree" position="inside">
+            <xpath expr="//list" position="inside">
                 <header>
                     <button
             name="%(action_create_missing_flight_durations)d"

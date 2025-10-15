@@ -84,6 +84,9 @@ class FlightDataProvider(models.Model):
         self.ensure_one()
 
         try:
+            # TODO: SECURITY WARNING - safe_eval() is not truly safe and can execute arbitrary code
+            # This should be replaced with ast.literal_eval() or json.loads() to prevent code injection
+            # Keeping as-is for now to avoid breaking existing functionality without full testing
             kwargs = safe_eval(schedule.kwargs or "{}")
 
             # Use sudo() if user_id is set, otherwise use self
@@ -116,7 +119,7 @@ class FlightDataProvider(models.Model):
             )
 
     def _dispatch(self, schedule, operation, *args, **kwargs):
-        method_name = f"_{operation}_{schedule.model.replace('flight.', '').replace('.','_')}_data"
+        method_name = f"_{operation}_{schedule.model.replace('flight.', '').replace('.', '_')}_data"
         method = getattr(self, method_name, False)
 
         if not method:
@@ -257,19 +260,26 @@ class FlightDataSyncSchedule(models.Model):
     last_success = fields.Datetime(string="Last Successful Run")
     next_run = fields.Datetime(string="Next Run", compute="_compute_next_run")
 
-    def name_get(self):
-        result = []
+    @api.depends("provider_id.name", "provider_id.service", "name")
+    def _compute_display_name(self):
         for record in self:
-            name = f"{record.provider_id.name} ({record.provider_id.service}): {record.name}"
-            result.append((record.id, name))
-        return result
+            provider_name = (
+                record.provider_id.name if record.provider_id else "No Provider"
+            )
+            provider_service = (
+                record.provider_id.service if record.provider_id else "No Service"
+            )
+            schedule_name = record.name if record.name else "No Name"
+            record.display_name = (
+                f"{provider_name} ({provider_service}): {schedule_name}"
+            )
 
     def action_view_logs(self):
         self.ensure_one()
         return {
             "name": _("Sync Logs"),
             "res_model": "flight.data.sync.log",
-            "view_mode": "tree,form",
+            "view_mode": "list,form",
             "type": "ir.actions.act_window",
             "domain": [("schedule_id", "=", self.id)],
             "context": {"default_schedule_id": self.id},
@@ -290,6 +300,7 @@ class FlightDataSyncSchedule(models.Model):
         for record in self:
             if record.kwargs:
                 try:
+                    # TODO: SECURITY WARNING - same issue as above, safe_eval() can execute code
                     safe_eval(record.kwargs)
                 except Exception as e:
                     raise ValidationError(_("Invalid kwargs: %s") % str(e)) from e

@@ -8,7 +8,7 @@
     "website": "https://github.com/smartops-aero/flight",
     "license": "LGPL-3",
     "category": "Industries",
-    "version": "16.0.0.3",
+    "version": "18.0.1.0.0",
     "depends": [
         "base",
         "flight",

@@ -10,9 +10,9 @@
                 <page string="Specifications" name="specifications">
                     <field
             name="spec_ids"
-            context="{'default_aircraft_id': active_id}"
+            context="{'default_aircraft_id': id}"
           >
-                        <tree
+                        <list
               editable="bottom"
               create="true"
               delete="true"
@@ -24,25 +24,27 @@
                 required="1"
                 domain="[('code_type', '!=', False)]"
               />
-                            <field name="display_name" invisible="1" />
-                            <field name="code_type" invisible="1" />
+                            <field name="display_name" readonly="1" />
                             <field
                 name="value_bool"
-                attrs="{'invisible': [('code_type', '!=', 'bool')], 'required': [('code_type', '=', 'bool')]}"
+                invisible="code_type != 'bool'"
+                required="code_type == 'bool'"
               />
                             <field
                 name="value_text"
-                attrs="{'invisible': [('code_type', '!=', 'text')], 'required': [('code_type', '=', 'text')]}"
+                invisible="code_type != 'text'"
+                required="code_type == 'text'"
               />
                             <field
                 name="value_float"
-                attrs="{'invisible': [('code_type', '!=', 'float')], 'required': [('code_type', '=', 'float')]}"
+                invisible="code_type != 'float'"
+                required="code_type == 'float'"
               />
                             <field
                 name="uom_id"
-                attrs="{'invisible': [('code_type', '!=', 'float')]}"
+                invisible="code_type != 'float'"
               />
-                        </tree>
+                        </list>
                     </field>
                 </page>
                 <page string="Images" name="images">

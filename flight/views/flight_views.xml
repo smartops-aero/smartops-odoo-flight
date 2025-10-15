@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Flight Tree View -->
+    <!-- Flight List View -->
     <record id="view_flight_tree" model="ir.ui.view">
-        <field name="name">flight.flight.tree</field>
+        <field name="name">flight.flight.list</field>
         <field name="model">flight.flight</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="date" />
                 <field name="aircraft_id" />
                 <field name="departure_id" />
                 <field name="arrival_id" />
                 <field name="locked" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -26,14 +26,14 @@
             name="toggle_locked"
             type="object"
             string="Lock"
-            attrs="{'invisible': [('locked', '=', True)]}"
+            invisible="locked"
             groups="flight.group_flight_manager"
           />
                     <button
             name="toggle_locked"
             type="object"
             string="Unlock"
-            attrs="{'invisible': [('locked', '=', False)]}"
+            invisible="not locked"
             groups="flight.group_flight_manager"
           />
                 </header>
@@ -49,22 +49,18 @@
                     <notebook>
                         <page string="Crew" name="crew">
                             <field name="crew_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field
                     name="partner_id"
                     domain="[('is_company', '=', False)]"
                   />
                                     <field name="role_id" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" />
-                    <field name="activity_ids" />
-                    <field name="message_ids" />
-                </div>
+                <chatter />
             </form>
         </field>
     </record>
@@ -149,7 +145,7 @@
     <record id="action_flight_flight_list" model="ir.actions.act_window">
         <field name="name">Flights</field>
         <field name="res_model">flight.flight</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_flight_search" />
     </record>
 </odoo>

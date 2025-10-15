@@ -9,17 +9,19 @@
     "website": "https://github.com/smartops-aero/flight",
     "license": "LGPL-3",
     "category": "Industries",
-    "version": "16.0.1.0.1",
+    "version": "18.0.1.0.0",
     "depends": [
         "base",
         "flight",
+        "web",
     ],
     "assets": {
         "web.assets_backend": [
-            "flight_event/static/src/components/relative_datetimepicker/relative_datetimepicker.js",
             "flight_event/static/src/scss/flight_event_time_matrix.scss",
+            "flight_event/static/src/components/flight_event_time_matrix_cell/flight_event_time_matrix_cell.js",
             "flight_event/static/src/components/flight_event_time_matrix_field/flight_event_time_matrix_field.js",
             "flight_event/static/src/components/flight_event_time_matrix_renderer/flight_event_time_matrix_renderer.js",
+            "flight_event/static/src/components/flight_event_time_matrix_cell/flight_event_time_matrix_cell.xml",
             "flight_event/static/src/components/flight_event_time_matrix_field/flight_event_time_matrix_field.xml",
             "flight_event/static/src/components/flight_event_time_matrix_renderer/flight_event_time_matrix_renderer.xml",
         ],
