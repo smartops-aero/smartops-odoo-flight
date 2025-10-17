@@ -1,19 +1,19 @@
-odoo.define("website_flight_fleet.fleet", function (require) {
-  var publicWidget = require("web.public.widget");
+/** @odoo-module **/
 
-  publicWidget.registry.websiteFleet = publicWidget.Widget.extend({
-    selector: ".o_website_fleet",
-    events: {
-      "click .js_search_button": "_onSearchClick",
-    },
+import publicWidget from "@web/legacy/js/public/public_widget";
 
-    _onSearchClick: function (ev) {
-      ev.preventDefault();
-      var $form = $(ev.currentTarget).closest("form");
-      var term = $form.find('input[name="search"]').val();
-      window.location = "/fleet?search=" + encodeURIComponent(term);
-    },
-  });
+publicWidget.registry.websiteFleet = publicWidget.Widget.extend({
+  selector: ".o_website_fleet",
+  events: {
+    "click .js_search_button": "_onSearchClick",
+  },
 
-  return publicWidget.registry.websiteFleet;
+  _onSearchClick: function (ev) {
+    ev.preventDefault();
+    const $form = $(ev.currentTarget).closest("form");
+    const term = $form.find('input[name="search"]').val();
+    window.location = "/fleet?search=" + encodeURIComponent(term);
+  },
 });
+
+export default publicWidget.registry.websiteFleet;

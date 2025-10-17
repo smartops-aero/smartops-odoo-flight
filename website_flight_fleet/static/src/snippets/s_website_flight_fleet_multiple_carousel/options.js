@@ -1,6 +1,6 @@
 /** @odoo-module */
 
-import options from "web_editor.snippets.options";
+import options from "@web_editor/js/editor/snippets.options";
 
 options.registry.WebsiteFlightFleetMultipleCarousel = options.Class.extend({
   /**
@@ -104,13 +104,13 @@ options.registry.WebsiteFlightFleetMultipleCarousel = options.Class.extend({
    */
   _initializeCarousel: function () {
     this.$controls = this.$target.find(
-      ".carousel-control-prev, .carousel-control-next"
+      ".carousel-control-prev, .carousel-control-next",
     );
 
     // Handle navigation clicks
     this._onNavigationClick = _.throttle(
       this._handleNavigationClick.bind(this),
-      500
+      500,
     );
     this.$controls.on("click.carousel_opt", this._onNavigationClick);
   },
@@ -183,8 +183,8 @@ options.registry.WebsiteFlightFleetMultipleCarousel = options.Class.extend({
           ? $items.length - 1
           : activeIndex - 1
         : activeIndex + 1 >= $items.length
-        ? 0
-        : activeIndex + 1;
+          ? 0
+          : activeIndex + 1;
 
     $items.removeClass("active");
     $items.eq(newIndex).addClass("active");

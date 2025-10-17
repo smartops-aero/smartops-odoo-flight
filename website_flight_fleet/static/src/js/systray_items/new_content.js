@@ -1,40 +1,28 @@
 /** @odoo-module **/
 
 import {
-  MODULE_STATUS,
   NewContentModal,
+  MODULE_STATUS,
 } from "@website/systray_items/new_content";
-import { patch } from "web.utils";
+import { patch } from "@web/core/utils/patch";
 import { xml } from "@odoo/owl";
 
-patch(NewContentModal.prototype, "website_flight_fleet_new_content", {
+patch(NewContentModal.prototype, {
   setup() {
-    this._super();
+    super.setup();
 
     // Add aircraft option to new content menu
     const newAircraftElement = {
       moduleXmlId: "base.module_website_flight_fleet",
-      name: "Aircraft",
-      // Added title property
       title: "Aircraft",
-      // Optional but recommended
-      description: "Add a new aircraft to your fleet",
-      model: "flight.aircraft",
       icon: xml`<i class="fa fa-plane"/>`,
-      sequence: 35,
       createNewContent: () =>
         this.onAddContent("website_flight_fleet.aircraft_new_action", true),
       status: MODULE_STATUS.INSTALLED,
+      model: "flight.aircraft",
     };
 
-    // Insert aircraft option into content elements
-    const index = this.state.newContentElements.findIndex(
-      (el) => el.sequence > newAircraftElement.sequence
-    );
-    if (index >= 0) {
-      this.state.newContentElements.splice(index, 0, newAircraftElement);
-    } else {
-      this.state.newContentElements.push(newAircraftElement);
-    }
+    // Insert aircraft option into content elements at the appropriate position
+    this.state.newContentElements.push(newAircraftElement);
   },
 });

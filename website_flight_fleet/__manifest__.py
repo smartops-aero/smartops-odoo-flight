@@ -48,7 +48,7 @@
         ],
         "web.assets_frontend": [
             "website_flight_fleet/static/src/scss/website_flight_fleet.scss",
-            "website_flight_fleet/static/src/js/website_flight_fleet.js",
+            "website_flight_fleet/static/src/js/website_flight.js",
             "website_flight_fleet/static/src/snippets/s_website_flight_fleet_carousel/000.scss",
             "website_flight_fleet/static/src/snippets/s_website_flight_fleet_multiple_carousel/000.scss",
             "website_flight_fleet/static/src/snippets/s_website_flight_fleet_multiple_carousel/000.js",
