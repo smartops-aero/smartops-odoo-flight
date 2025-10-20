@@ -6,25 +6,32 @@
     inherit_id="website.snippets"
     name="Website Flight Snippets"
   >
-    <xpath expr="//snippets[@id='snippet_structure']" position="inside">
+    <!-- Inner Content snippets (smaller components) -->
+    <xpath expr="//snippets[@id='snippet_content']" position="inside">
       <t
         t-snippet="website_flight_fleet.s_website_flight_fleet_accordion"
+        string="Flight Fleet Accordion"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_accordion.png"
       />
+    </xpath>
 
+    <!-- Structure snippets (full-width sections) -->
+    <xpath expr="//snippets[@id='snippet_structure']" position="inside">
       <t
         t-snippet="website_flight_fleet.s_website_flight_fleet_carousel"
+        string="Flight Fleet Carousel"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_carousel.png"
       />
 
       <t
         t-snippet="website_flight_fleet.s_website_flight_fleet_multiple_carousel"
+        string="Flight Fleet Multi Carousel"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_multiple_carousel.png"
       />
-    </xpath>
-    <xpath expr="//snippets[@id='snippet_structure']" position="inside">
+
       <t
         t-snippet="website_flight_fleet.s_website_flight_fleet_dynamic_aircraft_images"
+        string="Dynamic Aircraft Images"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_accordion.png"
       />
     </xpath>

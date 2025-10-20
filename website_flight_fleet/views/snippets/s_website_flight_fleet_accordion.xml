@@ -4,19 +4,20 @@
     id="s_website_flight_fleet_accordion"
     name="Website Flight Accordion"
   >
-        <section class="s_website_flight_fleet_accordion">
+        <section class="s_website_flight_fleet_accordion o_cc o_cc1" data-snippet="s_website_flight_fleet_accordion" data-name="Flight Fleet Accordion">
             <div class="container">
                 <t t-set="uniq" t-value="datetime.datetime.now().microsecond" />
                 <div id="myCollapse" class="accordion ps-4" role="tablist">
                     <!-- Default accordion item - can be duplicated -->
-                    <div class="accordion-item border-0">
-                        <h2 class="accordion-header">
+                    <div class="accordion-item border-0 position-relative z-1" data-name="Accordion Item">
                             <button
+                type="button"
+                t-attf-id="accordion-button{{uniq}}_1"
                 t-attf-data-bs-target="#myCollapseTab{{uniq}}_1"
-                role="tab"
+                t-attf-aria-controls="myCollapseTab{{uniq}}_1"
                 data-bs-toggle="collapse"
                 aria-expanded="true"
-                class="accordion-button lead text-black fw-bold bg-transparent"
+                class="accordion-header accordion-button lead text-black fw-bold bg-transparent"
               >
                                 Question Title <span
                   class="transition-icon ms-auto"
@@ -37,12 +38,12 @@
                                     </div>
                                 </span>
                             </button>
-                        </h2>
                         <div
               t-attf-id="myCollapseTab{{uniq}}_1"
               class="accordion-collapse collapse show"
               data-bs-parent="#myCollapse"
-              role="tabpanel"
+              role="region"
+              t-attf-aria-labelledby="accordion-button{{uniq}}_1"
             >
                             <div class="accordion-body pt-0 max-width-large">
                                 <p class="text-black">Answer text goes here</p>
