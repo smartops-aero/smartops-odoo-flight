@@ -1,6 +1,7 @@
 /** @odoo-module */
 
 import options from "@web_editor/js/editor/snippets.options";
+import { throttleForAnimation } from "@web/core/utils/timing";
 
 options.registry.WebsiteFlightFleetMultipleCarousel = options.Class.extend({
   /**
@@ -108,9 +109,8 @@ options.registry.WebsiteFlightFleetMultipleCarousel = options.Class.extend({
     );
 
     // Handle navigation clicks
-    this._onNavigationClick = _.throttle(
+    this._onNavigationClick = throttleForAnimation(
       this._handleNavigationClick.bind(this),
-      500,
     );
     this.$controls.on("click.carousel_opt", this._onNavigationClick);
   },
