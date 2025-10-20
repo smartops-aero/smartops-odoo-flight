@@ -33,23 +33,17 @@
             class="carousel-item oe_img_bg o_bg_img_center active"
             data-name="Slide"
             style="background-image: url('/web/image/website.s_carousel_default_image_1');"
-          >
-
-                    </div>
+          />
                     <div
             class="carousel-item oe_img_bg o_bg_img_center"
             data-name="Slide"
             style="background-image: url('/web/image/website.s_carousel_default_image_2');"
-          >
-
-                    </div>
+          />
                     <div
             class="carousel-item oe_img_bg o_bg_img_center"
             data-name="Slide"
             style="background-image: url('/web/image/website.s_carousel_default_image_3');"
-          >
-
-                    </div>
+          />
                 </div>
 
                 <!-- Controls -->

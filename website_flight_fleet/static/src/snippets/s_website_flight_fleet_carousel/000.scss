@@ -1,16 +1,19 @@
-// Add this to static/src/snippets/s_website_flight_fleet_carousel/000.scss
+// Full viewport carousel styles
+
+.s_carousel_wrapper {
+  height: 100vh;
+}
 
 .s_website_flight_fleet_carousel {
   height: 100vh;
-  .carousel {
+
+  .carousel-inner {
     height: 100%;
 
-    .carousel-inner {
-      height: 100%;
-
-      .carousel-item {
-        height: 100vh !important; // Full viewport height
-      }
+    // Target carousel items with background images specifically
+    .carousel-item.oe_img_bg.o_bg_img_center {
+      height: 100vh !important; // Full viewport height
+      min-height: 100vh !important;
     }
   }
 }
