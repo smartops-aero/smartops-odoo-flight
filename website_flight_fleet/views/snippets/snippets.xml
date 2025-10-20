@@ -41,7 +41,7 @@
         t-snippet="website_flight_fleet.s_website_flight_fleet_dynamic_aircraft_images"
         string="Dynamic Aircraft Images"
         group="images"
-        t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_accordion.png"
+        t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_dynamic_aircraft_images.png"
       >
         <keywords>dynamic, aircraft, images, fleet, aviation, gallery, photos</keywords>
       </t>
