@@ -12,7 +12,9 @@
         t-snippet="website_flight_fleet.s_website_flight_fleet_accordion"
         string="Flight Fleet Accordion"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_accordion.png"
-      />
+      >
+        <keywords>accordion, faq, collapse, aircraft, fleet, questions, answers</keywords>
+      </t>
     </xpath>
 
     <!-- Structure snippets (full-width sections) -->
@@ -20,20 +22,29 @@
       <t
         t-snippet="website_flight_fleet.s_website_flight_fleet_carousel"
         string="Flight Fleet Carousel"
+        group="intro"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_carousel.png"
-      />
+      >
+        <keywords>carousel, slider, aircraft, fleet, aviation, gallery, slideshow</keywords>
+      </t>
 
       <t
         t-snippet="website_flight_fleet.s_website_flight_fleet_multiple_carousel"
         string="Flight Fleet Multi Carousel"
+        group="content"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_multiple_carousel.png"
-      />
+      >
+        <keywords>carousel, multiple, cards, aircraft, fleet, aviation, slider, gallery</keywords>
+      </t>
 
       <t
         t-snippet="website_flight_fleet.s_website_flight_fleet_dynamic_aircraft_images"
         string="Dynamic Aircraft Images"
+        group="images"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_accordion.png"
-      />
+      >
+        <keywords>dynamic, aircraft, images, fleet, aviation, gallery, photos</keywords>
+      </t>
     </xpath>
   </template>
 </odoo>
