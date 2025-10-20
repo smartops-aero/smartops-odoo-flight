@@ -312,13 +312,14 @@
             <div id="myCollapse" class="accordion ps-4" role="tablist">
               <!-- What is dry leasing? -->
               <div class="accordion-item border-0" data-name="Item">
-                <h2 class="accordion-header">
                   <button
+                    type="button"
+                    id="accordion-button1"
                     data-bs-target="#myCollapseTab1"
-                    role="tab"
+                    aria-controls="myCollapseTab1"
                     data-bs-toggle="collapse"
                     aria-expanded="false"
-                    class="accordion-button lead text-black fw-bold bg-transparent collapsed"
+                    class="accordion-header accordion-button lead text-black fw-bold bg-transparent collapsed"
                   > What
                     is dry leasing? <span class="transition-icon ms-auto">
                       <div class="embed-icon">
@@ -337,12 +338,12 @@
                       </div>
                     </span>
                   </button>
-                </h2>
                 <div
                   id="myCollapseTab1"
                   class="accordion-collapse collapse"
                   data-bs-parent="#myCollapse"
-                  role="tabpanel"
+                  role="region"
+                  aria-labelledby="accordion-button1"
                 >
                   <div class="accordion-body max-width-large pt-0">
                     <p class="text-black">Dry leasing refers to leasing
@@ -357,13 +358,14 @@
 
               <!-- What is fractional ownership? -->
               <div class="accordion-item border-0" data-name="Item">
-                <h2 class="accordion-header">
                   <button
+                    type="button"
+                    id="accordion-button2"
                     data-bs-target="#myCollapseTab2"
-                    role="tab"
+                    aria-controls="myCollapseTab2"
                     data-bs-toggle="collapse"
                     aria-expanded="false"
-                    class="accordion-button lead text-black fw-bold bg-transparent collapsed"
+                    class="accordion-header accordion-button lead text-black fw-bold bg-transparent collapsed"
                   > What
                     is fractional ownership? <span
                       class="transition-icon ms-auto"
@@ -384,12 +386,12 @@
                       </div>
                     </span>
                   </button>
-                </h2>
                 <div
                   id="myCollapseTab2"
                   class="accordion-collapse collapse"
                   data-bs-parent="#myCollapse"
-                  role="tabpanel"
+                  role="region"
+                  aria-labelledby="accordion-button2"
                 >
                   <div class="accordion-body max-width-large pt-0">
                     <p class="text-black">Fractional ownership allows
@@ -405,13 +407,14 @@
 
               <!-- What planes are available? -->
               <div class="accordion-item border-0" data-name="Item">
-                <h2 class="accordion-header">
                   <button
+                    type="button"
+                    id="accordion-button3"
                     data-bs-target="#myCollapseTab3"
-                    role="tab"
+                    aria-controls="myCollapseTab3"
                     data-bs-toggle="collapse"
                     aria-expanded="false"
-                    class="accordion-button lead text-black fw-bold bg-transparent collapsed"
+                    class="accordion-header accordion-button lead text-black fw-bold bg-transparent collapsed"
                   > What
                     planes are available? <span class="transition-icon ms-auto">
                       <div class="embed-icon">
@@ -430,12 +433,12 @@
                       </div>
                     </span>
                   </button>
-                </h2>
                 <div
                   id="myCollapseTab3"
                   class="accordion-collapse collapse"
                   data-bs-parent="#myCollapse"
-                  role="tabpanel"
+                  role="region"
+                  aria-labelledby="accordion-button3"
                 >
                   <div class="accordion-body max-width-large pt-0">
                     <p class="text-black">Our fleet includes the
@@ -451,13 +454,14 @@
 
               <!-- How do I lease? -->
               <div class="accordion-item border-0" data-name="Item">
-                <h2 class="accordion-header">
                   <button
+                    type="button"
+                    id="accordion-button4"
                     data-bs-target="#myCollapseTab4"
-                    role="tab"
+                    aria-controls="myCollapseTab4"
                     data-bs-toggle="collapse"
                     aria-expanded="false"
-                    class="accordion-button lead text-black fw-bold bg-transparent collapsed"
+                    class="accordion-header accordion-button lead text-black fw-bold bg-transparent collapsed"
                   > How do
                     I lease? <span class="transition-icon ms-auto">
                       <div class="embed-icon">
@@ -476,12 +480,12 @@
                       </div>
                     </span>
                   </button>
-                </h2>
                 <div
                   id="myCollapseTab4"
                   class="accordion-collapse collapse"
                   data-bs-parent="#myCollapse"
-                  role="tabpanel"
+                  role="region"
+                  aria-labelledby="accordion-button4"
                 >
                   <div class="accordion-body max-width-large pt-0">
                     <p class="text-black">Leasing an aircraft is a
@@ -496,13 +500,14 @@
 
               <!-- What are the costs? -->
               <div class="accordion-item border-0" data-name="Item">
-                <h2 class="accordion-header">
                   <button
+                    type="button"
+                    id="accordion-button5"
                     data-bs-target="#myCollapseTab5"
-                    role="tab"
+                    aria-controls="myCollapseTab5"
                     data-bs-toggle="collapse"
                     aria-expanded="false"
-                    class="accordion-button lead text-black fw-bold bg-transparent collapsed"
+                    class="accordion-header accordion-button lead text-black fw-bold bg-transparent collapsed"
                   > What
                     are the costs? <span class="transition-icon ms-auto">
                       <div class="embed-icon">
@@ -521,12 +526,12 @@
                       </div>
                     </span>
                   </button>
-                </h2>
                 <div
                   id="myCollapseTab5"
                   class="accordion-collapse collapse"
                   data-bs-parent="#myCollapse"
-                  role="tabpanel"
+                  role="region"
+                  aria-labelledby="accordion-button5"
                 >
                   <div class="accordion-body max-width-large pt-0">
                     <p class="text-black">Costs vary based on the type
