@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- This is still WIP but we have some basic features working
+    and noted down how it works -->
+    <!-- Main Snippet Template -->
+    <template
+    id="s_website_flight_fleet_dynamic_aircraft_images"
+    name="Aircraft Images"
+  >
+        <t t-call="website.s_dynamic_snippet_template">
+            <t
+        t-set="snippet_name"
+        t-value="'s_website_flight_fleet_dynamic_aircraft_images'"
+      />
+            <t
+        t-set="snippet_classes"
+        t-value="'s_dynamic_snippet_aircraft_images'"
+      />
+        </t>
+    </template>
+
+    <!-- Dynamic Filter Template -->
+    <template
+    id="dynamic_filter_template_flight_aircraft_image_carousel"
+    name="Aircraft Image Carousel"
+  >
+        <t t-set="images" t-value="records" data-number-of-elements="1" />
+        <div t-foreach="images" t-as="data">
+            <t t-set="image" t-value="data['_record']" />
+
+            <img
+        t-att-src="'/web/image/flight.aircraft.image/%s/image' % image.id"
+        t-att-alt="image.name or ''"
+        class="dynamic-carousel-item card-img-top"
+      />
+
+        </div>
+    </template>
+
+    <!-- Snippet Options -->
+    <template
+    id="s_website_flight_fleet_dynamic_aircraft_images_options"
+    inherit_id="website.snippet_options"
+  >
+        <xpath expr="." position="inside">
+            <t t-call="website.dynamic_snippet_carousel_options_template">
+                <t
+          t-set="snippet_name"
+          t-value="'dynamic_snippet_aircraft_images'"
+        />
+                <t
+          t-set="snippet_selector"
+          t-value="'.s_dynamic_snippet_aircraft_images'"
+        />
+            </t>
+        </xpath>
+    </template>
+
+    <template
+    id="s_dynamic_snippet_options_template"
+    inherit_id="website.s_dynamic_snippet_options_template"
+  >
+        <xpath expr="//we-select[@data-name='filter_opt']" position="after">
+            <we-select
+        t-if="snippet_name == 'dynamic_snippet_aircraft_images'"
+        string="Aircraft"
+        data-no-preview="true"
+        data-name="aircraft_opt"
+        data-attribute-name="filterByAircraftId"
+      >
+                <we-button
+          data-select-data-attribute="-1"
+        >All Aircraft</we-button>
+            </we-select>
+            <we-select
+        t-if="snippet_name == 'dynamic_snippet_aircraft_images'"
+        string="Category"
+        data-no-preview="true"
+        data-name="category_opt"
+        data-attribute-name="filterByCategoryId"
+      >
+                <we-button
+          data-select-data-attribute="-1"
+        >All Categories</we-button>
+            </we-select>
+        </xpath>
+    </template>
+</odoo>

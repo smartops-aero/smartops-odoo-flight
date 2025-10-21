@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+        <!-- Website Aircraft Access Rules -->
+        <record id="website_aircraft_public" model="ir.rule">
+            <field name="name">Public Website Aircraft</field>
+            <field name="model_id" ref="flight.model_flight_aircraft" />
+            <field
+      name="domain_force"
+    >[('website_published', '=', True)]</field>
+            <field name="groups" eval="[(4, ref('base.group_public'))]" />
+        </record>
+
+        <record id="website_aircraft_user" model="ir.rule">
+            <field name="name">User Website Aircraft</field>
+            <field name="model_id" ref="flight.model_flight_aircraft" />
+            <field
+      name="domain_force"
+    >['|', ('website_published', '=', True), ('create_uid', '=',
+                user.id)]</field>
+            <field
+      name="groups"
+      eval="[(4, ref('flight.group_flight_user'))]"
+    />
+        </record>
+
+        <record id="website_aircraft_crew" model="ir.rule">
+            <field name="name">Crew Website Aircraft</field>
+            <field name="model_id" ref="flight.model_flight_aircraft" />
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field
+      name="groups"
+      eval="[(4, ref('flight.group_flight_crew'))]"
+    />
+        </record>
+</odoo>
