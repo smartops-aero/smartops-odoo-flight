@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+  <!-- Fleet Page -->
+  <template id="page_fleet" name="Fleet Page">
+    <t t-call="website.layout">
+      <div id="wrap" class="oe_structure">
+        <!-- Hero Section -->
+        <section
+          class="s_cover bg-black-50 s_parallax_no_overflow_hidden oe_img_bg o_bg_img_center py-7"
+          data-scroll-background-ratio="0"
+          data-snippet="s_cover"
+          data-name="Cover"
+          style="background-image: url('/website_flight_fleet/static/src/img/plane-service-p-800.png');"
+        >
+
+          <div
+            class="o_we_bg_filter"
+            style="background-image: linear-gradient(#00000080, #00000080);"
+          />
+
+          <div class="s_allow_columns">
+            <div class="s_text_block">
+              <div class="container text-center">
+                <div class="row justify-content-center">
+                  <div
+                    class="col-lg-7  o_animate o_anim_fade_in"
+                    style="--wanim-intensity: 50; animation-duration: 0.4s;"
+                  >
+                    <!-- Tagline -->
+                    <div class="mb-3">
+                      <span class="fw-semibold text-white">Explore Our
+                        Fleet
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="col-lg-7 o_animate o_anim_slide_in o_anim_from_bottom"
+                    style="--wanim-intensity: 10; animation-duration: 0.4s;"
+                  >
+                    <!-- Heading -->
+                    <div class="mb-4">
+                      <h1 class="fw-bold">Premium Aircraft Available
+                        for Dry Lease and
+                        Fractional Ownership</h1>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="lead mb-2">
+                      PRJets proudly offers a curated fleet of premium
+                      aircraft designed to meet your travel needs.
+                      Whether you're exploring the Caribbean or
+                      traveling further afield, our Citation Bravo and
+                      Piper Navajo deliver exceptional performance,
+                      comfort, and flexibility. Available for both dry
+                      lease and fractional ownership, our fleet
+                      redefines private aviation, giving you the
+                      freedom to fly on your terms.
+                    </p>
+                    <a href="#" class="btn btn-primary mt-4">Inquire
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Fleet Content Section -->
+        <section class="py-7">
+          <div class="container">
+            <!-- Search and Filter Section -->
+            <div t-if="models or search" class="row mb-5">
+              <div class="col-lg-8">
+                <form t-att-action="aircraft_url()" method="get" class="mb-4">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      name="search"
+                      class="form-control"
+                      t-att-value="search"
+                      placeholder="Search aircraft..."
+                    />
+                    <button
+                      type="submit"
+                      class="btn btn-primary"
+                    >Search</button>
+                  </div>
+                </form>
+              </div>
+              <div class="col-lg-4">
+                <select
+                  t-if="models"
+                  class="form-select"
+                  onchange="window.location = this.value"
+                >
+                  <option value="/fleet">All Models</option>
+                  <t t-foreach="models" t-as="model">
+                    <option
+                      t-att-value="'/fleet/model/%s' % slug(model)"
+                      t-att-selected="model == selected_model"
+                    >
+                      <t t-esc="model.name" />
+                    </option>
+                  </t>
+                </select>
+              </div>
+            </div>
+            <!-- Empty State -->
+            <t t-if="not aircrafts">
+              <div class="text-center py-5">
+                <div class="mb-4">
+                  <i class="fa fa-plane fa-3x text-muted" />
+                </div>
+                <h3 class="mb-3">No Aircraft Available</h3>
+                <p class="lead mb-4">
+                  <t
+                    t-if="search"
+                  > No aircraft found matching your search criteria "<t
+                      t-esc="search"
+                    />
+                    ". <br
+                    />Try adjusting your search or viewing all available aircraft. <br
+                    />
+                                    <a
+                      t-att-href="aircraft_url()"
+                      class="btn btn-primary mt-3"
+                    >View
+                      All Aircraft</a>
+                  </t>
+                  <t
+                    t-else=""
+                  > Our fleet is currently being updated. Please check back later or
+                    contact us for more information. <br />
+                                    <a
+                      href="/contactus"
+                      class="btn btn-primary mt-3"
+                    >Contact
+                      Us</a>
+                  </t>
+                </p>
+              </div>
+            </t>
+            <!-- Aircraft Grid -->
+            <div t-else="" class="row g-4">
+              <t t-foreach="aircrafts" t-as="aircraft">
+                <div
+                  class="s_col_no_bgcolor pt16 pb16 col-lg-4"
+                  data-name="Box"
+                >
+                  <div class="card hover-item text-bg-white h-100 border-0">
+                    <a
+                      t-att-href="'/aircraft/%s' % slug(aircraft)"
+                      class="text-decoration-none"
+                    >
+                      <div class="ratio ratio-16x9">
+                        <t t-if="aircraft.image_1920">
+                          <img
+                            t-att-src="website.image_url(aircraft, 'image_1920')"
+                            class="card-img-top"
+                            style="object-fit: cover;"
+                            alt="Aircraft Image"
+                            loading="lazy"
+                          />
+                        </t>
+                      </div>
+                    </a>
+                    <div class="py-4 text-center">
+                      <div class="mb-4">
+                        <span class="fw-semibold text-black">
+                          <strong
+                            t-if="aircraft.website_aircraft_slogan"
+                            t-field="aircraft.website_aircraft_slogan"
+                          />
+                        </span>
+                      </div>
+                      <h4
+                        class="fw-bold text-black mb-4"
+                        t-field="aircraft.website_display_name"
+                      />
+                      <p
+                        class="card-text text-black mb-4"
+                        t-field="aircraft.website_short_description"
+                      />
+                      <div class="border-top border-secondary my-4" />
+                      <p class="card-text text-black mb-4">
+                        <t
+                          t-set="performance_specs"
+                          t-value="aircraft.spec_ids.filtered(lambda s: s.code_id.category_id.code == 'performance')"
+                        />
+                        <t
+                          t-set="passenger_spec"
+                          t-value="aircraft.spec_ids.filtered(lambda s: s.code_id.code == 'load.passengers')"
+                        />
+                        <t t-foreach="performance_specs" t-as="spec">
+                            <t t-esc="spec.display_name" />
+                            <t t-if="not spec_last"> | </t>
+                        </t>
+                        <t t-if="passenger_spec">
+                            <br />
+                            <t t-esc="passenger_spec.display_name" />
+                        </t>
+                      </p>
+                      <a
+                        t-att-href="'/aircraft/%s' % slug(aircraft)"
+                        class="btn btn-primary o_animate o_anim_slide_in o_anim_from_bottom"
+                        style="--wanim-intensity: 10; animation-duration: 0.4s;"
+                      >
+                        <strong>Learn More</strong>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </t>
+            </div>
+
+            <!-- Pager -->
+            <div class="row mt-5">
+              <div class="col-12">
+                <t t-call="website.pager" />
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="container mt-7 mb-2 text-center">
+          <div class="mw-100 mw-lg-50 mx-auto">
+            <div
+              class="o_animate o_anim_slide_in o_anim_from_bottom"
+              style="--wanim-intensity: 20; animation-duration: 0.4s;"
+            >
+              <h2 class="fw-bold text-black text-center mb-4">Aircraft
+                Showcase
+              </h2>
+              <p class="lead text-black">
+                Explore our stunning Citation Bravo and Piper Navajo
+                interiors.
+              </p>
+            </div>
+          </div>
+        </section>
+        <section class="mb-7">
+          <div class="container s_allow_columns">
+            <!-- Using s_nb_column_fixed to keep 3 columns -->
+            <div class="row s_nb_column_fixed gx-4 gy-4 gy-lg-0">
+              <!-- First Column -->
+              <div class="col-lg-4 s_col_no_bgcolor s_col_no_resize">
+                <div class="h-100">
+                  <img
+                    src="/website_flight_fleet/static/src/img/pipern-p-1080.png"
+                    class="img-fluid card-img-top"
+                    alt="Gallery Image 1"
+                    loading="lazy"
+                    style="aspect-ratio: 1; object-fit: cover;"
+                  />
+                </div>
+              </div>
+              <!-- Second Column -->
+              <div class="col-lg-4 s_col_no_bgcolor s_col_no_resize">
+                <div class="h-100">
+                  <img
+                    src="/website_flight_fleet/static/src/img/pipern-p-1080.png"
+                    class="img-fluid card-img-top"
+                    alt="Gallery Image 2"
+                    loading="lazy"
+                    style="aspect-ratio: 1; object-fit: cover;"
+                  />
+                </div>
+              </div>
+              <!-- Third Column -->
+              <div class="col-lg-4 s_col_no_bgcolor s_col_no_resize">
+                <div class="h-100">
+                  <img
+                    src="/website_flight_fleet/static/src/img/pipern-p-1080.png"
+                    class="img-fluid card-img-top"
+                    alt="Gallery Image 3"
+                    loading="lazy"
+                    style="aspect-ratio: 1; object-fit: cover;"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Bottom CTA Section -->
+        <section class="container s_allow_columns text-start py-7">
+          <div class="row">
+            <div class="col-lg-7">
+              <h2
+                class="fw-bold mb-4 text-black"
+              >Ready to Experience Our Fleet?</h2>
+              <p
+                class="lead fw-normal text-black"
+              >Contact us to learn more about our
+                aircraft and how we can meet your aviation needs.</p>
+              <a href="#contact_us" class="btn btn-primary mt-3">Contact Us</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="pt-7">
+          <div class="container">
+            <div class="mb-5">
+              <h2 class="fw-bold text-black">FAQs</h2>
+              <p
+                class="lead text-black"
+              >Explore our frequently asked questions about our fleet,
+                leasing, and ownership options.</p>
+            </div>
+          </div>
+        </section>
+        <section class="s_website_flight_fleet_accordion pb-7">
+          <div class="container">
+            <div id="myCollapse" class="accordion ps-4" role="tablist">
+              <!-- What is dry leasing? -->
+              <div class="accordion-item border-0" data-name="Item">
+                  <button
+                    type="button"
+                    id="accordion-button1"
+                    data-bs-target="#myCollapseTab1"
+                    aria-controls="myCollapseTab1"
+                    data-bs-toggle="collapse"
+                    aria-expanded="false"
+                    class="accordion-header accordion-button lead text-black fw-bold bg-transparent collapsed"
+                  > What
+                    is dry leasing? <span class="transition-icon ms-auto">
+                      <div class="embed-icon">
+                        <svg
+                          width="100%"
+                          height="100%"
+                          viewBox="0 0 32 32"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M25.3333 15.667V16.3336C25.3333 16.7018 25.0349 17.0003 24.6667 17.0003H17V24.667C17 25.0351 16.7015 25.3336 16.3333 25.3336H15.6667C15.2985 25.3336 15 25.0351 15 24.667V17.0003H7.3333C6.96511 17.0003 6.66663 16.7018 6.66663 16.3336V15.667C6.66663 15.2988 6.96511 15.0003 7.3333 15.0003H15V7.33365C15 6.96546 15.2985 6.66699 15.6667 6.66699H16.3333C16.7015 6.66699 17 6.96546 17 7.33365V15.0003H24.6667C25.0349 15.0003 25.3333 15.2988 25.3333 15.667Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </div>
+                    </span>
+                  </button>
+                <div
+                  id="myCollapseTab1"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#myCollapse"
+                  role="region"
+                  aria-labelledby="accordion-button1"
+                >
+                  <div class="accordion-body max-width-large pt-0">
+                    <p class="text-black">Dry leasing refers to leasing
+                      an aircraft without crew, maintenance, or
+                      insurance. This option allows operators to have
+                      more control over their operational costs. It's
+                      ideal for those who have their own flight crew
+                      and want flexibility.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- What is fractional ownership? -->
+              <div class="accordion-item border-0" data-name="Item">
+                  <button
+                    type="button"
+                    id="accordion-button2"
+                    data-bs-target="#myCollapseTab2"
+                    aria-controls="myCollapseTab2"
+                    data-bs-toggle="collapse"
+                    aria-expanded="false"
+                    class="accordion-header accordion-button lead text-black fw-bold bg-transparent collapsed"
+                  > What
+                    is fractional ownership? <span
+                      class="transition-icon ms-auto"
+                    >
+                      <div class="embed-icon">
+                        <svg
+                          width="100%"
+                          height="100%"
+                          viewBox="0 0 32 32"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M25.3333 15.667V16.3336C25.3333 16.7018 25.0349 17.0003 24.6667 17.0003H17V24.667C17 25.0351 16.7015 25.3336 16.3333 25.3336H15.6667C15.2985 25.3336 15 25.0351 15 24.667V17.0003H7.3333C6.96511 17.0003 6.66663 16.7018 6.66663 16.3336V15.667C6.66663 15.2988 6.96511 15.0003 7.3333 15.0003H15V7.33365C15 6.96546 15.2985 6.66699 15.6667 6.66699H16.3333C16.7015 6.66699 17 6.96546 17 7.33365V15.0003H24.6667C25.0349 15.0003 25.3333 15.2988 25.3333 15.667Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </div>
+                    </span>
+                  </button>
+                <div
+                  id="myCollapseTab2"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#myCollapse"
+                  role="region"
+                  aria-labelledby="accordion-button2"
+                >
+                  <div class="accordion-body max-width-large pt-0">
+                    <p class="text-black">Fractional ownership allows
+                      multiple owners to share the costs and usage of
+                      an aircraft. This model provides access to
+                      private jets without the full financial burden.
+                      It's a practical solution for those who fly
+                      frequently but not enough to warrant full
+                      ownership.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- What planes are available? -->
+              <div class="accordion-item border-0" data-name="Item">
+                  <button
+                    type="button"
+                    id="accordion-button3"
+                    data-bs-target="#myCollapseTab3"
+                    aria-controls="myCollapseTab3"
+                    data-bs-toggle="collapse"
+                    aria-expanded="false"
+                    class="accordion-header accordion-button lead text-black fw-bold bg-transparent collapsed"
+                  > What
+                    planes are available? <span class="transition-icon ms-auto">
+                      <div class="embed-icon">
+                        <svg
+                          width="100%"
+                          height="100%"
+                          viewBox="0 0 32 32"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M25.3333 15.667V16.3336C25.3333 16.7018 25.0349 17.0003 24.6667 17.0003H17V24.667C17 25.0351 16.7015 25.3336 16.3333 25.3336H15.6667C15.2985 25.3336 15 25.0351 15 24.667V17.0003H7.3333C6.96511 17.0003 6.66663 16.7018 6.66663 16.3336V15.667C6.66663 15.2988 6.96511 15.0003 7.3333 15.0003H15V7.33365C15 6.96546 15.2985 6.66699 15.6667 6.66699H16.3333C16.7015 6.66699 17 6.96546 17 7.33365V15.0003H24.6667C25.0349 15.0003 25.3333 15.2988 25.3333 15.667Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </div>
+                    </span>
+                  </button>
+                <div
+                  id="myCollapseTab3"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#myCollapse"
+                  role="region"
+                  aria-labelledby="accordion-button3"
+                >
+                  <div class="accordion-body max-width-large pt-0">
+                    <p class="text-black">Our fleet includes the
+                      Citation Bravo and the Piper Navajo. The
+                      Citation Bravo offers speed and comfort for
+                      medium-range flights, while the Piper Navajo is
+                      perfect for shorter trips with its versatility.
+                      Both aircraft are well-maintained and equipped
+                      for a premium flying experience.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- How do I lease? -->
+              <div class="accordion-item border-0" data-name="Item">
+                  <button
+                    type="button"
+                    id="accordion-button4"
+                    data-bs-target="#myCollapseTab4"
+                    aria-controls="myCollapseTab4"
+                    data-bs-toggle="collapse"
+                    aria-expanded="false"
+                    class="accordion-header accordion-button lead text-black fw-bold bg-transparent collapsed"
+                  > How do
+                    I lease? <span class="transition-icon ms-auto">
+                      <div class="embed-icon">
+                        <svg
+                          width="100%"
+                          height="100%"
+                          viewBox="0 0 32 32"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M25.3333 15.667V16.3336C25.3333 16.7018 25.0349 17.0003 24.6667 17.0003H17V24.667C17 25.0351 16.7015 25.3336 16.3333 25.3336H15.6667C15.2985 25.3336 15 25.0351 15 24.667V17.0003H7.3333C6.96511 17.0003 6.66663 16.7018 6.66663 16.3336V15.667C6.66663 15.2988 6.96511 15.0003 7.3333 15.0003H15V7.33365C15 6.96546 15.2985 6.66699 15.6667 6.66699H16.3333C16.7015 6.66699 17 6.96546 17 7.33365V15.0003H24.6667C25.0349 15.0003 25.3333 15.2988 25.3333 15.667Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </div>
+                    </span>
+                  </button>
+                <div
+                  id="myCollapseTab4"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#myCollapse"
+                  role="region"
+                  aria-labelledby="accordion-button4"
+                >
+                  <div class="accordion-body max-width-large pt-0">
+                    <p class="text-black">Leasing an aircraft is a
+                      straightforward process. You can start by
+                      contacting our team to discuss your specific
+                      needs and preferences. We will guide you through
+                      the options available and help you finalize the
+                      best leasing agreement.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- What are the costs? -->
+              <div class="accordion-item border-0" data-name="Item">
+                  <button
+                    type="button"
+                    id="accordion-button5"
+                    data-bs-target="#myCollapseTab5"
+                    aria-controls="myCollapseTab5"
+                    data-bs-toggle="collapse"
+                    aria-expanded="false"
+                    class="accordion-header accordion-button lead text-black fw-bold bg-transparent collapsed"
+                  > What
+                    are the costs? <span class="transition-icon ms-auto">
+                      <div class="embed-icon">
+                        <svg
+                          width="100%"
+                          height="100%"
+                          viewBox="0 0 32 32"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M25.3333 15.667V16.3336C25.3333 16.7018 25.0349 17.0003 24.6667 17.0003H17V24.667C17 25.0351 16.7015 25.3336 16.3333 25.3336H15.6667C15.2985 25.3336 15 25.0351 15 24.667V17.0003H7.3333C6.96511 17.0003 6.66663 16.7018 6.66663 16.3336V15.667C6.66663 15.2988 6.96511 15.0003 7.3333 15.0003H15V7.33365C15 6.96546 15.2985 6.66699 15.6667 6.66699H16.3333C16.7015 6.66699 17 6.96546 17 7.33365V15.0003H24.6667C25.0349 15.0003 25.3333 15.2988 25.3333 15.667Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </div>
+                    </span>
+                  </button>
+                <div
+                  id="myCollapseTab5"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#myCollapse"
+                  role="region"
+                  aria-labelledby="accordion-button5"
+                >
+                  <div class="accordion-body max-width-large pt-0">
+                    <p class="text-black">Costs vary based on the type
+                      of lease and the aircraft selected. Dry leases
+                      typically have lower monthly payments but
+                      require additional operational expenses.
+                      Fractional ownership involves upfront costs and
+                      ongoing fees, but it offers shared access to the
+                      aircraft.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+</odoo>

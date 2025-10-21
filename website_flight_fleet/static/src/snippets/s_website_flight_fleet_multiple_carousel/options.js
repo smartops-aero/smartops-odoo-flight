@@ -1,0 +1,199 @@
+/** @odoo-module */
+
+import options from "@web_editor/js/editor/snippets.options";
+import { throttleForAnimation } from "@web/core/utils/timing";
+
+options.registry.WebsiteFlightFleetMultipleCarousel = options.Class.extend({
+  /**
+   * @override
+   */
+  start: function () {
+    this._super.apply(this, arguments);
+    this._initializeCarousel();
+    return this;
+  },
+
+  /**
+   * @override
+   */
+  onFocus: function () {
+    this._refreshCarousel();
+  },
+
+  /**
+   * @override
+   */
+  onClone: function () {
+    this._assignUniqueID();
+  },
+
+  /**
+   * @override
+   */
+  onBuilt: function () {
+    this._assignUniqueID();
+  },
+
+  /**
+   * @override
+   */
+  cleanForSave: function () {
+    // Reset carousel state before save
+    this.$target.find(".carousel-item").removeClass("active");
+    this.$target.find(".carousel-item:first").addClass("active");
+  },
+
+  // --------------------------------------------------------------------------
+  // Options
+  // --------------------------------------------------------------------------
+
+  /**
+   * @see this.selectClass for parameters
+   * It can have these params in function
+   * @param {String} previewMode
+   * @param {String} value
+   * @param {Object} params
+   */
+  addSlide: function () {
+    const $carousel = this.$target.find(".carousel-inner");
+    const $clone = $carousel.find(".carousel-item:first").clone();
+
+    // Reset the clone's content
+    $clone.removeClass("active");
+    $clone.find("img").attr({
+      src: "/web/image/website.s_carousel_default_image_1",
+      alt: "New Slide",
+    });
+
+    // Append the new slide
+    $carousel.append($clone);
+
+    // Reinitialize the carousel
+    this._refreshCarousel();
+  },
+  /**
+   * Changes the animation speed/interval and reinitializes the widget
+   *
+   * @param {String} previewMode
+   * @param {String} value
+   * @param {Object} params
+   */
+  updateInterval: function (previewMode, value, params) {
+    console.log(previewMode, value, params);
+    // Get the widget instance
+    const widget = this.$target.data("WebsiteFlightFleetMultipleCarousel");
+
+    if (widget) {
+      // Stop current auto sliding
+      widget._stopAutoSlide();
+
+      // Update the interval value
+      widget.interval = parseFloat(value) * 1000;
+
+      // Restart auto sliding with new interval
+      widget._startAutoSlide();
+    }
+  },
+
+  // --------------------------------------------------------------------------
+  // Private
+  // --------------------------------------------------------------------------
+
+  /**
+   * Initialize carousel functionality
+   * @private
+   */
+  _initializeCarousel: function () {
+    this.$controls = this.$target.find(
+      ".carousel-control-prev, .carousel-control-next",
+    );
+
+    // Handle navigation clicks
+    this._onNavigationClick = throttleForAnimation(
+      this._handleNavigationClick.bind(this),
+    );
+    this.$controls.on("click.carousel_opt", this._onNavigationClick);
+  },
+
+  /**
+   * Refresh carousel state
+   * @private
+   */
+  _refreshCarousel: function () {
+    this._updateNavigationVisibility();
+    this._updateSlidePositions();
+  },
+
+  /**
+   * Assign unique ID to carousel
+   * @private
+   */
+  _assignUniqueID: function () {
+    const uniqueId = `multipleCarousel${Date.now()}`;
+    this.$target.find(".multiple-cards-carousel").attr("id", uniqueId);
+    this.$target
+      .find("[data-bs-target]")
+      .attr("data-bs-target", `#${uniqueId}`);
+  },
+
+  /**
+   * Update navigation buttons visibility
+   * @private
+   */
+  _updateNavigationVisibility: function () {
+    const $items = this.$target.find(".carousel-item");
+    this.$controls.toggleClass("d-none", $items.length <= 1);
+  },
+
+  /**
+   * Update slide positions
+   * @private
+   */
+  _updateSlidePositions: function () {
+    const visibleSlides =
+      window.innerWidth >= 992 ? 3 : window.innerWidth >= 768 ? 2 : 1;
+    console.log(visibleSlides);
+  },
+
+  /**
+   * Handle navigation click
+   * @param {Event} ev
+   * @private
+   */
+  _handleNavigationClick: function (ev) {
+    const direction = $(ev.currentTarget).hasClass("carousel-control-prev")
+      ? "prev"
+      : "next";
+    this._slide(direction);
+  },
+
+  /**
+   * Slide the carousel
+   * @param {String} direction
+   * @private
+   */
+  _slide: function (direction) {
+    const $items = this.$target.find(".carousel-item");
+    const $active = $items.filter(".active");
+    const activeIndex = $items.index($active);
+
+    const newIndex =
+      direction === "prev"
+        ? activeIndex - 1 < 0
+          ? $items.length - 1
+          : activeIndex - 1
+        : activeIndex + 1 >= $items.length
+          ? 0
+          : activeIndex + 1;
+
+    $items.removeClass("active");
+    $items.eq(newIndex).addClass("active");
+
+    this._updateSlidePositions();
+  },
+});
+
+export default {
+  WebsiteFlightFleetMultipleCarousel:
+    options.registry.WebsiteFlightFleetMultipleCarousel,
+};

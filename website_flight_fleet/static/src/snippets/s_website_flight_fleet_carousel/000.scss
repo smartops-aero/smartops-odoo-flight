@@ -1,0 +1,35 @@
+// Full viewport carousel styles
+
+.s_carousel_wrapper {
+  height: 100vh;
+}
+
+.s_website_flight_fleet_carousel {
+  height: 100vh;
+
+  .carousel-inner {
+    height: 100%;
+
+    // Target carousel items with background images specifically
+    .carousel-item.oe_img_bg.o_bg_img_center {
+      height: 100vh !important; // Full viewport height
+      min-height: 100vh !important;
+    }
+  }
+}
+
+.website-flight-carousel-indicators {
+  margin-bottom: 3rem !important;
+  li {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 100% !important;
+    background-color: rgba(255, 255, 255, 0.6) !important;
+    margin: 3px 3px !important;
+    transition: all 0.5s ease !important;
+
+    &.active {
+      background-color: #fff !important;
+    }
+  }
+}

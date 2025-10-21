@@ -9,7 +9,6 @@ class FlightAircraft(models.Model):
         max_width=1920,
         max_height=1920,
         help="Upload a seat map image showing the aircraft's seating configuration",
-        tracking=True,
     )
 
     spec_ids = fields.One2many(
