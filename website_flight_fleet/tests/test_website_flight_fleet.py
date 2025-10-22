@@ -191,8 +191,8 @@ class TestWebsiteFlightFleet(TransactionCase):
 
     def test_04_aircraft_model_display(self):
         """Test aircraft model display name"""
-        # Check actual display name (just the model name, not make + model)
-        self.assertEqual(self.model_g650.display_name, "G650")
+        # Check actual display name (Make Model (Code) format)
+        self.assertEqual(self.model_g650.display_name, "Gulfstream G650 (G650)")
 
         # Check model properties
         self.assertEqual(self.model_g650.name, "G650")
