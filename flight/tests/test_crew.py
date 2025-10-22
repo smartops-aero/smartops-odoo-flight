@@ -295,3 +295,57 @@ class TestCrew(FlightCommon):
 
         # Flight should have 2 crew records
         self.assertEqual(len(flight.crew_ids), 2)
+
+    def test_11_crew_cascade_delete_when_flight_deleted(self):
+        """Test crew members are deleted when flight is deleted (ondelete='cascade')"""
+        flight = self.create_test_flight()
+
+        # Create crew members
+        pilot = self.env["res.partner"].create(
+            {
+                "name": "Captain Test",
+                "is_company": False,
+            }
+        )
+
+        copilot = self.env["res.partner"].create(
+            {
+                "name": "First Officer Test",
+                "is_company": False,
+            }
+        )
+
+        crew1 = self.env["flight.crew"].create(
+            {
+                "flight_id": flight.id,
+                "partner_id": pilot.id,
+                "role_id": self.crew_role_pilot.id,
+            }
+        )
+
+        crew2 = self.env["flight.crew"].create(
+            {
+                "flight_id": flight.id,
+                "partner_id": copilot.id,
+                "role_id": self.crew_role_copilot.id,
+            }
+        )
+
+        crew1_id = crew1.id
+        crew2_id = crew2.id
+
+        # Verify crew exists
+        self.assertTrue(self.env["flight.crew"].browse(crew1_id).exists())
+        self.assertTrue(self.env["flight.crew"].browse(crew2_id).exists())
+
+        # Delete flight (must unlock first as locked flights can't be deleted)
+        flight.write({"locked": False})
+        flight.unlink()
+
+        # Crew should be deleted (cascade)
+        self.assertFalse(self.env["flight.crew"].browse(crew1_id).exists())
+        self.assertFalse(self.env["flight.crew"].browse(crew2_id).exists())
+
+        # Partners should still exist (not deleted)
+        self.assertTrue(pilot.exists())
+        self.assertTrue(copilot.exists())
