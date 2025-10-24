@@ -57,40 +57,69 @@
         background-color: mix($o-brand-primary, $o-view-background-color, 15%);
       }
 
-      // Input field styling for time entry
-      .o_matrix_cell_input {
-        min-width: 90px;
-        max-width: 120px;
-        padding: 4px 8px;
-        border: 1px solid transparent;
-        background-color: transparent;
-        transition: all 0.2s ease;
+      // Input group wrapper for input + calendar icon
+      .o_matrix_cell_group {
+        display: inline-flex;
+        max-width: 140px;
 
-        &::placeholder {
-          color: $text-muted;
-          opacity: 0.5;
+        .o_matrix_cell_input {
+          min-width: 90px;
+          padding: 4px 8px;
+          border: 1px solid transparent;
+          background-color: transparent;
+          transition: all 0.2s ease;
+          flex: 1;
+
+          &::placeholder {
+            color: $text-muted;
+            opacity: 0.5;
+          }
+
+          &:hover:not([readonly]) {
+            border-color: mix($o-brand-primary, $o-view-background-color, 30%);
+            background-color: mix($o-brand-primary, $o-view-background-color, 5%);
+          }
+
+          &:focus {
+            border-color: $o-brand-primary;
+            background-color: white;
+            outline: none;
+            box-shadow: none; // Remove default, we'll handle with input-group
+          }
+
+          &[readonly] {
+            cursor: default;
+            color: $text-muted;
+            background-color: $o-view-background-color;
+          }
+
+          &:not([readonly]) {
+            cursor: text;
+          }
         }
 
-        &:hover:not([readonly]) {
-          border-color: mix($o-brand-primary, $o-view-background-color, 30%);
-          background-color: mix($o-brand-primary, $o-view-background-color, 5%);
+        // Calendar icon suffix
+        .o_matrix_cell_icon {
+          background-color: transparent;
+          border-left: none;
+          padding: 0 8px;
+          color: $o-brand-primary;
+          cursor: pointer;
+
+          i {
+            font-size: 0.9em;
+          }
         }
 
-        &:focus {
-          border-color: $o-brand-primary;
-          background-color: white;
-          outline: none;
+        // When input is focused, highlight the whole group
+        &:focus-within {
+          .o_matrix_cell_input,
+          .o_matrix_cell_icon {
+            border-color: $o-brand-primary;
+            background-color: white;
+          }
           box-shadow: 0 0 0 2px rgba($o-brand-primary, 0.2);
-        }
-
-        &[readonly] {
-          cursor: default;
-          color: $text-muted;
-          background-color: $o-view-background-color;
-        }
-
-        &:not([readonly]) {
-          cursor: text;
+          border-radius: 0.25rem;
         }
       }
 

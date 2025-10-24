@@ -30,6 +30,7 @@ export class FlightEventTimeMatrixCell extends Component {
     this.notification = useService("notification");
     this.state = useState({
       inputValue: this.getFormattedValue(),
+      isFocused: false,
     });
 
     const getPickerProps = () => {
@@ -173,6 +174,9 @@ export class FlightEventTimeMatrixCell extends Component {
   onInputBlur(ev) {
     const inputValue = ev.target.value.trim();
 
+    // Update focus state
+    this.state.isFocused = false;
+
     // If empty, clear the value
     if (!inputValue) {
       this.props.onUpdate(this.props.timeKind, this.props.eventCode, false);
@@ -216,21 +220,18 @@ export class FlightEventTimeMatrixCell extends Component {
   }
 
   /**
-   * Handle click on input - open picker on Ctrl+Click
-   */
-  onClick(ev) {
-    if (!this.props.readonly && ev.ctrlKey) {
-      ev.preventDefault();
-      this.openPicker(0);
-    }
-  }
-
-  /**
-   * Handle focus - select all text for easy editing
+   * Handle focus - auto-open picker and select text
    */
   onInputFocus(ev) {
     if (!this.props.readonly) {
+      // Update focus state to show calendar icon
+      this.state.isFocused = true;
+
+      // Select all text for easy editing
       ev.target.select();
+
+      // Auto-open the datetime picker
+      this.openPicker();
     }
   }
 }
