@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useRef, useState } from "@odoo/owl";
+import { Component, onWillRender, useRef, useState } from "@odoo/owl";
 import { formatDateTime } from "@web/core/l10n/dates";
 import { useDateTimePicker } from "@web/core/datetime/datetime_hook";
 import { useService } from "@web/core/utils/hooks";
@@ -29,8 +29,9 @@ export class FlightEventTimeMatrixCell extends Component {
     this.inputRef = useRef("time-input");
     this.notification = useService("notification");
     this.state = useState({
-      inputValue: this.getFormattedValue(),
+      inputValue: "",
       isFocused: false,
+      isUserEditing: false, // Track if user is actively typing
     });
 
     const getPickerProps = () => {
@@ -43,25 +44,38 @@ export class FlightEventTimeMatrixCell extends Component {
 
     /**
      * Individual datetime picker for this cell.
-     * Uses onApply instead of onChange to prevent auto-closing.
+     * Updates immediately on change for UX, similar to 16.0 behavior.
      */
     const dateTimePicker = useDateTimePicker({
       target: "time-input",
       get pickerProps() {
         return getPickerProps();
       },
-      onChange: () => {
-        // Intentionally empty - we handle updates in onApply
-      },
-      onApply: (value) => {
+      onChange: (value) => {
+        // Update immediately when user selects a date/time
         if (value) {
           this.props.onUpdate(this.props.timeKind, this.props.eventCode, value);
-          this.state.inputValue = this.getFormattedValue();
+        }
+      },
+      onApply: (value) => {
+        // Also handle Apply button click
+        if (value) {
+          this.props.onUpdate(this.props.timeKind, this.props.eventCode, value);
         }
       },
     });
 
     this.openPicker = dateTimePicker.open;
+
+    /**
+     * Sync display value with props on every render
+     * Similar to Odoo's DateTimeField pattern (datetime_field.js:160)
+     */
+    onWillRender(() => {
+      if (!this.state.isUserEditing) {
+        this.state.inputValue = this.getFormattedValue();
+      }
+    });
   }
 
   /**
@@ -174,20 +188,19 @@ export class FlightEventTimeMatrixCell extends Component {
   onInputBlur(ev) {
     const inputValue = ev.target.value.trim();
 
-    // Update focus state
+    // Clear editing and focus state
     this.state.isFocused = false;
+    this.state.isUserEditing = false;
 
     // If empty, clear the value
     if (!inputValue) {
       this.props.onUpdate(this.props.timeKind, this.props.eventCode, false);
-      this.state.inputValue = "";
       return;
     }
 
     const parsed = this.parseRelativeTime(inputValue);
     if (parsed) {
       this.props.onUpdate(this.props.timeKind, this.props.eventCode, parsed);
-      this.state.inputValue = this.getFormattedValue();
     } else {
       // Invalid input - revert to previous value
       this.state.inputValue = this.getFormattedValue();
@@ -213,9 +226,10 @@ export class FlightEventTimeMatrixCell extends Component {
   }
 
   /**
-   * Handle input field change - update state
+   * Handle input field change - update state and mark as editing
    */
   onInputChange(ev) {
+    this.state.isUserEditing = true;
     this.state.inputValue = ev.target.value;
   }
 

@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, onWillStart, onWillUpdateProps, useState } from "@odoo/owl";
+import { Component, onWillStart, onWillRender, useState } from "@odoo/owl";
 import { FlightEventTimeMatrixRenderer } from "@flight_event/components/flight_event_time_matrix_renderer/flight_event_time_matrix_renderer";
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
@@ -31,11 +31,10 @@ export class FlightEventTimeMatrixField extends Component {
 
     /**
      * Local state for the flight date.
-     * NOTE: onWillUpdateProps doesn't trigger when date field changes,
-     * causing matrix not to update relative day displays automatically.
+     * Synced via onWillRender to track date changes reactively.
      */
     this.state = useState({
-      date: this.props.record.data.date,
+      date: null,
     });
 
     // Check if props.name exists before using it
@@ -57,9 +56,14 @@ export class FlightEventTimeMatrixField extends Component {
       );
     });
 
-    onWillUpdateProps((nextProps) => {
-      // Attempt to update date when props change - currently not working as expected
-      this.state.date = nextProps.record.data.date;
+    /**
+     * Sync date state on every render.
+     * This ensures the matrix appears immediately when the user sets a date
+     * on a new flight record, without needing to save first.
+     * Similar pattern to datetime_field.js:160 in Odoo core.
+     */
+    onWillRender(() => {
+      this.state.date = this.props.record.data.date;
     });
   }
 
