@@ -35,12 +35,29 @@ FlightEventTimeMatrixField (Main Field Widget)
 ### FlightEventTimeMatrixCell
 
 - **Location**: `flight_event_time_matrix_cell/`
-- **Purpose**: Individual cell with datetime picker
+- **Purpose**: Individual cell with text input and datetime picker
 - **Key Responsibilities**:
-  - Manages its own `useDateTimePicker` hook
+  - Provides text input field for keyboard-driven time entry
+  - Parses typed input in formats: "HH:mm", "HH:mm +/-D", "HH:mm TZ"
+  - Manages its own `useDateTimePicker` hook for visual picker
   - Formats time with relative day offset (e.g., "14:30 +1")
-  - Handles click to open datetime picker
+  - Opens datetime picker on Ctrl+Click
   - Uses onApply callback to prevent auto-closing
+
+#### Supported Input Formats
+
+- `14:30` - Same day at 2:30 PM
+- `14:30 +1` - Next day at 2:30 PM
+- `08:00 -1` - Previous day at 8:00 AM
+- `16:00 EST` - Same day at 4:00 PM Eastern Time
+- `14:30 +1 UTC` - Next day at 2:30 PM UTC
+
+#### Keyboard Shortcuts
+
+- **Enter** - Parse and apply the typed time
+- **Escape** - Revert to previous value
+- **Ctrl+Click** - Open visual datetime picker
+- **Focus** - Auto-select all text for easy editing
 
 ## Data Flow
 

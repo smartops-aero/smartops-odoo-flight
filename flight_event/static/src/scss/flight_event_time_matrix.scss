@@ -51,12 +51,50 @@
     // Matrix cell styling
     .o_matrix_cell {
       text-align: center;
-      padding: 8px;
+      padding: 4px;
 
       &.cursor-pointer:hover {
         background-color: mix($o-brand-primary, $o-view-background-color, 15%);
       }
 
+      // Input field styling for time entry
+      .o_matrix_cell_input {
+        min-width: 90px;
+        max-width: 120px;
+        padding: 4px 8px;
+        border: 1px solid transparent;
+        background-color: transparent;
+        transition: all 0.2s ease;
+
+        &::placeholder {
+          color: $text-muted;
+          opacity: 0.5;
+        }
+
+        &:hover:not([readonly]) {
+          border-color: mix($o-brand-primary, $o-view-background-color, 30%);
+          background-color: mix($o-brand-primary, $o-view-background-color, 5%);
+        }
+
+        &:focus {
+          border-color: $o-brand-primary;
+          background-color: white;
+          outline: none;
+          box-shadow: 0 0 0 2px rgba($o-brand-primary, 0.2);
+        }
+
+        &[readonly] {
+          cursor: default;
+          color: $text-muted;
+          background-color: $o-view-background-color;
+        }
+
+        &:not([readonly]) {
+          cursor: text;
+        }
+      }
+
+      // Old span styling (kept for backwards compatibility)
       .o_matrix_cell_value {
         display: inline-block;
         min-width: 80px;
