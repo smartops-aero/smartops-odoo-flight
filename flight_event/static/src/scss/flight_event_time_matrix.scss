@@ -37,14 +37,6 @@
           font-weight: $font-weight-bold;
           box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
         }
-
-        &:hover {
-          background-color: mix(
-            $o-brand-primary,
-            $o-view-background-color,
-            10%
-          );
-        }
       }
     }
 
