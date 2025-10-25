@@ -70,14 +70,8 @@ export class FlightEventTimeMatrixField extends Component {
   /**
    * @returns {Object} The One2many field value containing flight.event.time records
    */
-  getList() {
-    // Access the One2many field data from the record
-    const fieldValue = this.props.record.data[this.props.name];
-    return fieldValue;
-  }
-
   get list() {
-    return this.getList();
+    return this.props.record.data[this.props.name];
   }
 
   /**

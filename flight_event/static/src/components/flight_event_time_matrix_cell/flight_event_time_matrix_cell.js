@@ -43,6 +43,16 @@ export class FlightEventTimeMatrixCell extends Component {
     };
 
     /**
+     * Handler for datetime updates from picker.
+     * Used by both onChange and onApply to avoid duplication.
+     */
+    const handleDateTimeUpdate = (value) => {
+      if (value) {
+        this.props.onUpdate(this.props.timeKind, this.props.eventCode, value);
+      }
+    };
+
+    /**
      * Individual datetime picker for this cell.
      * Updates immediately on change for UX, similar to 16.0 behavior.
      */
@@ -51,18 +61,8 @@ export class FlightEventTimeMatrixCell extends Component {
       get pickerProps() {
         return getPickerProps();
       },
-      onChange: (value) => {
-        // Update immediately when user selects a date/time
-        if (value) {
-          this.props.onUpdate(this.props.timeKind, this.props.eventCode, value);
-        }
-      },
-      onApply: (value) => {
-        // Also handle Apply button click
-        if (value) {
-          this.props.onUpdate(this.props.timeKind, this.props.eventCode, value);
-        }
-      },
+      onChange: handleDateTimeUpdate,
+      onApply: handleDateTimeUpdate,
     });
 
     this.openPicker = dateTimePicker.open;
