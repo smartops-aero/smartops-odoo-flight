@@ -1,26 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
     <t t-name="flight_event.FlightEventTimeMatrixCell">
-        <div class="input-group input-group-sm o_matrix_cell_group">
-            <input
-          t-ref="time-input"
-          type="text"
-          class="o_matrix_cell_input form-control text-center"
-          t-att-value="state.inputValue"
-          t-att-readonly="props.readonly"
-          t-on-blur="onInputBlur"
-          t-on-keydown="onInputKeydown"
-          t-on-input="onInputChange"
-          t-on-focus="onInputFocus"
-          placeholder="HH:mm"
-          title="Enter time (e.g., 14:30 or 14:30 +1 for next day)"
-        />
-            <span
-          t-if="state.isFocused and !props.readonly"
-          class="input-group-text o_matrix_cell_icon"
-        >
-                <i class="fa fa-calendar" />
-            </span>
-        </div>
+        <input
+      t-ref="time-input"
+      type="text"
+      class="form-control form-control-sm text-center"
+      t-att-value="state.inputValue"
+      t-att-readonly="props.readonly"
+      t-on-blur="onInputBlur"
+      t-on-keydown="onInputKeydown"
+      t-on-input="onInputChange"
+      t-on-focus="onInputFocus"
+      placeholder="HH:mm"
+      title="Enter time (e.g., 14:30 or 14:30 +1 for next day)"
+    />
     </t>
 </templates>

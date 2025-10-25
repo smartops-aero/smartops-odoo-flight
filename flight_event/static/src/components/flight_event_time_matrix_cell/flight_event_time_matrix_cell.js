@@ -30,7 +30,6 @@ export class FlightEventTimeMatrixCell extends Component {
     this.notification = useService("notification");
     this.state = useState({
       inputValue: "",
-      isFocused: false,
       isUserEditing: false, // Track if user is actively typing
     });
 
@@ -188,8 +187,7 @@ export class FlightEventTimeMatrixCell extends Component {
   onInputBlur(ev) {
     const inputValue = ev.target.value.trim();
 
-    // Clear editing and focus state
-    this.state.isFocused = false;
+    // Clear editing state
     this.state.isUserEditing = false;
 
     // If empty, clear the value
@@ -238,9 +236,6 @@ export class FlightEventTimeMatrixCell extends Component {
    */
   onInputFocus(ev) {
     if (!this.props.readonly) {
-      // Update focus state to show calendar icon
-      this.state.isFocused = true;
-
       // Select all text for easy editing
       ev.target.select();
 
