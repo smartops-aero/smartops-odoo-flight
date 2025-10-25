@@ -13,7 +13,8 @@
         string="Flight Fleet Accordion"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_accordion.png"
       >
-        <keywords>accordion, faq, collapse, aircraft, fleet, questions, answers</keywords>
+        <keywords
+        >accordion, faq, collapse, aircraft, fleet, questions, answers</keywords>
       </t>
     </xpath>
 
@@ -25,7 +26,8 @@
         group="intro"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_carousel.png"
       >
-        <keywords>carousel, slider, aircraft, fleet, aviation, gallery, slideshow</keywords>
+        <keywords
+        >carousel, slider, aircraft, fleet, aviation, gallery, slideshow</keywords>
       </t>
 
       <t
@@ -34,7 +36,8 @@
         group="content"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_multiple_carousel.png"
       >
-        <keywords>carousel, multiple, cards, aircraft, fleet, aviation, slider, gallery</keywords>
+        <keywords
+        >carousel, multiple, cards, aircraft, fleet, aviation, slider, gallery</keywords>
       </t>
 
       <t
@@ -43,7 +46,8 @@
         group="images"
         t-thumbnail="/website_flight_fleet/static/src/img/snippets/s_website_flight_fleet_dynamic_aircraft_images.png"
       >
-        <keywords>dynamic, aircraft, images, fleet, aviation, gallery, photos</keywords>
+        <keywords
+        >dynamic, aircraft, images, fleet, aviation, gallery, photos</keywords>
       </t>
     </xpath>
   </template>

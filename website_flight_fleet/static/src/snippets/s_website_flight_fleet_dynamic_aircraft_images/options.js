@@ -75,7 +75,7 @@ const DynamicSnippetAircraftImagesOptions =
 
     async _renderAircraftSelector(uiFragment) {
       const aircraftSelect = uiFragment.querySelector(
-        '[data-name="aircraft_opt"]',
+        '[data-name="aircraft_opt"]'
       );
       if (aircraftSelect && Object.keys(this.aircrafts).length) {
         for (const [id, aircraft] of Object.entries(this.aircrafts)) {
@@ -89,7 +89,7 @@ const DynamicSnippetAircraftImagesOptions =
 
     async _renderCategorySelector(uiFragment) {
       const categorySelect = uiFragment.querySelector(
-        '[data-name="category_opt"]',
+        '[data-name="category_opt"]'
       );
       if (categorySelect && Object.keys(this.categories).length) {
         for (const [id, category] of Object.entries(this.categories)) {

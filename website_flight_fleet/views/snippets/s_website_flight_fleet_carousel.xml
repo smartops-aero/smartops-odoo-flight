@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <template id="s_website_flight_fleet_carousel" name="Aircraft Carousel">
-        <section class="s_carousel_wrapper" data-snippet="s_website_flight_fleet_carousel" data-name="Flight Fleet Carousel">
+        <section
+      class="s_carousel_wrapper"
+      data-snippet="s_website_flight_fleet_carousel"
+      data-name="Flight Fleet Carousel"
+    >
             <t t-set="uniq" t-value="datetime.datetime.now().microsecond" />
             <div
         class="s_website_flight_fleet_carousel s_carousel s_carousel_default carousel slide"

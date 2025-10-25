@@ -123,7 +123,9 @@ export class FlightEventTimeMatrixCell extends Component {
     }
 
     // Match: HH:mm [+/-D] [TIMEZONE]
-    const match = inputValue.match(/^(\d{1,2}):(\d{2})(?:\s+([+-]\d+))?(?:\s+([A-Z]{2,5}))?$/i);
+    const match = inputValue.match(
+      /^(\d{1,2}):(\d{2})(?:\s+([+-]\d+))?(?:\s+([A-Z]{2,5}))?$/i
+    );
 
     if (!match) {
       return null;

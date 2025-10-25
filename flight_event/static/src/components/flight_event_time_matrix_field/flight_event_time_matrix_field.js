@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, onWillStart, onWillRender, useState } from "@odoo/owl";
+import { Component, onWillRender, onWillStart, useState } from "@odoo/owl";
 import { FlightEventTimeMatrixRenderer } from "@flight_event/components/flight_event_time_matrix_renderer/flight_event_time_matrix_renderer";
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";

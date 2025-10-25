@@ -1,8 +1,8 @@
 /** @odoo-module **/
 
 import {
-  NewContentModal,
   MODULE_STATUS,
+  NewContentModal,
 } from "@website/systray_items/new_content";
 import { patch } from "@web/core/utils/patch";
 import { xml } from "@odoo/owl";

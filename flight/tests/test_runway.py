@@ -1,6 +1,7 @@
+from psycopg2 import IntegrityError
+
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
-from psycopg2 import IntegrityError
 
 from .common import FlightCommon
 
@@ -259,8 +260,12 @@ class TestAerodromeRunway(FlightCommon):
         aerodrome.unlink()
 
         # Runways should be deleted (cascade)
-        self.assertFalse(self.env["flight.aerodrome.runway"].browse(runway1_id).exists())
-        self.assertFalse(self.env["flight.aerodrome.runway"].browse(runway2_id).exists())
+        self.assertFalse(
+            self.env["flight.aerodrome.runway"].browse(runway1_id).exists()
+        )
+        self.assertFalse(
+            self.env["flight.aerodrome.runway"].browse(runway2_id).exists()
+        )
 
     def test_16_runway_length_width_with_uom(self):
         """Test runway length and width with different UoMs"""

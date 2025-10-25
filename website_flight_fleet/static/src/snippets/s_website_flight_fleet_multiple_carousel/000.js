@@ -63,7 +63,7 @@ publicWidget.registry.WebsiteFlightFleetMultipleCarousel =
       // Handle mouse interactions
       carouselInner.addEventListener("mouseenter", () => this._stopAutoSlide());
       carouselInner.addEventListener("mouseleave", () =>
-        this._startAutoSlide(),
+        this._startAutoSlide()
       );
 
       // Handle window resize
@@ -93,7 +93,7 @@ publicWidget.registry.WebsiteFlightFleetMultipleCarousel =
 
     _updateIndicators: function () {
       const indicatorsContainer = this.carousel.querySelector(
-        ".carousel-indicators",
+        ".carousel-indicators"
       );
       if (!indicatorsContainer) return;
 
@@ -129,7 +129,7 @@ publicWidget.registry.WebsiteFlightFleetMultipleCarousel =
 
       // Update indicators
       const indicators = this.carousel.querySelectorAll(
-        ".carousel-indicators li",
+        ".carousel-indicators li"
       );
       indicators.forEach((indicator, i) => {
         indicator.classList.toggle("active", i === index);
