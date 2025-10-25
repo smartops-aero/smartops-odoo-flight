@@ -28,9 +28,10 @@ export class FlightEventTimeMatrixCell extends Component {
   setup() {
     this.inputRef = useRef("time-input");
     this.notification = useService("notification");
+    // Track input value and editing state
     this.state = useState({
       inputValue: "",
-      isUserEditing: false, // Track if user is actively typing
+      isUserEditing: false,
     });
 
     const getPickerProps = () => {
@@ -44,6 +45,7 @@ export class FlightEventTimeMatrixCell extends Component {
     /**
      * Handler for datetime updates from picker.
      * Used by both onChange and onApply to avoid duplication.
+     * @param {DateTime} value - The selected datetime value
      */
     const handleDateTimeUpdate = (value) => {
       if (value) {
@@ -134,8 +136,8 @@ export class FlightEventTimeMatrixCell extends Component {
     const [, hours, minutes, dayOffset, timezone] = match;
 
     // Validate time values
-    const h = parseInt(hours);
-    const m = parseInt(minutes);
+    const h = parseInt(hours, 10);
+    const m = parseInt(minutes, 10);
     if (h < 0 || h > 23 || m < 0 || m > 59) {
       return null;
     }
@@ -177,7 +179,7 @@ export class FlightEventTimeMatrixCell extends Component {
 
     // Apply day offset if specified
     if (dayOffset) {
-      date = date.plus({ days: parseInt(dayOffset) });
+      date = date.plus({ days: parseInt(dayOffset, 10) });
     }
 
     return date.isValid ? date : null;
@@ -185,6 +187,7 @@ export class FlightEventTimeMatrixCell extends Component {
 
   /**
    * Handle input field blur - parse and update value
+   * @param {Event} ev - The blur event
    */
   onInputBlur(ev) {
     const inputValue = ev.target.value.trim();
@@ -212,11 +215,13 @@ export class FlightEventTimeMatrixCell extends Component {
 
   /**
    * Handle input field keydown
+   * @param {KeyboardEvent} ev - The keydown event
    */
   onInputKeydown(ev) {
     if (ev.key === "Enter") {
       ev.preventDefault();
-      ev.target.blur(); // Trigger blur to parse
+      // Trigger blur to parse
+      ev.target.blur();
     } else if (ev.key === "Escape") {
       ev.preventDefault();
       // Revert to original value
@@ -227,6 +232,7 @@ export class FlightEventTimeMatrixCell extends Component {
 
   /**
    * Handle input field change - update state and mark as editing
+   * @param {Event} ev - The input event
    */
   onInputChange(ev) {
     this.state.isUserEditing = true;
@@ -235,6 +241,7 @@ export class FlightEventTimeMatrixCell extends Component {
 
   /**
    * Handle focus - auto-open picker and select text
+   * @param {FocusEvent} ev - The focus event
    */
   onInputFocus(ev) {
     if (!this.props.readonly) {
