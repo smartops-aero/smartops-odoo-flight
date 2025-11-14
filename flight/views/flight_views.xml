@@ -6,11 +6,11 @@
         <field name="model">flight.flight</field>
         <field name="arch" type="xml">
             <list>
-                <field name="date" />
-                <field name="aircraft_id" />
-                <field name="departure_id" />
-                <field name="arrival_id" />
-                <field name="locked" />
+                <field name="date" optional="show" />
+                <field name="aircraft_id" optional="show" />
+                <field name="departure_id" optional="show" />
+                <field name="arrival_id" optional="show" />
+                <field name="locked" optional="hide" />
             </list>
         </field>
     </record>
