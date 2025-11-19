@@ -9,11 +9,13 @@ Adds essential aviation units of measurement to Odoo's UOM system. Includes dist
 ## Features
 
 ### Distance Units
+
 - **Nautical Miles (nm)**: Standard aviation distance measurement
 - **Statute Miles (mi)**: Alternative distance measurement
 - **Kilometers (km)**: Metric distance measurement
 
 ### Speed Units
+
 - **Knots (kt)**: Standard aviation speed (nautical miles per hour)
 - **Kilometers per hour (kph)**: Metric speed measurement
 - **Feet per second (fps)**: Vertical speed measurement
@@ -35,6 +37,7 @@ Adds essential aviation units of measurement to Odoo's UOM system. Includes dist
 ### In Flight Modules
 
 Aviation units are used throughout the flight module suite for:
+
 - Flight distances and ranges
 - Aircraft speeds and velocities
 - Route planning calculations
@@ -50,6 +53,7 @@ flight_uom/
 ## Conversion Factors
 
 All conversion factors follow international aviation standards:
+
 - 1 nautical mile = 1.852 kilometers
 - 1 statute mile = 1.609344 kilometers
 - 1 knot = 1 nautical mile per hour

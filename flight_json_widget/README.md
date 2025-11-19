@@ -26,7 +26,7 @@ Provides a custom Odoo widget for displaying JSON fields with syntax highlightin
 Add the widget to any JSON or Text field in your XML views:
 
 ```xml
-<field name="json_data" widget="flight_json"/>
+<field name="json_data" widget="flight_json" />
 ```
 
 ### Viewing JSON Data

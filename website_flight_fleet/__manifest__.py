@@ -16,7 +16,7 @@
         - Customizable display options
     """,
     "author": "Apexive Solutions LLC",
-    "website": "https://github.com/smartops-aero/flight",
+    "website": "https://github.com/smartops-aero/smartops-odoo-flight",
     "version": "18.0.1.0.0",
     "depends": [
         "website",

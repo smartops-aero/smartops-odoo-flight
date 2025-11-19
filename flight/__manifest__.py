@@ -14,7 +14,7 @@
             and import it using the Flights -> Configuration -> Aerodromes -> Favorites -> Import records function.
     """,
     "author": "Apexive Solutions LLC",
-    "website": "https://github.com/smartops-aero/flight",
+    "website": "https://github.com/smartops-aero/smartops-odoo-flight",
     "license": "LGPL-3",
     "category": "Industries",
     "version": "18.0.1.1.0",
