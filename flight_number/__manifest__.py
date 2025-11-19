@@ -20,4 +20,7 @@
         "views/flight_prefix_views.xml",
         "views/menu.xml",
     ],
+    "images": [
+        "static/description/banner.jpeg",
+    ],
 }
