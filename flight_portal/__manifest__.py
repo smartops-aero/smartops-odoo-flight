@@ -22,6 +22,9 @@
         "views/flight_views.xml",
         "views/flight_portal_templates.xml",
     ],
+    "images": [
+        "static/description/banner.jpeg",
+    ],
     "installable": True,
     "auto_install": False,
 }

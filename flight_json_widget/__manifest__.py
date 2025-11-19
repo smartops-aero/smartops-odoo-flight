@@ -12,6 +12,9 @@
             "flight_json_widget/static/src/views/fields/flight_json/flight_json.xml",
         ],
     },
+    "images": [
+        "static/description/banner.jpeg",
+    ],
     "installable": True,
     "application": False,
     "auto_install": False,

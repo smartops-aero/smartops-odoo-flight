@@ -36,6 +36,9 @@ All conversion factors follow international aviation standards.
     "data": [
         "data/product_uom_data.xml",
     ],
+    "images": [
+        "static/description/banner.jpeg",
+    ],
     "installable": True,
     "auto_install": False,
 }

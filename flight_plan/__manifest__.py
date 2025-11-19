@@ -14,4 +14,7 @@
         "views/flight_plan_aerodrome_views.xml",
         "views/menu.xml",
     ],
+    "images": [
+        "static/description/banner.jpeg",
+    ],
 }
