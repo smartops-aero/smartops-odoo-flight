@@ -61,7 +61,7 @@
         ],
     },
     "images": [
-        "static/description/banner.png",
+        "static/description/banner.jpeg",
     ],
     "application": False,
     "installable": True,
