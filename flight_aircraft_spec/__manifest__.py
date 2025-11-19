@@ -3,7 +3,7 @@
     "version": "18.0.1.0.0",
     "category": "Flight",
     "author": "Apexive Solutions LLC",
-    "website": "https://github.com/smartops-aero/flight",
+    "website": "https://github.com/smartops-aero/smartops-odoo-flight",
     "summary": "Comprehensive aircraft specifications management system",
     "description": """
         Provides a robust and flexible system for managing aircraft specifications and amenities:

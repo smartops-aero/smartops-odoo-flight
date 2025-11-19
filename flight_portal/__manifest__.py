@@ -7,7 +7,7 @@
         allowing sharing of flight information via secure access tokens.
     """,
     "author": "Apexive Solutions LLC",
-    "website": "https://github.com/smartops-aero/flight",
+    "website": "https://github.com/smartops-aero/smartops-odoo-flight",
     "license": "LGPL-3",
     "category": "Industries",
     "version": "18.0.1.0.0",
@@ -21,6 +21,9 @@
         "security/flight_portal_security.xml",
         "views/flight_views.xml",
         "views/flight_portal_templates.xml",
+    ],
+    "images": [
+        "static/description/banner.jpeg",
     ],
     "installable": True,
     "auto_install": False,

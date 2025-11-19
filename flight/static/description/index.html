@@ -1,113 +1,516 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flight Management Module</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1, h2 {
-            color: #00529b;
-        }
-        .feature-list {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        .feature-list li:before {
-            content: "✈️ ";
-        }
-        .note {
-            background-color: #f0f0f0;
-            border-left: 5px solid #00529b;
-            padding: 10px;
-            margin: 20px 0;
-        }
-        .logo {
-            max-width: 200px;
-            margin-bottom: 20px;
-        }
-        .project-info {
-            background-color: #e6f3ff;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
+<section style="padding:4rem 0 3rem; background-color:#f8f9fa">
+    <div class="container">
+        <div class="text-center" style="max-width:1000px; margin:0 auto">
+            <div style="background-color:#71639e; color:#fff; display:inline-block; padding:0.5rem 1.5rem; border-radius:20px; font-size:0.9rem; font-weight:600; margin-bottom:1.5rem">
+                Foundation Module
+            </div>
+            <h1 style="font-size:3.5rem; font-weight:800; color:#212529; margin-bottom:1.5rem; line-height:1.1">
+                SmartOps Flight Management
+            </h1>
+            <p style="font-size:1.35rem; color:#6c757d; margin-bottom:2.5rem; line-height:1.6">
+                The complete foundation for aviation operations management in Odoo. Build your entire flight operation on this powerful, extensible base module.
+            </p>
+            <div class="d-flex flex-wrap justify-content-center" style="gap:0.75rem">
+                <span class="badge" style="background-color:#71639e; color:#fff; padding:0.5rem 1rem; border-radius:20px; font-size:0.9rem">Flights & Operations</span>
+                <span class="badge" style="background-color:#71639e; color:#fff; padding:0.5rem 1rem; border-radius:20px; font-size:0.9rem">Aircraft Management</span>
+                <span class="badge" style="background-color:#71639e; color:#fff; padding:0.5rem 1rem; border-radius:20px; font-size:0.9rem">Aerodrome Database</span>
+                <span class="badge" style="background-color:#71639e; color:#fff; padding:0.5rem 1rem; border-radius:20px; font-size:0.9rem">Crew Tracking</span>
+                <span class="badge" style="background-color:#71639e; color:#fff; padding:0.5rem 1rem; border-radius:20px; font-size:0.9rem">Extensible Architecture</span>
+            </div>
+        </div>
+    </div>
+</section>
 
-<h1>Flight Management Module</h1>
+<section style="background-color:#71639e; padding:2rem 0">
+    <div class="container">
+        <div class="text-center">
+            <p style="color:#ffffff; font-size:1.15rem; font-weight:600; margin-bottom:0">
+                Part of the Complete SmartOps Aviation Suite by Apexive Solutions LLC
+            </p>
+            <p style="color:#f8f9fa; font-size:0.95rem; margin-bottom:0">
+                Professional flight operations management solutions trusted by aviation businesses worldwide
+            </p>
+        </div>
+    </div>
+</section>
 
-<div class="project-info">
-    <p><strong>This module is part of the smartops.aero project developed by Apexive.</strong></p>
-</div>
+<section class="container" style="padding:4rem 0">
+    <div class="row align-items-center">
+        <div class="col-lg-6 col-12 mb-4 mb-lg-0">
+            <h2 style="font-size:2.5rem; font-weight:700; color:#212529; margin-bottom:1.5rem; line-height:1.2">
+                Why SmartOps Flight Management?
+            </h2>
+            <p style="color:#495057; font-size:1.1rem; line-height:1.8; margin-bottom:1.5rem">
+                Running an aviation operation requires managing complex, interconnected data: flights, aircraft, crew, airports, and compliance requirements. SmartOps Flight Management provides the foundation to manage it all in one integrated system.
+            </p>
+            <p style="color:#495057; font-size:1.1rem; line-height:1.8; margin-bottom:1.5rem">
+                Built by aviation professionals for aviation operations, this module serves as the core of a complete flight management ecosystem. Whether you're managing charter operations, flight schools, aircraft management companies, or commercial aviation, this is your starting point.
+            </p>
+            <div class="card border-0" style="background-color:#f5efff; border-radius:12px; padding:1.5rem">
+                <p style="color:#71639e; font-weight:600; font-size:1.05rem; margin-bottom:0.5rem">
+                    <i class="fa fa-lightbulb-o" style="margin-right:0.5rem"></i>
+                    The Value Proposition
+                </p>
+                <p style="color:#495057; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                    Replace fragmented spreadsheets, multiple databases, and disconnected systems with a single, integrated Odoo-based solution that grows with your operation.
+                </p>
+            </div>
+        </div>
+        <div class="col-lg-6 col-12">
+            <div class="card border-0 shadow-sm" style="border-radius:16px">
+                <div class="card-body p-4">
+                    <h4 style="color:#212529; font-weight:700; margin-bottom:1.5rem">Complete Solution Suite</h4>
+                    <div style="margin-bottom:1rem; padding:1rem; background-color:#f8f9fa; border-radius:8px">
+                        <div style="display:flex; align-items:start">
+                            <i class="fa fa-check-circle" style="color:#28a745; font-size:1.5rem; margin-right:1rem; margin-top:0.25rem"></i>
+                            <div>
+                                <strong style="color:#212529; display:block; margin-bottom:0.25rem">Core Foundation</strong>
+                                <small style="color:#6c757d">Flights, aircraft, aerodromes, crew management</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:1rem; padding:1rem; background-color:#f8f9fa; border-radius:8px">
+                        <div style="display:flex; align-items:start">
+                            <i class="fa fa-check-circle" style="color:#28a745; font-size:1.5rem; margin-right:1rem; margin-top:0.25rem"></i>
+                            <div>
+                                <strong style="color:#212529; display:block; margin-bottom:0.25rem">Modular Extensions</strong>
+                                <small style="color:#6c757d">Add capabilities as you grow: events, specs, portal, data sync</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:1rem; padding:1rem; background-color:#f8f9fa; border-radius:8px">
+                        <div style="display:flex; align-items:start">
+                            <i class="fa fa-check-circle" style="color:#28a745; font-size:1.5rem; margin-right:1rem; margin-top:0.25rem"></i>
+                            <div>
+                                <strong style="color:#212529; display:block; margin-bottom:0.25rem">Odoo Integration</strong>
+                                <small style="color:#6c757d">Seamless integration with CRM, accounting, HR, inventory</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding:1rem; background-color:#f8f9fa; border-radius:8px">
+                        <div style="display:flex; align-items:start">
+                            <i class="fa fa-check-circle" style="color:#28a745; font-size:1.5rem; margin-right:1rem; margin-top:0.25rem"></i>
+                            <div>
+                                <strong style="color:#212529; display:block; margin-bottom:0.25rem">Professional Support</strong>
+                                <small style="color:#6c757d">Backed by Apexive Solutions LLC aviation expertise</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-<p>The Flight Management module provides a comprehensive solution for managing flights, aircraft, and aerodromes in Odoo. This base module offers essential models and views that serve as a foundation for more advanced flight management functionality.</p>
+<section style="background-color:#f8f9fa; padding:4rem 0">
+    <div class="container">
+        <h2 class="text-center" style="font-size:2.5rem; font-weight:700; color:#212529; margin-bottom:3rem">
+            Core Features
+        </h2>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-center" style="width:64px; height:64px; border-radius:12px; background-color:#f5efff; margin-bottom:1.5rem">
+                            <i class="fa fa-plane" style="font-size:32px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Flight Operations
+                        </h3>
+                        <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            Complete flight lifecycle management with departure, arrival, aircraft assignment, crew, and dates.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-<h2>Key Features</h2>
-<ul class="feature-list">
-    <li>Flight management with departure and arrival information</li>
-    <li>Aircraft registration and model tracking</li>
-    <li>Aerodrome (airport) management with detailed information</li>
-    <li>Integration with Odoo's messaging system for collaborative management</li>
-</ul>
+            <div class="col-lg-3 col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-center" style="width:64px; height:64px; border-radius:12px; background-color:#f5efff; margin-bottom:1.5rem">
+                            <i class="fa fa-fighter-jet" style="font-size:32px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Aircraft Fleet
+                        </h3>
+                        <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            Manage aircraft registrations, models, manufacturers, classes, and equipment types with full traceability.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-<h2>Module Components</h2>
-<h3>Flights</h3>
-<p>Manage individual flights with details such as:</p>
-<ul>
-    <li>Flight date</li>
-    <li>Aircraft assignment</li>
-    <li>Departure and arrival aerodromes</li>
-</ul>
+            <div class="col-lg-3 col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-center" style="width:64px; height:64px; border-radius:12px; background-color:#f5efff; margin-bottom:1.5rem">
+                            <i class="fa fa-map-marker" style="font-size:32px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Aerodrome Database
+                        </h3>
+                        <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            Comprehensive airport database with ICAO/IATA codes, coordinates, runways, timezones, and elevation data.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-<h3>Aircraft</h3>
-<p>Keep track of your fleet with information including:</p>
-<ul>
-    <li>Registration number</li>
-    <li>Aircraft model</li>
-    <li>Manufacturing details</li>
-    <li>Equipment type classification</li>
-</ul>
+            <div class="col-lg-3 col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-center" style="width:64px; height:64px; border-radius:12px; background-color:#f5efff; margin-bottom:1.5rem">
+                            <i class="fa fa-users" style="font-size:32px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Crew Management
+                        </h3>
+                        <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            Track crew members, roles, assignments, and qualifications integrated with Odoo's HR system.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-<h3>Aerodromes</h3>
-<p>Maintain a database of airports with details such as:</p>
-<ul>
-    <li>ICAO and IATA codes</li>
-    <li>Geographic location (latitude and longitude)</li>
-    <li>Time zone information</li>
-</ul>
+            <div class="col-lg-3 col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-center" style="width:64px; height:64px; border-radius:12px; background-color:#f5efff; margin-bottom:1.5rem">
+                            <i class="fa fa-comments" style="font-size:32px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Collaboration Tools
+                        </h3>
+                        <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            Built-in chatter, activities, and notifications keep your team coordinated and informed.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-<div class="note">
-    <strong>Note:</strong> The aerodrome data is not loaded by default due to its large size. To populate your aerodrome database, please follow the instructions in the module's README file.
-</div>
+            <div class="col-lg-3 col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-center" style="width:64px; height:64px; border-radius:12px; background-color:#f5efff; margin-bottom:1.5rem">
+                            <i class="fa fa-lock" style="font-size:32px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Security & Access
+                        </h3>
+                        <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            Granular security groups and record locking ensure data integrity and proper access control.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-<h2>Integration and Extensibility</h2>
-<p>This module is designed to integrate seamlessly with other Odoo modules and can be extended to include more advanced features such as:</p>
-<ul>
-    <li>Flight scheduling and operations management</li>
-    <li>Crew management and assignment</li>
-    <li>Maintenance tracking for aircraft</li>
-    <li>Financial aspects of flight operations</li>
-</ul>
+            <div class="col-lg-3 col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-center" style="width:64px; height:64px; border-radius:12px; background-color:#f5efff; margin-bottom:1.5rem">
+                            <i class="fa fa-ruler" style="font-size:32px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Aviation UOM
+                        </h3>
+                        <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            Nautical miles, knots, and other aviation-specific units built-in with automatic conversions.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-<p>For more advanced functionality, please check out our Flight Operations Management (flight_ops) module or Flight Events (flight_event) module.</p>
+            <div class="col-lg-3 col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-center" style="width:64px; height:64px; border-radius:12px; background-color:#f5efff; margin-bottom:1.5rem">
+                            <i class="fa fa-puzzle-piece" style="font-size:32px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Extensible Design
+                        </h3>
+                        <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            Built as a foundation for extension modules: events, specs, portal, data sync, and more.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-<h2>About smartops.aero</h2>
-<p>smartops.aero is a comprehensive aviation management solution developed by Apexive. It aims to streamline and optimize various aspects of flight operations, maintenance, and management for aviation businesses.</p>
+<section class="container" style="padding:4rem 0">
+    <h2 class="text-center" style="font-size:2.5rem; font-weight:700; color:#212529; margin-bottom:3rem">
+        Who Benefits?
+    </h2>
+    <div class="row g-4">
+        <div class="col-md-4 col-12">
+            <div class="card h-100 border-0 shadow-sm" style="border-radius:16px; background-color:#f8f9fa">
+                <div class="card-body p-4">
+                    <h4 style="font-size:1.3rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                        <i class="fa fa-briefcase" style="color:#71639e; margin-right:0.75rem"></i>
+                        Charter Operators
+                    </h4>
+                    <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                        Manage on-demand flights, aircraft availability, crew scheduling, and client coordination in one system. Integrate with CRM and billing.
+                    </p>
+                </div>
+            </div>
+        </div>
 
-<h2>Support</h2>
-<p>For any questions or support needs, please contact our support team or visit our GitHub repository at:</p>
-<p><a href="https://github.com/smartops-aero/smartops-odoo-flight">https://github.com/smartops-aero/smartops-odoo-flight</a></p>
+        <div class="col-md-4 col-12">
+            <div class="card h-100 border-0 shadow-sm" style="border-radius:16px; background-color:#f8f9fa">
+                <div class="card-body p-4">
+                    <h4 style="font-size:1.3rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                        <i class="fa fa-graduation-cap" style="color:#71639e; margin-right:0.75rem"></i>
+                        Flight Schools
+                    </h4>
+                    <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                        Track training flights, instructor assignments, aircraft utilization, and student progress integrated with Odoo's education features.
+                    </p>
+                </div>
+            </div>
+        </div>
 
-<p>For more information about Apexive and our other projects, visit:</p>
-<p><a href="https://apexive.com">https://apexive.com</a></p>
-</body>
-</html>
+        <div class="col-md-4 col-12">
+            <div class="card h-100 border-0 shadow-sm" style="border-radius:16px; background-color:#f8f9fa">
+                <div class="card-body p-4">
+                    <h4 style="font-size:1.3rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                        <i class="fa fa-building" style="color:#71639e; margin-right:0.75rem"></i>
+                        Aircraft Management
+                    </h4>
+                    <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                        Manage multiple aircraft for multiple owners with detailed tracking, maintenance coordination, and owner reporting capabilities.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-12">
+            <div class="card h-100 border-0 shadow-sm" style="border-radius:16px; background-color:#f8f9fa">
+                <div class="card-body p-4">
+                    <h4 style="font-size:1.3rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                        <i class="fa fa-plane" style="color:#71639e; margin-right:0.75rem"></i>
+                        Commercial Aviation
+                    </h4>
+                    <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                        Foundation for scheduled service operations with flight planning, crew rostering, and operational coordination.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-12">
+            <div class="card h-100 border-0 shadow-sm" style="border-radius:16px; background-color:#f8f9fa">
+                <div class="card-body p-4">
+                    <h4 style="font-size:1.3rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                        <i class="fa fa-truck" style="color:#71639e; margin-right:0.75rem"></i>
+                        Cargo Operations
+                    </h4>
+                    <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                        Track freight flights with integration to Odoo's inventory and logistics modules for complete cargo visibility.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-12">
+            <div class="card h-100 border-0 shadow-sm" style="border-radius:16px; background-color:#f8f9fa">
+                <div class="card-body p-4">
+                    <h4 style="font-size:1.3rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                        <i class="fa fa-cogs" style="color:#71639e; margin-right:0.75rem"></i>
+                        MRO Providers
+                    </h4>
+                    <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                        Track customer aircraft, test flights, and ferry operations integrated with maintenance and project management.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="background-color:#f8f9fa; padding:4rem 0">
+    <div class="container">
+        <h2 class="text-center" style="font-size:2.5rem; font-weight:700; color:#212529; margin-bottom:3rem">
+            Extend Your Capabilities
+        </h2>
+        <div class="row g-4">
+            <div class="col-md-6 col-12">
+                <div class="card border-0 shadow-sm h-100" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <h4 style="color:#71639e; font-weight:700; margin-bottom:1.5rem">Available Extension Modules</h4>
+                        <div style="margin-bottom:1rem">
+                            <strong style="color:#212529">Flight Events</strong>
+                            <p style="color:#6c757d; font-size:0.9rem; margin-bottom:0">Track takeoff, landing, and phase times with timezone support</p>
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <strong style="color:#212529">Flight Aircraft Specs</strong>
+                            <p style="color:#6c757d; font-size:0.9rem; margin-bottom:0">Detailed aircraft specifications and amenities management</p>
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <strong style="color:#212529">Flight Data Sync</strong>
+                            <p style="color:#6c757d; font-size:0.9rem; margin-bottom:0">Sync data from external flight tracking and weather services</p>
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <strong style="color:#212529">Flight Portal</strong>
+                            <p style="color:#6c757d; font-size:0.9rem; margin-bottom:0">Share flight information with clients and partners securely</p>
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <strong style="color:#212529">Flight Plan</strong>
+                            <p style="color:#6c757d; font-size:0.9rem; margin-bottom:0">Manage routes, waypoints, and navigation data</p>
+                        </div>
+                        <div>
+                            <strong style="color:#212529">Website Flight Fleet</strong>
+                            <p style="color:#6c757d; font-size:0.9rem; margin-bottom:0">Showcase your fleet online with beautiful website snippets</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-12">
+                <div class="card border-0 shadow-sm h-100" style="border-radius:16px; background-color:#71639e">
+                    <div class="card-body p-4 d-flex flex-column justify-content-center">
+                        <h4 style="color:#ffffff; font-weight:700; margin-bottom:1.5rem">
+                            <i class="fa fa-star" style="margin-right:0.75rem"></i>
+                            Complete Aviation Solution
+                        </h4>
+                        <p style="color:#f8f9fa; font-size:1.05rem; line-height:1.8; margin-bottom:1.5rem">
+                            Apexive Solutions LLC provides comprehensive aviation management solutions built on proven Odoo technology. Our SmartOps Flight suite combines deep aviation industry knowledge with enterprise-grade software.
+                        </p>
+                        <p style="color:#f8f9fa; font-size:1.05rem; line-height:1.8; margin-bottom:1.5rem">
+                            From flight scheduling to aircraft maintenance, crew management to client portals, we offer integrated modules that work together seamlessly.
+                        </p>
+                        <div style="background-color:#ffffff; padding:1.5rem; border-radius:12px">
+                            <p style="color:#71639e; font-weight:700; font-size:1.1rem; margin-bottom:0.5rem">
+                                Why Choose Apexive?
+                            </p>
+                            <ul style="color:#495057; font-size:0.95rem; line-height:1.8; margin-bottom:0; padding-left:1.25rem">
+                                <li>Built by aviation professionals</li>
+                                <li>Open-source and extensible</li>
+                                <li>Proven in production environments</li>
+                                <li>Regular updates and improvements</li>
+                                <li>Professional support available</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container" style="padding:4rem 0">
+    <div class="row">
+        <div class="col-lg-8 col-12 mx-auto">
+            <h2 style="font-size:2.5rem; font-weight:700; color:#212529; margin-bottom:2rem; text-align:center">
+                Getting Started
+            </h2>
+            <div class="card border-0 shadow-sm" style="border-radius:16px">
+                <div class="card-body p-4">
+                    <h4 style="color:#212529; font-weight:600; margin-bottom:1.5rem">Installation</h4>
+                    <ol style="color:#495057; font-size:0.95rem; line-height:1.8; padding-left:1.5rem; margin-bottom:2rem">
+                        <li style="margin-bottom:0.75rem">Install from Odoo Apps menu</li>
+                        <li style="margin-bottom:0.75rem">Requires: <code style="background-color:#f8f9fa; padding:0.2rem 0.5rem; border-radius:4px">base</code>, <code style="background-color:#f8f9fa; padding:0.2rem 0.5rem; border-radius:4px">mail</code>, <code style="background-color:#f8f9fa; padding:0.2rem 0.5rem; border-radius:4px">web</code>, <code style="background-color:#f8f9fa; padding:0.2rem 0.5rem; border-radius:4px">flight_uom</code></li>
+                        <li style="margin-bottom:0.75rem">Access via <strong>Flights</strong> menu after installation</li>
+                        <li>Optionally install extension modules for additional functionality</li>
+                    </ol>
+
+                    <div style="background-color:#fff3cd; border-left:4px solid:#ffc107; padding:1rem; margin-bottom:1.5rem">
+                        <strong style="color:#856404; display:block; margin-bottom:0.5rem">
+                            <i class="fa fa-info-circle" style="margin-right:0.5rem"></i>
+                            Aerodrome Data
+                        </strong>
+                        <p style="color:#856404; font-size:0.9rem; margin-bottom:0">
+                            The comprehensive aerodrome database is not loaded by default due to size. Import the CSV from our GitHub repository: <code style="background-color:#ffffff; padding:0.2rem 0.5rem; border-radius:4px">github.com/smartops-aero/smartops-odoo-flight</code>
+                        </p>
+                    </div>
+
+                    <h4 style="color:#212529; font-weight:600; margin-bottom:1rem">Quick Start Guide</h4>
+                    <div style="background-color:#f8f9fa; padding:1.5rem; border-radius:8px">
+                        <p style="color:#495057; font-size:0.95rem; line-height:1.7; margin-bottom:1rem">
+                            <strong>1. Set Up Aircraft:</strong> Add your aircraft fleet with registrations and models
+                        </p>
+                        <p style="color:#495057; font-size:0.95rem; line-height:1.7; margin-bottom:1rem">
+                            <strong>2. Import Aerodromes:</strong> Load airport data for your operational areas
+                        </p>
+                        <p style="color:#495057; font-size:0.95rem; line-height:1.7; margin-bottom:1rem">
+                            <strong>3. Configure Crew:</strong> Set up crew members and their roles
+                        </p>
+                        <p style="color:#495057; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            <strong>4. Create Flights:</strong> Start scheduling and tracking your operations
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="background-color:#f5efff; padding:3rem 0">
+    <div class="container">
+        <h2 class="text-center" style="font-size:2rem; font-weight:700; color:#212529; margin-bottom:1rem">
+            Unlock Advanced Capabilities
+        </h2>
+        <p class="text-center" style="color:#6c757d; font-size:1.05rem; margin-bottom:3rem; max-width:700px; margin-left:auto; margin-right:auto">
+            Extend your flight management with premium enterprise modules
+        </p>
+        <div class="row g-4">
+            <div class="col-md-4 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:12px">
+                    <div class="card-body p-4">
+                        <span class="badge" style="background-color:#71639e; color:#fff; padding:0.35rem 0.75rem; border-radius:12px; font-size:0.75rem; margin-bottom:1rem">Premium Module</span>
+                        <h4 style="color:#212529; font-weight:700; font-size:1.2rem; margin-bottom:0.75rem">Flight Operations</h4>
+                        <p style="color:#6c757d; font-size:0.9rem; line-height:1.6; margin-bottom:1.25rem">Advanced operational workflows, dispatch management, and flight coordination tools for professional operations</p>
+                        <a href="https://apps.odoo.com/apps/modules/18.0/flight_ops" style="color:#71639e; font-weight:600; text-decoration:none">View on Odoo Apps →</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:12px">
+                    <div class="card-body p-4">
+                        <span class="badge" style="background-color:#71639e; color:#fff; padding:0.35rem 0.75rem; border-radius:12px; font-size:0.75rem; margin-bottom:1rem">Premium Module</span>
+                        <h4 style="color:#212529; font-weight:700; font-size:1.2rem; margin-bottom:0.75rem">Flight Crew Management</h4>
+                        <p style="color:#6c757d; font-size:0.9rem; line-height:1.6; margin-bottom:1.25rem">Comprehensive crew scheduling, qualifications tracking, duty time management, and compliance reporting</p>
+                        <a href="https://apps.odoo.com/apps/modules/18.0/flight_crew" style="color:#71639e; font-weight:600; text-decoration:none">View on Odoo Apps →</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:12px">
+                    <div class="card-body p-4">
+                        <span class="badge" style="background-color:#71639e; color:#fff; padding:0.35rem 0.75rem; border-radius:12px; font-size:0.75rem; margin-bottom:1rem">Premium Module</span>
+                        <h4 style="color:#212529; font-weight:700; font-size:1.2rem; margin-bottom:0.75rem">Passenger Management</h4>
+                        <p style="color:#6c757d; font-size:0.9rem; line-height:1.6; margin-bottom:1.25rem">Complete passenger manifests, contact management, booking tracking, and customer relationship tools</p>
+                        <a href="https://apps.odoo.com/apps/modules/18.0/flight_pax" style="color:#71639e; font-weight:600; text-decoration:none">View on Odoo Apps →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="background-color:#71639e; padding:4rem 0">
+    <div class="container">
+        <div class="text-center">
+            <h2 style="color:#ffffff; font-weight:700; font-size:2rem; margin-bottom:1.5rem">
+                Ready to Transform Your Aviation Operations?
+            </h2>
+            <p style="color:#f8f9fa; font-size:1.15rem; margin-bottom:2.5rem; max-width:800px; margin-left:auto; margin-right:auto">
+                Join aviation operations worldwide who trust SmartOps Flight Management for their daily operations. Start with the foundation and grow with modular extensions.
+            </p>
+            <div class="d-flex flex-wrap justify-content-center" style="gap:1.5rem">
+                <div>
+                    <strong style="color:#f8f9fa; display:block; margin-bottom:0.5rem">GitHub</strong>
+                    <code style="background-color:#ffffff; color:#71639e; padding:0.5rem 1rem; border-radius:8px; font-size:0.9rem; font-weight:600">github.com/smartops-aero/smartops-odoo-flight</code>
+                </div>
+                <div>
+                    <strong style="color:#f8f9fa; display:block; margin-bottom:0.5rem">Support</strong>
+                    <a href="mailto:support@apexive.com" style="background-color:#ffffff; color:#71639e; padding:0.5rem 1rem; border-radius:8px; font-size:0.9rem; font-weight:600; text-decoration:none; display:inline-block">support@apexive.com</a>
+                </div>
+            </div>
+            <p style="color:#f8f9fa; font-size:0.9rem; margin-top:2.5rem; margin-bottom:0">
+                Developed by Apexive Solutions LLC &bull; License: LGPL-3 &bull; Version 18.0.1.1.0
+            </p>
+        </div>
+    </div>
+</section>

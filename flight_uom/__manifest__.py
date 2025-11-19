@@ -26,7 +26,7 @@ The module provides two new UOM categories:
 All conversion factors follow international aviation standards.
     """,
     "author": "Apexive Solutions LLC",
-    "website": "https://github.com/smartops-aero/flight",
+    "website": "https://github.com/smartops-aero/smartops-odoo-flight",
     "license": "LGPL-3",
     "category": "Industries",
     "version": "18.0.1.0.0",
@@ -35,6 +35,9 @@ All conversion factors follow international aviation standards.
     ],
     "data": [
         "data/product_uom_data.xml",
+    ],
+    "images": [
+        "static/description/banner.jpeg",
     ],
     "installable": True,
     "auto_install": False,
