@@ -34,7 +34,7 @@
         "data/flight_aircraft_spec_data.xml",
     ],
     "images": [
-        "static/description/banner.png",
+        "static/description/banner.jpeg",
     ],
     "demo": [],
     "installable": True,
