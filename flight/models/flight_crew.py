@@ -4,15 +4,6 @@
 from odoo import api, fields, models
 
 
-class FlightCrewRole(models.Model):
-    _name = "flight.crew.role"
-    _description = "Crew Member Role"
-    _order = "name"
-
-    name = fields.Char(required=True)
-    description = fields.Char()
-
-
 class FlightFlightCrew(models.Model):
     _name = "flight.flight.crew"
     _description = "Flight Crew Assignment"
@@ -20,21 +11,16 @@ class FlightFlightCrew(models.Model):
     _table = "flight_crew"  # Keep existing table name for data compatibility
 
     partner_id = fields.Many2one("res.partner", string="Contact", required=True)
-    role_id = fields.Many2one("flight.crew.role")
     flight_id = fields.Many2one(
         "flight.flight", string="Flight", required=True, ondelete="cascade", index=True
     )
 
-    @api.depends("partner_id", "role_id")
+    @api.depends("partner_id")
     def _compute_display_name(self):
-        """Compute display name to show partner name and role"""
+        """Compute display name to show partner name"""
         for record in self:
-            name_parts = []
-            if record.partner_id and record.partner_id.name:
-                name_parts.append(record.partner_id.name)
-            if record.role_id and record.role_id.name:
-                name_parts.append(f"({record.role_id.name})")
-
             record.display_name = (
-                " ".join(name_parts) if name_parts else f"Crew Member #{record.id}"
+                record.partner_id.name
+                if record.partner_id and record.partner_id.name
+                else f"Crew Member #{record.id}"
             )

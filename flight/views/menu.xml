@@ -125,19 +125,4 @@
     parent="menu_flight_configuration"
     sequence="30"
   />
-
-  <menuitem
-    id="menu_flight_crew_configuration"
-    name="Crew"
-    parent="menu_flight_configuration"
-    sequence="40"
-  />
-
-  <menuitem
-    id="menu_flight_crew_role"
-    name="Crew Roles"
-    parent="menu_flight_crew_configuration"
-    action="action_flight_crew_role"
-    sequence="10"
-  />
 </odoo>

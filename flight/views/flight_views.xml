@@ -54,7 +54,6 @@
                     name="partner_id"
                     domain="[('is_company', '=', False)]"
                   />
-                                    <field name="role_id" />
                                 </list>
                             </field>
                         </page>
