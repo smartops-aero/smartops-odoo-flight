@@ -5,7 +5,7 @@
         <field name="name">flight.flight.list</field>
         <field name="model">flight.flight</field>
         <field name="arch" type="xml">
-            <list>
+            <list edit="0" open_form_view="0">
                 <field name="date" optional="show" />
                 <field name="aircraft_id" optional="show" />
                 <field name="departure_id" optional="show" />

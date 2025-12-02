@@ -48,14 +48,6 @@
     sequence="30"
   />
 
-  <menuitem
-    id="menu_crew_list"
-    name="Crew Assignments"
-    parent="menu_crew"
-    action="action_flight_crew"
-    sequence="10"
-  />
-
   <!-- Configuration Submenu -->
   <menuitem
     id="menu_flight_configuration"

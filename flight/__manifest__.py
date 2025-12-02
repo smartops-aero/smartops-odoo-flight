@@ -37,7 +37,6 @@
         "views/aircraft_views.xml",
         "views/aerodrome_views.xml",
         "views/flight_aerodrome_runway_views.xml",
-        "views/flight_crew_views.xml",
         "views/menu.xml",
         "data/flight.aircraft.class.csv",
         "data/flight.aircraft.model.tag.csv",
