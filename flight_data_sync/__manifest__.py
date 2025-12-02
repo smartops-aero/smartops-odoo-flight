@@ -1,6 +1,6 @@
 {
     "name": "Flight Data Sync",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.1.0",
     "author": "Apexive Solutions LLC",
     "website": "https://github.com/smartops-aero/smartops-odoo-flight",
     "license": "LGPL-3",

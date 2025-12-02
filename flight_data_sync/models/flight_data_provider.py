@@ -61,7 +61,7 @@ class FlightDataProvider(models.Model):
         """Hook for extension"""
         return [
             ("flight.flight", "Flights"),
-            ("flight.crew", "Crew"),
+            ("flight.flight.crew", "Crew Assignments"),
             ("flight.aerodrome", "Aerodromes"),
             ("flight.aircraft", "Aircraft"),
             ("hr.employee", "Employees"),

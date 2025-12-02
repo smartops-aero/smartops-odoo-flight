@@ -13,10 +13,11 @@ class FlightCrewRole(models.Model):
     description = fields.Char()
 
 
-class FlightCrew(models.Model):
-    _name = "flight.crew"
-    _description = "Crew Member"
+class FlightFlightCrew(models.Model):
+    _name = "flight.flight.crew"
+    _description = "Flight Crew Assignment"
     _inherit = ["flight.lock.mixin"]
+    _table = "flight_crew"  # Keep existing table name for data compatibility
 
     partner_id = fields.Many2one("res.partner", string="Contact", required=True)
     role_id = fields.Many2one("flight.crew.role")

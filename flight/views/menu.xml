@@ -50,7 +50,7 @@
 
   <menuitem
     id="menu_crew_list"
-    name="Flight Crew"
+    name="Crew Assignments"
     parent="menu_crew"
     action="action_flight_crew"
     sequence="10"

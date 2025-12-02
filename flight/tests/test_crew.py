@@ -7,7 +7,7 @@ from .common import FlightCommon
 
 @tagged("post_install", "-at_install", "flight_crew")
 class TestCrew(FlightCommon):
-    """Test cases for flight.crew model"""
+    """Test cases for flight.flight.crew model"""
 
     def test_01_crew_role_creation(self):
         """Test crew role creation"""
@@ -35,7 +35,7 @@ class TestCrew(FlightCommon):
 
         flight = self.create_test_flight()
 
-        crew = self.env["flight.crew"].create(
+        crew = self.env["flight.flight.crew"].create(
             {
                 "flight_id": flight.id,
                 "partner_id": pilot.id,
@@ -59,7 +59,7 @@ class TestCrew(FlightCommon):
 
         flight = self.create_test_flight()
 
-        crew = self.env["flight.crew"].create(
+        crew = self.env["flight.flight.crew"].create(
             {
                 "flight_id": flight.id,
                 "partner_id": pilot.id,
@@ -98,7 +98,7 @@ class TestCrew(FlightCommon):
                 )
             )
 
-            crew = self.env["flight.crew"].create(
+            crew = self.env["flight.flight.crew"].create(
                 {
                     "flight_id": flight.id,
                     "partner_id": partner.id,
@@ -127,7 +127,7 @@ class TestCrew(FlightCommon):
 
         # Test that partner_id is required - raises IntegrityError from database
         with self.assertRaises(IntegrityError):
-            self.env["flight.crew"].create(
+            self.env["flight.flight.crew"].create(
                 {
                     "flight_id": flight.id,
                     "role_id": self.crew_role_pilot.id,
@@ -147,7 +147,7 @@ class TestCrew(FlightCommon):
             }
         )
 
-        crew = self.env["flight.crew"].create(
+        crew = self.env["flight.flight.crew"].create(
             {
                 "flight_id": flight.id,
                 "partner_id": pilot.id,
@@ -194,14 +194,14 @@ class TestCrew(FlightCommon):
         )
 
         # Search captains
-        captains = self.env["flight.crew"].search(
+        captains = self.env["flight.flight.crew"].search(
             [("role_id", "=", self.crew_role_pilot.id)]
         )
         self.assertIn(crew1, captains)
         self.assertNotIn(crew2, captains)
 
         # Search first officers
-        first_officers = self.env["flight.crew"].search(
+        first_officers = self.env["flight.flight.crew"].search(
             [("role_id", "=", self.crew_role_copilot.id)]
         )
         self.assertIn(crew2, first_officers)
@@ -335,16 +335,16 @@ class TestCrew(FlightCommon):
         crew2_id = crew2.id
 
         # Verify crew exists
-        self.assertTrue(self.env["flight.crew"].browse(crew1_id).exists())
-        self.assertTrue(self.env["flight.crew"].browse(crew2_id).exists())
+        self.assertTrue(self.env["flight.flight.crew"].browse(crew1_id).exists())
+        self.assertTrue(self.env["flight.flight.crew"].browse(crew2_id).exists())
 
         # Delete flight (must unlock first as locked flights can't be deleted)
         flight.write({"locked": False})
         flight.unlink()
 
         # Crew should be deleted (cascade)
-        self.assertFalse(self.env["flight.crew"].browse(crew1_id).exists())
-        self.assertFalse(self.env["flight.crew"].browse(crew2_id).exists())
+        self.assertFalse(self.env["flight.flight.crew"].browse(crew1_id).exists())
+        self.assertFalse(self.env["flight.flight.crew"].browse(crew2_id).exists())
 
         # Partners should still exist (not deleted)
         self.assertTrue(pilot.exists())

@@ -31,10 +31,10 @@ access_flight_aircraft_model_user,flight.aircraft.model.user,model_flight_aircra
 access_flight_aircraft_model_tag_manager,flight.aircraft.model.tag.manager,model_flight_aircraft_model_tag,group_flight_manager,1,1,1,1
 access_flight_aircraft_model_tag_user,flight.aircraft.model.tag.user,model_flight_aircraft_model_tag,base.group_user,1,0,0,0
 
-access_flight_crew_manager,flight.crew.manager,model_flight_crew,group_flight_manager,1,1,1,1
-access_flight_crew_dispatcher,flight.crew.dispatcher,model_flight_crew,group_flight_dispatcher,1,1,1,1
-access_flight_crew_crew,flight.crew.crew,model_flight_crew,group_flight_crew,1,1,1,0
-access_flight_crew_user,flight.crew.user,model_flight_crew,group_flight_user,1,0,0,0
+access_flight_flight_crew_manager,flight.flight.crew.manager,model_flight_flight_crew,group_flight_manager,1,1,1,1
+access_flight_flight_crew_dispatcher,flight.flight.crew.dispatcher,model_flight_flight_crew,group_flight_dispatcher,1,1,1,1
+access_flight_flight_crew_crew,flight.flight.crew.crew,model_flight_flight_crew,group_flight_crew,1,1,1,0
+access_flight_flight_crew_user,flight.flight.crew.user,model_flight_flight_crew,group_flight_user,1,0,0,0
 
 access_flight_crew_role_manager,flight.crew.role.manager,model_flight_crew_role,group_flight_manager,1,1,1,1
 access_flight_crew_role_dispatcher,flight.crew.role.dispatcher,model_flight_crew_role,group_flight_dispatcher,1,1,1,1

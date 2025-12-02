@@ -23,7 +23,7 @@ class FlightFlight(models.Model):
 
     # Added crew relationship
     crew_ids = fields.One2many(
-        "flight.crew", "flight_id", string="Crew Members", copy=True
+        "flight.flight.crew", "flight_id", string="Crew Members", copy=True
     )
 
     @api.depends(

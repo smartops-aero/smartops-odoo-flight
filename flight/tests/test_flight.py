@@ -56,7 +56,7 @@ class TestFlight(FlightCommon):
         flight = self.create_test_flight()
 
         # Add crew members
-        self.env["flight.crew"].create(
+        self.env["flight.flight.crew"].create(
             {
                 "flight_id": flight.id,
                 "partner_id": pilot.id,
@@ -64,7 +64,7 @@ class TestFlight(FlightCommon):
             }
         )
 
-        self.env["flight.crew"].create(
+        self.env["flight.flight.crew"].create(
             {
                 "flight_id": flight.id,
                 "partner_id": copilot.id,
@@ -142,7 +142,7 @@ class TestFlight(FlightCommon):
         )
 
         # Add crew
-        self.env["flight.crew"].create(
+        self.env["flight.flight.crew"].create(
             {
                 "flight_id": original.id,
                 "partner_id": self.env.company.partner_id.id,
