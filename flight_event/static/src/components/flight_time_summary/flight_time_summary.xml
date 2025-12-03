@@ -3,20 +3,31 @@
 
     <!-- Individual time input cell -->
     <t t-name="flight_event.FlightTimeSummaryCell">
-        <input
-      t-ref="time-input"
-      type="text"
-      class="form-control form-control-sm text-center flight-time-input"
-      t-att-data-time-kind="props.timeKind"
-      t-att-data-event-code="props.eventCode"
-      t-att-value="state.inputValue"
-      t-att-readonly="props.readonly"
-      t-on-blur="onInputBlur"
-      t-on-keydown="onInputKeydown"
-      t-on-input="onInputChange"
-      t-on-focus="onInputFocus"
-      placeholder="--:--"
-    />
+        <div class="input-group input-group-sm flight-time-cell">
+            <input
+        t-ref="time-input"
+        type="text"
+        class="form-control form-control-sm text-center flight-time-input"
+        t-att-data-time-kind="props.timeKind"
+        t-att-data-event-code="props.eventCode"
+        t-att-value="state.inputValue"
+        t-att-readonly="props.readonly"
+        t-on-blur="onInputBlur"
+        t-on-keydown="onInputKeydown"
+        t-on-input="onInputChange"
+        t-on-focus="onInputFocus"
+        placeholder="--:--"
+      />
+            <button
+        t-if="!props.readonly"
+        type="button"
+        class="btn btn-outline-secondary flight-time-picker-btn"
+        t-on-click="onPickerClick"
+        title="Open date/time picker"
+      >
+                <i class="fa fa-clock-o" />
+            </button>
+        </div>
     </t>
 
     <!-- Main summary widget -->
@@ -30,18 +41,6 @@
               class="column-header text-center fw-bold mb-2"
             >ACTUAL</div>
                         <div class="time-block-container">
-                            <!-- Block time bracket (OB to IB) -->
-                            <div class="block-bracket block-bracket-outer">
-                                <div class="bracket-line" />
-                                <div class="bracket-label">
-                                    <span
-                    class="duration-value"
-                    t-esc="getBlockDuration('A') || '--:--'"
-                  />
-                                    <span class="duration-label">BLK</span>
-                                </div>
-                            </div>
-
                             <!-- Events container -->
                             <div class="events-container">
                                 <!-- Off Blocks -->
@@ -59,19 +58,6 @@
 
                                 <!-- Flight time bracket (TO to LD) -->
                                 <div class="flight-bracket-container">
-                                    <div class="flight-bracket">
-                                        <div class="bracket-line" />
-                                        <div class="bracket-label">
-                                            <span
-                        class="duration-value"
-                        t-esc="getFlightDuration('A') || '--:--'"
-                      />
-                                            <span
-                        class="duration-label"
-                      >FLT</span>
-                                        </div>
-                                    </div>
-
                                     <div class="flight-events">
                                         <!-- Take Off -->
                                         <div class="event-row">
@@ -99,12 +85,26 @@
                       />
                                         </div>
                                     </div>
+
+                                    <!-- Flight bracket on right -->
+                                    <div class="flight-bracket">
+                                        <div class="bracket-line" />
+                                        <div class="bracket-label">
+                                            <span
+                        class="duration-value"
+                        t-esc="getFlightDuration('A') || '--:--'"
+                      />
+                                            <span
+                        class="duration-label"
+                      >FLT</span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- In Blocks -->
                                 <div class="event-row">
                                     <span class="event-label">IB</span>
-                                        <FlightTimeSummaryCell
+                                    <FlightTimeSummaryCell
                     value="getTimeValue('A', 'IB')"
                     eventCode="'IB'"
                     timeKind="'A'"
@@ -112,6 +112,18 @@
                     onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                     readonly="props.readonly"
                   />
+                                </div>
+                            </div>
+
+                            <!-- Block time bracket on right (OB to IB) -->
+                            <div class="block-bracket block-bracket-outer">
+                                <div class="bracket-line" />
+                                <div class="bracket-label">
+                                    <span
+                    class="duration-value"
+                    t-esc="getBlockDuration('A') || '--:--'"
+                  />
+                                    <span class="duration-label">BLK</span>
                                 </div>
                             </div>
                         </div>
@@ -123,24 +135,12 @@
               class="column-header text-center fw-bold mb-2"
             >SCHEDULED</div>
                         <div class="time-block-container">
-                            <!-- Block time bracket (OB to IB) -->
-                            <div class="block-bracket block-bracket-outer">
-                                <div class="bracket-line" />
-                                <div class="bracket-label">
-                                    <span
-                    class="duration-value"
-                    t-esc="getBlockDuration('S') || '--:--'"
-                  />
-                                    <span class="duration-label">BLK</span>
-                                </div>
-                            </div>
-
                             <!-- Events container -->
                             <div class="events-container">
                                 <!-- Off Blocks -->
                                 <div class="event-row">
                                     <span class="event-label">OB</span>
-                                        <FlightTimeSummaryCell
+                                    <FlightTimeSummaryCell
                     value="getTimeValue('S', 'OB')"
                     eventCode="'OB'"
                     timeKind="'S'"
@@ -152,19 +152,6 @@
 
                                 <!-- Flight time bracket (TO to LD) -->
                                 <div class="flight-bracket-container">
-                                    <div class="flight-bracket">
-                                        <div class="bracket-line" />
-                                        <div class="bracket-label">
-                                            <span
-                        class="duration-value"
-                        t-esc="getFlightDuration('S') || '--:--'"
-                      />
-                                            <span
-                        class="duration-label"
-                      >FLT</span>
-                                        </div>
-                                    </div>
-
                                     <div class="flight-events">
                                         <!-- Take Off -->
                                         <div class="event-row">
@@ -192,12 +179,26 @@
                       />
                                         </div>
                                     </div>
+
+                                    <!-- Flight bracket on right -->
+                                    <div class="flight-bracket">
+                                        <div class="bracket-line" />
+                                        <div class="bracket-label">
+                                            <span
+                        class="duration-value"
+                        t-esc="getFlightDuration('S') || '--:--'"
+                      />
+                                            <span
+                        class="duration-label"
+                      >FLT</span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- In Blocks -->
                                 <div class="event-row">
                                     <span class="event-label">IB</span>
-                                        <FlightTimeSummaryCell
+                                    <FlightTimeSummaryCell
                     value="getTimeValue('S', 'IB')"
                     eventCode="'IB'"
                     timeKind="'S'"
@@ -205,6 +206,18 @@
                     onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                     readonly="props.readonly"
                   />
+                                </div>
+                            </div>
+
+                            <!-- Block time bracket on right (OB to IB) -->
+                            <div class="block-bracket block-bracket-outer">
+                                <div class="bracket-line" />
+                                <div class="bracket-label">
+                                    <span
+                    class="duration-value"
+                    t-esc="getBlockDuration('S') || '--:--'"
+                  />
+                                    <span class="duration-label">BLK</span>
                                 </div>
                             </div>
                         </div>

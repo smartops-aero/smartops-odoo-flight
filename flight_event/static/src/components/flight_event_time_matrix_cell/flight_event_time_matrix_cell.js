@@ -249,15 +249,20 @@ export class FlightEventTimeMatrixCell extends Component {
   }
 
   /**
-   * Handle focus - auto-open picker and select text
+   * Handle focus - select text for easy editing
    * @param {FocusEvent} ev - The focus event
    */
   onInputFocus(ev) {
     if (!this.props.readonly) {
-      // Select all text for easy editing
       ev.target.select();
+    }
+  }
 
-      // Auto-open the datetime picker
+  /**
+   * Handle picker button click - open the datetime picker
+   */
+  onPickerClick() {
+    if (!this.props.readonly) {
       this.openPicker();
     }
   }

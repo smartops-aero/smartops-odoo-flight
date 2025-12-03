@@ -242,6 +242,11 @@ class FlightTimeSummaryCell extends Component {
   onInputFocus(ev) {
     if (!this.props.readonly) {
       ev.target.select();
+    }
+  }
+
+  onPickerClick() {
+    if (!this.props.readonly) {
       this.openPicker();
     }
   }

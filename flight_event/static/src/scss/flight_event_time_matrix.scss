@@ -44,6 +44,23 @@
     .o_matrix_cell {
       text-align: center;
       padding: 4px;
+
+      .flight-time-cell {
+        .form-control {
+          width: 65px;
+          font-family: $font-family-monospace;
+        }
+
+        .flight-time-picker-btn {
+          padding: 0.1rem 0.35rem;
+          font-size: 0.8rem;
+          border-color: $gray-300;
+
+          &:hover {
+            background-color: $gray-100;
+          }
+        }
+      }
     }
   }
 

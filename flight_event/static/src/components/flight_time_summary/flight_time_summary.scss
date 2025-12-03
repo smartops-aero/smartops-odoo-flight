@@ -1,9 +1,9 @@
 // Flight Time Summary Widget Styles
-// Compact visualization with duration brackets
+// Compact visualization with duration brackets on the right
 
 .flight-time-summary {
   .flight-time-column {
-    min-width: 140px;
+    min-width: 180px;
   }
 
   .column-header {
@@ -18,15 +18,13 @@
   .time-block-container {
     position: relative;
     display: flex;
-    padding-left: 45px; // Space for block bracket
+    gap: 0.25rem;
   }
 
   .events-container {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    position: relative;
-    padding-left: 35px; // Space for flight bracket
   }
 
   .event-row {
@@ -44,34 +42,48 @@
     text-align: right;
   }
 
-  .flight-time-input {
-    width: 70px;
-    font-size: 0.85rem;
-    font-family: $font-family-monospace;
-    padding: 0.15rem 0.25rem;
-    height: 28px;
+  .flight-time-cell {
+    width: auto;
 
-    &:focus {
-      border-color: $primary;
-      box-shadow: 0 0 0 0.15rem rgba($primary, 0.25);
+    .flight-time-input {
+      width: 55px;
+      font-size: 0.85rem;
+      font-family: $font-family-monospace;
+      padding: 0.15rem 0.25rem;
+      height: 26px;
+
+      &:focus {
+        border-color: $primary;
+        box-shadow: 0 0 0 0.15rem rgba($primary, 0.25);
+      }
+
+      &::placeholder {
+        color: $gray-400;
+        font-size: 0.75rem;
+      }
+
+      &[readonly] {
+        background-color: $gray-100;
+      }
     }
 
-    &::placeholder {
-      color: $gray-400;
+    .flight-time-picker-btn {
+      padding: 0.1rem 0.3rem;
       font-size: 0.75rem;
-    }
+      height: 26px;
+      border-color: $gray-300;
 
-    &[readonly] {
-      background-color: $gray-100;
+      &:hover {
+        background-color: $gray-100;
+      }
     }
   }
 
-  // Flight bracket container (TO-LD)
+  // Flight bracket container (TO-LD) - now uses flexbox
   .flight-bracket-container {
-    position: relative;
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    align-items: stretch;
+    gap: 0.25rem;
   }
 
   .flight-events {
@@ -80,30 +92,28 @@
     gap: 2px;
   }
 
-  // Block bracket (outer - OB to IB)
+  // Block bracket (outer - OB to IB) - now on the right
   .block-bracket-outer {
-    position: absolute;
-    left: 0;
-    top: 16px; // Center on first row
-    bottom: 16px; // Center on last row
-    width: 40px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 4px;
+    margin-top: 16px;
+    margin-bottom: 16px;
 
     .bracket-line {
       position: absolute;
       left: 0;
       top: 0;
       bottom: 0;
-      width: 12px;
+      width: 10px;
       border: 2px solid $info;
-      border-right: none;
-      border-radius: 4px 0 0 4px;
+      border-left: none;
+      border-radius: 0 4px 4px 0;
     }
 
     .bracket-label {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
+      margin-left: 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -114,6 +124,7 @@
         font-weight: 600;
         font-family: $font-family-monospace;
         color: $info;
+        white-space: nowrap;
       }
 
       .duration-label {
@@ -124,30 +135,28 @@
     }
   }
 
-  // Flight bracket (inner - TO to LD)
+  // Flight bracket (inner - TO to LD) - now on the right of TO/LD
   .flight-bracket {
-    position: absolute;
-    left: -30px;
-    top: 16px; // Center on TO row
-    bottom: 16px; // Center on LD row (within flight-bracket-container)
-    width: 28px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 4px;
+    margin-top: 16px;
+    margin-bottom: 16px;
 
     .bracket-line {
       position: absolute;
       left: 0;
       top: 0;
       bottom: 0;
-      width: 10px;
+      width: 8px;
       border: 2px solid $success;
-      border-right: none;
-      border-radius: 3px 0 0 3px;
+      border-left: none;
+      border-radius: 0 3px 3px 0;
     }
 
     .bracket-label {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
+      margin-left: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -158,6 +167,7 @@
         font-weight: 600;
         font-family: $font-family-monospace;
         color: $success;
+        white-space: nowrap;
       }
 
       .duration-label {
@@ -179,7 +189,7 @@
       color: $gray-400;
     }
 
-    .flight-time-input {
+    .flight-time-cell .flight-time-input {
       &[readonly] {
         background-color: $gray-800;
       }
