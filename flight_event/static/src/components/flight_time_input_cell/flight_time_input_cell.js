@@ -136,7 +136,8 @@ export class FlightTimeInputCell extends Component {
       }
 
       return formatted;
-    } catch {
+    } catch (error) {
+      console.warn("FlightTimeInputCell: Failed to format time value", error);
       return "";
     }
   }
@@ -205,7 +206,8 @@ export class FlightTimeInputCell extends Component {
       if (!date.isValid) {
         return null;
       }
-    } catch {
+    } catch (error) {
+      console.warn("FlightTimeInputCell: Failed to parse time input", error);
       return null;
     }
 
