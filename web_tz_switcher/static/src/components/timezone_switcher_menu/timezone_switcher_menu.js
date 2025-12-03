@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
@@ -40,9 +40,15 @@ export class TimezoneSwitcherMenu extends Component {
       await this.loadTimezones();
       await this.updateCurrentTimezone();
       // Update time every second
-      setInterval(() => {
+      this.clockInterval = setInterval(() => {
         this.state.currentTime = DateTime.now();
       }, 1000);
+    });
+
+    onWillUnmount(() => {
+      if (this.clockInterval) {
+        clearInterval(this.clockInterval);
+      }
     });
   }
 
