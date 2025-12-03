@@ -85,13 +85,6 @@ export class TimezoneSwitcherMenu extends Component {
   }
 
   /**
-   * Get icon class based on override status.
-   */
-  get iconClass() {
-    return this.state.isOverride ? "fa-clock-o text-warning" : "fa-clock-o";
-  }
-
-  /**
    * Get short timezone abbreviation (e.g., "EST", "PST", "UTC").
    * Uses Luxon to get the actual timezone abbreviation.
    */

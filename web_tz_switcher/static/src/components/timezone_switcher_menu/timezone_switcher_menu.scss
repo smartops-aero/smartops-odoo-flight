@@ -1,10 +1,12 @@
 .o_timezone_switcher_menu {
   .o_timezone_switcher_toggler {
     padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
+    font-size: $o-font-size-base;
+    // Inherit navbar entry color for consistency
+    color: var(--NavBar-entry-color, #{$o-navbar-entry-color});
 
-    .fa {
-      font-size: 1em;
+    &:hover {
+      color: var(--NavBar-entry-color--hover, #{$o-navbar-entry-color--hover});
     }
   }
 }
@@ -14,11 +16,11 @@
   max-width: 380px;
 
   .dropdown-header {
-    font-weight: 600;
+    font-weight: $o-font-weight-medium;
     padding: 0.5rem 1rem;
 
     &.bg-light {
-      background-color: #f8f9fa !important;
+      background-color: $o-gray-100 !important;
     }
   }
 
@@ -34,12 +36,12 @@
         transition: background-color 0.15s ease-in-out;
 
         &:hover {
-          background-color: #f8f9fa;
+          background-color: $o-gray-100;
         }
 
         .badge {
-          font-size: 0.7rem;
-          font-weight: 500;
+          font-size: $o-font-size-base-smaller;
+          font-weight: $o-font-weight-medium;
         }
 
         .fa-check {
@@ -49,7 +51,7 @@
     }
 
     .input-group-text {
-      background-color: white;
+      background-color: $o-white;
       border-right: 0;
     }
 
@@ -58,7 +60,7 @@
 
       &:focus {
         box-shadow: none;
-        border-color: #ced4da;
+        border-color: $o-gray-400;
       }
     }
   }

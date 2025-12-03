@@ -5,8 +5,7 @@
             <DropdownGroup group="'web-navbar-group'">
                 <Dropdown menuClass="'o_timezone_switcher_dropdown'">
                     <button class="o_timezone_switcher_toggler btn btn-secondary d-flex align-items-center gap-1 py-1 py-lg-0" title="Switch Display Timezone">
-                        <i t-att-class="'fa ' + iconClass" />
-                        <span class="d-none d-lg-inline small">
+                        <span class="small">
                             <t t-esc="currentTimezoneShort" />
                         </span>
                         <t t-if="state.isOverride">
