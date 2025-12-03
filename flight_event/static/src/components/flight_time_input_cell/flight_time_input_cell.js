@@ -112,16 +112,24 @@ export class FlightTimeInputCell extends Component {
       const tzOption = this.props.displayTz ? { tz: this.props.displayTz } : {};
       let formatted = formatDateTime(displayValue, { format: "HH:mm", ...tzOption });
 
-      // Calculate day offset relative to the base date (in display timezone if set)
+      // Calculate day offset relative to the flight date
+      // The flight date is a calendar date (no time), so we compare calendar days
       if (this.props.date && displayValue) {
-        const baseDate = this.props.displayTz
-          ? this.props.date.toUTC().setZone(this.props.displayTz)
-          : this.props.date;
+        // Get the flight date's calendar day (year, month, day)
+        const flightYear = this.props.date.year;
+        const flightMonth = this.props.date.month;
+        const flightDay = this.props.date.day;
 
-        const dayDiff = Math.floor(
-          displayValue.startOf("day").diff(baseDate.startOf("day"), "days")
-            .days,
-        );
+        // Get the display value's calendar day in its display timezone
+        const displayYear = displayValue.year;
+        const displayMonth = displayValue.month;
+        const displayDay = displayValue.day;
+
+        // Create comparable dates (just the calendar date, ignoring time)
+        const flightDate = DateTime.fromObject({ year: flightYear, month: flightMonth, day: flightDay });
+        const displayDate = DateTime.fromObject({ year: displayYear, month: displayMonth, day: displayDay });
+
+        const dayDiff = Math.floor(displayDate.diff(flightDate, "days").days);
         if (dayDiff !== 0) {
           formatted += ` ${dayDiff > 0 ? "+" : ""}${dayDiff}`;
         }
@@ -167,22 +175,25 @@ export class FlightTimeInputCell extends Component {
       return null;
     }
 
-    // Use displayTz as the default timezone for parsing if no explicit timezone in input
-    const parseZone =
-      timezone?.toUpperCase() || this.props.displayTz || "local";
-    let date = this.props.date || DateTime.local();
+    // Use explicit timezone from input, or local timezone for local cells
+    // Note: displayTz cells are display-only, so we always parse in local or explicit TZ
+    const parseZone = timezone?.toUpperCase() || "local";
+    const baseDate = this.props.date || DateTime.local();
 
-    // Convert base date to the parse timezone
-    if (parseZone !== "local") {
-      date = date.setZone(parseZone);
-    }
+    // Extract the calendar date from the base date
+    // The flight date field is a Date (not DateTime), so it represents a calendar date
+    // We need to use the date as-is regardless of timezone
+    const year = baseDate.year;
+    const month = baseDate.month;
+    const day = baseDate.day;
 
+    let date;
     try {
       date = DateTime.fromObject(
         {
-          year: date.year,
-          month: date.month,
-          day: date.day,
+          year,
+          month,
+          day,
           hour: h,
           minute: m,
           second: 0,
@@ -214,6 +225,12 @@ export class FlightTimeInputCell extends Component {
     if (this.props.displayOnly) {
       this.state.isUserEditing = false;
       this.state.inputValue = this.getFormattedValue();
+      return;
+    }
+
+    // Only process if user was actually editing
+    // This prevents re-parsing the display value (e.g., "17:50 -1") on blur
+    if (!this.state.isUserEditing) {
       return;
     }
 
