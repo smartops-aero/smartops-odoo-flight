@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="web_tz_switcher.TimezoneSwitcherMenu">
+        <div class="o_timezone_switcher_menu d-none d-md-block">
+            <DropdownGroup group="'web-navbar-group'">
+                <Dropdown menuClass="'o_timezone_switcher_dropdown'">
+                    <button class="o_timezone_switcher_toggler btn btn-secondary d-flex align-items-center gap-1 py-1 py-lg-0" title="Switch Display Timezone">
+                        <span class="small">
+                            <t t-esc="currentTimezoneShort" />
+                        </span>
+                        <t t-if="state.isOverride">
+                            <span class="badge text-bg-warning ms-1" style="font-size: 0.6rem;">TZ</span>
+                        </t>
+                    </button>
+
+                    <t t-set-slot="content">
+                        <div class="o_timezone_switcher_content">
+                            <!-- Header with current timezone and time -->
+                            <div class="dropdown-header p-3 border-bottom">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">Display Timezone</h6>
+                                    <span class="badge text-bg-primary">
+                                        <t t-esc="currentTimeFormatted" />
+                                    </span>
+                                </div>
+                                <div class="text-muted small">
+                                    Current: <strong><t t-esc="state.currentTimezone" /></strong>
+                                </div>
+                                <t t-if="state.isOverride">
+                                    <div class="mt-2">
+                                        <button
+                                            class="btn btn-sm btn-warning w-100"
+                                            t-on-click="onResetTimezone"
+                                        >
+                                            <i class="fa fa-undo me-1" />
+                                            Reset to Default
+                                        </button>
+                                    </div>
+                                </t>
+                            </div>
+
+                            <!-- Search box -->
+                            <div class="p-2 border-bottom">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-search" />
+                                    </span>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Search timezones..."
+                                        t-att-value="state.searchQuery"
+                                        t-on-input="onSearchInput"
+                                    />
+                                    <t t-if="state.searchQuery">
+                                        <button
+                                            class="btn btn-outline-secondary"
+                                            t-on-click="onClearSearch"
+                                        >
+                                            <i class="fa fa-times" />
+                                        </button>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Timezone list (grouped by region) -->
+                            <div class="o_timezone_list overflow-auto" style="max-height: 400px;">
+                                <t t-foreach="visibleRegions" t-as="region" t-key="region">
+                                    <div class="dropdown-header bg-light sticky-top">
+                                        <strong><t t-esc="region" /></strong>
+                                    </div>
+                                    <t
+                                        t-foreach="filteredGroupedTimezones[region]"
+                                        t-as="timezone"
+                                        t-key="timezone"
+                                    >
+                                        <DropdownItem
+                                            class="'o_timezone_item'"
+                                            onSelected="() => this.onTimezoneSelect(timezone)"
+                                        >
+                                            <div class="d-flex justify-content-between align-items-center w-100">
+                                                <span>
+                                                    <t t-esc="formatTimezoneName(timezone)" />
+                                                </span>
+                                                <span class="badge text-bg-secondary ms-2">
+                                                    <t t-esc="getTimezoneOffset(timezone)" />
+                                                </span>
+                                            </div>
+                                            <t t-if="timezone === state.currentTimezone">
+                                                <i class="fa fa-check text-success ms-2" />
+                                            </t>
+                                        </DropdownItem>
+                                    </t>
+                                </t>
+                            </div>
+
+                            <!-- Footer with toggle for all regions -->
+                            <t t-if="!state.searchQuery and !state.showAllRegions">
+                                <div class="dropdown-divider" />
+                                <div class="p-2">
+                                    <button
+                                        class="btn btn-sm btn-link w-100 text-start"
+                                        t-on-click="onToggleAllRegions"
+                                    >
+                                        <i class="fa fa-globe me-1" />
+                                        Show All Regions
+                                    </button>
+                                </div>
+                            </t>
+
+                            <!-- Info footer -->
+                            <div class="dropdown-divider" />
+                            <div class="dropdown-header text-muted small">
+                                <i class="fa fa-info-circle me-1" />
+                                All times in database remain in UTC
+                            </div>
+                        </div>
+                    </t>
+                </Dropdown>
+            </DropdownGroup>
+        </div>
+    </t>
+</templates>
