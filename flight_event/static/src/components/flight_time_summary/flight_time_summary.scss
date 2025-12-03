@@ -17,11 +17,15 @@
   }
 
   .tz-subheaders {
+    // Align with time cells: event-label width (20px) + gap (0.5rem/8px) = 28px margin-left
+    margin-left: 28px;
+
     .tz-label {
       font-size: 0.65rem;
       text-transform: uppercase;
       letter-spacing: 0.03em;
-      width: 55px;
+      // Match the width of flight-time-cell input (55px) + picker button (~26px) + gap
+      width: 82px;
       text-align: center;
 
       &.text-muted {
