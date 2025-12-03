@@ -25,8 +25,8 @@ Technical:
 * Uses Odoo's context mechanism (tz parameter)
 * All database times remain in UTC
 * Only affects rendering/display
-* Patches userService to update context dynamically
-* Triggers selective re-rendering of current view
+* Patches formatDateTime to use user.tz instead of browser timezone
+* Triggers selective re-rendering of current view via soft_reload
 
 Perfect for:
 ------------
@@ -46,9 +46,15 @@ Perfect for:
     ],
     "assets": {
         "web.assets_backend": [
+            # Patches must load first to override core functions
+            "web_tz_switcher/static/src/patches/*.js",
+            # Hooks (shared utilities)
+            "web_tz_switcher/static/src/hooks/*.js",
+            # Services
+            "web_tz_switcher/static/src/services/timezone_service.js",
+            # Components
             "web_tz_switcher/static/src/components/timezone_switcher_menu/*.js",
             "web_tz_switcher/static/src/components/timezone_switcher_menu/*.xml",
-            "web_tz_switcher/static/src/services/timezone_service.js",
             "web_tz_switcher/static/src/components/timezone_switcher_menu/*.scss",
         ],
     },

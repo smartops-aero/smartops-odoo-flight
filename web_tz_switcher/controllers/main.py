@@ -34,6 +34,9 @@ class TimezoneSwitcherController(http.Controller):
         request.session.context = dict(request.session.context or {})
         request.session.context["tz"] = timezone
 
+        # Force session save to ensure persistence
+        request.session.touch()
+
         _logger.info(
             "User %s switched display timezone to %s",
             request.env.user.login,
@@ -60,6 +63,8 @@ class TimezoneSwitcherController(http.Controller):
         if request.session.context and "tz" in request.session.context:
             request.session.context = dict(request.session.context)
             del request.session.context["tz"]
+            # Force session save to ensure persistence
+            request.session.touch()
 
         # Get user's default timezone
         user_tz = request.env.user.tz or "UTC"

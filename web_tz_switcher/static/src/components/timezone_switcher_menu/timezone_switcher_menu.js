@@ -7,6 +7,9 @@ import { user } from "@web/core/user";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownGroup } from "@web/core/dropdown/dropdown_group";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
+import { rpc } from "@web/core/network/rpc";
+
+import { getTimezoneAbbreviation } from "../../hooks/use_user_timezone";
 
 const { DateTime } = luxon;
 
@@ -55,12 +58,16 @@ export class TimezoneSwitcherMenu extends Component {
 
   /**
    * Update current timezone state.
+   * Uses backend's is_override flag which correctly compares against user's DB timezone.
    */
   async updateCurrentTimezone() {
-    const tz = await this.timezoneSwitcher.getCurrentTimezone();
-    this.state.currentTimezone = tz;
-    // Check if it's different from user default
-    this.state.isOverride = tz !== (user.context.tz || "UTC");
+    try {
+      const result = await rpc("/web/timezone/current");
+      this.state.currentTimezone = result.timezone;
+      this.state.isOverride = result.is_override;
+    } catch (error) {
+      console.error("Failed to get current timezone:", error);
+    }
   }
 
   /**
@@ -85,21 +92,10 @@ export class TimezoneSwitcherMenu extends Component {
   }
 
   /**
-   * Get short timezone abbreviation (e.g., "EST", "PST", "UTC").
-   * Uses Luxon to get the actual timezone abbreviation.
+   * Get short timezone abbreviation (e.g., "EST", "PST", "UTC+4").
    */
   get currentTimezoneShort() {
-    const tz = this.state.currentTimezone;
-    // Get the timezone abbreviation from Luxon
-    const abbr = this.state.currentTime.setZone(tz).toFormat("ZZZZ");
-    // If it's a named abbreviation (like EST, PST), use it
-    // Otherwise fall back to UTC offset format
-    if (abbr && !abbr.startsWith("GMT") && !abbr.startsWith("UTC")) {
-      return abbr;
-    }
-    // Return short offset like "+5" or "-8"
-    const offset = this.state.currentTime.setZone(tz).toFormat("Z");
-    return `UTC${offset}`;
+    return getTimezoneAbbreviation(this.state.currentTimezone);
   }
 
   /**

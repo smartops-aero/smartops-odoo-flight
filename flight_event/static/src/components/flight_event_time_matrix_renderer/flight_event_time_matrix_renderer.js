@@ -23,6 +23,7 @@ export class FlightEventTimeMatrixRenderer extends Component {
     onUpdate: Function,
     readonly: Boolean,
     localTzLabel: String,
+    userTz: String,
   };
 
   setup() {

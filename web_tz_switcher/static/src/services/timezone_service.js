@@ -65,17 +65,11 @@ export const timezoneSwitcherService = {
           console.warn("Failed to save timezone to localStorage:", e);
         }
 
-        // Reload current action to re-render all datetime fields
-        const currentController = action.currentController;
-        if (currentController) {
-          // For form views, just reload the view
-          if (currentController.props?.resModel) {
-            await action.doAction("reload");
-          } else {
-            // For other views, restore the action
-            await action.restore();
-          }
-        }
+        // Trigger soft reload to re-render all datetime fields with new timezone
+        await action.doAction({
+          type: "ir.actions.client",
+          tag: "soft_reload",
+        });
 
         notification.add(`Timezone switched to ${timezone}`, {
           type: "success",
@@ -118,15 +112,11 @@ export const timezoneSwitcherService = {
           console.warn("Failed to clear timezone from localStorage:", e);
         }
 
-        // Reload current action
-        const currentController = action.currentController;
-        if (currentController) {
-          if (currentController.props?.resModel) {
-            await action.doAction("reload");
-          } else {
-            await action.restore();
-          }
-        }
+        // Trigger soft reload to re-render all datetime fields with new timezone
+        await action.doAction({
+          type: "ir.actions.client",
+          tag: "soft_reload",
+        });
 
         notification.add(`Timezone reset to ${result.timezone}`, {
           type: "info",

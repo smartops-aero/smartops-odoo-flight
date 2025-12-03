@@ -11,6 +11,7 @@
           timeKinds="this.timeKinds"
           readonly="props.readonly"
           localTzLabel="this.localTzLabel"
+          userTz="this.userTz"
         />
       </t>
       <t t-else="">

@@ -14,6 +14,7 @@
         "base",
         "flight",
         "web",
+        "web_tz_switcher",
     ],
     "assets": {
         "web.assets_backend": [

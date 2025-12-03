@@ -41,6 +41,7 @@
                       date="state.date"
                       onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                       readonly="props.readonly"
+                      displayTz="userTz"
                     />
                     <FlightTimeSummaryCell
                       value="getTimeValue('A', 'OB')"
@@ -69,6 +70,7 @@
                           date="state.date"
                           onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                           readonly="props.readonly"
+                          displayTz="userTz"
                         />
                         <FlightTimeSummaryCell
                           value="getTimeValue('A', 'TO')"
@@ -94,6 +96,7 @@
                           date="state.date"
                           onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                           readonly="props.readonly"
+                          displayTz="userTz"
                         />
                         <FlightTimeSummaryCell
                           value="getTimeValue('A', 'LD')"
@@ -133,6 +136,7 @@
                       date="state.date"
                       onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                       readonly="props.readonly"
+                      displayTz="userTz"
                     />
                     <FlightTimeSummaryCell
                       value="getTimeValue('A', 'IB')"
@@ -183,6 +187,7 @@
                       date="state.date"
                       onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                       readonly="props.readonly"
+                      displayTz="userTz"
                     />
                     <FlightTimeSummaryCell
                       value="getTimeValue('S', 'OB')"
@@ -211,6 +216,7 @@
                           date="state.date"
                           onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                           readonly="props.readonly"
+                          displayTz="userTz"
                         />
                         <FlightTimeSummaryCell
                           value="getTimeValue('S', 'TO')"
@@ -236,6 +242,7 @@
                           date="state.date"
                           onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                           readonly="props.readonly"
+                          displayTz="userTz"
                         />
                         <FlightTimeSummaryCell
                           value="getTimeValue('S', 'LD')"
@@ -275,6 +282,7 @@
                       date="state.date"
                       onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                       readonly="props.readonly"
+                      displayTz="userTz"
                     />
                     <FlightTimeSummaryCell
                       value="getTimeValue('S', 'IB')"

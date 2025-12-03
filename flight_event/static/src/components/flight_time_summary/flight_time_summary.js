@@ -5,6 +5,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 
+import { useUserTimezone } from "@web_tz_switcher/hooks/use_user_timezone";
 import { FlightTimeInputCell } from "../flight_time_input_cell/flight_time_input_cell";
 
 const { DateTime } = luxon;
@@ -93,6 +94,7 @@ export class FlightTimeSummary extends Component {
   setup() {
     this.orm = useService("orm");
     this.notification = useService("notification");
+    this.timezone = useUserTimezone();
 
     this.eventCodes = [];
     this.eventCodeMap = {};
@@ -109,7 +111,7 @@ export class FlightTimeSummary extends Component {
       const codes = await this.orm.searchRead(
         "flight.event.code",
         [["code", "in", EVENT_SEQUENCE]],
-        ["id", "code", "name"],
+        ["id", "code", "name"]
       );
       this.eventCodes = codes;
       this.eventCodeMap = Object.fromEntries(codes.map((c) => [c.code, c]));
@@ -121,12 +123,12 @@ export class FlightTimeSummary extends Component {
     });
   }
 
-  /**
-   * Get the current local timezone abbreviation
-   * @returns {String} Timezone abbreviation (e.g., "CET", "PST")
-   */
+  get userTz() {
+    return this.timezone.userTz;
+  }
+
   get localTzLabel() {
-    return DateTime.local().toFormat("ZZZZ") || "Local";
+    return this.timezone.tzLabel;
   }
 
   get list() {

@@ -6,7 +6,7 @@ import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { useService } from "@web/core/utils/hooks";
 
-const { DateTime } = luxon;
+import { useUserTimezone } from "@web_tz_switcher/hooks/use_user_timezone";
 
 /**
  * Field widget for displaying and editing flight event times in a matrix format.
@@ -27,6 +27,7 @@ export class FlightEventTimeMatrixField extends Component {
   setup() {
     this.orm = useService("orm");
     this.notification = useService("notification");
+    this.timezone = useUserTimezone();
 
     this.eventCodes = [];
 
@@ -47,7 +48,7 @@ export class FlightEventTimeMatrixField extends Component {
       this.eventCodes = await this.orm.searchRead(
         "flight.event.code",
         [],
-        ["id", "code", "name"],
+        ["id", "code", "name"]
       );
     });
 
@@ -56,12 +57,12 @@ export class FlightEventTimeMatrixField extends Component {
     });
   }
 
-  /**
-   * Get the current local timezone abbreviation
-   * @returns {String} Timezone abbreviation (e.g., "CET", "PST")
-   */
+  get userTz() {
+    return this.timezone.userTz;
+  }
+
   get localTzLabel() {
-    return DateTime.local().toFormat("ZZZZ") || "Local";
+    return this.timezone.tzLabel;
   }
 
   /**
@@ -91,7 +92,7 @@ export class FlightEventTimeMatrixField extends Component {
     const matchingRecords = this.list.records.filter(
       (record) =>
         record.data.time_kind === timeKind.key &&
-        record.data.code_id[0] === eventCode.id,
+        record.data.code_id[0] === eventCode.id
     );
 
     if (matchingRecords.length === 1) {
@@ -111,7 +112,7 @@ export class FlightEventTimeMatrixField extends Component {
     } else {
       await this.notification.add(
         "Multiple records found for the same event code and time kind",
-        { type: "danger" },
+        { type: "danger" }
       );
       return;
     }

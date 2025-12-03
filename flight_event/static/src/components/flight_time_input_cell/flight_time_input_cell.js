@@ -175,9 +175,9 @@ export class FlightTimeInputCell extends Component {
       return null;
     }
 
-    // Use explicit timezone from input, or local timezone for local cells
-    // Note: displayTz cells are display-only, so we always parse in local or explicit TZ
-    const parseZone = timezone?.toUpperCase() || "local";
+    // Use explicit timezone from input, or displayTz (user's selected timezone), or browser local
+    // This ensures times entered are interpreted in the displayed timezone
+    const parseZone = timezone?.toUpperCase() || this.props.displayTz || "local";
     const baseDate = this.props.date || DateTime.local();
 
     // Extract the calendar date from the base date
