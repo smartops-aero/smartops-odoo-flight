@@ -22,7 +22,7 @@
         <div class="d-flex gap-4">
           <!-- ACTUAL Column -->
           <div class="flight-time-column">
-            <div class="column-header text-center fw-bold mb-1">ACTUAL</div>
+            <div class="column-header text-center fw-bold mb-1">ACTUAL TIMES</div>
             <div class="tz-subheaders d-flex gap-1 mb-2">
               <span class="tz-label" t-esc="localTzLabel" />
               <span class="tz-label text-muted">UTC</span>
@@ -164,7 +164,7 @@
 
           <!-- SCHEDULED Column -->
           <div class="flight-time-column">
-            <div class="column-header text-center fw-bold mb-1">SCHEDULED</div>
+            <div class="column-header text-center fw-bold mb-1">SCHEDULED TIMES</div>
             <div class="tz-subheaders d-flex gap-1 mb-2">
               <span class="tz-label" t-esc="localTzLabel" />
               <span class="tz-label text-muted">UTC</span>
