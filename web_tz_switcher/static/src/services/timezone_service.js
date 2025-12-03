@@ -17,16 +17,26 @@ export const timezoneSwitcherService = {
     const STORAGE_KEY = "web_tz_switcher.current_tz";
 
     /**
-     * Get current active timezone.
+     * Get current active timezone info.
      * Priority: session context > localStorage > user default
+     *
+     * @returns {Promise<Object>} - { timezone, isOverride, userDefault }
      */
     async function getCurrentTimezone() {
       try {
         const result = await rpc("/web/timezone/current");
-        return result.timezone;
+        return {
+          timezone: result.timezone,
+          isOverride: result.is_override,
+          userDefault: result.user_default,
+        };
       } catch (error) {
         console.error("Failed to get current timezone:", error);
-        return user.context.tz || "UTC";
+        return {
+          timezone: user.context.tz || "UTC",
+          isOverride: false,
+          userDefault: user.context.tz || "UTC",
+        };
       }
     }
 

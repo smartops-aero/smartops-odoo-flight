@@ -7,7 +7,6 @@ import { user } from "@web/core/user";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownGroup } from "@web/core/dropdown/dropdown_group";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
-import { rpc } from "@web/core/network/rpc";
 
 import { getTimezoneAbbreviation } from "../../utils/timezone_utils";
 
@@ -61,13 +60,9 @@ export class TimezoneSwitcherMenu extends Component {
    * Uses backend's is_override flag which correctly compares against user's DB timezone.
    */
   async updateCurrentTimezone() {
-    try {
-      const result = await rpc("/web/timezone/current");
-      this.state.currentTimezone = result.timezone;
-      this.state.isOverride = result.is_override;
-    } catch (error) {
-      console.error("Failed to get current timezone:", error);
-    }
+    const result = await this.timezoneSwitcher.getCurrentTimezone();
+    this.state.currentTimezone = result.timezone;
+    this.state.isOverride = result.isOverride;
   }
 
   /**

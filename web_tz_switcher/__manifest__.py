@@ -39,11 +39,7 @@ Perfect for:
     "website": "https://apexive.com",
     "license": "LGPL-3",
     "depends": ["web"],
-    "data": [
-        "security/ir.model.access.csv",
-        "data/timezone_data.xml",
-        "views/webclient_templates.xml",
-    ],
+    "data": [],
     "assets": {
         "web.assets_backend": [
             # Patches must load first to override core functions
