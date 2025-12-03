@@ -1,12 +1,11 @@
 /** @odoo-module **/
 
-import { Component, onWillRender, onWillStart, useRef, useState } from "@odoo/owl";
-
-import { formatDateTime } from "@web/core/l10n/dates";
+import { Component, onWillRender, onWillStart, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
-import { useDateTimePicker } from "@web/core/datetime/datetime_hook";
 import { useService } from "@web/core/utils/hooks";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
+
+import { FlightTimeInputCell } from "../flight_time_input_cell/flight_time_input_cell";
 
 const { DateTime } = luxon;
 
@@ -27,11 +26,12 @@ const EVENT_LABELS = {
 };
 
 /**
- * Time input cell component for individual time entry.
- * Handles keyboard navigation to stay within the same time kind column.
+ * Wrapper component for FlightTimeInputCell that handles
+ * Tab navigation within the same time kind column.
  */
 class FlightTimeSummaryCell extends Component {
   static template = "flight_event.FlightTimeSummaryCell";
+  static components = { FlightTimeInputCell };
   static props = {
     value: { type: [DateTime, Boolean], optional: true },
     eventCode: String,
@@ -41,214 +41,31 @@ class FlightTimeSummaryCell extends Component {
     readonly: Boolean,
   };
 
-  setup() {
-    this.inputRef = useRef("time-input");
-    this.notification = useService("notification");
-
-    this.state = useState({
-      inputValue: "",
-      isUserEditing: false,
-    });
-
-    const getPickerProps = () => {
-      const value = this.props?.value || this.props?.date || DateTime.local();
-      return {
-        value: value,
-        type: "datetime",
-      };
-    };
-
-    const handleDateTimeUpdate = (value) => {
-      if (value) {
-        this.props.onUpdate(this.props.timeKind, this.props.eventCode, value);
-      }
-    };
-
-    const dateTimePicker = useDateTimePicker({
-      target: "time-input",
-      get pickerProps() {
-        return getPickerProps();
-      },
-      onChange: handleDateTimeUpdate,
-      onApply: handleDateTimeUpdate,
-    });
-
-    this.openPicker = dateTimePicker.open;
-
-    onWillRender(() => {
-      if (!this.state.isUserEditing) {
-        this.state.inputValue = this.getFormattedValue();
-      }
-    });
-  }
-
-  getFormattedValue() {
-    const value = this.props.value;
-    if (!value || value === false) {
-      return "";
-    }
-
-    try {
-      let formatted = formatDateTime(value, { format: "HH:mm" });
-
-      if (this.props.date && value) {
-        const dayDiff = Math.floor(
-          value.startOf("day").diff(this.props.date.startOf("day"), "days").days
-        );
-        if (dayDiff !== 0) {
-          formatted += ` ${dayDiff > 0 ? "+" : ""}${dayDiff}`;
-        }
-      }
-
-      return formatted;
-    } catch (error) {
-      return "";
-    }
-  }
-
-  parseRelativeTime(inputValue) {
-    if (!inputValue || inputValue.trim() === "") {
-      return null;
-    }
-
-    const match = inputValue.match(
-      /^(\d{1,2}):(\d{2})(?:\s+([+-]\d+))?(?:\s+([A-Z]{2,5}))?$/i
-    );
-
-    if (!match) {
-      return null;
-    }
-
-    const [, hours, minutes, dayOffset, timezone] = match;
-
-    const h = parseInt(hours, 10);
-    const m = parseInt(minutes, 10);
-    if (h < 0 || h > 23 || m < 0 || m > 59) {
-      return null;
-    }
-
-    let date = this.props.date || DateTime.local();
-
-    if (timezone) {
-      try {
-        date = DateTime.fromObject(
-          {
-            year: date.year,
-            month: date.month,
-            day: date.day,
-            hour: h,
-            minute: m,
-            second: 0,
-            millisecond: 0,
-          },
-          { zone: timezone.toUpperCase() }
-        );
-
-        if (!date.isValid) {
-          return null;
-        }
-      } catch (error) {
-        return null;
-      }
-    } else {
-      date = date.set({
-        hour: h,
-        minute: m,
-        second: 0,
-        millisecond: 0,
-      });
-    }
-
-    if (dayOffset) {
-      date = date.plus({ days: parseInt(dayOffset, 10) });
-    }
-
-    return date.isValid ? date : null;
-  }
-
   /**
-   * Handle input blur event - parse and update value
-   * @param {Event} ev - The blur event
-   */
-  onInputBlur(ev) {
-    const inputValue = ev.target.value.trim();
-    this.state.isUserEditing = false;
-
-    if (!inputValue) {
-      this.props.onUpdate(this.props.timeKind, this.props.eventCode, false);
-      return;
-    }
-
-    const parsed = this.parseRelativeTime(inputValue);
-    if (parsed) {
-      this.props.onUpdate(this.props.timeKind, this.props.eventCode, parsed);
-    } else {
-      this.state.inputValue = this.getFormattedValue();
-      this.notification.add("Invalid time format. Use: HH:mm or HH:mm +1", {
-        type: "warning",
-      });
-    }
-  }
-
-  /**
-   * Handle keyboard navigation.
-   * Tab/Shift+Tab moves to next/prev cell in the SAME column (same time kind).
+   * Handle Tab navigation to stay within the same time kind column.
    * @param {KeyboardEvent} ev - The keydown event
+   * @param {String} timeKind - Current time kind
+   * @param {String} eventCode - Current event code
+   * @returns {Boolean} True if navigation was handled
    */
-  onInputKeydown(ev) {
-    if (ev.key === "Enter") {
-      ev.preventDefault();
-      // Parse and apply the value
-      const inputValue = ev.target.value.trim();
-      if (inputValue) {
-        const parsed = this.parseRelativeTime(inputValue);
-        if (parsed) {
-          this.props.onUpdate(this.props.timeKind, this.props.eventCode, parsed);
-          this.state.isUserEditing = false;
-        }
+  onTabNavigation(ev, timeKind, eventCode) {
+    const currentIndex = EVENT_SEQUENCE.indexOf(eventCode);
+    const direction = ev.shiftKey ? -1 : 1;
+    const nextIndex = currentIndex + direction;
+
+    if (nextIndex >= 0 && nextIndex < EVENT_SEQUENCE.length) {
+      // Find the next input element in the same time kind column
+      const container = ev.target.closest(".flight-time-summary");
+      const nextEventCode = EVENT_SEQUENCE[nextIndex];
+      const selector = `input[data-time-kind="${timeKind}"][data-event-code="${nextEventCode}"]`;
+      const nextInput = container?.querySelector(selector);
+      if (nextInput) {
+        nextInput.focus();
+        return true;
       }
-      // Blur closes the picker automatically
-      ev.target.blur();
-    } else if (ev.key === "Escape") {
-      ev.preventDefault();
-      this.state.inputValue = this.getFormattedValue();
-      ev.target.blur();
-    } else if (ev.key === "Tab") {
-      // Find the next input in the same column
-      const currentIndex = EVENT_SEQUENCE.indexOf(this.props.eventCode);
-      const direction = ev.shiftKey ? -1 : 1;
-      const nextIndex = currentIndex + direction;
-
-      if (nextIndex >= 0 && nextIndex < EVENT_SEQUENCE.length) {
-        ev.preventDefault();
-        // Find the next input element in the same time kind column using data attributes
-        const container = ev.target.closest(".flight-time-summary");
-        const nextEventCode = EVENT_SEQUENCE[nextIndex];
-        const selector = `input[data-time-kind="${this.props.timeKind}"][data-event-code="${nextEventCode}"]`;
-        const nextInput = container?.querySelector(selector);
-        if (nextInput) {
-          nextInput.focus();
-        }
-      }
-      // If at boundary, let default Tab behavior happen (move to other column or next field)
     }
-  }
-
-  onInputChange(ev) {
-    this.state.isUserEditing = true;
-    this.state.inputValue = ev.target.value;
-  }
-
-  onInputFocus(ev) {
-    if (!this.props.readonly) {
-      ev.target.select();
-    }
-  }
-
-  onPickerClick() {
-    if (!this.props.readonly) {
-      this.openPicker();
-    }
+    // At boundary - let default Tab behavior happen
+    return false;
   }
 }
 
@@ -289,7 +106,7 @@ export class FlightTimeSummary extends Component {
       const codes = await this.orm.searchRead(
         "flight.event.code",
         [["code", "in", EVENT_SEQUENCE]],
-        ["id", "code", "name"]
+        ["id", "code", "name"],
       );
       this.eventCodes = codes;
       this.eventCodeMap = Object.fromEntries(codes.map((c) => [c.code, c]));
@@ -324,7 +141,11 @@ export class FlightTimeSummary extends Component {
       const eventCode = codeObj ? codeObj[1] : null;
       const timeKind = record.data.time_kind;
 
-      if (eventCode && this.matrix[timeKind] && this.matrix[timeKind][eventCode]) {
+      if (
+        eventCode &&
+        this.matrix[timeKind] &&
+        this.matrix[timeKind][eventCode]
+      ) {
         this.matrix[timeKind][eventCode] = {
           value: record.data.time,
           record: record,

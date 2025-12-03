@@ -42,43 +42,6 @@
     text-align: right;
   }
 
-  .flight-time-cell {
-    width: auto;
-
-    .flight-time-input {
-      width: 55px;
-      font-size: 0.85rem;
-      font-family: $font-family-monospace;
-      padding: 0.15rem 0.25rem;
-      height: 26px;
-
-      &:focus {
-        border-color: $primary;
-        box-shadow: 0 0 0 0.15rem rgba($primary, 0.25);
-      }
-
-      &::placeholder {
-        color: $gray-400;
-        font-size: 0.75rem;
-      }
-
-      &[readonly] {
-        background-color: $gray-100;
-      }
-    }
-
-    .flight-time-picker-btn {
-      padding: 0.1rem 0.3rem;
-      font-size: 0.75rem;
-      height: 26px;
-      border-color: $gray-300;
-
-      &:hover {
-        background-color: $gray-100;
-      }
-    }
-  }
-
   // Flight bracket container (TO-LD) - now uses flexbox
   .flight-bracket-container {
     display: flex;
@@ -187,12 +150,6 @@
 
     .event-label {
       color: $gray-400;
-    }
-
-    .flight-time-cell .flight-time-input {
-      &[readonly] {
-        background-color: $gray-800;
-      }
     }
 
     .block-bracket-outer .bracket-label .duration-label,

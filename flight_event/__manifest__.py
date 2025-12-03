@@ -17,6 +17,11 @@
     ],
     "assets": {
         "web.assets_backend": [
+            # Shared time input cell (used by both matrix and summary widgets)
+            "flight_event/static/src/components/flight_time_input_cell/flight_time_input_cell.scss",
+            "flight_event/static/src/components/flight_time_input_cell/flight_time_input_cell.js",
+            "flight_event/static/src/components/flight_time_input_cell/flight_time_input_cell.xml",
+            # Matrix widget
             "flight_event/static/src/scss/flight_event_time_matrix.scss",
             "flight_event/static/src/components/flight_event_time_matrix_cell/flight_event_time_matrix_cell.js",
             "flight_event/static/src/components/flight_event_time_matrix_field/flight_event_time_matrix_field.js",
@@ -24,6 +29,7 @@
             "flight_event/static/src/components/flight_event_time_matrix_cell/flight_event_time_matrix_cell.xml",
             "flight_event/static/src/components/flight_event_time_matrix_field/flight_event_time_matrix_field.xml",
             "flight_event/static/src/components/flight_event_time_matrix_renderer/flight_event_time_matrix_renderer.xml",
+            # Summary widget
             "flight_event/static/src/components/flight_time_summary/flight_time_summary.scss",
             "flight_event/static/src/components/flight_time_summary/flight_time_summary.js",
             "flight_event/static/src/components/flight_time_summary/flight_time_summary.xml",

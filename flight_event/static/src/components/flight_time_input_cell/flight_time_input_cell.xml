@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+  <t t-name="flight_event.FlightTimeInputCell">
+    <div class="input-group input-group-sm flight-time-cell">
+      <input
+        t-ref="time-input"
+        type="text"
+        class="form-control form-control-sm text-center flight-time-input"
+        t-att-data-time-kind="props.timeKind"
+        t-att-data-event-code="props.eventCode"
+        t-att-value="state.inputValue"
+        t-att-readonly="props.readonly"
+        t-on-blur="onInputBlur"
+        t-on-keydown="onInputKeydown"
+        t-on-input="onInputChange"
+        t-on-focus="onInputFocus"
+        placeholder="--:--"
+        title="Enter time (e.g., 14:30 or 14:30 +1 for next day)"
+      />
+      <button
+        t-if="!props.readonly"
+        type="button"
+        class="btn btn-outline-secondary flight-time-picker-btn"
+        t-on-click="onPickerClick"
+        title="Open date/time picker"
+      >
+        <i class="fa fa-clock-o" />
+      </button>
+    </div>
+  </t>
+</templates>
