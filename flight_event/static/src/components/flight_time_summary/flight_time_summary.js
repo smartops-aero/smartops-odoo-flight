@@ -39,11 +39,10 @@ class FlightTimeSummaryCell extends Component {
     date: DateTime,
     onUpdate: Function,
     readonly: Boolean,
-    inputRef: { type: String, optional: true },
   };
 
   setup() {
-    this.inputRef = useRef(this.props.inputRef || "time-input");
+    this.inputRef = useRef("time-input");
     this.notification = useService("notification");
 
     this.state = useState({
@@ -66,7 +65,7 @@ class FlightTimeSummaryCell extends Component {
     };
 
     const dateTimePicker = useDateTimePicker({
-      target: this.props.inputRef || "time-input",
+      target: "time-input",
       get pickerProps() {
         return getPickerProps();
       },
@@ -194,6 +193,7 @@ class FlightTimeSummaryCell extends Component {
   /**
    * Handle keyboard navigation.
    * Tab/Shift+Tab moves to next/prev cell in the SAME column (same time kind).
+   * @param {KeyboardEvent} ev - The keydown event
    */
   onInputKeydown(ev) {
     if (ev.key === "Enter") {
@@ -211,10 +211,11 @@ class FlightTimeSummaryCell extends Component {
 
       if (nextIndex >= 0 && nextIndex < EVENT_SEQUENCE.length) {
         ev.preventDefault();
-        // Find the next input element in the same time kind column
+        // Find the next input element in the same time kind column using data attributes
         const container = ev.target.closest(".flight-time-summary");
-        const nextInputName = `input-${this.props.timeKind}-${EVENT_SEQUENCE[nextIndex]}`;
-        const nextInput = container?.querySelector(`input[name="${nextInputName}"]`);
+        const nextEventCode = EVENT_SEQUENCE[nextIndex];
+        const selector = `input[data-time-kind="${this.props.timeKind}"][data-event-code="${nextEventCode}"]`;
+        const nextInput = container?.querySelector(selector);
         if (nextInput) {
           nextInput.focus();
         }

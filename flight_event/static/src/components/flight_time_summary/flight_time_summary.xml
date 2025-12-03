@@ -7,7 +7,8 @@
       t-ref="time-input"
       type="text"
       class="form-control form-control-sm text-center flight-time-input"
-      t-att-name="'input-' + props.timeKind + '-' + props.eventCode"
+      t-att-data-time-kind="props.timeKind"
+      t-att-data-event-code="props.eventCode"
       t-att-value="state.inputValue"
       t-att-readonly="props.readonly"
       t-on-blur="onInputBlur"
@@ -53,7 +54,6 @@
                     date="state.date"
                     onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                     readonly="props.readonly"
-                    inputRef="'input-A-OB'"
                   />
                                 </div>
 
@@ -83,7 +83,6 @@
                         date="state.date"
                         onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                         readonly="props.readonly"
-                        inputRef="'input-A-TO'"
                       />
                                         </div>
 
@@ -97,7 +96,6 @@
                         date="state.date"
                         onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                         readonly="props.readonly"
-                        inputRef="'input-A-LD'"
                       />
                                         </div>
                                     </div>
@@ -106,14 +104,13 @@
                                 <!-- In Blocks -->
                                 <div class="event-row">
                                     <span class="event-label">IB</span>
-                                    <FlightTimeSummaryCell
+                                        <FlightTimeSummaryCell
                     value="getTimeValue('A', 'IB')"
                     eventCode="'IB'"
                     timeKind="'A'"
                     date="state.date"
                     onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                     readonly="props.readonly"
-                    inputRef="'input-A-IB'"
                   />
                                 </div>
                             </div>
@@ -143,14 +140,13 @@
                                 <!-- Off Blocks -->
                                 <div class="event-row">
                                     <span class="event-label">OB</span>
-                                    <FlightTimeSummaryCell
+                                        <FlightTimeSummaryCell
                     value="getTimeValue('S', 'OB')"
                     eventCode="'OB'"
                     timeKind="'S'"
                     date="state.date"
                     onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                     readonly="props.readonly"
-                    inputRef="'input-S-OB'"
                   />
                                 </div>
 
@@ -180,7 +176,6 @@
                         date="state.date"
                         onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                         readonly="props.readonly"
-                        inputRef="'input-S-TO'"
                       />
                                         </div>
 
@@ -194,7 +189,6 @@
                         date="state.date"
                         onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                         readonly="props.readonly"
-                        inputRef="'input-S-LD'"
                       />
                                         </div>
                                     </div>
@@ -203,14 +197,13 @@
                                 <!-- In Blocks -->
                                 <div class="event-row">
                                     <span class="event-label">IB</span>
-                                    <FlightTimeSummaryCell
+                                        <FlightTimeSummaryCell
                     value="getTimeValue('S', 'IB')"
                     eventCode="'IB'"
                     timeKind="'S'"
                     date="state.date"
                     onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                     readonly="props.readonly"
-                    inputRef="'input-S-IB'"
                   />
                                 </div>
                             </div>
