@@ -19,7 +19,7 @@
   <t t-name="flight_event.FlightTimeSummary">
     <div class="flight-time-summary">
       <t t-if="state.date and list and eventCodes.length > 0">
-        <div class="d-flex gap-4">
+        <div class="d-flex flex-column flex-md-row gap-4">
           <!-- ACTUAL Column -->
           <div class="flight-time-column">
             <div

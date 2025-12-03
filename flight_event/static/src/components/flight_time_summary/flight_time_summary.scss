@@ -3,7 +3,10 @@
 // Supports dual timezone display (Local + UTC)
 
 .flight-time-summary {
+  overflow-x: auto;
+
   .flight-time-column {
+    flex-shrink: 0;
     min-width: 220px;
   }
 
