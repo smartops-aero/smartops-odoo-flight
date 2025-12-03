@@ -1,0 +1,198 @@
+// Flight Time Summary Widget Styles
+// Compact visualization with duration brackets
+
+.flight-time-summary {
+  .flight-time-column {
+    min-width: 140px;
+  }
+
+  .column-header {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: $gray-600;
+    border-bottom: 1px solid $gray-300;
+    padding-bottom: 0.25rem;
+  }
+
+  .time-block-container {
+    position: relative;
+    display: flex;
+    padding-left: 45px; // Space for block bracket
+  }
+
+  .events-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    padding-left: 35px; // Space for flight bracket
+  }
+
+  .event-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 32px;
+  }
+
+  .event-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: $gray-600;
+    width: 20px;
+    text-align: right;
+  }
+
+  .flight-time-input {
+    width: 70px;
+    font-size: 0.85rem;
+    font-family: $font-family-monospace;
+    padding: 0.15rem 0.25rem;
+    height: 28px;
+
+    &:focus {
+      border-color: $primary;
+      box-shadow: 0 0 0 0.15rem rgba($primary, 0.25);
+    }
+
+    &::placeholder {
+      color: $gray-400;
+      font-size: 0.75rem;
+    }
+
+    &[readonly] {
+      background-color: $gray-100;
+    }
+  }
+
+  // Flight bracket container (TO-LD)
+  .flight-bracket-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .flight-events {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  // Block bracket (outer - OB to IB)
+  .block-bracket-outer {
+    position: absolute;
+    left: 0;
+    top: 16px; // Center on first row
+    bottom: 16px; // Center on last row
+    width: 40px;
+
+    .bracket-line {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 12px;
+      border: 2px solid $info;
+      border-right: none;
+      border-radius: 4px 0 0 4px;
+    }
+
+    .bracket-label {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1;
+
+      .duration-value {
+        font-size: 0.75rem;
+        font-weight: 600;
+        font-family: $font-family-monospace;
+        color: $info;
+      }
+
+      .duration-label {
+        font-size: 0.6rem;
+        color: $gray-500;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  // Flight bracket (inner - TO to LD)
+  .flight-bracket {
+    position: absolute;
+    left: -30px;
+    top: 16px; // Center on TO row
+    bottom: 16px; // Center on LD row (within flight-bracket-container)
+    width: 28px;
+
+    .bracket-line {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 10px;
+      border: 2px solid $success;
+      border-right: none;
+      border-radius: 3px 0 0 3px;
+    }
+
+    .bracket-label {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1;
+
+      .duration-value {
+        font-size: 0.7rem;
+        font-weight: 600;
+        font-family: $font-family-monospace;
+        color: $success;
+      }
+
+      .duration-label {
+        font-size: 0.55rem;
+        color: $gray-500;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  // Dark mode adjustments
+  .o_dark_mode & {
+    .column-header {
+      color: $gray-400;
+      border-bottom-color: $gray-600;
+    }
+
+    .event-label {
+      color: $gray-400;
+    }
+
+    .flight-time-input {
+      &[readonly] {
+        background-color: $gray-800;
+      }
+    }
+
+    .block-bracket-outer .bracket-label .duration-label,
+    .flight-bracket .bracket-label .duration-label {
+      color: $gray-400;
+    }
+  }
+}
+
+// Compact mode when in smaller containers
+.o_field_flight_time_summary {
+  @extend .o_field_widget;
+}

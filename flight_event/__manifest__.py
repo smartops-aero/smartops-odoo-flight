@@ -24,6 +24,9 @@
             "flight_event/static/src/components/flight_event_time_matrix_cell/flight_event_time_matrix_cell.xml",
             "flight_event/static/src/components/flight_event_time_matrix_field/flight_event_time_matrix_field.xml",
             "flight_event/static/src/components/flight_event_time_matrix_renderer/flight_event_time_matrix_renderer.xml",
+            "flight_event/static/src/components/flight_time_summary/flight_time_summary.scss",
+            "flight_event/static/src/components/flight_time_summary/flight_time_summary.js",
+            "flight_event/static/src/components/flight_time_summary/flight_time_summary.xml",
         ],
     },
     "data": [
