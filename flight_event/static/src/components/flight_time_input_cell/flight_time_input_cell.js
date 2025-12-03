@@ -16,6 +16,7 @@ const { DateTime } = luxon;
  * - Timezone support in input (e.g., "14:30 UTC")
  * - Datetime picker integration via clock icon button
  * - Keyboard navigation (Enter to save, Escape to cancel)
+ * - Display timezone override for showing times in different timezones
  *
  * @extends Component
  */
@@ -23,20 +24,23 @@ export class FlightTimeInputCell extends Component {
   static template = "flight_event.FlightTimeInputCell";
   static props = {
     value: { type: [DateTime, Boolean], optional: true },
-    eventCode: { type: Object, optional: true }, // Can be Object (matrix) or String (summary)
-    timeKind: { type: Object, optional: true }, // Can be Object (matrix) or String (summary)
+    eventCode: { type: Object, optional: true },
+    timeKind: { type: Object, optional: true },
     date: DateTime,
     onUpdate: Function,
     readonly: Boolean,
-    // Optional: function to handle Tab navigation (for summary widget column isolation)
     onTabNavigation: { type: Function, optional: true },
+    // Optional: timezone to display the time in (e.g., "UTC", "Europe/Paris")
+    // If not set, uses the value's original timezone
+    displayTz: { type: String, optional: true },
+    // Optional: if true, this cell is display-only (shows converted time but doesn't edit)
+    displayOnly: { type: Boolean, optional: true },
   };
 
   setup() {
     this.inputRef = useRef("time-input");
     this.notification = useService("notification");
 
-    // Track input value and editing state
     this.state = useState({
       inputValue: "",
       isUserEditing: false,
@@ -50,21 +54,12 @@ export class FlightTimeInputCell extends Component {
       };
     };
 
-    /**
-     * Handler for datetime updates from picker.
-     * Used by both onChange and onApply to avoid duplication.
-     * @param {DateTime} value - The selected datetime value
-     */
     const handleDateTimeUpdate = (value) => {
-      if (value) {
+      if (value && !this.props.displayOnly) {
         this.props.onUpdate(this.props.timeKind, this.props.eventCode, value);
       }
     };
 
-    /**
-     * Individual datetime picker for this cell.
-     * Updates immediately on change for UX, similar to 16.0 behavior.
-     */
     const dateTimePicker = useDateTimePicker({
       target: "time-input",
       get pickerProps() {
@@ -76,10 +71,6 @@ export class FlightTimeInputCell extends Component {
 
     this.openPicker = dateTimePicker.open;
 
-    /**
-     * Sync display value with props on every render
-     * Similar to Odoo's DateTimeField pattern (datetime_field.js:160)
-     */
     onWillRender(() => {
       if (!this.state.isUserEditing) {
         this.state.inputValue = this.getFormattedValue();
@@ -88,22 +79,47 @@ export class FlightTimeInputCell extends Component {
   }
 
   /**
+   * Gets the display value, optionally converted to the display timezone.
+   * @returns {DateTime|false} The value in the display timezone
+   */
+  getDisplayValue() {
+    const value = this.props.value;
+    if (!value || value === false) {
+      return false;
+    }
+
+    if (this.props.displayTz) {
+      // Convert to UTC first to get the correct instant, then to target timezone
+      return value.toUTC().setZone(this.props.displayTz);
+    }
+    return value;
+  }
+
+  /**
    * Formats datetime for display with relative day offset.
    * @returns {String} Formatted time like "14:30" or "14:30 +1" for next day
    */
   getFormattedValue() {
-    const value = this.props.value;
+    const displayValue = this.getDisplayValue();
 
-    if (!value || value === false) {
+    if (!displayValue || displayValue === false) {
       return "";
     }
 
     try {
-      let formatted = formatDateTime(value, { format: "HH:mm" });
+      // Use formatDateTime with explicit timezone to prevent it from
+      // converting back to user's local timezone
+      const tzOption = this.props.displayTz ? { tz: this.props.displayTz } : {};
+      let formatted = formatDateTime(displayValue, { format: "HH:mm", ...tzOption });
 
-      if (this.props.date && value) {
+      // Calculate day offset relative to the base date (in display timezone if set)
+      if (this.props.date && displayValue) {
+        const baseDate = this.props.displayTz
+          ? this.props.date.toUTC().setZone(this.props.displayTz)
+          : this.props.date;
+
         const dayDiff = Math.floor(
-          value.startOf("day").diff(this.props.date.startOf("day"), "days")
+          displayValue.startOf("day").diff(baseDate.startOf("day"), "days")
             .days,
         );
         if (dayDiff !== 0) {
@@ -125,6 +141,8 @@ export class FlightTimeInputCell extends Component {
    * - "HH:mm TZ" → Specified time in timezone
    * - "HH:mm +D TZ" → Combined offset and timezone
    *
+   * When displayTz is set, input is interpreted in that timezone.
+   *
    * @param {String} inputValue - User typed input
    * @returns {DateTime|null} Parsed DateTime or null if invalid
    */
@@ -133,7 +151,6 @@ export class FlightTimeInputCell extends Component {
       return null;
     }
 
-    // Match: HH:mm [+/-D] [TIMEZONE]
     const match = inputValue.match(
       /^(\d{1,2}):(\d{2})(?:\s+([+-]\d+))?(?:\s+([A-Z]{2,5}))?$/i,
     );
@@ -144,49 +161,43 @@ export class FlightTimeInputCell extends Component {
 
     const [, hours, minutes, dayOffset, timezone] = match;
 
-    // Validate time values
     const h = parseInt(hours, 10);
     const m = parseInt(minutes, 10);
     if (h < 0 || h > 23 || m < 0 || m > 59) {
       return null;
     }
 
+    // Use displayTz as the default timezone for parsing if no explicit timezone in input
+    const parseZone =
+      timezone?.toUpperCase() || this.props.displayTz || "local";
     let date = this.props.date || DateTime.local();
 
-    // Create datetime with timezone if specified
-    if (timezone) {
-      try {
-        date = DateTime.fromObject(
-          {
-            year: date.year,
-            month: date.month,
-            day: date.day,
-            hour: h,
-            minute: m,
-            second: 0,
-            millisecond: 0,
-          },
-          { zone: timezone.toUpperCase() },
-        );
-
-        // Check if timezone is valid
-        if (!date.isValid) {
-          return null;
-        }
-      } catch {
-        return null;
-      }
-    } else {
-      // No timezone - use local
-      date = date.set({
-        hour: h,
-        minute: m,
-        second: 0,
-        millisecond: 0,
-      });
+    // Convert base date to the parse timezone
+    if (parseZone !== "local") {
+      date = date.setZone(parseZone);
     }
 
-    // Apply day offset if specified
+    try {
+      date = DateTime.fromObject(
+        {
+          year: date.year,
+          month: date.month,
+          day: date.day,
+          hour: h,
+          minute: m,
+          second: 0,
+          millisecond: 0,
+        },
+        { zone: parseZone },
+      );
+
+      if (!date.isValid) {
+        return null;
+      }
+    } catch {
+      return null;
+    }
+
     if (dayOffset) {
       date = date.plus({ days: parseInt(dayOffset, 10) });
     }
@@ -199,12 +210,16 @@ export class FlightTimeInputCell extends Component {
    * @param {Event} ev - The blur event
    */
   onInputBlur(ev) {
-    const inputValue = ev.target.value.trim();
+    // Display-only cells don't process input
+    if (this.props.displayOnly) {
+      this.state.isUserEditing = false;
+      this.state.inputValue = this.getFormattedValue();
+      return;
+    }
 
-    // Clear editing state
+    const inputValue = ev.target.value.trim();
     this.state.isUserEditing = false;
 
-    // If empty, clear the value
     if (!inputValue) {
       this.props.onUpdate(this.props.timeKind, this.props.eventCode, false);
       return;
@@ -214,7 +229,6 @@ export class FlightTimeInputCell extends Component {
     if (parsed) {
       this.props.onUpdate(this.props.timeKind, this.props.eventCode, parsed);
     } else {
-      // Invalid input - revert to previous value
       this.state.inputValue = this.getFormattedValue();
       this.notification.add("Invalid time format. Use: HH:mm or HH:mm +1", {
         type: "warning",
@@ -227,9 +241,23 @@ export class FlightTimeInputCell extends Component {
    * @param {KeyboardEvent} ev - The keydown event
    */
   onInputKeydown(ev) {
+    // Display-only cells don't process keyboard input for editing
+    if (this.props.displayOnly) {
+      if (ev.key === "Tab" && this.props.onTabNavigation) {
+        const handled = this.props.onTabNavigation(
+          ev,
+          this.props.timeKind,
+          this.props.eventCode,
+        );
+        if (handled) {
+          ev.preventDefault();
+        }
+      }
+      return;
+    }
+
     if (ev.key === "Enter") {
       ev.preventDefault();
-      // Parse and apply the value
       const inputValue = ev.target.value.trim();
       if (inputValue) {
         const parsed = this.parseRelativeTime(inputValue);
@@ -242,15 +270,12 @@ export class FlightTimeInputCell extends Component {
           this.state.isUserEditing = false;
         }
       }
-      // Blur closes the picker automatically
       ev.target.blur();
     } else if (ev.key === "Escape") {
       ev.preventDefault();
-      // Revert to original value
       this.state.inputValue = this.getFormattedValue();
       ev.target.blur();
     } else if (ev.key === "Tab" && this.props.onTabNavigation) {
-      // Let the parent handle Tab navigation if needed (e.g., summary widget column isolation)
       const handled = this.props.onTabNavigation(
         ev,
         this.props.timeKind,
@@ -267,8 +292,10 @@ export class FlightTimeInputCell extends Component {
    * @param {Event} ev - The input event
    */
   onInputChange(ev) {
-    this.state.isUserEditing = true;
-    this.state.inputValue = ev.target.value;
+    if (!this.props.displayOnly) {
+      this.state.isUserEditing = true;
+      this.state.inputValue = ev.target.value;
+    }
   }
 
   /**
@@ -276,7 +303,7 @@ export class FlightTimeInputCell extends Component {
    * @param {FocusEvent} ev - The focus event
    */
   onInputFocus(ev) {
-    if (!this.props.readonly) {
+    if (!this.props.readonly && !this.props.displayOnly) {
       ev.target.select();
     }
   }
@@ -285,8 +312,24 @@ export class FlightTimeInputCell extends Component {
    * Handle picker button click - open the datetime picker
    */
   onPickerClick() {
-    if (!this.props.readonly) {
+    if (!this.props.readonly && !this.props.displayOnly) {
       this.openPicker();
     }
+  }
+
+  /**
+   * Check if picker button should be shown
+   * @returns {Boolean}
+   */
+  get showPickerButton() {
+    return !this.props.readonly && !this.props.displayOnly;
+  }
+
+  /**
+   * Check if the input should be readonly
+   * @returns {Boolean}
+   */
+  get isReadonly() {
+    return this.props.readonly || this.props.displayOnly;
   }
 }

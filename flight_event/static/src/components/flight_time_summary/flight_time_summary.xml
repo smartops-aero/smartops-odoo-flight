@@ -9,6 +9,8 @@
       date="props.date"
       onUpdate="props.onUpdate"
       readonly="props.readonly"
+      displayTz="props.displayTz"
+      displayOnly="props.displayOnly"
       onTabNavigation="(ev, tk, ec) => this.onTabNavigation(ev, tk, ec)"
     />
   </t>
@@ -20,21 +22,37 @@
         <div class="d-flex gap-4">
           <!-- ACTUAL Column -->
           <div class="flight-time-column">
-            <div class="column-header text-center fw-bold mb-2">ACTUAL</div>
+            <div class="column-header text-center fw-bold mb-1">ACTUAL</div>
+            <div class="tz-subheaders d-flex justify-content-center gap-2 mb-2">
+              <span class="tz-label" t-esc="localTzLabel" />
+              <span class="tz-label text-muted">UTC</span>
+            </div>
             <div class="time-block-container">
               <!-- Events container -->
               <div class="events-container">
                 <!-- Off Blocks -->
                 <div class="event-row">
                   <span class="event-label">OB</span>
-                  <FlightTimeSummaryCell
-                    value="getTimeValue('A', 'OB')"
-                    eventCode="'OB'"
-                    timeKind="'A'"
-                    date="state.date"
-                    onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
-                    readonly="props.readonly"
-                  />
+                  <div class="time-cells d-flex gap-1">
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('A', 'OB')"
+                      eventCode="'OB'"
+                      timeKind="'A'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                    />
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('A', 'OB')"
+                      eventCode="'OB'"
+                      timeKind="'A'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                      displayTz="'UTC'"
+                      displayOnly="true"
+                    />
+                  </div>
                 </div>
 
                 <!-- Flight time bracket (TO to LD) -->
@@ -43,27 +61,51 @@
                     <!-- Take Off -->
                     <div class="event-row">
                       <span class="event-label">TO</span>
-                      <FlightTimeSummaryCell
-                        value="getTimeValue('A', 'TO')"
-                        eventCode="'TO'"
-                        timeKind="'A'"
-                        date="state.date"
-                        onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
-                        readonly="props.readonly"
-                      />
+                      <div class="time-cells d-flex gap-1">
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('A', 'TO')"
+                          eventCode="'TO'"
+                          timeKind="'A'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                        />
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('A', 'TO')"
+                          eventCode="'TO'"
+                          timeKind="'A'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                          displayTz="'UTC'"
+                          displayOnly="true"
+                        />
+                      </div>
                     </div>
 
                     <!-- Landing -->
                     <div class="event-row">
                       <span class="event-label">LD</span>
-                      <FlightTimeSummaryCell
-                        value="getTimeValue('A', 'LD')"
-                        eventCode="'LD'"
-                        timeKind="'A'"
-                        date="state.date"
-                        onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
-                        readonly="props.readonly"
-                      />
+                      <div class="time-cells d-flex gap-1">
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('A', 'LD')"
+                          eventCode="'LD'"
+                          timeKind="'A'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                        />
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('A', 'LD')"
+                          eventCode="'LD'"
+                          timeKind="'A'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                          displayTz="'UTC'"
+                          displayOnly="true"
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -83,14 +125,26 @@
                 <!-- In Blocks -->
                 <div class="event-row">
                   <span class="event-label">IB</span>
-                  <FlightTimeSummaryCell
-                    value="getTimeValue('A', 'IB')"
-                    eventCode="'IB'"
-                    timeKind="'A'"
-                    date="state.date"
-                    onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
-                    readonly="props.readonly"
-                  />
+                  <div class="time-cells d-flex gap-1">
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('A', 'IB')"
+                      eventCode="'IB'"
+                      timeKind="'A'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                    />
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('A', 'IB')"
+                      eventCode="'IB'"
+                      timeKind="'A'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                      displayTz="'UTC'"
+                      displayOnly="true"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -110,21 +164,37 @@
 
           <!-- SCHEDULED Column -->
           <div class="flight-time-column">
-            <div class="column-header text-center fw-bold mb-2">SCHEDULED</div>
+            <div class="column-header text-center fw-bold mb-1">SCHEDULED</div>
+            <div class="tz-subheaders d-flex justify-content-center gap-2 mb-2">
+              <span class="tz-label" t-esc="localTzLabel" />
+              <span class="tz-label text-muted">UTC</span>
+            </div>
             <div class="time-block-container">
               <!-- Events container -->
               <div class="events-container">
                 <!-- Off Blocks -->
                 <div class="event-row">
                   <span class="event-label">OB</span>
-                  <FlightTimeSummaryCell
-                    value="getTimeValue('S', 'OB')"
-                    eventCode="'OB'"
-                    timeKind="'S'"
-                    date="state.date"
-                    onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
-                    readonly="props.readonly"
-                  />
+                  <div class="time-cells d-flex gap-1">
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('S', 'OB')"
+                      eventCode="'OB'"
+                      timeKind="'S'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                    />
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('S', 'OB')"
+                      eventCode="'OB'"
+                      timeKind="'S'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                      displayTz="'UTC'"
+                      displayOnly="true"
+                    />
+                  </div>
                 </div>
 
                 <!-- Flight time bracket (TO to LD) -->
@@ -133,27 +203,51 @@
                     <!-- Take Off -->
                     <div class="event-row">
                       <span class="event-label">TO</span>
-                      <FlightTimeSummaryCell
-                        value="getTimeValue('S', 'TO')"
-                        eventCode="'TO'"
-                        timeKind="'S'"
-                        date="state.date"
-                        onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
-                        readonly="props.readonly"
-                      />
+                      <div class="time-cells d-flex gap-1">
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('S', 'TO')"
+                          eventCode="'TO'"
+                          timeKind="'S'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                        />
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('S', 'TO')"
+                          eventCode="'TO'"
+                          timeKind="'S'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                          displayTz="'UTC'"
+                          displayOnly="true"
+                        />
+                      </div>
                     </div>
 
                     <!-- Landing -->
                     <div class="event-row">
                       <span class="event-label">LD</span>
-                      <FlightTimeSummaryCell
-                        value="getTimeValue('S', 'LD')"
-                        eventCode="'LD'"
-                        timeKind="'S'"
-                        date="state.date"
-                        onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
-                        readonly="props.readonly"
-                      />
+                      <div class="time-cells d-flex gap-1">
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('S', 'LD')"
+                          eventCode="'LD'"
+                          timeKind="'S'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                        />
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('S', 'LD')"
+                          eventCode="'LD'"
+                          timeKind="'S'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                          displayTz="'UTC'"
+                          displayOnly="true"
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -173,14 +267,26 @@
                 <!-- In Blocks -->
                 <div class="event-row">
                   <span class="event-label">IB</span>
-                  <FlightTimeSummaryCell
-                    value="getTimeValue('S', 'IB')"
-                    eventCode="'IB'"
-                    timeKind="'S'"
-                    date="state.date"
-                    onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
-                    readonly="props.readonly"
-                  />
+                  <div class="time-cells d-flex gap-1">
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('S', 'IB')"
+                      eventCode="'IB'"
+                      timeKind="'S'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                    />
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('S', 'IB')"
+                      eventCode="'IB'"
+                      timeKind="'S'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                      displayTz="'UTC'"
+                      displayOnly="true"
+                    />
+                  </div>
                 </div>
               </div>
 

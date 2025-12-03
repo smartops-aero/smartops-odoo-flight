@@ -8,6 +8,7 @@ const { DateTime } = luxon;
 /**
  * Renders the flight event time matrix as a table.
  * Manages the layout and data flow to individual cell components.
+ * Displays Local and UTC columns for each time kind (Actual/Scheduled).
  *
  * @extends Component
  */
@@ -21,6 +22,7 @@ export class FlightEventTimeMatrixRenderer extends Component {
     date: DateTime,
     onUpdate: Function,
     readonly: Boolean,
+    localTzLabel: String,
   };
 
   setup() {

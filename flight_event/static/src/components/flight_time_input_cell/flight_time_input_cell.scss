@@ -23,6 +23,19 @@
 
     &[readonly] {
       background-color: $gray-100;
+      cursor: default;
+    }
+
+    // Display-only cells (UTC equivalent) - more subtle styling
+    &.display-only {
+      background-color: lighten($gray-100, 3%);
+      color: $gray-600;
+      border-color: $gray-200;
+
+      &:focus {
+        border-color: $gray-300;
+        box-shadow: none;
+      }
     }
   }
 
@@ -42,6 +55,12 @@
     .flight-time-input {
       &[readonly] {
         background-color: $gray-800;
+      }
+
+      &.display-only {
+        background-color: $gray-900;
+        color: $gray-500;
+        border-color: $gray-700;
       }
     }
   }

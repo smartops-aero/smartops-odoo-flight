@@ -1,9 +1,10 @@
 // Flight Time Summary Widget Styles
 // Compact visualization with duration brackets on the right
+// Supports dual timezone display (Local + UTC)
 
 .flight-time-summary {
   .flight-time-column {
-    min-width: 180px;
+    min-width: 220px;
   }
 
   .column-header {
@@ -13,6 +14,20 @@
     color: $gray-600;
     border-bottom: 1px solid $gray-300;
     padding-bottom: 0.25rem;
+  }
+
+  .tz-subheaders {
+    .tz-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      width: 55px;
+      text-align: center;
+
+      &.text-muted {
+        color: $gray-500;
+      }
+    }
   }
 
   .time-block-container {
@@ -40,6 +55,11 @@
     color: $gray-600;
     width: 20px;
     text-align: right;
+  }
+
+  .time-cells {
+    display: flex;
+    gap: 2px;
   }
 
   // Flight bracket container (TO-LD) - now uses flexbox
@@ -150,6 +170,10 @@
 
     .event-label {
       color: $gray-400;
+    }
+
+    .tz-subheaders .tz-label.text-muted {
+      color: $gray-500;
     }
 
     .block-bracket-outer .bracket-label .duration-label,

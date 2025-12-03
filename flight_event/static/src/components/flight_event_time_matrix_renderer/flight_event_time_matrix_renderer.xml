@@ -1,54 +1,64 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
-    <t t-name="flight_event.FlightEventTimeMatrixRenderer">
-        <table
+  <t t-name="flight_event.FlightEventTimeMatrixRenderer">
+    <table
       class="o_list_table table table-responsive table-sm table-hover position-relative mb-0 o_list_table_ungrouped table-striped"
       t-if="eventCodes.length > 0 and matrix"
     >
-            <thead>
-                <tr>
-                    <th>Event</th>
-                    <th
-            t-foreach="timeKinds"
-            t-as="timeKind"
-            t-key="timeKind.key"
-            class="text-center"
-          >
-                        <t t-esc="timeKind.label" />
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr
-          t-foreach="eventCodes"
-          t-as="eventCode"
-          t-key="eventCode.code"
-        >
-                    <td>
-                        <t t-esc="eventCode.name" />
-                    </td>
-                    <td
-            t-foreach="timeKinds"
-            t-as="timeKind"
-            t-key="timeKind.key"
-            class="o_matrix_cell"
-          >
-                        <FlightEventTimeMatrixCell
-              t-props="{
-                value: this.getCellValue(eventCode, timeKind),
-                eventCode: eventCode,
-                timeKind: timeKind,
-                date: props.date,
-                onUpdate: (timeKind, eventCode, value) => this.onCellUpdate(timeKind, eventCode, value),
-                readonly: props.readonly
-              }"
-            />
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div t-else="" class="alert alert-info">
-            Nothing to display.
-        </div>
-    </t>
+      <thead>
+        <!-- Main header row with time kind labels -->
+        <tr>
+          <th rowspan="2" class="align-middle">Event</th>
+          <t t-foreach="timeKinds" t-as="timeKind" t-key="timeKind.key">
+            <th colspan="2" class="text-center border-start">
+              <t t-esc="timeKind.label" />
+            </th>
+          </t>
+        </tr>
+        <!-- Sub-header row with timezone labels -->
+        <tr>
+          <t t-foreach="timeKinds" t-as="timeKind" t-key="timeKind.key">
+            <th class="text-center tz-header border-start">
+              <t t-esc="props.localTzLabel" />
+            </th>
+            <th class="text-center tz-header text-muted">UTC</th>
+          </t>
+        </tr>
+      </thead>
+      <tbody>
+        <tr t-foreach="eventCodes" t-as="eventCode" t-key="eventCode.code">
+          <td>
+            <t t-esc="eventCode.name" />
+          </td>
+          <t t-foreach="timeKinds" t-as="timeKind" t-key="timeKind.key">
+            <!-- Local time cell (editable) -->
+            <td class="o_matrix_cell border-start">
+              <FlightEventTimeMatrixCell
+                value="this.getCellValue(eventCode, timeKind)"
+                eventCode="eventCode"
+                timeKind="timeKind"
+                date="props.date"
+                onUpdate="(timeKind, eventCode, value) => this.onCellUpdate(timeKind, eventCode, value)"
+                readonly="props.readonly"
+              />
+            </td>
+            <!-- UTC time cell (display only) -->
+            <td class="o_matrix_cell">
+              <FlightEventTimeMatrixCell
+                value="this.getCellValue(eventCode, timeKind)"
+                eventCode="eventCode"
+                timeKind="timeKind"
+                date="props.date"
+                onUpdate="(timeKind, eventCode, value) => this.onCellUpdate(timeKind, eventCode, value)"
+                readonly="props.readonly"
+                displayTz="'UTC'"
+                displayOnly="true"
+              />
+            </td>
+          </t>
+        </tr>
+      </tbody>
+    </table>
+    <div t-else="" class="alert alert-info">Nothing to display.</div>
+  </t>
 </templates>

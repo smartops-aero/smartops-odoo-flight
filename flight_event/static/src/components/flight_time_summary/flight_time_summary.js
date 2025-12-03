@@ -39,6 +39,8 @@ class FlightTimeSummaryCell extends Component {
     date: DateTime,
     onUpdate: Function,
     readonly: Boolean,
+    displayTz: { type: String, optional: true },
+    displayOnly: { type: Boolean, optional: true },
   };
 
   /**
@@ -54,17 +56,17 @@ class FlightTimeSummaryCell extends Component {
     const nextIndex = currentIndex + direction;
 
     if (nextIndex >= 0 && nextIndex < EVENT_SEQUENCE.length) {
-      // Find the next input element in the same time kind column
+      // Find the next input element in the same time kind column (local timezone only)
       const container = ev.target.closest(".flight-time-summary");
       const nextEventCode = EVENT_SEQUENCE[nextIndex];
-      const selector = `input[data-time-kind="${timeKind}"][data-event-code="${nextEventCode}"]`;
+      // Only navigate to editable (non-UTC) cells
+      const selector = `input[data-time-kind="${timeKind}"][data-event-code="${nextEventCode}"]:not([data-display-tz="UTC"])`;
       const nextInput = container?.querySelector(selector);
       if (nextInput) {
         nextInput.focus();
         return true;
       }
     }
-    // At boundary - let default Tab behavior happen
     return false;
   }
 }
@@ -73,14 +75,15 @@ class FlightTimeSummaryCell extends Component {
  * Flight Time Summary Widget
  *
  * Displays event times in a compact visual format with real-time duration calculations.
- * Shows Actual and Scheduled times in separate columns with block/flight time indicators.
+ * Shows Actual and Scheduled times in separate columns, each with Local and UTC sub-columns.
  *
  * Layout:
- *       ACTUAL              SCHEDULED
- * OB    17:57  ─┐ Block    17:45  ─┐ Block
- * TO    18:05  ─┼─┐ Flight 17:55  ─┼─┐ Flight
- * LD    19:15  ─┼─┘ 1:10   19:05  ─┼─┘ 1:10
- * IB    19:22  ─┘   1:25   19:15  ─┘   1:30
+ *         ACTUAL                    SCHEDULED
+ *       Local   UTC               Local   UTC
+ * OB    17:57  16:57  ─┐ Block   17:45  16:45  ─┐ Block
+ * TO    18:05  17:05  ─┼─┐ FLT   17:55  16:55  ─┼─┐ FLT
+ * LD    19:15  18:15  ─┼─┘ 1:10  19:05  18:05  ─┼─┘ 1:10
+ * IB    19:22  18:22  ─┘   1:25  19:15  18:15  ─┘   1:30
  */
 export class FlightTimeSummary extends Component {
   static template = "flight_event.FlightTimeSummary";
@@ -118,6 +121,14 @@ export class FlightTimeSummary extends Component {
     });
   }
 
+  /**
+   * Get the current local timezone abbreviation
+   * @returns {String} Timezone abbreviation (e.g., "CET", "PST")
+   */
+  get localTzLabel() {
+    return DateTime.local().toFormat("ZZZZ") || "Local";
+  }
+
   get list() {
     return this.props.record.data[this.props.name];
   }
@@ -125,7 +136,6 @@ export class FlightTimeSummary extends Component {
   _updateMatrix() {
     const records = this.list?.records || [];
 
-    // Build matrix: { A: { OB: value, TO: value, ... }, S: { ... } }
     this.matrix = {
       A: {},
       S: {},
@@ -253,15 +263,12 @@ export class FlightTimeSummary extends Component {
     const cellData = this.matrix[timeKind][eventCode];
 
     if (cellData.record) {
-      // Update existing record
       if (value === false) {
-        // Clear the value - we need to delete the record or set time to null
         await cellData.record.update({ time: false });
       } else {
         await cellData.record.update({ time: value });
       }
     } else if (value) {
-      // Create new record
       const record = await this.list.addNewRecord({ mode: "edit" });
       await record.update({
         time: value,
