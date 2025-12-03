@@ -1,13 +1,14 @@
 /** @odoo-module **/
 
-import { Component, onWillUpdateProps } from "@odoo/owl";
-import { FlightEventTimeMatrixCell } from "@flight_event/components/flight_event_time_matrix_cell/flight_event_time_matrix_cell";
+import { Component, onWillRender } from "@odoo/owl";
+import { FlightTimeInputCell as FlightEventTimeMatrixCell } from "@flight_event/components/flight_time_input_cell/flight_time_input_cell";
 
 const { DateTime } = luxon;
 
 /**
  * Renders the flight event time matrix as a table.
  * Manages the layout and data flow to individual cell components.
+ * Displays Local and UTC columns for each time kind (Actual/Scheduled).
  *
  * @extends Component
  */
@@ -21,21 +22,25 @@ export class FlightEventTimeMatrixRenderer extends Component {
     date: DateTime,
     onUpdate: Function,
     readonly: Boolean,
+    localTzLabel: String,
   };
 
   setup() {
-    this._updateProps(this.props);
-    onWillUpdateProps((newProps) => this._updateProps(newProps));
+    // Use onWillRender to rebuild matrix on every render.
+    // This ensures changes from other widgets (e.g., summary widget)
+    // that share the same One2many field are reflected.
+    onWillRender(() => this._rebuildMatrix());
   }
 
   /**
-   * @param {Object} newProps
+   * Rebuilds the matrix from current props.
+   * Called on every render to pick up changes from shared field data.
    */
-  _updateProps(newProps) {
-    this.timeKinds = newProps.timeKinds;
-    this.eventCodes = newProps.eventCodes;
+  _rebuildMatrix() {
+    this.timeKinds = this.props.timeKinds;
+    this.eventCodes = this.props.eventCodes;
 
-    const records = newProps.list?.records || [];
+    const records = this.props.list?.records || [];
     this.matrix = this._getMatrix(records);
   }
 
@@ -49,9 +54,9 @@ export class FlightEventTimeMatrixRenderer extends Component {
       this.eventCodes.map((eventCode) => [
         eventCode.code,
         Object.fromEntries(
-          this.timeKinds.map((timeKind) => [timeKind.key, { value: false }])
+          this.timeKinds.map((timeKind) => [timeKind.key, { value: false }]),
         ),
-      ])
+      ]),
     );
 
     records.forEach((record) => {

@@ -6,13 +6,15 @@ import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { useService } from "@web/core/utils/hooks";
 
+const { DateTime } = luxon;
+
 /**
  * Field widget for displaying and editing flight event times in a matrix format.
  * Manages the relationship between flight events (e.g., takeoff, landing) and their time kinds (actual/scheduled).
  *
  * The widget displays a grid where:
  * - Rows represent event codes (takeoff, landing, etc.)
- * - Columns represent time kinds (Actual, Scheduled)
+ * - Columns represent time kinds (Actual, Scheduled), each with Local and UTC sub-columns
  * - Cells contain datetime values with relative day offset display
  *
  * @extends Component
@@ -26,18 +28,12 @@ export class FlightEventTimeMatrixField extends Component {
     this.orm = useService("orm");
     this.notification = useService("notification");
 
-    // Initialize eventCodes as empty array to prevent undefined errors
     this.eventCodes = [];
 
-    /**
-     * Local state for the flight date.
-     * Synced via onWillRender to track date changes reactively.
-     */
     this.state = useState({
       date: null,
     });
 
-    // Check if props.name exists before using it
     if (this.props.name && this.props.record.activeFields) {
       this.activeField = this.props.record.activeFields[this.props.name];
     }
@@ -48,23 +44,24 @@ export class FlightEventTimeMatrixField extends Component {
     ];
 
     onWillStart(async () => {
-      // Fetch all available event codes for the matrix rows
       this.eventCodes = await this.orm.searchRead(
         "flight.event.code",
         [],
-        ["id", "code", "name"]
+        ["id", "code", "name"],
       );
     });
 
-    /**
-     * Sync date state on every render.
-     * This ensures the matrix appears immediately when the user sets a date
-     * on a new flight record, without needing to save first.
-     * Similar pattern to datetime_field.js:160 in Odoo core.
-     */
     onWillRender(() => {
       this.state.date = this.props.record.data.date;
     });
+  }
+
+  /**
+   * Get the current local timezone abbreviation
+   * @returns {String} Timezone abbreviation (e.g., "CET", "PST")
+   */
+  get localTzLabel() {
+    return DateTime.local().toFormat("ZZZZ") || "Local";
   }
 
   /**
@@ -91,18 +88,15 @@ export class FlightEventTimeMatrixField extends Component {
       return;
     }
 
-    // Find existing record for this event/time combination
     const matchingRecords = this.list.records.filter(
       (record) =>
         record.data.time_kind === timeKind.key &&
-        record.data.code_id[0] === eventCode.id
+        record.data.code_id[0] === eventCode.id,
     );
 
     if (matchingRecords.length === 1) {
-      // Update existing record
       await matchingRecords[0].update({ time: value });
     } else if (matchingRecords.length === 0) {
-      // Create new record
       const record = await this.list.addNewRecord({
         mode: "edit",
       });
@@ -113,18 +107,14 @@ export class FlightEventTimeMatrixField extends Component {
         flight_id: this.props.record.id || this.props.record.resId,
       };
       await record.update(values);
-
-      // Force UI update by triggering a re-render
       this.render();
     } else {
-      // Data integrity issue - shouldn't have duplicates
       await this.notification.add(
         "Multiple records found for the same event code and time kind",
-        { type: "danger" }
+        { type: "danger" },
       );
       return;
     }
-    // No need to call setDirty - the record update handles this automatically
   }
 }
 

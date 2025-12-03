@@ -1,0 +1,193 @@
+// Flight Time Summary Widget Styles
+// Compact visualization with duration brackets on the right
+// Supports dual timezone display (Local + UTC)
+
+.flight-time-summary {
+  .flight-time-column {
+    min-width: 220px;
+  }
+
+  .column-header {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: $gray-600;
+    border-bottom: 1px solid $gray-300;
+    padding-bottom: 0.25rem;
+  }
+
+  .tz-subheaders {
+    // Align with time cells: event-label width (20px) + gap (0.5rem/8px) = 28px margin-left
+    margin-left: 28px;
+
+    .tz-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      // Match the width of flight-time-cell input (55px) + picker button (~26px) + gap
+      width: 82px;
+      text-align: center;
+
+      &.text-muted {
+        color: $gray-500;
+      }
+    }
+  }
+
+  .time-block-container {
+    position: relative;
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .events-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .event-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 32px;
+  }
+
+  .event-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: $gray-600;
+    width: 20px;
+    text-align: right;
+  }
+
+  .time-cells {
+    display: flex;
+    gap: 2px;
+  }
+
+  // Flight bracket container (TO-LD) - now uses flexbox
+  .flight-bracket-container {
+    display: flex;
+    align-items: stretch;
+    gap: 0.25rem;
+  }
+
+  .flight-events {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  // Block bracket (outer - OB to IB) - now on the right
+  .block-bracket-outer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 4px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+
+    .bracket-line {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 10px;
+      border: 2px solid $info;
+      border-left: none;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .bracket-label {
+      margin-left: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1;
+
+      .duration-value {
+        font-size: 0.75rem;
+        font-weight: 600;
+        font-family: $font-family-monospace;
+        color: $info;
+        white-space: nowrap;
+      }
+
+      .duration-label {
+        font-size: 0.6rem;
+        color: $gray-500;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  // Flight bracket (inner - TO to LD) - now on the right of TO/LD
+  .flight-bracket {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 4px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+
+    .bracket-line {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      border: 2px solid $success;
+      border-left: none;
+      border-radius: 0 3px 3px 0;
+    }
+
+    .bracket-label {
+      margin-left: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1;
+
+      .duration-value {
+        font-size: 0.7rem;
+        font-weight: 600;
+        font-family: $font-family-monospace;
+        color: $success;
+        white-space: nowrap;
+      }
+
+      .duration-label {
+        font-size: 0.55rem;
+        color: $gray-500;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  // Dark mode adjustments
+  .o_dark_mode & {
+    .column-header {
+      color: $gray-400;
+      border-bottom-color: $gray-600;
+    }
+
+    .event-label {
+      color: $gray-400;
+    }
+
+    .tz-subheaders .tz-label.text-muted {
+      color: $gray-500;
+    }
+
+    .block-bracket-outer .bracket-label .duration-label,
+    .flight-bracket .bracket-label .duration-label {
+      color: $gray-400;
+    }
+  }
+}
+
+// Compact mode when in smaller containers
+.o_field_flight_time_summary {
+  @extend .o_field_widget;
+}

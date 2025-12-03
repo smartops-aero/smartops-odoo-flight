@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+  <!-- Wrapper for FlightTimeInputCell with Tab navigation -->
+  <t t-name="flight_event.FlightTimeSummaryCell">
+    <FlightTimeInputCell
+      value="props.value"
+      eventCode="props.eventCode"
+      timeKind="props.timeKind"
+      date="props.date"
+      onUpdate="props.onUpdate"
+      readonly="props.readonly"
+      displayTz="props.displayTz"
+      displayOnly="props.displayOnly"
+      onTabNavigation="(ev, tk, ec) => this.onTabNavigation(ev, tk, ec)"
+    />
+  </t>
+
+  <!-- Main summary widget -->
+  <t t-name="flight_event.FlightTimeSummary">
+    <div class="flight-time-summary">
+      <t t-if="state.date and list and eventCodes.length > 0">
+        <div class="d-flex gap-4">
+          <!-- ACTUAL Column -->
+          <div class="flight-time-column">
+            <div class="column-header text-center fw-bold mb-1">ACTUAL TIMES</div>
+            <div class="tz-subheaders d-flex gap-1 mb-2">
+              <span class="tz-label" t-esc="localTzLabel" />
+              <span class="tz-label text-muted">UTC</span>
+            </div>
+            <div class="time-block-container">
+              <!-- Events container -->
+              <div class="events-container">
+                <!-- Off Blocks -->
+                <div class="event-row">
+                  <span class="event-label">OB</span>
+                  <div class="time-cells d-flex gap-1">
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('A', 'OB')"
+                      eventCode="'OB'"
+                      timeKind="'A'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                    />
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('A', 'OB')"
+                      eventCode="'OB'"
+                      timeKind="'A'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                      displayTz="'UTC'"
+                      displayOnly="true"
+                    />
+                  </div>
+                </div>
+
+                <!-- Flight time bracket (TO to LD) -->
+                <div class="flight-bracket-container">
+                  <div class="flight-events">
+                    <!-- Take Off -->
+                    <div class="event-row">
+                      <span class="event-label">TO</span>
+                      <div class="time-cells d-flex gap-1">
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('A', 'TO')"
+                          eventCode="'TO'"
+                          timeKind="'A'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                        />
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('A', 'TO')"
+                          eventCode="'TO'"
+                          timeKind="'A'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                          displayTz="'UTC'"
+                          displayOnly="true"
+                        />
+                      </div>
+                    </div>
+
+                    <!-- Landing -->
+                    <div class="event-row">
+                      <span class="event-label">LD</span>
+                      <div class="time-cells d-flex gap-1">
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('A', 'LD')"
+                          eventCode="'LD'"
+                          timeKind="'A'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                        />
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('A', 'LD')"
+                          eventCode="'LD'"
+                          timeKind="'A'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                          displayTz="'UTC'"
+                          displayOnly="true"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Flight bracket on right -->
+                  <div class="flight-bracket">
+                    <div class="bracket-line" />
+                    <div class="bracket-label">
+                      <span
+                        class="duration-value"
+                        t-esc="getFlightDuration('A') || '--:--'"
+                      />
+                      <span class="duration-label">FLT</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- In Blocks -->
+                <div class="event-row">
+                  <span class="event-label">IB</span>
+                  <div class="time-cells d-flex gap-1">
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('A', 'IB')"
+                      eventCode="'IB'"
+                      timeKind="'A'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                    />
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('A', 'IB')"
+                      eventCode="'IB'"
+                      timeKind="'A'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                      displayTz="'UTC'"
+                      displayOnly="true"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Block time bracket on right (OB to IB) -->
+              <div class="block-bracket block-bracket-outer">
+                <div class="bracket-line" />
+                <div class="bracket-label">
+                  <span
+                    class="duration-value"
+                    t-esc="getBlockDuration('A') || '--:--'"
+                  />
+                  <span class="duration-label">BLK</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SCHEDULED Column -->
+          <div class="flight-time-column">
+            <div class="column-header text-center fw-bold mb-1">SCHEDULED TIMES</div>
+            <div class="tz-subheaders d-flex gap-1 mb-2">
+              <span class="tz-label" t-esc="localTzLabel" />
+              <span class="tz-label text-muted">UTC</span>
+            </div>
+            <div class="time-block-container">
+              <!-- Events container -->
+              <div class="events-container">
+                <!-- Off Blocks -->
+                <div class="event-row">
+                  <span class="event-label">OB</span>
+                  <div class="time-cells d-flex gap-1">
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('S', 'OB')"
+                      eventCode="'OB'"
+                      timeKind="'S'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                    />
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('S', 'OB')"
+                      eventCode="'OB'"
+                      timeKind="'S'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                      displayTz="'UTC'"
+                      displayOnly="true"
+                    />
+                  </div>
+                </div>
+
+                <!-- Flight time bracket (TO to LD) -->
+                <div class="flight-bracket-container">
+                  <div class="flight-events">
+                    <!-- Take Off -->
+                    <div class="event-row">
+                      <span class="event-label">TO</span>
+                      <div class="time-cells d-flex gap-1">
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('S', 'TO')"
+                          eventCode="'TO'"
+                          timeKind="'S'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                        />
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('S', 'TO')"
+                          eventCode="'TO'"
+                          timeKind="'S'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                          displayTz="'UTC'"
+                          displayOnly="true"
+                        />
+                      </div>
+                    </div>
+
+                    <!-- Landing -->
+                    <div class="event-row">
+                      <span class="event-label">LD</span>
+                      <div class="time-cells d-flex gap-1">
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('S', 'LD')"
+                          eventCode="'LD'"
+                          timeKind="'S'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                        />
+                        <FlightTimeSummaryCell
+                          value="getTimeValue('S', 'LD')"
+                          eventCode="'LD'"
+                          timeKind="'S'"
+                          date="state.date"
+                          onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                          readonly="props.readonly"
+                          displayTz="'UTC'"
+                          displayOnly="true"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Flight bracket on right -->
+                  <div class="flight-bracket">
+                    <div class="bracket-line" />
+                    <div class="bracket-label">
+                      <span
+                        class="duration-value"
+                        t-esc="getFlightDuration('S') || '--:--'"
+                      />
+                      <span class="duration-label">FLT</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- In Blocks -->
+                <div class="event-row">
+                  <span class="event-label">IB</span>
+                  <div class="time-cells d-flex gap-1">
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('S', 'IB')"
+                      eventCode="'IB'"
+                      timeKind="'S'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                    />
+                    <FlightTimeSummaryCell
+                      value="getTimeValue('S', 'IB')"
+                      eventCode="'IB'"
+                      timeKind="'S'"
+                      date="state.date"
+                      onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
+                      readonly="props.readonly"
+                      displayTz="'UTC'"
+                      displayOnly="true"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Block time bracket on right (OB to IB) -->
+              <div class="block-bracket block-bracket-outer">
+                <div class="bracket-line" />
+                <div class="bracket-label">
+                  <span
+                    class="duration-value"
+                    t-esc="getBlockDuration('S') || '--:--'"
+                  />
+                  <span class="duration-label">BLK</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </t>
+      <t t-else="">
+        <p class="text-muted small">Set flight date to enter times</p>
+      </t>
+    </div>
+  </t>
+</templates>

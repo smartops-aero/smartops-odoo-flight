@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
-    <t t-name="flight_event.FlightEventTimeMatrixCell">
-        <input
-      t-ref="time-input"
-      type="text"
-      class="form-control form-control-sm text-center"
-      t-att-value="state.inputValue"
-      t-att-readonly="props.readonly"
-      t-on-blur="onInputBlur"
-      t-on-keydown="onInputKeydown"
-      t-on-input="onInputChange"
-      t-on-focus="onInputFocus"
-      placeholder="HH:mm"
-      title="Enter time (e.g., 14:30 or 14:30 +1 for next day)"
-    />
-    </t>
+  <!-- Alias template for backward compatibility with existing matrix widget -->
+  <t
+    t-name="flight_event.FlightEventTimeMatrixCell"
+    t-inherit="flight_event.FlightTimeInputCell"
+    t-inherit-mode="primary"
+  />
 </templates>
