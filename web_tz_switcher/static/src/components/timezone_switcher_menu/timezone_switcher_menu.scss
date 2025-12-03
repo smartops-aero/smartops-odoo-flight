@@ -1,0 +1,92 @@
+.o_timezone_switcher_menu {
+    .o_timezone_switcher_toggler {
+        padding: 0.375rem 0.75rem;
+
+        .fa {
+            font-size: 1.1em;
+        }
+    }
+
+    .o_timezone_switcher_dropdown {
+        min-width: 350px;
+        max-width: 400px;
+
+        .dropdown-header {
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+
+            &.bg-light {
+                background-color: #f8f9fa !important;
+            }
+        }
+
+        .o_timezone_switcher_content {
+            .dropdown-divider {
+                margin: 0;
+            }
+
+            .o_timezone_list {
+                .o_timezone_item {
+                    padding: 0.5rem 1rem;
+                    cursor: pointer;
+                    transition: background-color 0.15s ease-in-out;
+
+                    &:hover {
+                        background-color: #f8f9fa;
+                    }
+
+                    .badge {
+                        font-size: 0.75rem;
+                        font-weight: 500;
+                    }
+
+                    .fa-check {
+                        margin-left: auto;
+                    }
+                }
+            }
+
+            .input-group-text {
+                background-color: white;
+                border-right: 0;
+            }
+
+            input.form-control {
+                border-left: 0;
+
+                &:focus {
+                    box-shadow: none;
+                    border-color: #ced4da;
+                }
+            }
+        }
+
+        .badge-warning {
+            font-size: 0.65rem;
+            padding: 0.25em 0.5em;
+        }
+
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+    }
+}
+
+// Animation for timezone switch
+@keyframes timezone-pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.o_timezone_switcher_menu.o_timezone_switching {
+    animation: timezone-pulse 0.5s ease-in-out;
+}

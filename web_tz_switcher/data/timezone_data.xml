@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="0">
+        <!--
+            No data records needed for timezone switching.
+            All timezone data comes from pytz library.
+
+            This module is purely session-based and doesn't store
+            anything in the database, keeping it clean and lightweight.
+        -->
+    </data>
+</odoo>
