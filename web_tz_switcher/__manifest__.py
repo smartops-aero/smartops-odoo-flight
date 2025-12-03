@@ -48,8 +48,8 @@ Perfect for:
         "web.assets_backend": [
             # Patches must load first to override core functions
             "web_tz_switcher/static/src/patches/*.js",
-            # Hooks (shared utilities)
-            "web_tz_switcher/static/src/hooks/*.js",
+            # Utilities
+            "web_tz_switcher/static/src/utils/*.js",
             # Services
             "web_tz_switcher/static/src/services/timezone_service.js",
             # Components

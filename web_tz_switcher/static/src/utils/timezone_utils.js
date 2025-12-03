@@ -1,7 +1,5 @@
 /** @odoo-module **/
 
-import { user } from "@web/core/user";
-
 const { DateTime } = luxon;
 
 /**
@@ -29,32 +27,4 @@ export function getTimezoneAbbreviation(tz) {
   // Return UTC+X format
   const offset = dt.toFormat("Z");
   return `UTC${offset}`;
-}
-
-/**
- * Hook to get user's selected timezone and its display label.
- * Uses user.tz from context (set by timezone switcher or user settings).
- *
- * @returns {Object} { userTz, tzLabel }
- *   - userTz: IANA timezone name (e.g., "America/New_York") or "local" as fallback
- *   - tzLabel: Timezone abbreviation for display (e.g., "EST", "UTC+4")
- */
-export function useUserTimezone() {
-  return {
-    /**
-     * Get the user's selected timezone
-     * @returns {String} IANA timezone name or "local"
-     */
-    get userTz() {
-      return user.tz || "local";
-    },
-
-    /**
-     * Get timezone abbreviation for column headers
-     * @returns {String} Timezone abbreviation (e.g., "CET", "UTC+4")
-     */
-    get tzLabel() {
-      return getTimezoneAbbreviation(user.tz);
-    },
-  };
 }

@@ -5,7 +5,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 
-import { useUserTimezone } from "@web_tz_switcher/hooks/use_user_timezone";
+import { useUserTimezone } from "../../hooks/use_user_timezone";
 import { FlightTimeInputCell } from "../flight_time_input_cell/flight_time_input_cell";
 
 const { DateTime } = luxon;

@@ -9,7 +9,7 @@ import { DropdownGroup } from "@web/core/dropdown/dropdown_group";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 import { rpc } from "@web/core/network/rpc";
 
-import { getTimezoneAbbreviation } from "../../hooks/use_user_timezone";
+import { getTimezoneAbbreviation } from "../../utils/timezone_utils";
 
 const { DateTime } = luxon;
 

@@ -6,7 +6,7 @@ import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { useService } from "@web/core/utils/hooks";
 
-import { useUserTimezone } from "@web_tz_switcher/hooks/use_user_timezone";
+import { useUserTimezone } from "../../hooks/use_user_timezone";
 
 /**
  * Field widget for displaying and editing flight event times in a matrix format.
