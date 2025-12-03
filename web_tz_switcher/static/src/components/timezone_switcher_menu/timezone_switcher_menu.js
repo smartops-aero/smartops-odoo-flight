@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState, onWillStart, onWillUnmount } from "@odoo/owl";
+import { Component, onWillStart, onWillUnmount, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
@@ -108,7 +108,7 @@ export class TimezoneSwitcherMenu extends Component {
       return this.state.timezones;
     }
     return this.state.timezones.filter((tz) =>
-      tz.toLowerCase().includes(query),
+      tz.toLowerCase().includes(query)
     );
   }
 
@@ -120,7 +120,7 @@ export class TimezoneSwitcherMenu extends Component {
     const query = this.state.searchQuery.toLowerCase();
 
     for (const [region, tzList] of Object.entries(
-      this.state.groupedTimezones,
+      this.state.groupedTimezones
     )) {
       const matchingTzs = query
         ? tzList.filter((tz) => tz.toLowerCase().includes(query))
@@ -149,13 +149,13 @@ export class TimezoneSwitcherMenu extends Component {
       return Object.keys(this.filteredGroupedTimezones).sort();
     }
     return this.featuredRegions.filter(
-      (region) => region in this.filteredGroupedTimezones,
+      (region) => region in this.filteredGroupedTimezones
     );
   }
 
   /**
    * Handle timezone selection.
-   * @param {string} timezone - Selected IANA timezone
+   * @param {String} timezone - Selected IANA timezone
    */
   async onTimezoneSelect(timezone) {
     const success = await this.timezoneSwitcher.switchTimezone(timezone);
@@ -198,8 +198,8 @@ export class TimezoneSwitcherMenu extends Component {
 
   /**
    * Format timezone display name.
-   * @param {string} timezone - IANA timezone name
-   * @returns {string} - Formatted display name
+   * @param {String} timezone - IANA timezone name
+   * @returns {String} - Formatted display name
    */
   formatTimezoneName(timezone) {
     return timezone.replace(/_/g, " ");
@@ -207,8 +207,8 @@ export class TimezoneSwitcherMenu extends Component {
 
   /**
    * Get UTC offset for a timezone.
-   * @param {string} timezone - IANA timezone name
-   * @returns {string} - UTC offset (e.g., "UTC+5:30")
+   * @param {String} timezone - IANA timezone name
+   * @returns {String} - UTC offset (e.g., "UTC+5:30")
    */
   getTimezoneOffset(timezone) {
     const dt = DateTime.now().setZone(timezone);
@@ -225,7 +225,7 @@ export const systrayItem = {
   Component: TimezoneSwitcherMenu,
 };
 
-// sequence: 0 places it next to user menu (rightmost area)
+// Sequence: 0 places it next to user menu (rightmost area)
 registry
   .category("systray")
   .add("TimezoneSwitcherMenu", systrayItem, { sequence: 0 });

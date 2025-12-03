@@ -46,9 +46,7 @@ class TestTimezoneController(HttpCase):
 
         self.assertTrue(result["result"]["success"])
         # Should be user's default or UTC
-        self.assertIn(
-            result["result"]["timezone"], [self.env.user.tz or "UTC", "UTC"]
-        )
+        self.assertIn(result["result"]["timezone"], [self.env.user.tz or "UTC", "UTC"])
 
     def test_get_current_timezone(self):
         """Test getting current timezone info."""

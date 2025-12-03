@@ -36,7 +36,7 @@ Perfect for:
 * Any business requiring multi-timezone visibility
     """,
     "author": "Apexive Solutions LLC",
-    "website": "https://apexive.com",
+    "website": "https://github.com/smartops-aero/smartops-odoo-flight",
     "license": "LGPL-3",
     "depends": ["web"],
     "data": [],

@@ -41,6 +41,7 @@ No configuration needed - works immediately after installation!
 #### Live Time Display
 
 The systray shows:
+
 - Current timezone abbreviation (e.g., "New York (14:30)")
 - Live clock updating every second
 - Warning badge when using override timezone
@@ -48,6 +49,7 @@ The systray shows:
 #### Smart Timezone Selection
 
 The dropdown provides:
+
 - **Search box** - Type to filter timezones (e.g., "york", "tokyo")
 - **Regional grouping** - Timezones organized by continent
 - **UTC offsets** - Each timezone shows its current UTC offset
@@ -57,6 +59,7 @@ The dropdown provides:
 #### Session Persistence
 
 Your timezone preference:
+
 - ✅ Persists across page navigation
 - ✅ Survives browser refresh (localStorage)
 - ✅ Resets after logout
@@ -160,6 +163,7 @@ UTC
 Switch to a new timezone.
 
 **Request:**
+
 ```json
 {
   "timezone": "America/New_York"
@@ -167,6 +171,7 @@ Switch to a new timezone.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -183,6 +188,7 @@ Switch to a new timezone.
 Reset to user's default timezone.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -196,6 +202,7 @@ Reset to user's default timezone.
 Get current timezone information.
 
 **Response:**
+
 ```json
 {
   "timezone": "America/New_York",
@@ -210,6 +217,7 @@ Get current timezone information.
 Get available timezones.
 
 **Request:**
+
 ```json
 {
   "common_only": true
@@ -217,6 +225,7 @@ Get available timezones.
 ```
 
 **Response:**
+
 ```json
 {
   "timezones": ["America/New_York", "Europe/London", ...],
@@ -313,6 +322,7 @@ odoo-bin -c odoo.conf --test-enable --stop-after-init \
 ```
 
 Test coverage:
+
 - ✅ Valid timezone switching
 - ✅ Invalid timezone handling
 - ✅ Reset to default
@@ -359,7 +369,7 @@ get featuredRegions() {
 
 ```javascript
 // Store user's favorite timezones
-const favorites = JSON.parse(localStorage.getItem('tz_favorites') || '[]');
+const favorites = JSON.parse(localStorage.getItem("tz_favorites") || "[]");
 ```
 
 #### Custom Notification Behavior
@@ -367,8 +377,8 @@ const favorites = JSON.parse(localStorage.getItem('tz_favorites') || '[]');
 ```javascript
 // Customize success notification
 notification.add(`Time zone changed to ${timezone}`, {
-    type: "success",
-    title: "Display Updated",
+  type: "success",
+  title: "Display Updated",
 });
 ```
 
@@ -393,12 +403,14 @@ Website: https://apexive.com
 ## Support
 
 For issues, questions, or contributions:
+
 - GitHub Issues: (your repository)
 - Email: support@apexive.com
 
 ## Credits
 
 Built with:
+
 - Odoo OWL framework
 - Luxon datetime library
 - Python pytz library

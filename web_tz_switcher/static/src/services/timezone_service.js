@@ -44,8 +44,8 @@ export const timezoneSwitcherService = {
      * Switch to a new timezone.
      * Updates session context and triggers view reload.
      *
-     * @param {string} timezone - IANA timezone name (e.g., 'America/New_York')
-     * @returns {Promise<boolean>} - Success status
+     * @param {String} timezone - IANA timezone name (e.g., 'America/New_York')
+     * @returns {Promise<Boolean>} - Success status
      */
     async function switchTimezone(timezone) {
       if (!timezone) {
@@ -99,7 +99,7 @@ export const timezoneSwitcherService = {
      * Reset to user's default timezone.
      * Removes session override and restores user's configured timezone.
      *
-     * @returns {Promise<boolean>} - Success status
+     * @returns {Promise<Boolean>} - Success status
      */
     async function resetTimezone() {
       try {
@@ -145,7 +145,7 @@ export const timezoneSwitcherService = {
     /**
      * Get list of available timezones.
      *
-     * @param {boolean} commonOnly - Return only common timezones
+     * @param {Boolean} commonOnly - Return only common timezones
      * @returns {Promise<Object>} - Timezone lists (flat and grouped)
      */
     async function listTimezones(commonOnly = true) {
