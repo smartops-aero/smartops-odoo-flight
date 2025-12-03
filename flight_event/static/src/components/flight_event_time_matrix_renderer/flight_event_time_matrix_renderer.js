@@ -55,9 +55,9 @@ export class FlightEventTimeMatrixRenderer extends Component {
       this.eventCodes.map((eventCode) => [
         eventCode.code,
         Object.fromEntries(
-          this.timeKinds.map((timeKind) => [timeKind.key, { value: false }]),
+          this.timeKinds.map((timeKind) => [timeKind.key, { value: false }])
         ),
-      ]),
+      ])
     );
 
     records.forEach((record) => {
