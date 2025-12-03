@@ -220,7 +220,16 @@ export class FlightEventTimeMatrixCell extends Component {
   onInputKeydown(ev) {
     if (ev.key === "Enter") {
       ev.preventDefault();
-      // Trigger blur to parse
+      // Parse and apply the value
+      const inputValue = ev.target.value.trim();
+      if (inputValue) {
+        const parsed = this.parseRelativeTime(inputValue);
+        if (parsed) {
+          this.props.onUpdate(this.props.timeKind, this.props.eventCode, parsed);
+          this.state.isUserEditing = false;
+        }
+      }
+      // Blur closes the picker automatically
       ev.target.blur();
     } else if (ev.key === "Escape") {
       ev.preventDefault();
