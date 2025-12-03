@@ -54,6 +54,9 @@ Perfect for:
             "web_tz_switcher/static/src/components/timezone_switcher_menu/*.scss",
         ],
     },
+    "images": [
+        "static/description/banner.png",
+    ],
     "installable": True,
     "application": False,
     "auto_install": False,
