@@ -33,35 +33,33 @@
             </xpath>
 
             <!-- Add notebook pages for detailed times view -->
-            <sheet position="inside">
-                <notebook>
-                    <page string="Times" name="times_detail">
-                        <field
+            <notebook position="inside">
+                <page string="Times" name="times_detail">
+                    <field
               name="event_time_ids"
               widget="flight_event_time_matrix"
               options="{'time_kinds': 'get_time_kinds'}"
             >
-                            <list>
-                                <field name="flight_id" />
-                                <field name="time_kind" />
-                                <field name="code_id" />
-                                <field name="time" />
-                            </list>
-                        </field>
-                    </page>
-                    <page string="Phase Durations" name="phase_durations">
-                        <field name="phase_duration_ids">
-                            <list>
-                                <field name="phase_id" />
-                                <field name="time_kind" />
-                                <field name="start_event_id" />
-                                <field name="end_event_id" />
-                                <field name="duration" widget="float_time" />
-                            </list>
-                        </field>
-                    </page>
-                </notebook>
-            </sheet>
+                        <list>
+                            <field name="flight_id" />
+                            <field name="time_kind" />
+                            <field name="code_id" />
+                            <field name="time" />
+                        </list>
+                    </field>
+                </page>
+                <page string="Phase Durations" name="phase_durations">
+                    <field name="phase_duration_ids">
+                        <list>
+                            <field name="phase_id" />
+                            <field name="time_kind" />
+                            <field name="start_event_id" />
+                            <field name="end_event_id" />
+                            <field name="duration" widget="float_time" />
+                        </list>
+                    </field>
+                </page>
+            </notebook>
         </field>
     </record>
 
