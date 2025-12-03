@@ -228,6 +228,7 @@ export const systrayItem = {
   Component: TimezoneSwitcherMenu,
 };
 
+// sequence: 0 places it next to user menu (rightmost area)
 registry
   .category("systray")
-  .add("TimezoneSwitcherMenu", systrayItem, { sequence: 50 });
+  .add("TimezoneSwitcherMenu", systrayItem, { sequence: 0 });
