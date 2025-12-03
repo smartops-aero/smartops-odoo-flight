@@ -9,7 +9,7 @@
     "website": "https://github.com/smartops-aero/smartops-odoo-flight",
     "license": "LGPL-3",
     "category": "Industries",
-    "version": "18.0.1.0.1",
+    "version": "18.0.1.1.0",
     "depends": [
         "base",
         "flight",
@@ -17,6 +17,8 @@
     ],
     "assets": {
         "web.assets_backend": [
+            # Shared hooks
+            "flight_event/static/src/hooks/*.js",
             # Shared time input cell (used by both matrix and summary widgets)
             "flight_event/static/src/components/flight_time_input_cell/flight_time_input_cell.scss",
             "flight_event/static/src/components/flight_time_input_cell/flight_time_input_cell.js",

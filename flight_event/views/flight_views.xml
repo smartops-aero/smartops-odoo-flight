@@ -36,10 +36,10 @@
             <notebook position="inside">
                 <page string="Times" name="times_detail">
                     <field
-              name="event_time_ids"
-              widget="flight_event_time_matrix"
-              options="{'time_kinds': 'get_time_kinds'}"
-            >
+            name="event_time_ids"
+            widget="flight_event_time_matrix"
+            options="{'time_kinds': 'get_time_kinds'}"
+          >
                         <list>
                             <field name="flight_id" />
                             <field name="time_kind" />

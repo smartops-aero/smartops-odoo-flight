@@ -22,7 +22,9 @@
         <div class="d-flex gap-4">
           <!-- ACTUAL Column -->
           <div class="flight-time-column">
-            <div class="column-header text-center fw-bold mb-1">ACTUAL TIMES</div>
+            <div
+              class="column-header text-center fw-bold mb-1"
+            >ACTUAL TIMES</div>
             <div class="tz-subheaders d-flex gap-1 mb-2">
               <span class="tz-label" t-esc="localTzLabel" />
               <span class="tz-label text-muted">UTC</span>
@@ -41,6 +43,7 @@
                       date="state.date"
                       onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                       readonly="props.readonly"
+                      displayTz="userTz"
                     />
                     <FlightTimeSummaryCell
                       value="getTimeValue('A', 'OB')"
@@ -69,6 +72,7 @@
                           date="state.date"
                           onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                           readonly="props.readonly"
+                          displayTz="userTz"
                         />
                         <FlightTimeSummaryCell
                           value="getTimeValue('A', 'TO')"
@@ -94,6 +98,7 @@
                           date="state.date"
                           onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                           readonly="props.readonly"
+                          displayTz="userTz"
                         />
                         <FlightTimeSummaryCell
                           value="getTimeValue('A', 'LD')"
@@ -133,6 +138,7 @@
                       date="state.date"
                       onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                       readonly="props.readonly"
+                      displayTz="userTz"
                     />
                     <FlightTimeSummaryCell
                       value="getTimeValue('A', 'IB')"
@@ -164,7 +170,9 @@
 
           <!-- SCHEDULED Column -->
           <div class="flight-time-column">
-            <div class="column-header text-center fw-bold mb-1">SCHEDULED TIMES</div>
+            <div
+              class="column-header text-center fw-bold mb-1"
+            >SCHEDULED TIMES</div>
             <div class="tz-subheaders d-flex gap-1 mb-2">
               <span class="tz-label" t-esc="localTzLabel" />
               <span class="tz-label text-muted">UTC</span>
@@ -183,6 +191,7 @@
                       date="state.date"
                       onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                       readonly="props.readonly"
+                      displayTz="userTz"
                     />
                     <FlightTimeSummaryCell
                       value="getTimeValue('S', 'OB')"
@@ -211,6 +220,7 @@
                           date="state.date"
                           onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                           readonly="props.readonly"
+                          displayTz="userTz"
                         />
                         <FlightTimeSummaryCell
                           value="getTimeValue('S', 'TO')"
@@ -236,6 +246,7 @@
                           date="state.date"
                           onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                           readonly="props.readonly"
+                          displayTz="userTz"
                         />
                         <FlightTimeSummaryCell
                           value="getTimeValue('S', 'LD')"
@@ -275,6 +286,7 @@
                       date="state.date"
                       onUpdate="(tk, ec, v) => this.commitChange(tk, ec, v)"
                       readonly="props.readonly"
+                      displayTz="userTz"
                     />
                     <FlightTimeSummaryCell
                       value="getTimeValue('S', 'IB')"

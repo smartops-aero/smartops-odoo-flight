@@ -110,7 +110,10 @@ export class FlightTimeInputCell extends Component {
       // Use formatDateTime with explicit timezone to prevent it from
       // converting back to user's local timezone
       const tzOption = this.props.displayTz ? { tz: this.props.displayTz } : {};
-      let formatted = formatDateTime(displayValue, { format: "HH:mm", ...tzOption });
+      let formatted = formatDateTime(displayValue, {
+        format: "HH:mm",
+        ...tzOption,
+      });
 
       // Calculate day offset relative to the flight date
       // The flight date is a calendar date (no time), so we compare calendar days
@@ -126,8 +129,16 @@ export class FlightTimeInputCell extends Component {
         const displayDay = displayValue.day;
 
         // Create comparable dates (just the calendar date, ignoring time)
-        const flightDate = DateTime.fromObject({ year: flightYear, month: flightMonth, day: flightDay });
-        const displayDate = DateTime.fromObject({ year: displayYear, month: displayMonth, day: displayDay });
+        const flightDate = DateTime.fromObject({
+          year: flightYear,
+          month: flightMonth,
+          day: flightDay,
+        });
+        const displayDate = DateTime.fromObject({
+          year: displayYear,
+          month: displayMonth,
+          day: displayDay,
+        });
 
         const dayDiff = Math.floor(displayDate.diff(flightDate, "days").days);
         if (dayDiff !== 0) {
@@ -136,7 +147,8 @@ export class FlightTimeInputCell extends Component {
       }
 
       return formatted;
-    } catch {
+    } catch (error) {
+      console.warn("FlightTimeInputCell: Failed to format time value", error);
       return "";
     }
   }
@@ -160,7 +172,7 @@ export class FlightTimeInputCell extends Component {
     }
 
     const match = inputValue.match(
-      /^(\d{1,2}):(\d{2})(?:\s+([+-]\d+))?(?:\s+([A-Z]{2,5}))?$/i,
+      /^(\d{1,2}):(\d{2})(?:\s+([+-]\d+))?(?:\s+([A-Z]{2,5}))?$/i
     );
 
     if (!match) {
@@ -175,9 +187,10 @@ export class FlightTimeInputCell extends Component {
       return null;
     }
 
-    // Use explicit timezone from input, or local timezone for local cells
-    // Note: displayTz cells are display-only, so we always parse in local or explicit TZ
-    const parseZone = timezone?.toUpperCase() || "local";
+    // Use explicit timezone from input, or displayTz (user's selected timezone), or browser local
+    // This ensures times entered are interpreted in the displayed timezone
+    const parseZone =
+      timezone?.toUpperCase() || this.props.displayTz || "local";
     const baseDate = this.props.date || DateTime.local();
 
     // Extract the calendar date from the base date
@@ -199,13 +212,14 @@ export class FlightTimeInputCell extends Component {
           second: 0,
           millisecond: 0,
         },
-        { zone: parseZone },
+        { zone: parseZone }
       );
 
       if (!date.isValid) {
         return null;
       }
-    } catch {
+    } catch (error) {
+      console.warn("FlightTimeInputCell: Failed to parse time input", error);
       return null;
     }
 
@@ -264,7 +278,7 @@ export class FlightTimeInputCell extends Component {
         const handled = this.props.onTabNavigation(
           ev,
           this.props.timeKind,
-          this.props.eventCode,
+          this.props.eventCode
         );
         if (handled) {
           ev.preventDefault();
@@ -282,7 +296,7 @@ export class FlightTimeInputCell extends Component {
           this.props.onUpdate(
             this.props.timeKind,
             this.props.eventCode,
-            parsed,
+            parsed
           );
           this.state.isUserEditing = false;
         }
@@ -296,7 +310,7 @@ export class FlightTimeInputCell extends Component {
       const handled = this.props.onTabNavigation(
         ev,
         this.props.timeKind,
-        this.props.eventCode,
+        this.props.eventCode
       );
       if (handled) {
         ev.preventDefault();
