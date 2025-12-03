@@ -1,6 +1,7 @@
 import logging
 
 import pytz
+
 from odoo import http
 from odoo.http import request
 
@@ -101,9 +102,12 @@ class TimezoneSwitcherController(http.Controller):
 
         current_tz = session_tz or user_tz
 
+        # is_override is True only if session has a tz AND it differs from user's default
+        is_override = bool(session_tz) and session_tz != user_tz
+
         return {
             "timezone": current_tz,
-            "is_override": bool(session_tz),
+            "is_override": is_override,
             "user_default": user_tz,
             "session_context": request.session.context,
         }
