@@ -5,6 +5,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
 import { Dropdown } from "@web/core/dropdown/dropdown";
+import { DropdownGroup } from "@web/core/dropdown/dropdown_group";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 
 const { DateTime } = luxon;
@@ -17,7 +18,8 @@ const { DateTime } = luxon;
  */
 export class TimezoneSwitcherMenu extends Component {
   static template = "web_tz_switcher.TimezoneSwitcherMenu";
-  static components = { Dropdown, DropdownItem };
+  static components = { Dropdown, DropdownGroup, DropdownItem };
+  static props = {};
 
   setup() {
     this.timezoneSwitcher = useService("timezone_switcher");
@@ -87,6 +89,24 @@ export class TimezoneSwitcherMenu extends Component {
    */
   get iconClass() {
     return this.state.isOverride ? "fa-clock-o text-warning" : "fa-clock-o";
+  }
+
+  /**
+   * Get short timezone abbreviation (e.g., "EST", "PST", "UTC").
+   * Uses Luxon to get the actual timezone abbreviation.
+   */
+  get currentTimezoneShort() {
+    const tz = this.state.currentTimezone;
+    // Get the timezone abbreviation from Luxon
+    const abbr = this.state.currentTime.setZone(tz).toFormat("ZZZZ");
+    // If it's a named abbreviation (like EST, PST), use it
+    // Otherwise fall back to UTC offset format
+    if (abbr && !abbr.startsWith("GMT") && !abbr.startsWith("UTC")) {
+      return abbr;
+    }
+    // Return short offset like "+5" or "-8"
+    const offset = this.state.currentTime.setZone(tz).toFormat("Z");
+    return `UTC${offset}`;
   }
 
   /**
