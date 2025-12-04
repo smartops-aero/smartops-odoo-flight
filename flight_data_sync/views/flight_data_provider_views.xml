@@ -61,6 +61,7 @@
                         </group>
                         <group>
                             <field name="api_base" />
+                            <field name="auth_type" widget="radio" />
                             <field name="username" />
                             <field name="password" password="True" />
                         </group>

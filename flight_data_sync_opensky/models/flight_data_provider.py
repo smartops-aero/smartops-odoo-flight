@@ -37,6 +37,7 @@ class FlightDataProvider(models.Model):
                 base_url=self.api_base or None,
                 username=self.username or None,
                 password=self.password or None,
+                auth_type=self.auth_type or "basic",
             )
         return super().get_client(schedule)
 

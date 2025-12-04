@@ -27,30 +27,100 @@ class OpenSkyClient:
     The OpenSky Network provides free access to ADS-B flight data.
     Authenticated users have higher rate limits.
 
+    Supports both Basic Authentication (legacy) and OAuth2 Client Credentials.
+
     Attributes:
         base_url: Base URL for the OpenSky API
-        username: Optional username for authentication
-        password: Optional password for authentication
+        auth_type: 'basic' or 'oauth2'
+        username: Username or Client ID
+        password: Password or Client Secret
+        access_token: OAuth2 access token (auto-managed)
     """
 
-    def __init__(self, base_url=None, username=None, password=None):
+    def __init__(
+        self, base_url=None, username=None, password=None, auth_type="basic"
+    ):
         """Initialize the OpenSky client.
 
         Args:
             base_url: Base URL for the API (defaults to official endpoint)
-            username: Username for authentication (optional, increases rate limits)
-            password: Password for authentication (optional)
+            username: Username (basic auth) or Client ID (OAuth2)
+            password: Password (basic auth) or Client Secret (OAuth2)
+            auth_type: 'basic' for username/password, 'oauth2' for client credentials
         """
         self.base_url = base_url or "https://opensky-network.org/api"
+        self.auth_url = "https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token"
         self.username = username
         self.password = password
+        self.auth_type = auth_type
+        self.access_token = None
+        self.token_expiry = None
         self.session = requests.Session()
 
-        if self.username and self.password:
+        if self.auth_type == "basic" and self.username and self.password:
+            # Basic HTTP Authentication (legacy)
             self.session.auth = (self.username, self.password)
+        elif self.auth_type == "oauth2" and self.username and self.password:
+            # OAuth2 - token will be obtained on first request
+            pass
+
+    def _get_oauth2_token(self):
+        """Obtain OAuth2 access token using client credentials flow.
+
+        Returns:
+            Access token string
+
+        Raises:
+            OpenSkyAPIError: If token request fails
+        """
+        from datetime import datetime, timedelta
+
+        # Check if we have a valid cached token
+        if self.access_token and self.token_expiry:
+            if datetime.now() < self.token_expiry:
+                return self.access_token
+
+        # Request new token
+        _logger.info(
+            f"Obtaining OAuth2 access token for client {self.username}"
+        )
+
+        try:
+            response = requests.post(
+                self.auth_url,
+                data={
+                    "grant_type": "client_credentials",
+                    "client_id": self.username,
+                    "client_secret": self.password,
+                },
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+                timeout=10,
+            )
+            response.raise_for_status()
+
+            token_data = response.json()
+            self.access_token = token_data["access_token"]
+
+            # Token expires in 30 minutes, refresh 5 minutes early
+            expires_in = token_data.get("expires_in", 1800)
+            self.token_expiry = datetime.now() + timedelta(
+                seconds=expires_in - 300
+            )
+
+            _logger.info(
+                f"✓ OAuth2 token obtained, expires in {expires_in} seconds"
+            )
+            return self.access_token
+
+        except Exception as e:
+            error_msg = f"Failed to obtain OAuth2 token: {str(e)}"
+            _logger.error(error_msg)
+            raise OpenSkyAPIError(error_msg) from e
 
     def _make_request(self, endpoint, params=None):
         """Make a request to the OpenSky API.
+
+        Automatically handles OAuth2 token management if configured.
 
         Args:
             endpoint: API endpoint to call
@@ -64,8 +134,16 @@ class OpenSkyClient:
         """
         url = f"{self.base_url}/{endpoint}"
 
+        # Prepare headers
+        headers = {}
+        if self.auth_type == "oauth2":
+            token = self._get_oauth2_token()
+            headers["Authorization"] = f"Bearer {token}"
+
         try:
-            response = self.session.get(url, params=params, timeout=30)
+            response = self.session.get(
+                url, params=params, headers=headers, timeout=30
+            )
             response.raise_for_status()
             return response.json()
         except requests.exceptions.HTTPError as e:
@@ -75,6 +153,10 @@ class OpenSkyClient:
                     f"No data found for {endpoint} with params {params}: {str(e)}"
                 )
                 return None
+            elif e.response.status_code == 401:
+                error_msg = f"Unauthorized - check your credentials (auth_type={self.auth_type})"
+                _logger.error(error_msg)
+                raise OpenSkyAPIError(error_msg) from e
             error_msg = f"OpenSky API HTTP error: {str(e)}"
             _logger.error(error_msg)
             raise OpenSkyAPIError(error_msg) from e

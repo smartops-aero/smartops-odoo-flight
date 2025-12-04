@@ -32,8 +32,17 @@ class FlightDataProvider(models.Model):
         default=lambda self: self.env.company,
     )
     api_base = fields.Char(string="API Base URL")
-    username = fields.Char(string="Username")
-    password = fields.Char(string="Password")
+    auth_type = fields.Selection(
+        [
+            ("basic", "Basic Authentication (Username/Password)"),
+            ("oauth2", "OAuth2 Client Credentials"),
+        ],
+        string="Authentication Type",
+        default="basic",
+        help="Choose authentication method. OAuth2 is required for OpenSky accounts created after March 2025.",
+    )
+    username = fields.Char(string="Username / Client ID")
+    password = fields.Char(string="Password / Client Secret")
     schedule_ids = fields.One2many(
         "flight.data.sync.schedule",
         "provider_id",
