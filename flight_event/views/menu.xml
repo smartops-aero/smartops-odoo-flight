@@ -3,7 +3,7 @@
     <!-- Flight Event Time menu item under Flight/Flight submenu -->
     <menuitem
     id="menu_flight_event_time"
-    name="Flight Events"
+    name="Event times"
     action="action_flight_event_time_list"
     parent="flight.menu_flight"
     sequence="20"

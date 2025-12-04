@@ -2,11 +2,22 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⚠️ CRITICAL: This is Odoo 18.0
+
+**IMPORTANT:** This project uses **Odoo 18.0**. Always follow Odoo 18.0 conventions:
+
+- Use `<list>` instead of `<tree>` for list views in XML
+- Use `_compute_display_name` instead of `name_get()` method
+- Use `<chatter />` tag instead of verbose chatter XML
+- Use `/** @odoo-module **/` for JavaScript modules
+- Follow OWL v2 patterns for reactive components
+- All view modes: `list,form,kanban` (not `tree,form,kanban`)
+
 ## Project Overview
 
 This is an Odoo 18.0 module suite for aviation/flight management called SmartOps Flight. It provides comprehensive functionality for managing flights, aircraft, aerodromes, crew, and related aviation operations.
 
-**Note:** Recently migrated from Odoo 16.0 to 18.0. See [MIGRATION_16_TO_18.md](MIGRATION_16_TO_18.md) for complete migration details.
+**Migration Status:** ✅ Successfully migrated from Odoo 16.0 to 18.0. See [MIGRATION_16_TO_18.md](MIGRATION_16_TO_18.md) for complete migration details.
 
 ## Module Architecture
 
