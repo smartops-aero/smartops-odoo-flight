@@ -107,6 +107,13 @@ class FlightAircraft(models.Model):
     _avatar_name_field = "registration"
 
     registration = fields.Char("Aircraft registration", tracking=True)
+    icao24 = fields.Char(
+        "ICAO24 Address",
+        size=6,
+        tracking=True,
+        help="ICAO 24-bit address in hexadecimal format (e.g., ABC123). "
+        "Required for flight data synchronization with services like OpenSky Network.",
+    )
     model_id = fields.Many2one("flight.aircraft.model", tracking=True)
     operator_id = fields.Many2one(
         "res.partner",

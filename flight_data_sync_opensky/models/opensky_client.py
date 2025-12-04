@@ -230,3 +230,91 @@ class OpenSkyClient:
             datetime object in UTC
         """
         return datetime.utcfromtimestamp(timestamp)
+
+    def lookup_aircraft_by_registration(self, registration):
+        """Look up aircraft ICAO24 by registration number.
+
+        **WARNING**: This uses an UNDOCUMENTED endpoint that may not be reliable.
+        The OpenSky Network official API does not provide a registration→ICAO24
+        lookup endpoint. This method attempts to use an unofficial endpoint but
+        it may be unavailable or removed at any time.
+
+        **Recommendation**: Manually set ICAO24 addresses for reliable operation.
+
+        Args:
+            registration: Aircraft registration/tail number (e.g., "N12345", "F-GFKY")
+
+        Returns:
+            Dictionary with aircraft data including icao24, or None if not found
+            Example: {
+                'icao24': 'abc123',
+                'registration': 'N12345',
+                'manufacturericao': 'BOEING',
+                'model': '737-800',
+                ...
+            }
+            Returns None if lookup fails or aircraft not found.
+
+        Note:
+            This method never raises exceptions. All errors are logged and
+            None is returned to allow graceful fallback to manual entry.
+        """
+        # Clean registration (remove spaces, convert to uppercase)
+        registration = registration.strip().upper()
+
+        _logger.info(
+            f"[EXPERIMENTAL] Attempting ICAO24 lookup for registration {registration} "
+            f"using undocumented endpoint"
+        )
+
+        # Try the undocumented metadata endpoint
+        # WARNING: This is NOT part of the official OpenSky REST API
+        # It may be removed or changed without notice
+        try:
+            url = f"{self.base_url}/metadata/aircraft/registration/{registration}"
+            response = self.session.get(url, timeout=10)
+
+            if response.status_code == 200:
+                data = response.json()
+                if data and isinstance(data, dict) and data.get("icao24"):
+                    _logger.info(
+                        f"✓ Found ICAO24 {data.get('icao24')} for registration {registration}"
+                    )
+                    return data
+                else:
+                    _logger.warning(
+                        f"⚠ Endpoint returned 200 but no valid ICAO24 for {registration}"
+                    )
+                    return None
+            elif response.status_code == 404:
+                _logger.info(
+                    f"⚠ No aircraft found for registration {registration} (404)"
+                )
+                return None
+            elif response.status_code == 503:
+                _logger.warning(
+                    f"⚠ OpenSky metadata service unavailable (503) for {registration}"
+                )
+                return None
+            else:
+                _logger.warning(
+                    f"⚠ Unexpected response {response.status_code} for {registration}"
+                )
+                return None
+
+        except requests.exceptions.Timeout:
+            _logger.warning(
+                f"⚠ Timeout while looking up registration {registration}"
+            )
+            return None
+        except requests.exceptions.RequestException as e:
+            _logger.warning(
+                f"⚠ Network error during lookup for {registration}: {str(e)}"
+            )
+            return None
+        except Exception as e:
+            _logger.error(
+                f"✗ Unexpected error during ICAO24 lookup for {registration}: {str(e)}",
+                exc_info=True,
+            )
+            return None

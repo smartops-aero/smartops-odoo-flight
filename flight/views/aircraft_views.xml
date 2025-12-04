@@ -40,6 +40,7 @@
                     <group>
                         <group>
                             <field name="sn" />
+                            <field name="icao24" placeholder="e.g., ABC123" />
                             <field name="model_id" />
                             <field name="operator_id" />
                             <field name="dom" />

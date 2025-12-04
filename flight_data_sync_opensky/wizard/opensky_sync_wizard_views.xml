@@ -33,9 +33,10 @@
                             <field name="date_from" required="sync_mode == 'aircraft_range'"/>
                             <field name="date_to" required="sync_mode == 'aircraft_range'"/>
                         </group>
-                        <div class="alert alert-info" role="alert">
-                            <strong>Note:</strong> Date range is limited to 30 days due to OpenSky Network API limitations.
-                            For authenticated users, the API provides access to historical data up to 30 days in the past.
+                        <div class="alert alert-warning" role="alert">
+                            <strong>Important:</strong> Date range is limited to <strong>2 days maximum</strong> due to OpenSky Network API limitations.
+                            The /flights/aircraft endpoint only supports queries up to 2 days.
+                            For longer periods, run the wizard multiple times with different 2-day ranges.
                         </div>
                     </page>
                 </notebook>

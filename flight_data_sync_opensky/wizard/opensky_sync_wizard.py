@@ -89,13 +89,14 @@ class OpenskySyncWizard(models.TransientModel):
                 if wizard.date_from > wizard.date_to:
                     raise ValidationError(_("Date From must be before Date To"))
 
-                # Limit range to 30 days to avoid API rate limits
+                # OpenSky API limitation: max 2 days for /flights/aircraft endpoint
                 delta = (wizard.date_to - wizard.date_from).days
-                if delta > 30:
+                if delta > 2:
                     raise ValidationError(
                         _(
-                            "Date range cannot exceed 30 days due to API limitations. "
-                            "Please select a smaller range."
+                            "Date range cannot exceed 2 days due to OpenSky API limitations.\n\n"
+                            "The /flights/aircraft endpoint only supports queries up to 2 days.\n"
+                            "Please select a smaller range or split your sync into multiple 2-day periods."
                         )
                     )
 
@@ -141,11 +142,69 @@ class OpenskySyncWizard(models.TransientModel):
         if not self.aircraft_id:
             raise UserError(_("Please select an aircraft"))
 
-        if not self.aircraft_id.icao24:
-            raise UserError(
-                _("Aircraft %s does not have an ICAO24 address set")
-                % self.aircraft_id.registration
+        # Check if ICAO24 is available, if not try to look it up
+        icao24 = self.aircraft_id.icao24
+        if not icao24:
+            _logger.info(
+                f"ICAO24 not set for aircraft {self.aircraft_id.registration}, attempting lookup"
             )
+
+            if not self.aircraft_id.registration:
+                raise UserError(
+                    _(
+                        "Aircraft must have either ICAO24 address or registration number set"
+                    )
+                )
+
+            # Try to lookup ICAO24 from registration
+            try:
+                aircraft_data = client.lookup_aircraft_by_registration(
+                    self.aircraft_id.registration
+                )
+
+                if aircraft_data and aircraft_data.get("icao24"):
+                    icao24 = aircraft_data["icao24"]
+                    # Update the aircraft record with the found ICAO24
+                    self.aircraft_id.write({"icao24": icao24})
+                    _logger.info(
+                        f"Found and saved ICAO24 {icao24} for {self.aircraft_id.registration}"
+                    )
+                else:
+                    raise UserError(
+                        _(
+                            "Could not find ICAO24 address for aircraft registration %s\n\n"
+                            "The automatic lookup failed. This can happen because:\n"
+                            "• The aircraft is not in OpenSky's database\n"
+                            "• The registration format is incorrect\n"
+                            "• The lookup service is temporarily unavailable\n\n"
+                            "Please set the ICAO24 address manually:\n"
+                            "1. Go to Flights → Configuration → Aircraft\n"
+                            "2. Edit aircraft %s\n"
+                            "3. Set the ICAO24 field (6-character hex code)\n\n"
+                            "You can find ICAO24 addresses at:\n"
+                            "• https://opensky-network.org/aircraft-database\n"
+                            "• https://flightaware.com\n"
+                            "• https://flightradar24.com"
+                        )
+                        % (self.aircraft_id.registration, self.aircraft_id.registration)
+                    )
+            except UserError:
+                # Re-raise UserError as-is (don't wrap it)
+                raise
+            except Exception as e:
+                _logger.error(f"Error looking up ICAO24: {str(e)}", exc_info=True)
+                raise UserError(
+                    _(
+                        "Unexpected error while looking up ICAO24 for aircraft %s\n\n"
+                        "Error: %s\n\n"
+                        "Please set the ICAO24 address manually:\n"
+                        "1. Go to Flights → Configuration → Aircraft\n"
+                        "2. Edit aircraft %s\n"
+                        "3. Set the ICAO24 field\n\n"
+                        "The automatic lookup is experimental and may not always work."
+                    )
+                    % (self.aircraft_id.registration, str(e), self.aircraft_id.registration)
+                ) from e
 
         # Convert dates to timestamps
         # Use start of day for date_from and end of day for date_to
@@ -156,13 +215,13 @@ class OpenskySyncWizard(models.TransientModel):
         end_timestamp = int(dt_to.timestamp())
 
         _logger.info(
-            f"Fetching OpenSky flights for aircraft {self.aircraft_id.icao24} "
+            f"Fetching OpenSky flights for aircraft {icao24} "
             f"from {self.date_from} to {self.date_to}"
         )
 
         try:
             flights = client.get_flights_by_aircraft(
-                self.aircraft_id.icao24.lower(), begin_timestamp, end_timestamp
+                icao24.lower(), begin_timestamp, end_timestamp
             )
 
             _logger.info(f"Fetched {len(flights)} flights from OpenSky")
@@ -182,7 +241,28 @@ class OpenskySyncWizard(models.TransientModel):
         all_flights = []
 
         for flight in self.flight_ids:
-            if not flight.aircraft_id.icao24:
+            # Get or lookup ICAO24
+            icao24 = flight.aircraft_id.icao24
+
+            if not icao24:
+                # Try to lookup ICAO24 if we have registration
+                if flight.aircraft_id.registration:
+                    try:
+                        aircraft_data = client.lookup_aircraft_by_registration(
+                            flight.aircraft_id.registration
+                        )
+                        if aircraft_data and aircraft_data.get("icao24"):
+                            icao24 = aircraft_data["icao24"]
+                            flight.aircraft_id.write({"icao24": icao24})
+                            _logger.info(
+                                f"Found and saved ICAO24 {icao24} for {flight.aircraft_id.registration}"
+                            )
+                    except Exception as e:
+                        _logger.warning(
+                            f"Could not lookup ICAO24 for {flight.aircraft_id.registration}: {str(e)}"
+                        )
+
+            if not icao24:
                 _logger.warning(
                     f"Skipping flight {flight.display_name} - no ICAO24 on aircraft"
                 )
@@ -197,7 +277,7 @@ class OpenskySyncWizard(models.TransientModel):
 
             try:
                 flights = client.get_flights_by_aircraft(
-                    flight.aircraft_id.icao24.lower(), begin_timestamp, end_timestamp
+                    icao24.lower(), begin_timestamp, end_timestamp
                 )
                 all_flights.extend(flights)
 

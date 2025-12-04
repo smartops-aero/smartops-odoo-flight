@@ -60,16 +60,40 @@ Create a free account at [opensky-network.org](https://opensky-network.org) to i
 
 ### 2. Configure Aircraft ICAO24 Addresses
 
-For the sync to work, your aircraft records must have their ICAO24 addresses set:
+**REQUIRED**: Aircraft must have ICAO24 addresses set for synchronization.
+
+The ICAO24 address is a unique 6-character hexadecimal code assigned to each aircraft transponder (e.g., "ABC123", "3C6444").
+
+#### Option 1: Manual Entry (Recommended)
 
 1. Navigate to: **Flights → Configuration → Aircraft**
 2. Edit each aircraft
 3. Set the **ICAO24** field (6-character hex code, e.g., "ABC123")
 
 **Finding ICAO24 addresses**:
-- Use aircraft registration lookup tools
-- Check [OpenSky Network](https://opensky-network.org) search
-- Consult aviation databases
+- [OpenSky Network aircraft database](https://opensky-network.org/aircraft-database)
+- [FlightAware](https://flightaware.com) - Search by registration
+- [FlightRadar24](https://flightradar24.com) - Search by registration
+- Aviation databases and registries
+
+#### Option 2: Experimental Automatic Lookup
+
+⚠️ **WARNING**: The automatic lookup feature is **experimental** and may not work reliably.
+
+The module attempts to automatically look up ICAO24 addresses from the registration number using an **undocumented** OpenSky endpoint. This feature:
+- ✅ Works automatically in the background
+- ⚠️ Uses an unofficial API endpoint that may be removed
+- ⚠️ May fail for many aircraft (not all are in the database)
+- ⚠️ Requires internet access
+- ⚠️ May be slow or timeout
+
+**How it works**:
+1. You sync an aircraft with only registration number set
+2. Module attempts automatic lookup
+3. If successful, ICAO24 is saved to aircraft record
+4. If failed, you get a clear error message with manual instructions
+
+**Recommendation**: For production use, manually set ICAO24 addresses to ensure reliability.
 
 ## Usage
 
@@ -153,17 +177,27 @@ The OpenSky Network API has rate limits:
 
 ## Limitations
 
-1. **Date Range**: Maximum 30 days per sync (API limitation)
-2. **Historical Data**: Tracks only available for last 30 days
-3. **Airport Coverage**: OpenSky estimates may not match all airports perfectly
-4. **ICAO24 Required**: Aircraft must have ICAO24 addresses set
-5. **Aerodrome Matching**: Departure/arrival aerodromes must exist in Odoo
-6. **Non-Commercial Use**: OpenSky data is for research/non-commercial use only
+Based on the [official OpenSky Network REST API documentation](https://openskynetwork.github.io/opensky-api/rest.html):
+
+1. **Date Range**: **Maximum 2 days** per sync for `/flights/aircraft` endpoint (official API limitation)
+2. **Historical Data**: Only flights from **previous day or earlier** available (batch processed nightly)
+3. **Tracks**: Only available for last 30 days
+4. **Airport Coverage**: OpenSky estimates may not match all airports perfectly
+5. **ICAO24 Required**: Aircraft MUST have ICAO24 addresses (no official lookup API)
+6. **Automatic Lookup**: Experimental feature using undocumented endpoint - may not work
+7. **Aerodrome Matching**: Departure/arrival aerodromes must exist in Odoo
+8. **Non-Commercial Use**: OpenSky data is for research/non-commercial use only
+9. **Rate Limits**: 400 credits/day (anonymous) or 4000 credits/day (authenticated)
 
 ## Troubleshooting
 
-### "Aircraft does not have an ICAO24 address set"
-- Solution: Edit the aircraft and set the ICAO24 field
+### "Could not find ICAO24 address for aircraft registration"
+- **Cause**: The aircraft's registration number is not in the OpenSky database
+- **Solutions**:
+  1. Verify the registration number is correct in the aircraft form
+  2. Manually look up the ICAO24 on [OpenSky Network](https://opensky-network.org/aircraft-database)
+  3. Set the ICAO24 field manually in the aircraft form
+  4. Try a different data source if the aircraft is very new or rare
 
 ### "No flights found"
 - Possible causes:
