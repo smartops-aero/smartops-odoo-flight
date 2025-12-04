@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend Flight Data Provider Form to show OpenSky info -->
+    <record id="view_flight_data_provider_form_opensky" model="ir.ui.view">
+        <field name="name">flight.data.provider.form.opensky</field>
+        <field name="model">flight.data.provider</field>
+        <field name="inherit_id" ref="flight_data_sync.view_flight_data_provider_form"/>
+        <field name="arch" type="xml">
+            <notebook position="before">
+                <group string="OpenSky Network Information" invisible="service != 'opensky'">
+                    <div class="alert alert-info" role="alert">
+                        <h4 class="alert-heading">OpenSky Network API</h4>
+                        <p>
+                            The OpenSky Network is a non-profit association providing free access to real-time
+                            and historical ADS-B flight data for research and non-commercial use.
+                        </p>
+                        <hr/>
+                        <h5>Configuration:</h5>
+                        <ul>
+                            <li><strong>API Base:</strong> Leave empty to use default (https://opensky-network.org/api)</li>
+                            <li><strong>Username/Password:</strong> Optional but recommended for higher rate limits</li>
+                            <li>Anonymous users: ~400 API credits/day</li>
+                            <li>Authenticated users: ~4000 API credits/day</li>
+                        </ul>
+                        <hr/>
+                        <h5>Features:</h5>
+                        <ul>
+                            <li>Fetch flights by aircraft ICAO24 and date range (max 30 days)</li>
+                            <li>Compare OpenSky data with existing flights</li>
+                            <li>Interactive wizard for selective sync</li>
+                            <li>Automatic matching by aircraft, date, departure, and arrival</li>
+                        </ul>
+                        <hr/>
+                        <p class="mb-0">
+                            <strong>Note:</strong> Create an account at
+                            <a href="https://opensky-network.org" target="_blank">opensky-network.org</a>
+                            to increase your API rate limits.
+                        </p>
+                    </div>
+                </group>
+            </notebook>
+        </field>
+    </record>
+</odoo>

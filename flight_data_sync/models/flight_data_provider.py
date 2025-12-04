@@ -31,9 +31,9 @@ class FlightDataProvider(models.Model):
         required=True,
         default=lambda self: self.env.company,
     )
-    api_base = fields.Char()
-    username = fields.Char()
-    password = fields.Char()
+    api_base = fields.Char(string="API Base URL")
+    username = fields.Char(string="Username")
+    password = fields.Char(string="Password")
     schedule_ids = fields.One2many(
         "flight.data.sync.schedule",
         "provider_id",

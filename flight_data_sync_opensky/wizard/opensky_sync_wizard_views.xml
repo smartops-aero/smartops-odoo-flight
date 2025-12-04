@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- OpenSky Sync Wizard Form View -->
+    <record id="view_opensky_sync_wizard_form" model="ir.ui.view">
+        <field name="name">opensky.sync.wizard.form</field>
+        <field name="model">opensky.sync.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Sync with OpenSky Network">
+                <group invisible="state != 'select'">
+                    <group>
+                        <field name="state" invisible="1"/>
+                        <field name="sync_mode" widget="radio"/>
+                        <field name="provider_id"/>
+                    </group>
+                </group>
+
+                <notebook invisible="state != 'select'">
+                    <page string="Specific Flights" invisible="sync_mode != 'flights'">
+                        <group>
+                            <field name="flight_ids" widget="many2many_tags" nolabel="1">
+                                <list>
+                                    <field name="date"/>
+                                    <field name="aircraft_id"/>
+                                    <field name="departure_id"/>
+                                    <field name="arrival_id"/>
+                                </list>
+                            </field>
+                        </group>
+                    </page>
+                    <page string="Aircraft Date Range" invisible="sync_mode != 'aircraft_range'">
+                        <group>
+                            <field name="aircraft_id" required="sync_mode == 'aircraft_range'"/>
+                            <field name="date_from" required="sync_mode == 'aircraft_range'"/>
+                            <field name="date_to" required="sync_mode == 'aircraft_range'"/>
+                        </group>
+                        <div class="alert alert-info" role="alert">
+                            <strong>Note:</strong> Date range is limited to 30 days due to OpenSky Network API limitations.
+                            For authenticated users, the API provides access to historical data up to 30 days in the past.
+                        </div>
+                    </page>
+                </notebook>
+
+                <group invisible="state != 'compare'">
+                    <group string="Summary">
+                        <field name="total_opensky_flights"/>
+                        <field name="new_flights"/>
+                        <field name="existing_flights"/>
+                    </group>
+                </group>
+
+                <notebook invisible="state != 'compare'">
+                    <page string="Flight Comparison">
+                        <field name="comparison_line_ids">
+                            <list editable="bottom" create="0" delete="0">
+                                <field name="status" readonly="1"/>
+                                <field name="date" readonly="1"/>
+                                <field name="aircraft_id" readonly="1"/>
+                                <field name="departure_id" readonly="1"/>
+                                <field name="arrival_id" readonly="1"/>
+                                <field name="opensky_first_seen" readonly="1"/>
+                                <field name="opensky_last_seen" readonly="1"/>
+                                <field name="flight_duration" readonly="1" widget="float_time"/>
+                                <field name="opensky_callsign" readonly="1"/>
+                                <field name="existing_flight_id" readonly="1"/>
+                                <field name="action" widget="badge"
+                                    decoration-success="action == 'create'"
+                                    decoration-info="action == 'update'"
+                                    decoration-muted="action == 'skip'"/>
+                            </list>
+                        </field>
+                        <div class="alert alert-info" role="alert" style="margin-top: 10px;">
+                            <strong>How to use:</strong>
+                            <ul>
+                                <li><strong>Create:</strong> Create a new flight in Odoo from OpenSky data</li>
+                                <li><strong>Update:</strong> Update the existing Odoo flight (currently confirms match)</li>
+                                <li><strong>Skip:</strong> Do not sync this flight</li>
+                            </ul>
+                            Change the <strong>Action</strong> column to control what happens with each flight.
+                        </div>
+                    </page>
+                </notebook>
+
+                <footer>
+                    <button string="Fetch Flights" name="action_fetch_flights" type="object"
+                        class="btn-primary" invisible="state != 'select'"/>
+                    <button string="Apply Sync" name="action_apply_sync" type="object"
+                        class="btn-primary" invisible="state != 'compare'"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open wizard from flight list view -->
+    <record id="action_opensky_sync_wizard" model="ir.actions.act_window">
+        <field name="name">Sync with OpenSky Network</field>
+        <field name="res_model">opensky.sync.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="flight.model_flight_flight"/>
+        <field name="binding_view_types">list,form</field>
+    </record>
+</odoo>

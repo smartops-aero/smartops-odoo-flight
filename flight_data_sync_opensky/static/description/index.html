@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Flight Data Sync - OpenSky Network</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: #2c3e50;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+      }
+      h2 {
+        color: #34495e;
+        margin-top: 30px;
+      }
+      .feature-box {
+        background: #ecf0f1;
+        border-left: 4px solid #3498db;
+        padding: 15px;
+        margin: 20px 0;
+      }
+      .highlight {
+        background: #fff9e6;
+        padding: 2px 6px;
+        border-radius: 3px;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      li {
+        margin: 8px 0;
+      }
+      .alert {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 4px;
+        padding: 15px;
+        margin: 20px 0;
+      }
+      .alert strong {
+        color: #155724;
+      }
+      code {
+        background: #f4f4f4;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: "Courier New", monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Flight Data Sync - OpenSky Network</h1>
+
+    <p>
+      Integrate your Odoo flight management system with the
+      <strong>OpenSky Network</strong>, a non-profit providing free access to
+      real-time and historical ADS-B flight data.
+    </p>
+
+    <div class="feature-box">
+      <h2>✨ Key Features</h2>
+      <ul>
+        <li>
+          <strong>Interactive Wizard</strong> - User-friendly interface for
+          flight synchronization
+        </li>
+        <li>
+          <strong>Dual Sync Modes</strong> - Sync specific flights or by
+          aircraft date range
+        </li>
+        <li>
+          <strong>Smart Comparison</strong> - Compare OpenSky data with existing
+          Odoo flights
+        </li>
+        <li>
+          <strong>Flexible Actions</strong> - Choose to create, update, or skip
+          each flight
+        </li>
+        <li>
+          <strong>Automatic Matching</strong> - Match by aircraft, date,
+          departure, and arrival
+        </li>
+        <li>
+          <strong>Rich Flight Data</strong> - View times, duration, and
+          callsigns
+        </li>
+      </ul>
+    </div>
+
+    <h2>🚀 Quick Start</h2>
+    <ol>
+      <li>Install the module from Apps menu</li>
+      <li>
+        Create an OpenSky Network provider (Flights → Configuration → Data
+        Providers)
+      </li>
+      <li>Set ICAO24 addresses on your aircraft</li>
+      <li>
+        Open the sync wizard from flight list view (Action → Sync with OpenSky
+        Network)
+      </li>
+      <li>Choose sync mode and parameters</li>
+      <li>Review and apply changes</li>
+    </ol>
+
+    <div class="alert">
+      <strong>💡 Pro Tip:</strong> Create a free account at
+      <a href="https://opensky-network.org" target="_blank"
+        >opensky-network.org</a
+      >
+      and configure your provider with credentials to get
+      <span class="highlight">10x more API credits</span>
+      (4000/day vs 400/day for anonymous users).
+    </div>
+
+    <h2>📋 Requirements</h2>
+    <ul>
+      <li>Odoo 18.0</li>
+      <li>Flight module (base flight management)</li>
+      <li>Flight Data Sync module</li>
+      <li>Python <code>requests</code> library</li>
+      <li>Aircraft with ICAO24 addresses configured</li>
+    </ul>
+
+    <h2>🔧 Configuration</h2>
+
+    <h3>1. Create Provider</h3>
+    <p>
+      Navigate to <strong>Flights → Configuration → Data Providers</strong> and
+      create a new provider:
+    </p>
+    <ul>
+      <li><strong>Name:</strong> OpenSky Network</li>
+      <li><strong>Service:</strong> OpenSky Network</li>
+      <li>
+        <strong>Username/Password:</strong> Optional (for higher rate limits)
+      </li>
+    </ul>
+
+    <h3>2. Configure Aircraft</h3>
+    <p>Ensure all aircraft have their ICAO24 addresses set:</p>
+    <ul>
+      <li>Go to <strong>Flights → Configuration → Aircraft</strong></li>
+      <li>
+        Edit each aircraft and set the ICAO24 field (6-character hex code)
+      </li>
+    </ul>
+
+    <h2>📊 Sync Modes</h2>
+
+    <h3>Mode 1: Sync Aircraft by Date Range</h3>
+    <ul>
+      <li>Select an aircraft</li>
+      <li>Choose date range (max 30 days)</li>
+      <li>Fetch all flights for that aircraft in the period</li>
+      <li>Compare with existing Odoo flights</li>
+    </ul>
+
+    <h3>Mode 2: Sync Specific Flights</h3>
+    <ul>
+      <li>Select one or more existing flights</li>
+      <li>Fetch OpenSky data for those flight dates</li>
+      <li>Compare and verify flight data</li>
+    </ul>
+
+    <h2>⚠️ Limitations</h2>
+    <ul>
+      <li>Maximum 30-day date range per sync (API limitation)</li>
+      <li>Flight tracks only available for last 30 days</li>
+      <li>Non-commercial use only (OpenSky Network terms)</li>
+      <li>Requires ICAO24 addresses on aircraft</li>
+      <li>Aerodromes must exist in Odoo for matching</li>
+    </ul>
+
+    <h2>📖 Documentation</h2>
+    <p>
+      For detailed documentation, troubleshooting, and technical details, see
+      the README.md file.
+    </p>
+
+    <h2>📜 License</h2>
+    <p>LGPL-3</p>
+
+    <h2>👥 Credits</h2>
+    <ul>
+      <li><strong>Author:</strong> Apexive Solutions LLC</li>
+      <li><strong>Data Source:</strong> OpenSky Network</li>
+      <li>
+        <strong>Support:</strong>
+        <a href="https://github.com/smartops-aero/smartops-odoo-flight"
+          >GitHub</a
+        >
+      </li>
+    </ul>
+
+    <div class="alert" style="background: #d1ecf1; border-color: #bee5eb">
+      <strong>ℹ️ About OpenSky Network:</strong> The OpenSky Network is a
+      non-profit association based in Switzerland. It provides open access to
+      real-world air traffic control data for research and non-commercial
+      purposes. Learn more at
+      <a href="https://opensky-network.org" target="_blank"
+        >opensky-network.org</a
+      >.
+    </div>
+  </body>
+</html>
