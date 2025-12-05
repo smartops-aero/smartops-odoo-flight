@@ -112,6 +112,7 @@ class OpenskySyncWizard(models.TransientModel):
             base_url=self.provider_id.api_base or None,
             username=self.provider_id.username or None,
             password=self.provider_id.password or None,
+            auth_type=self.provider_id.auth_type or "basic",
         )
 
         # Fetch flights based on mode
