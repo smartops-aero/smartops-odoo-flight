@@ -15,6 +15,20 @@ Usage:
     3. Import generated CSVs in Odoo:
        - flight.aerodrome.csv
        - flight.aerodrome.runway.csv
+
+Known Issues:
+    1. Deprecated Timezones: The airportsdata library may include deprecated timezone
+       names that are not supported by Odoo's pytz selection field. After generating
+       the CSV, you may need to replace the following:
+         - Europe/Uzhgorod  -> Europe/Kyiv
+         - Europe/Zaporozhye -> Europe/Kyiv
+       Use: sed -i '' 's/Europe\\/Uzhgorod/Europe\\/Kyiv/g; s/Europe\\/Zaporozhye/Europe\\/Kyiv/g' flight.aerodrome.csv
+
+    2. Odoo Import Limit: Odoo's UI import mechanism may timeout or limit imports to
+       ~8,000 records. For the full dataset (~28,000 aerodromes), either:
+         - Split the CSV into smaller chunks and import separately
+         - Uncomment the CSV in __manifest__.py and upgrade the module
+         - Use odoo shell to load records programmatically
 """
 import csv
 
