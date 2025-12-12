@@ -27,15 +27,21 @@ class PortalFlight(portal.CustomerPortal):
             domain += [("date", ">=", date_begin), ("date", "<=", date_end)]
         return domain
 
-    @http.route(
-        ["/my/flights", "/my/flights/page/<int:page>"],
-        type="http",
-        auth="user",
-        website=True,
-    )
-    def portal_my_flights(
-        self, page=1, date_begin=None, date_end=None, sortby=None, **kw
+    def _prepare_flights_portal_values(
+        self, page=1, date_begin=None, date_end=None, sortby=None, url="/my/flights"
     ):
+        """Prepare values for flights portal (reusable helper).
+
+        Args:
+            page: Page number for pagination
+            date_begin: Start date filter
+            date_end: End date filter
+            sortby: Sort field key
+            url: Base URL for pagination
+
+        Returns:
+            dict: Values dictionary for rendering flights portal
+        """
         values = self._prepare_portal_layout_values()
         FlightFlight = request.env["flight.flight"]
 
@@ -53,7 +59,7 @@ class PortalFlight(portal.CustomerPortal):
 
         flight_count = FlightFlight.search_count(domain)
         pager = portal_pager(
-            url="/my/flights",
+            url=url,
             url_args={"date_begin": date_begin, "date_end": date_end, "sortby": sortby},
             total=flight_count,
             page=page,
@@ -70,11 +76,25 @@ class PortalFlight(portal.CustomerPortal):
                 "date_end": date_end,
                 "flights": flights,
                 "page_name": "flight",
-                "default_url": "/my/flights",
+                "default_url": url,
                 "pager": pager,
                 "searchbar_sortings": searchbar_sortings,
                 "sortby": sortby,
             }
+        )
+        return values
+
+    @http.route(
+        ["/my/flights", "/my/flights/page/<int:page>"],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def portal_my_flights(
+        self, page=1, date_begin=None, date_end=None, sortby=None, **kw
+    ):
+        values = self._prepare_flights_portal_values(
+            page, date_begin, date_end, sortby, url="/my/flights"
         )
         return request.render("flight_portal.portal_my_flights", values)
 
