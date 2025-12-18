@@ -5,30 +5,21 @@
         <field name="model">flight.flight</field>
         <field name="inherit_id" ref="flight.view_flight_form" />
         <field name="arch" type="xml">
-            <!-- Replace the single group with two-column layout -->
-            <xpath expr="//sheet/group" position="replace">
-                <group>
-                    <group name="flight_info">
-                        <field name="date" />
-                        <field name="aircraft_id" />
-                        <field name="departure_id" />
-                        <field name="arrival_id" />
-                        <field name="locked" />
-                    </group>
-                    <group name="flight_times">
-                        <field
-              name="event_time_ids"
-              widget="flight_time_summary"
-              nolabel="1"
-            >
-                            <list>
-                                <field name="flight_id" />
-                                <field name="time_kind" />
-                                <field name="code_id" />
-                                <field name="time" />
-                            </list>
-                        </field>
-                    </group>
+            <!-- Add time summary widget below the main info group -->
+            <xpath expr="//group[@name='main_info']" position="after">
+                <group name="flight_times">
+                    <field
+            name="event_time_ids"
+            widget="flight_time_summary"
+            nolabel="1"
+          >
+                        <list>
+                            <field name="flight_id" />
+                            <field name="time_kind" />
+                            <field name="code_id" />
+                            <field name="time" />
+                        </list>
+                    </field>
                 </group>
             </xpath>
 

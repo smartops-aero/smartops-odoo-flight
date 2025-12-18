@@ -17,7 +17,7 @@
     "website": "https://github.com/smartops-aero/smartops-odoo-flight",
     "license": "LGPL-3",
     "category": "Industries",
-    "version": "18.0.1.2.0",
+    "version": "18.0.1.3.0",
     "images": [
         "static/description/banner.jpeg",
     ],
@@ -26,6 +26,7 @@
         "mail",
         "web",
         "flight_uom",
+        "flight_widget_map_view",
     ],
     "demo": [
         "demo/flight_demo.xml",

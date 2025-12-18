@@ -39,12 +39,22 @@
                 </header>
                 <sheet>
                     <div name="button_box" class="oe_button_box" />
-                    <group>
-                        <field name="date" />
-                        <field name="aircraft_id" />
-                        <field name="departure_id" />
-                        <field name="arrival_id" />
-                        <field name="locked" />
+                    <group name="main_info">
+                        <group name="flight_info">
+                            <field name="date" />
+                            <field name="aircraft_id" />
+                            <field name="departure_id" />
+                            <field name="arrival_id" />
+                            <field name="locked" />
+                        </group>
+                        <group name="flight_visual">
+                            <field
+                name="map_data"
+                widget="flight_map_view"
+                options="{'height': '400px', 'width': '100%'}"
+                nolabel="1"
+              />
+                        </group>
                     </group>
                     <notebook>
                         <page string="Crew" name="crew">
