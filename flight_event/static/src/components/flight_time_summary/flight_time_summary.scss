@@ -5,6 +5,16 @@
 .flight-time-summary {
   overflow-x: auto;
 
+  .flight-time-tabs {
+    justify-content: center;
+
+    .btn-sm {
+      flex: 1;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+    }
+  }
+
   .flight-time-column {
     flex-shrink: 0;
     min-width: 220px;

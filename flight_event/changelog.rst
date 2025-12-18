@@ -5,6 +5,8 @@ Changelog
 18.0.1.2.0
 ----------
 
+* Implement 3-column layout for flight form view (Flight Info : Map : Time Summary 1:1:1)
+* Add tab-based time summary widget with Actual and Scheduled tabs
 * Fix view inheritance to use position="after" instead of position="replace"
 * Fix FlightTimeInputCell prop validation (eventCode and timeKind as String)
 

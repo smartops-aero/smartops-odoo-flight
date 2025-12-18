@@ -101,6 +101,7 @@ export class FlightTimeSummary extends Component {
 
     this.state = useState({
       date: null,
+      activeTab: "A", // 'A' for Actual, 'S' for Scheduled
     });
 
     if (this.props.name && this.props.record.activeFields) {
@@ -284,6 +285,22 @@ export class FlightTimeSummary extends Component {
 
   get eventSequence() {
     return EVENT_SEQUENCE;
+  }
+
+  /**
+   * Switch between Actual and Scheduled tabs
+   * @param {String} tab - The tab to switch to ('A' or 'S')
+   */
+  switchTab(tab) {
+    this.state.activeTab = tab;
+  }
+
+  /**
+   * Get the label for the active tab
+   * @returns {String} Tab label
+   */
+  getTabLabel(tab) {
+    return tab === "A" ? "ACTUAL" : "SCHEDULED";
   }
 }
 

@@ -5,9 +5,24 @@
         <field name="model">flight.flight</field>
         <field name="inherit_id" ref="flight.view_flight_form" />
         <field name="arch" type="xml">
-            <!-- Add time summary widget below the main info group -->
-            <xpath expr="//group[@name='main_info']" position="after">
-                <group name="flight_times">
+            <!-- Modify main_info group to use 3-column layout -->
+            <xpath expr="//group[@name='main_info']" position="attributes">
+                <attribute name="col">3</attribute>
+            </xpath>
+
+            <!-- Set flight_info to span 1 column -->
+            <xpath expr="//group[@name='flight_info']" position="attributes">
+                <attribute name="colspan">1</attribute>
+            </xpath>
+
+            <!-- Set flight_visual to span 1 column -->
+            <xpath expr="//group[@name='flight_visual']" position="attributes">
+                <attribute name="colspan">1</attribute>
+            </xpath>
+
+            <!-- Add time summary widget as third column (1 span) inside main_info -->
+            <xpath expr="//group[@name='flight_visual']" position="after">
+                <group name="flight_times" colspan="1" string="Times">
                     <field
             name="event_time_ids"
             widget="flight_time_summary"
