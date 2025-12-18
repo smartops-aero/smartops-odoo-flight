@@ -1,0 +1,519 @@
+<!-- Hero Section -->
+<section style="padding:4rem 0 3rem; background-color:#f8f9fa">
+    <div class="container">
+        <div class="text-center" style="max-width:900px; margin:0 auto">
+            <div style="margin-bottom:1.5rem">
+                <span class="bg-white d-inline-flex align-items-center"
+                      style="padding:0.5rem 1.25rem; border-radius:50px; margin:0.25rem">
+                    <i class="fa fa-map" style="color:#71639e; font-size:1rem; margin-right:0.5rem"></i>
+                    <span style="color:#71639e; font-weight:600; font-size:0.9rem">Map Widget</span>
+                </span>
+                <span class="bg-white d-inline-flex align-items-center"
+                      style="padding:0.5rem 1.25rem; border-radius:50px; margin:0.25rem">
+                    <i class="fa fa-check-circle" style="color:#28a745; font-size:1rem; margin-right:0.5rem"></i>
+                    <span style="color:#155724; font-weight:600; font-size:0.9rem">Odoo 18.0</span>
+                </span>
+                <span class="bg-white d-inline-flex align-items-center"
+                      style="padding:0.5rem 1.25rem; border-radius:50px; margin:0.25rem">
+                    <i class="fa fa-code" style="color:#17a2b8; font-size:1rem; margin-right:0.5rem"></i>
+                    <span style="color:#0c5460; font-weight:600; font-size:0.9rem">Developer Tool</span>
+                </span>
+            </div>
+
+            <h1 style="font-size:3.5rem; font-weight:800; color:#212529; margin-bottom:1.5rem; line-height:1.2">
+                Flight Widget &mdash; Map View
+            </h1>
+
+            <p style="font-size:1.4rem; color:#495057; margin-bottom:2rem; line-height:1.6">
+                Interactive map widget for Odoo 18.0 with advanced route visualization, path animation, and geographic data display capabilities.
+            </p>
+
+            <div class="d-flex justify-content-center flex-wrap">
+                <div class="bg-white d-flex align-items-center"
+                     style="padding:0.75rem 1.5rem; border-radius:12px; margin:0.5rem">
+                    <i class="fa fa-leaf" style="color:#28a745; font-size:1.25rem; margin-right:0.5rem"></i>
+                    <span style="color:#155724; font-weight:600">Leaflet.js</span>
+                </div>
+                <div class="bg-white d-flex align-items-center"
+                     style="padding:0.75rem 1.5rem; border-radius:12px; margin:0.5rem">
+                    <i class="fa fa-play-circle" style="color:#71639e; font-size:1.25rem; margin-right:0.5rem"></i>
+                    <span style="color:#5b4c7d; font-weight:600">GSAP Animation</span>
+                </div>
+                <div class="bg-white d-flex align-items-center"
+                     style="padding:0.75rem 1.5rem; border-radius:12px; margin:0.5rem">
+                    <i class="fa fa-mobile" style="color:#17a2b8; font-size:1.25rem; margin-right:0.5rem"></i>
+                    <span style="color:#0c5460; font-weight:600">Responsive</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container my-5">
+    <!-- What Is It Section -->
+    <section class="mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-12">
+                <h2 class="text-center mb-4" style="font-size:2.5rem; font-weight:700; color:#71639e">
+                    What Is This Widget?
+                </h2>
+                <p class="text-center mb-4" style="font-size:1.1rem; color:#495057; line-height:1.8">
+                    The Flight Map View Widget is a powerful, developer-friendly Odoo widget that brings interactive geographic visualization to your forms. Built on Leaflet.js with GSAP-powered animations, it provides a seamless way to display routes, markers, and geographic data within any Odoo module. Perfect for aviation, logistics, field service, and any application requiring map-based visualization.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <hr class="my-5 bg-secondary" style="height:2px; border:none; opacity:0.5">
+
+    <!-- Key Features Section -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4" style="font-size:2.5rem; font-weight:700; color:#71639e">
+            Key Features
+        </h2>
+        <p class="text-center mb-5" style="font-size:1.1rem; color:#6c757d">
+            Everything you need for professional geographic visualization
+        </p>
+
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <div class="bg-light d-flex align-items-center justify-content-center"
+                             style="width:56px; height:56px; border-radius:12px; margin-bottom:1.5rem">
+                            <i class="fa fa-map-marker" style="font-size:28px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Interactive Maps
+                        </h3>
+                        <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            Leaflet-based map widget with OpenStreetMap integration. Full zoom controls, pan functionality, and responsive design that adapts to any form layout.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <div class="bg-light d-flex align-items-center justify-content-center"
+                             style="width:56px; height:56px; border-radius:12px; margin-bottom:1.5rem">
+                            <i class="fa fa-road" style="font-size:28px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Route Visualization
+                        </h3>
+                        <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            Display flight paths between departure and arrival points with automatic bounds fitting. Support for multiple routes, curved paths, and custom styling.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <div class="bg-light d-flex align-items-center justify-content-center"
+                             style="width:56px; height:56px; border-radius:12px; margin-bottom:1.5rem">
+                            <i class="fa fa-play-circle" style="font-size:28px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Path Animation
+                        </h3>
+                        <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            GSAP-powered smooth animations for route display. Configurable animation duration, easing functions, and sequential path drawing effects for professional presentations.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <div class="bg-light d-flex align-items-center justify-content-center"
+                             style="width:56px; height:56px; border-radius:12px; margin-bottom:1.5rem">
+                            <i class="fa fa-compass" style="font-size:28px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Coordinate Support
+                        </h3>
+                        <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            Handle multiple coordinate formats including decimal degrees, DMS (Degrees/Minutes/Seconds), and arcseconds with automatic conversion and validation.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <div class="bg-light d-flex align-items-center justify-content-center"
+                             style="width:56px; height:56px; border-radius:12px; margin-bottom:1.5rem">
+                            <i class="fa fa-picture-o" style="font-size:28px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Custom Markers
+                        </h3>
+                        <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            Support for custom icons and marker styles. Add labels, tooltips, and popups to markers for enhanced user interaction and information display.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <div class="bg-light d-flex align-items-center justify-content-center"
+                             style="width:56px; height:56px; border-radius:12px; margin-bottom:1.5rem">
+                            <i class="fa fa-refresh" style="font-size:28px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Real-time Updates
+                        </h3>
+                        <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
+                            Dynamic map updates based on field changes. Automatically refresh visualization when underlying data changes in your Odoo forms.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="my-5 bg-secondary" style="height:2px; border:none; opacity:0.5">
+
+    <!-- Technical Specifications -->
+    <section class="mb-5" style="background-color:#f8f9fa; padding:3rem 2rem; border-radius:16px">
+        <h2 class="text-center mb-4" style="font-size:2.5rem; font-weight:700; color:#71639e">
+            Technical Specifications
+        </h2>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-12">
+                <div class="card border-0 shadow-sm h-100" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <h3 style="font-size:1.5rem; font-weight:700; color:#212529; margin-bottom:1.5rem">
+                            Built With
+                        </h3>
+                        <ul style="list-style:none; padding:0; margin:0">
+                            <li class="d-flex align-items-start mb-3">
+                                <i class="fa fa-check-circle" style="color:#28a745; font-size:1.25rem; margin-right:0.75rem; margin-top:0.125rem"></i>
+                                <div>
+                                    <strong style="color:#212529">Leaflet.js 1.9.x</strong>
+                                    <span style="color:#6c757d"> &mdash; Industry-standard mapping library</span>
+                                </div>
+                            </li>
+                            <li class="d-flex align-items-start mb-3">
+                                <i class="fa fa-check-circle" style="color:#28a745; font-size:1.25rem; margin-right:0.75rem; margin-top:0.125rem"></i>
+                                <div>
+                                    <strong style="color:#212529">GSAP 3.x</strong>
+                                    <span style="color:#6c757d"> &mdash; Professional animation platform</span>
+                                </div>
+                            </li>
+                            <li class="d-flex align-items-start mb-3">
+                                <i class="fa fa-check-circle" style="color:#28a745; font-size:1.25rem; margin-right:0.75rem; margin-top:0.125rem"></i>
+                                <div>
+                                    <strong style="color:#212529">OpenStreetMap</strong>
+                                    <span style="color:#6c757d"> &mdash; Free map tile provider</span>
+                                </div>
+                            </li>
+                            <li class="d-flex align-items-start">
+                                <i class="fa fa-check-circle" style="color:#28a745; font-size:1.25rem; margin-right:0.75rem; margin-top:0.125rem"></i>
+                                <div>
+                                    <strong style="color:#212529">Odoo Widget Framework</strong>
+                                    <span style="color:#6c757d"> &mdash; Native Odoo 18.0 integration</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-12">
+                <div class="card border-0 shadow-sm h-100" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <h3 style="font-size:1.5rem; font-weight:700; color:#212529; margin-bottom:1.5rem">
+                            Capabilities
+                        </h3>
+                        <ul style="list-style:none; padding:0; margin:0">
+                            <li class="d-flex align-items-start mb-3">
+                                <i class="fa fa-check" style="color:#71639e; font-size:1rem; margin-right:0.75rem; margin-top:0.25rem"></i>
+                                <span style="color:#495057">Multiple coordinate system support</span>
+                            </li>
+                            <li class="d-flex align-items-start mb-3">
+                                <i class="fa fa-check" style="color:#71639e; font-size:1rem; margin-right:0.75rem; margin-top:0.25rem"></i>
+                                <span style="color:#495057">Automatic bounds fitting</span>
+                            </li>
+                            <li class="d-flex align-items-start mb-3">
+                                <i class="fa fa-check" style="color:#71639e; font-size:1rem; margin-right:0.75rem; margin-top:0.25rem"></i>
+                                <span style="color:#495057">Touch gesture support for mobile</span>
+                            </li>
+                            <li class="d-flex align-items-start mb-3">
+                                <i class="fa fa-check" style="color:#71639e; font-size:1rem; margin-right:0.75rem; margin-top:0.25rem"></i>
+                                <span style="color:#495057">Responsive layout adaptation</span>
+                            </li>
+                            <li class="d-flex align-items-start mb-3">
+                                <i class="fa fa-check" style="color:#71639e; font-size:1rem; margin-right:0.75rem; margin-top:0.25rem"></i>
+                                <span style="color:#495057">Real-time field value updates</span>
+                            </li>
+                            <li class="d-flex align-items-start">
+                                <i class="fa fa-check" style="color:#71639e; font-size:1rem; margin-right:0.75rem; margin-top:0.25rem"></i>
+                                <span style="color:#495057">Optimized for up to 100 markers</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4" style="font-size:2.5rem; font-weight:700; color:#71639e">
+            Use Cases
+        </h2>
+        <p class="text-center mb-5" style="font-size:1.1rem; color:#6c757d">
+            Perfect for any industry requiring geographic visualization
+        </p>
+
+        <div class="row g-4">
+            <div class="col-md-4 col-12">
+                <div class="text-center">
+                    <div class="d-flex align-items-center justify-content-center"
+                         style="width:80px; height:80px; border-radius:50%; background-color:#f5efff; margin:0 auto 1.5rem">
+                        <i class="fa fa-plane" style="color:#71639e; font-size:2.5rem"></i>
+                    </div>
+                    <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                        Aviation
+                    </h3>
+                    <p style="color:#6c757d; font-size:1rem; line-height:1.6; margin-bottom:0">
+                        Display flight routes, departure/arrival airports, and flight paths with smooth animations. Perfect for flight management systems.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-12">
+                <div class="text-center">
+                    <div class="d-flex align-items-center justify-content-center"
+                         style="width:80px; height:80px; border-radius:50%; background-color:#f5efff; margin:0 auto 1.5rem">
+                        <i class="fa fa-truck" style="color:#71639e; font-size:2.5rem"></i>
+                    </div>
+                    <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                        Logistics
+                    </h3>
+                    <p style="color:#6c757d; font-size:1rem; line-height:1.6; margin-bottom:0">
+                        Track delivery routes, warehouse locations, and transportation paths. Visualize supply chain operations geographically.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-12">
+                <div class="text-center">
+                    <div class="d-flex align-items-center justify-content-center"
+                         style="width:80px; height:80px; border-radius:50%; background-color:#f5efff; margin:0 auto 1.5rem">
+                        <i class="fa fa-wrench" style="color:#71639e; font-size:2.5rem"></i>
+                    </div>
+                    <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                        Field Service
+                    </h3>
+                    <p style="color:#6c757d; font-size:1rem; line-height:1.6; margin-bottom:0">
+                        Visualize service territories, technician routes, and customer locations. Plan efficient field service operations.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="my-5 bg-secondary" style="height:2px; border:none; opacity:0.5">
+
+    <!-- Usage Section -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4" style="font-size:2.5rem; font-weight:700; color:#71639e">
+            How to Use
+        </h2>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-12">
+                <div class="card border-0 shadow-sm" style="border-radius:16px; margin-bottom:2rem">
+                    <div class="card-body p-4">
+                        <h3 style="font-size:1.5rem; font-weight:700; color:#212529; margin-bottom:1.5rem">
+                            Step 1: Inherit the Mixin
+                        </h3>
+                        <p style="color:#495057; margin-bottom:1rem; line-height:1.6">
+                            Add the map.path.mixin to your Python model:
+                        </p>
+                        <pre class="bg-dark" style="color:#ffffff; margin:0; padding:1.25rem; border-radius:12px; border:none; white-space:pre; font-family:monospace; font-size:0.85rem; line-height:1.6">from odoo import models, fields
+
+class YourModel(models.Model):
+    _name = 'your.model'
+    _inherit = 'map.path.mixin'
+
+    map_data = fields.Text('Map Data')</pre>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm" style="border-radius:16px; margin-bottom:2rem">
+                    <div class="card-body p-4">
+                        <h3 style="font-size:1.5rem; font-weight:700; color:#212529; margin-bottom:1.5rem">
+                            Step 2: Add Widget to Your View
+                        </h3>
+                        <p style="color:#495057; margin-bottom:1rem; line-height:1.6">
+                            Add the widget attribute to your field in XML:
+                        </p>
+                        <pre class="bg-dark" style="color:#ffffff; margin:0; padding:1.25rem; border-radius:12px; border:none; white-space:pre; font-family:monospace; font-size:0.85rem; line-height:1.6">&lt;field name="map_data" widget="flight_map_view"/&gt;</pre>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4">
+                        <h3 style="font-size:1.5rem; font-weight:700; color:#212529; margin-bottom:1.5rem">
+                            Step 3: Provide Map Data
+                        </h3>
+                        <p style="color:#495057; margin-bottom:1rem; line-height:1.6">
+                            The widget expects JSON data with this structure:
+                        </p>
+                        <pre class="bg-dark" style="color:#ffffff; margin:0; padding:1.25rem; border-radius:12px; border:none; white-space:pre; font-family:monospace; font-size:0.85rem; line-height:1.6">{
+  "paths": [
+    {
+      "from": { "lat": 43.238949, "lng": 76.889709 },
+      "to": { "lat": 25.252829, "lng": 55.364471 },
+      "label": "ALA &rarr; DXB"
+    }
+  ],
+  "markers": [
+    {
+      "lat": 43.238949,
+      "lng": 76.889709,
+      "label": "Almaty Airport"
+    }
+  ]
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Integration Section -->
+    <section class="mb-5">
+        <div class="text-center bg-light" style="padding:3rem 2rem; border-radius:16px">
+            <h3 style="color:#212529; font-weight:700; font-size:2rem; margin-bottom:1rem">
+                Part of SmartOps Flight Suite
+            </h3>
+            <p style="color:#495057; font-size:1.1rem; margin-bottom:1.5rem; line-height:1.6">
+                This widget is designed to work seamlessly with the SmartOps Flight management modules.<br>
+                Install as a standalone widget or as part of the complete aviation suite.
+            </p>
+            <p style="color:#71639e; font-weight:600; margin-bottom:0">
+                <code style="background-color:#fff; padding:0.5rem 1rem; border-radius:8px; font-size:0.95rem">
+                    github.com/smartops-aero/smartops-odoo-flight
+                </code>
+            </p>
+        </div>
+    </section>
+
+    <hr class="my-5 bg-secondary" style="height:2px; border:none; opacity:0.5">
+
+    <!-- Support Section -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4" style="font-size:2.5rem; font-weight:700; color:#71639e">
+            Support &amp; Documentation
+        </h2>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4 text-center">
+                        <div class="bg-light d-flex align-items-center justify-content-center"
+                             style="width:64px; height:64px; border-radius:12px; margin:0 auto 1.5rem">
+                            <i class="fa fa-book" style="font-size:32px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Documentation
+                        </h3>
+                        <p style="color:#6c757d; margin-bottom:1.5rem; line-height:1.6">
+                            Complete API reference, integration guides, and examples available in the module README.
+                        </p>
+                        <code style="background-color:#f8f9fa; padding:0.5rem 1rem; border-radius:8px; font-size:0.9rem; color:#495057">
+                            README.md in module folder
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-12">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+                    <div class="card-body p-4 text-center">
+                        <div class="bg-light d-flex align-items-center justify-content-center"
+                             style="width:64px; height:64px; border-radius:12px; margin:0 auto 1.5rem">
+                            <i class="fa fa-envelope" style="font-size:32px; color:#71639e"></i>
+                        </div>
+                        <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
+                            Need Help?
+                        </h3>
+                        <p style="color:#6c757d; margin-bottom:1.5rem; line-height:1.6">
+                            Our team is here to help with integration, customization, and technical support.
+                        </p>
+                        <a href="mailto:support@apexive.com"
+                           style="color:#71639e; font-weight:600; text-decoration:none">
+                            <i class="fa fa-envelope" style="margin-right:0.5rem"></i>
+                            support@apexive.com
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Browser Support -->
+    <section class="mb-5">
+        <div class="card border-0 shadow-sm" style="border-radius:16px; background-color:#f8f9fa">
+            <div class="card-body p-4">
+                <h3 class="text-center" style="font-size:1.5rem; font-weight:700; color:#212529; margin-bottom:2rem">
+                    Browser Support
+                </h3>
+                <div class="row text-center">
+                    <div class="col-md-3 col-6 mb-3">
+                        <i class="fa fa-chrome" style="font-size:2rem; color:#6c757d; margin-bottom:0.5rem"></i>
+                        <p style="color:#495057; margin-bottom:0; font-size:0.9rem">Chrome 90+</p>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <i class="fa fa-firefox" style="font-size:2rem; color:#6c757d; margin-bottom:0.5rem"></i>
+                        <p style="color:#495057; margin-bottom:0; font-size:0.9rem">Firefox 88+</p>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <i class="fa fa-safari" style="font-size:2rem; color:#6c757d; margin-bottom:0.5rem"></i>
+                        <p style="color:#495057; margin-bottom:0; font-size:0.9rem">Safari 14+</p>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <i class="fa fa-edge" style="font-size:2rem; color:#6c757d; margin-bottom:0.5rem"></i>
+                        <p style="color:#495057; margin-bottom:0; font-size:0.9rem">Edge 90+</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Footer -->
+<footer style="background-color:#71639e; padding:3rem 2rem; border-radius:16px; margin:2rem 0">
+    <div class="container">
+        <div class="text-center">
+            <h4 style="font-weight:700; color:#ffffff; font-size:1.75rem; margin-bottom:0.75rem">
+                Flight Widget &mdash; Map View
+            </h4>
+            <p style="color:#e9d5ff; font-size:1.1rem; margin-bottom:1.5rem">
+                Professional geographic visualization for Odoo 18.0
+            </p>
+            <p style="color:#e9d5ff; margin-bottom:0.25rem">
+                Developed by <strong style="color:#ffffff">Apexive Solutions LLC</strong>
+            </p>
+            <p style="color:#d4c5f9; font-size:0.95rem; margin-bottom:1rem">
+                Part of the SmartOps Flight Management Suite
+            </p>
+            <p style="color:#e0d4ec; font-size:0.9rem; margin-bottom:0">
+                Licensed under LGPL-3 &bull; &copy; 2025 Apexive Solutions LLC
+            </p>
+        </div>
+    </div>
+</footer>

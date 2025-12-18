@@ -4,7 +4,7 @@
 
 ### Prerequisites
 
-- Odoo 18.0 installed at `/path/to/kzr-odoo`
+- Odoo 18.0 installed at `/path/to/odoo`
 - PostgreSQL running with user `odoo` and password `odoo`
 - Python virtual environment activated: `source .venv/bin/activate`
 
@@ -18,7 +18,7 @@
 ### Run Specific Module Tests
 
 ```bash
-# From the kzr-odoo directory
+# From the odoo directory
 source .venv/bin/activate
 
 # Run all flight module tests

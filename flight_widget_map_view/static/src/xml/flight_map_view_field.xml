@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="flight_widget_map_view.FlightMapViewField">
+        <div
+      t-att-id="mapId"
+      class="o_flight_map_view"
+      t-att-style="mapStyle"
+    />
+    </t>
+</templates>
