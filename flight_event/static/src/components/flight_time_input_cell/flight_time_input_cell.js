@@ -363,4 +363,18 @@ export class FlightTimeInputCell extends Component {
   get isReadonly() {
     return this.props.readonly || this.props.displayOnly;
   }
+
+  /**
+   * Get tooltip text explaining input format
+   * @returns {String}
+   */
+  get inputTooltip() {
+    if (this.props.displayOnly) {
+      return this.props.displayTz ? `Time in ${this.props.displayTz}` : "";
+    }
+    const tz = this.props.displayTz || "local";
+    return `Enter time in ${tz}\n` +
+      `Format: HH:mm, HH:mm ±D, or HH:mm TZ\n` +
+      `Examples: 14:30, 02:15 +1, 23:45 -1 UTC`;
+  }
 }
