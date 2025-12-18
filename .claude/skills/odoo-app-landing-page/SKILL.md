@@ -22,37 +22,44 @@ Odoo App Store has strict HTML/CSS sanitization that strips many common patterns
 ### ❌ NEVER USE (Will Be Stripped)
 
 1. **NO DOCTYPE or full HTML structure**
+
    - Don't include `<!DOCTYPE>`, `<html>`, `<head>`, `<body>` tags
    - Start directly with `<section>` tags
 
 2. **NO inline flexbox alignment properties**
+
    ```html
    <!-- ❌ BAD - Will be stripped -->
    <div style="display:flex; align-items:center; justify-content:center">
-
-   <!-- ✅ GOOD - Use Bootstrap classes -->
-   <div class="d-flex align-items-center justify-content-center">
+     <!-- ✅ GOOD - Use Bootstrap classes -->
+     <div class="d-flex align-items-center justify-content-center"></div>
+   </div>
    ```
 
 3. **NO rgba() colors**
+
    ```html
    <!-- ❌ BAD -->
    <div style="background-color:rgba(135,90,123,0.1)">
-
-   <!-- ✅ GOOD - Use hex -->
-   <div style="background-color:#f5efff">
+     <!-- ✅ GOOD - Use hex -->
+     <div style="background-color:#f5efff"></div>
+   </div>
    ```
 
 4. **NO transitions, transforms, or animations**
+
    - These CSS properties are completely stripped
 
 5. **NO inline JavaScript**
+
    - No `onclick`, `onmouseover`, or any event handlers
 
 6. **NO linear gradients**
+
    - Use solid colors only
 
 7. **NO external links (mostly)**
+
    ```html
    <!-- ❌ BAD - Becomes <span> -->
    <a href="https://github.com/yourorg">GitHub</a>
@@ -65,6 +72,7 @@ Odoo App Store has strict HTML/CSS sanitization that strips many common patterns
    ```
 
 8. **NO unicode special characters**
+
    ```html
    <!-- ❌ BAD - Becomes garbled (→ becomes â) -->
    Preferences → API Keys
@@ -76,31 +84,45 @@ Odoo App Store has strict HTML/CSS sanitization that strips many common patterns
 ### ✅ ALWAYS USE (Safe Patterns)
 
 1. **Bootstrap 5 grid system**
+
    - `container`, `row`, `col-md-*`, `col-lg-*`, `col-12`
 
 2. **Bootstrap utility classes**
+
    - `d-flex`, `align-items-center`, `justify-content-center`
    - `p-4`, `mb-5`, `mt-3`, `mx-auto`
    - `text-center`, `shadow-sm`, `h-100`
 
 3. **Hex colors only**
+
    - `#875A7B` (Odoo purple), `#f8f9fa`, `#333`, `#fff`
 
 4. **Inline styles for**
+
    - `color`, `background-color`, `font-size`, `font-weight`
    - `padding`, `margin`, `border-radius`, `border`
    - `line-height`, `text-align`, `width`, `height`
 
 5. **Icon centering alternatives**
+
    ```html
    <!-- Method 1: text-center + line-height -->
-   <div class="text-center" style="width:64px; height:64px; line-height:64px; border-radius:50%; background-color:#875A7B">
-       <i class="fa fa-icon" style="color:#fff; font-size:32px; vertical-align:middle"></i>
+   <div
+     class="text-center"
+     style="width:64px; height:64px; line-height:64px; border-radius:50%; background-color:#875A7B"
+   >
+     <i
+       class="fa fa-icon"
+       style="color:#fff; font-size:32px; vertical-align:middle"
+     ></i>
    </div>
 
    <!-- Method 2: Bootstrap flex classes -->
-   <div class="d-flex align-items-center justify-content-center" style="width:64px; height:64px; border-radius:50%; background-color:#875A7B">
-       <i class="fa fa-icon" style="color:#fff; font-size:32px"></i>
+   <div
+     class="d-flex align-items-center justify-content-center"
+     style="width:64px; height:64px; border-radius:50%; background-color:#875A7B"
+   >
+     <i class="fa fa-icon" style="color:#fff; font-size:32px"></i>
    </div>
    ```
 
@@ -112,6 +134,7 @@ Odoo App Store has strict HTML/CSS sanitization that strips many common patterns
 ### 1. Gather Module Information
 
 Ask the user (if not already provided):
+
 - Module name and technical name
 - Brief description (1-2 sentences)
 - Key features (3-6 main features)
@@ -190,17 +213,20 @@ Use this proven structure:
 Use these safe hex colors:
 
 **Primary Colors:**
+
 - Odoo Purple: `#875A7B` or `#71639e` (from example)
 - Dark text: `#212529`, `#333`, `#495057`
 - Medium gray: `#6c757d`, `#666`
 - Light gray: `#868e96`
 
 **Backgrounds:**
+
 - Very light: `#f8f9fa`
 - Light purple tint: `#f5efff`, `#f7f2fa`
 - White: `#fff` or `#ffffff`
 
 **Accents:**
+
 - Success green: `#28a745`, `#155724`
 - Info blue: `#17a2b8`, `#0c5460`
 - Warning: `#ffc107`
@@ -213,39 +239,48 @@ Use these safe hex colors:
 ```html
 <!-- 3 columns on desktop, 1 on mobile -->
 <div class="col-md-4 col-12 mb-4">
-
-<!-- 4 columns on desktop, 2 on tablet, 1 on mobile -->
-<div class="col-md-3 col-sm-6 col-12 mb-4">
-
-<!-- 6 on large, 4 on medium, 2 on small -->
-<div class="col-lg-2 col-md-4 col-6 mb-4">
+  <!-- 4 columns on desktop, 2 on tablet, 1 on mobile -->
+  <div class="col-md-3 col-sm-6 col-12 mb-4">
+    <!-- 6 on large, 4 on medium, 2 on small -->
+    <div class="col-lg-2 col-md-4 col-6 mb-4"></div>
+  </div>
+</div>
 ```
 
 ### 6. Card Components Pattern
 
 ```html
 <div class="col-md-4 col-12 mb-4">
-    <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
-        <div class="card-body p-4">
-            <div class="bg-light d-flex align-items-center justify-content-center"
-                 style="width:56px; height:56px; border-radius:12px; margin-bottom:1.5rem">
-                <i class="fa fa-icon-name" style="font-size:28px; color:#71639e"></i>
-            </div>
-            <h3 style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem">
-                Feature Title
-            </h3>
-            <p style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0">
-                Feature description text
-            </p>
-        </div>
+  <div class="card h-100 border-0 shadow-sm" style="border-radius:16px">
+    <div class="card-body p-4">
+      <div
+        class="bg-light d-flex align-items-center justify-content-center"
+        style="width:56px; height:56px; border-radius:12px; margin-bottom:1.5rem"
+      >
+        <i class="fa fa-icon-name" style="font-size:28px; color:#71639e"></i>
+      </div>
+      <h3
+        style="font-size:1.25rem; font-weight:700; color:#212529; margin-bottom:1rem"
+      >
+        Feature Title
+      </h3>
+      <p
+        style="color:#6c757d; font-size:0.95rem; line-height:1.7; margin-bottom:0"
+      >
+        Feature description text
+      </p>
     </div>
+  </div>
 </div>
 ```
 
 ### 7. Code Examples Pattern
 
 ```html
-<pre class="bg-dark" style="color:#ffffff; margin:0; padding:1.25rem; border-radius:12px; border:none; white-space:pre; font-family:monospace; font-size:0.85rem; line-height:1.6">
+<pre
+  class="bg-dark"
+  style="color:#ffffff; margin:0; padding:1.25rem; border-radius:12px; border:none; white-space:pre; font-family:monospace; font-size:0.85rem; line-height:1.6"
+>
 # Your code here
 def example():
     pass
@@ -261,7 +296,7 @@ Before completing, verify:
 - [ ] No CSS transitions, transforms, or animations
 - [ ] No inline JavaScript handlers
 - [ ] No inline flexbox alignment properties (use Bootstrap classes)
-- [ ] Using Bootstrap 5 grid (container, row, col-*)
+- [ ] Using Bootstrap 5 grid (container, row, col-\*)
 - [ ] All sections have responsive columns
 - [ ] Icon centering uses text-center + line-height OR Bootstrap flex classes
 - [ ] Special characters use HTML entities (&rarr; not →)
@@ -271,6 +306,7 @@ Before completing, verify:
 ### 9. File Location
 
 Landing pages go in:
+
 ```
 MODULE_NAME/static/description/index.html
 ```
@@ -278,60 +314,76 @@ MODULE_NAME/static/description/index.html
 ### 10. Image References
 
 If the module has images:
+
 ```html
-<img src="//apps.odoocdn.com/apps/assets/18.0/MODULE_TECHNICAL_NAME/screenshot.png"
-     alt="Descriptive alt text"
-     class="img-fluid rounded"
-     style="max-width:100%">
+<img
+  src="//apps.odoocdn.com/apps/assets/18.0/MODULE_TECHNICAL_NAME/screenshot.png"
+  alt="Descriptive alt text"
+  class="img-fluid rounded"
+  style="max-width:100%"
+/>
 ```
 
 ## Common Patterns Library
 
 ### Hero Section
+
 ```html
 <section style="padding:4rem 0 3rem">
-    <div class="container">
-        <div class="text-center" style="max-width:800px; margin:0 auto">
-            <h1 style="font-size:3rem; font-weight:800; color:#212529; margin-bottom:1.5rem; line-height:1.2">
-                Your Module Title
-            </h1>
-            <p style="font-size:1.25rem; color:#6c757d; margin-bottom:2rem; line-height:1.6">
-                Brief compelling description
-            </p>
-        </div>
+  <div class="container">
+    <div class="text-center" style="max-width:800px; margin:0 auto">
+      <h1
+        style="font-size:3rem; font-weight:800; color:#212529; margin-bottom:1.5rem; line-height:1.2"
+      >
+        Your Module Title
+      </h1>
+      <p
+        style="font-size:1.25rem; color:#6c757d; margin-bottom:2rem; line-height:1.6"
+      >
+        Brief compelling description
+      </p>
     </div>
+  </div>
 </section>
 ```
 
 ### Section Divider
+
 ```html
-<hr class="my-5 bg-secondary" style="height:2px; border:none; opacity:0.5">
+<hr class="my-5 bg-secondary" style="height:2px; border:none; opacity:0.5" />
 ```
 
 ### Feature Grid
+
 ```html
 <div class="row g-4">
-    <div class="col-md-4 col-12">
-        <!-- Feature card -->
-    </div>
-    <div class="col-md-4 col-12">
-        <!-- Feature card -->
-    </div>
-    <div class="col-md-4 col-12">
-        <!-- Feature card -->
-    </div>
+  <div class="col-md-4 col-12">
+    <!-- Feature card -->
+  </div>
+  <div class="col-md-4 col-12">
+    <!-- Feature card -->
+  </div>
+  <div class="col-md-4 col-12">
+    <!-- Feature card -->
+  </div>
 </div>
 ```
 
 ### Call-to-Action Box
+
 ```html
-<div class="text-center mb-5 bg-primary" style="padding:3rem 2rem; border-radius:16px">
-    <h3 style="color:#ffffff; font-weight:700; font-size:2rem; margin-bottom:1rem">
-        Call to Action Title
-    </h3>
-    <p style="color:#f8f9fa; font-size:1.1rem; margin-bottom:0">
-        Supporting text
-    </p>
+<div
+  class="text-center mb-5 bg-primary"
+  style="padding:3rem 2rem; border-radius:16px"
+>
+  <h3
+    style="color:#ffffff; font-weight:700; font-size:2rem; margin-bottom:1rem"
+  >
+    Call to Action Title
+  </h3>
+  <p style="color:#f8f9fa; font-size:1.1rem; margin-bottom:0">
+    Supporting text
+  </p>
 </div>
 ```
 
@@ -365,6 +417,7 @@ If the module has images:
 ## Final Notes
 
 The Odoo App Store sanitizer is aggressive. When in doubt:
+
 1. Check the guide (`ODOO_APP_STORE_HTML_GUIDE.md`)
 2. Look at the working example (`llm_mcp_server/static/description/index.html`)
 3. Use Bootstrap classes instead of inline styles for layout
