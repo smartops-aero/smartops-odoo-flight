@@ -24,8 +24,8 @@ export class FlightTimeInputCell extends Component {
   static template = "flight_event.FlightTimeInputCell";
   static props = {
     value: { type: [DateTime, Boolean], optional: true },
-    eventCode: { type: Object, optional: true },
-    timeKind: { type: Object, optional: true },
+    eventCode: { type: String, optional: true },
+    timeKind: { type: String, optional: true },
     date: DateTime,
     onUpdate: Function,
     readonly: Boolean,

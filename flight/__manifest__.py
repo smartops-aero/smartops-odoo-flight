@@ -26,6 +26,7 @@
         "mail",
         "web",
         "flight_uom",
+        "flight_widget_map_view",
     ],
     "demo": [
         "demo/flight_demo.xml",
