@@ -2,6 +2,12 @@
 Changelog
 =========
 
+18.0.1.2.0
+----------
+
+* Fix view inheritance to use position="after" instead of position="replace"
+* Fix FlightTimeInputCell prop validation (eventCode and timeKind as String)
+
 18.0.1.1.0
 ----------
 
