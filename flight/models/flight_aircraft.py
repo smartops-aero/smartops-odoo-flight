@@ -106,7 +106,7 @@ class FlightAircraft(models.Model):
     _rec_name = "registration"
     _avatar_name_field = "registration"
 
-    registration = fields.Char("Aircraft registration", tracking=True)
+    registration = fields.Char("Aircraft registration", tracking=True, copy=False)
     icao24 = fields.Char(
         "ICAO24 Address",
         size=6,
