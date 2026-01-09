@@ -10,6 +10,7 @@ export class FlightMapViewField extends Component {
     ...standardFieldProps,
     height: { type: String, optional: true },
     width: { type: String, optional: true },
+    animate: { type: Boolean, optional: true },
   };
 
   setup() {
@@ -144,8 +145,10 @@ export class FlightMapViewField extends Component {
     const polyline = L.polyline(pathData.points, polylineOptions);
     polyline.addTo(this.map);
 
-    // Add simple animation if requested
-    if (options.animated) {
+    // Add animation if: view allows it (animate !== false) AND path requests it
+    const viewAllowsAnimation = this.props.animate !== false;
+    const pathRequestsAnimation = options.animated;
+    if (viewAllowsAnimation && pathRequestsAnimation) {
       this._animatePath(polyline, options);
     }
   }
@@ -255,7 +258,7 @@ export class FlightMapViewField extends Component {
       };
       gsap.set(element, { ...defaultInitialState, ...initialState });
 
-      // Create GSAP timeline like the explosion example
+      // Create GSAP timeline
       const timeline = gsap.timeline({
         repeat: loop ? -1 : 0,
         repeatDelay: 0.5,
@@ -386,6 +389,7 @@ export const flightMapViewField = {
   extractProps: ({ options }) => ({
     height: options.height,
     width: options.width,
+    animate: options.animate,
   }),
 };
 
