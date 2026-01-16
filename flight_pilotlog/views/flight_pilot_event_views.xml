@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Flight Pilot Event Code Views -->
+    <record id="view_flight_pilot_event_code_tree" model="ir.ui.view">
+        <field name="name">flight.pilot.event.code.tree</field>
+        <field name="model">flight.pilot.event.code</field>
+        <field name="arch" type="xml">
+            <tree string="Event Codes">
+                <field name="sequence" widget="handle" />
+                <field name="code" />
+                <field name="name" />
+                <field name="description" />
+                <field name="active" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_flight_pilot_event_code_form" model="ir.ui.view">
+        <field name="name">flight.pilot.event.code.form</field>
+        <field name="model">flight.pilot.event.code</field>
+        <field name="arch" type="xml">
+            <form string="Event Code">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+              name="toggle_active"
+              type="object"
+              class="oe_stat_button"
+              icon="fa-archive"
+            >
+                            <field name="active" widget="boolean_button" />
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code" />
+                            <field name="name" />
+                            <field name="sequence" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field
+                name="description"
+                nolabel="1"
+                placeholder="Detailed description of this event code..."
+              />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_flight_pilot_event_code_search" model="ir.ui.view">
+        <field name="name">flight.pilot.event.code.search</field>
+        <field name="model">flight.pilot.event.code</field>
+        <field name="arch" type="xml">
+            <search string="Search Event Codes">
+                <field name="name" />
+                <field name="code" />
+                <field name="description" />
+                <filter
+          string="Archived"
+          name="inactive"
+          domain="[('active', '=', False)]"
+        />
+            </search>
+        </field>
+    </record>
+
+    <record
+    id="action_flight_pilot_event_code_list"
+    model="ir.actions.act_window"
+  >
+        <field name="name">Event Codes</field>
+        <field name="res_model">flight.pilot.event.code</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first event code
+            </p>
+            <p>
+                Event codes are used to categorize pilot events during flights.
+            </p>
+        </field>
+    </record>
+
+    <!-- Flight Pilot Event Views -->
+    <record id="view_flight_pilot_event_tree" model="ir.ui.view">
+        <field name="name">flight.pilot.event.tree</field>
+        <field name="model">flight.pilot.event</field>
+        <field name="arch" type="xml">
+            <tree string="Pilot Events">
+                <field name="flight_id" />
+                <field name="partner_id" />
+                <field name="event_code_id" />
+                <field name="count" />
+                <field name="datetime" />
+                <field name="date" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_flight_pilot_event_form" model="ir.ui.view">
+        <field name="name">flight.pilot.event.form</field>
+        <field name="model">flight.pilot.event</field>
+        <field name="arch" type="xml">
+            <form string="Pilot Event">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="flight_id" />
+                            <field name="partner_id" />
+                            <field name="event_code_id" />
+                        </group>
+                        <group>
+                            <field name="count" />
+                            <field name="datetime" />
+                            <field name="date" readonly="1" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_flight_pilot_event_search" model="ir.ui.view">
+        <field name="name">flight.pilot.event.search</field>
+        <field name="model">flight.pilot.event</field>
+        <field name="arch" type="xml">
+            <search string="Search Pilot Events">
+                <field name="flight_id" />
+                <field name="partner_id" />
+                <field name="event_code_id" />
+                <field name="date" />
+                <filter
+          string="This Month"
+          name="this_month"
+          domain="[('date','&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')),('date','&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"
+        />
+                <filter
+          string="This Year"
+          name="this_year"
+          domain="[('date','&gt;=', (context_today() + relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),('date','&lt;=', (context_today() + relativedelta(years=1, month=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"
+        />
+                <group expand="0" string="Group By">
+                    <filter
+            string="Flight"
+            name="group_by_flight"
+            domain="[]"
+            context="{'group_by':'flight_id'}"
+          />
+                    <filter
+            string="Pilot"
+            name="group_by_pilot"
+            domain="[]"
+            context="{'group_by':'partner_id'}"
+          />
+                    <filter
+            string="Event Code"
+            name="group_by_event_code"
+            domain="[]"
+            context="{'group_by':'event_code_id'}"
+          />
+                    <filter
+            string="Date"
+            name="group_by_date"
+            domain="[]"
+            context="{'group_by':'date'}"
+          />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_flight_pilot_event_list" model="ir.actions.act_window">
+        <field name="name">Pilot Events</field>
+        <field name="res_model">flight.pilot.event</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first pilot event
+            </p>
+            <p>
+                Pilot events track specific occurrences during flights.
+            </p>
+        </field>
+    </record>
+
+    <!-- Pilot Event Analysis View -->
+    <record id="view_flight_pilot_event_pivot" model="ir.ui.view">
+        <field name="name">flight.pilot.event.pivot</field>
+        <field name="model">flight.pilot.event</field>
+        <field name="arch" type="xml">
+            <pivot string="Pilot Event Analysis">
+                <field name="partner_id" type="row" />
+                <field name="event_code_id" type="row" />
+                <field name="count" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_flight_pilot_event_graph" model="ir.ui.view">
+        <field name="name">flight.pilot.event.graph</field>
+        <field name="model">flight.pilot.event</field>
+        <field name="arch" type="xml">
+            <graph string="Pilot Event Analysis" type="bar">
+                <field name="partner_id" />
+                <field name="event_code_id" />
+                <field name="count" type="measure" />
+            </graph>
+        </field>
+    </record>
+
+    <record
+    id="action_flight_pilot_event_by_pilot"
+    model="ir.actions.act_window"
+  >
+        <field name="name">Event Analysis</field>
+        <field name="res_model">flight.pilot.event</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="context">{'search_default_group_by_pilot': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No event data available
+            </p>
+            <p>
+                Create pilot events to analyze their occurrences.
+            </p>
+        </field>
+    </record>
+</odoo>
