@@ -17,7 +17,7 @@ class ResCountry(models.Model):
     records belong to ``base`` (loaded ``noupdate="1"``), Odoo skips the CSV on
     plain ``-u flight`` upgrades; a version-pinned migration reloads it in
     ``mode='init'`` to force the values through — see
-    ``migrations/18.0.1.5.2/post-migrate.py``.
+    ``migrations/18.0.1.5.3/post-migrate.py``.
     """
 
     _inherit = "res.country"
