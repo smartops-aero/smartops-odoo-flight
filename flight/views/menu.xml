@@ -117,4 +117,13 @@
     parent="menu_flight_configuration"
     sequence="30"
   />
+
+  <menuitem
+    id="menu_res_country_icao_prefixes"
+    name="Country ICAO Prefixes"
+    parent="menu_flight_configuration"
+    action="action_res_country_icao_prefixes"
+    sequence="18"
+    groups="flight.group_flight_manager,base.group_system"
+  />
 </odoo>

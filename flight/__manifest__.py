@@ -17,7 +17,7 @@
     "website": "https://github.com/smartops-aero/smartops-odoo-flight",
     "license": "LGPL-3",
     "category": "Industries",
-    "version": "18.0.1.4.0",
+    "version": "18.0.1.5.0",
     "images": [
         "static/description/banner.jpeg",
     ],
@@ -38,9 +38,11 @@
         "views/aircraft_views.xml",
         "views/aerodrome_views.xml",
         "views/flight_aerodrome_runway_views.xml",
+        "views/res_country_views.xml",
         "views/menu.xml",
         "data/flight.aircraft.class.csv",
         "data/flight.aircraft.model.tag.csv",
+        "data/res.country.csv",
         # 'data/flight.aerodrome.csv',
     ],
 }

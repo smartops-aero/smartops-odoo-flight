@@ -4,6 +4,8 @@ Generate aerodrome and runway CSV data for Odoo import.
 
 Aerodrome data: From airportsdata Python library (~28,000 airports)
 Runway data: From OurAirports database (https://davidmegginson.github.io/ourairports-data/)
+ICAO country prefixes: derived from the same airportsdata dataset — the ICAO
+    location-indicator prefix -> country table (res.country.icao_prefixes).
 
 Usage:
     1. Download runway source data:
@@ -12,9 +14,10 @@ Usage:
     2. Run this script:
        python3 generate_aerodrome_csv.py
 
-    3. Import generated CSVs in Odoo:
+    3. Generated CSVs:
        - flight.aerodrome.csv
        - flight.aerodrome.runway.csv
+       - res.country.csv          (loaded on module install/upgrade)
 
 Known Issues:
     1. Deprecated Timezones: The airportsdata library may include deprecated timezone
@@ -31,6 +34,7 @@ Known Issues:
          - Use odoo shell to load records programmatically
 """
 import csv
+from collections import Counter, defaultdict
 
 import airportsdata
 
@@ -250,10 +254,65 @@ print(f"   - Skipped (missing ICAO): {skipped_missing_icao}")
 print(f"   - Skipped (no valid dimensions): {skipped_invalid_dimensions}")
 print(f"📄 Output: {RUNWAY_OUTPUT}")
 
+# =============================================================================
+# PART 3: GENERATE ICAO COUNTRY PREFIXES
+# =============================================================================
+print("\n🌍 PART 3: Generating ICAO country prefixes...")
+
+# Reload unmutated data (PART 1 pops fields from the aerodrome dicts).
+prefix_source = airportsdata.load("ICAO")
+
+# Count airports per (prefix, country) at prefix lengths 1..3.
+_prefix_counts = {1: defaultdict(Counter), 2: defaultdict(Counter), 3: defaultdict(Counter)}
+for _icao, _rec in prefix_source.items():
+    _iso = _rec.get("country")
+    if not _iso or not _icao.isalpha() or len(_icao) != 4:
+        continue
+    for _length in (1, 2, 3):
+        _prefix_counts[_length][_icao[:_length]][_iso] += 1
+
+
+def _clean_country(prefix):
+    """Return the country a prefix cleanly belongs to (>=97% of its airports,
+    at most 3 stray), else None. Skips non-standard X* codes."""
+    counter = _prefix_counts[len(prefix)][prefix]
+    dominant, n = counter.most_common(1)[0]
+    total = sum(counter.values())
+    if n / total >= 0.97 and (total - n) <= 3 and not prefix.startswith("X"):
+        return dominant
+    return None
+
+
+# For each airport, take the SHORTEST clean prefix and collect it per country.
+# This yields 2-letter prefixes where a country owns them, and a 3-letter split
+# for genuinely shared regions (e.g. UAF=Kyrgyzstan vs UAA..=Kazakhstan).
+country_prefixes = defaultdict(set)
+for _icao, _rec in prefix_source.items():
+    _iso = _rec.get("country")
+    if not _iso or not _icao.isalpha() or len(_icao) != 4:
+        continue
+    for _length in (1, 2, 3):
+        _dominant = _clean_country(_icao[:_length])
+        if _dominant:
+            country_prefixes[_dominant].add(_icao[:_length])
+            break
+
+PREFIX_OUTPUT = "res.country.csv"
+with open(PREFIX_OUTPUT, "w", newline="", encoding="utf-8") as csvfile:
+    writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+    writer.writerow(["id", "icao_prefixes"])
+    for _iso in sorted(country_prefixes):
+        _xmlid = "base.uk" if _iso == "GB" else f"base.{_iso.lower()}"
+        writer.writerow([_xmlid, " ".join(sorted(country_prefixes[_iso]))])
+
+print(f"✅ Generated {len(country_prefixes)} country prefix rows")
+print(f"📄 Output: {PREFIX_OUTPUT}")
+
 print("\n" + "=" * 80)
 print("✅ GENERATION COMPLETE!")
 print("=" * 80)
 print("\nGenerated files:")
 print(f"  1. {AERODROME_OUTPUT} ({len(airports)} aerodromes)")
 print(f"  2. {RUNWAY_OUTPUT} ({matched_count} runways with dimensions)")
+print(f"  3. {PREFIX_OUTPUT} ({len(country_prefixes)} country prefix rows)")
 print("\nImport these files in Odoo via Settings → Technical → Database Structure")

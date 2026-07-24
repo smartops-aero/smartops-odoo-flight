@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Expose the ICAO prefixes on the country form. -->
+    <record id="view_res_country_form_icao_prefixes" model="ir.ui.view">
+        <field name="name">res.country.form.icao.prefixes</field>
+        <field name="model">res.country</field>
+        <field name="inherit_id" ref="base.view_country_form" />
+        <field name="arch" type="xml">
+            <field name="code" position="after">
+                <field name="icao_prefixes" placeholder="e.g. EH  or  ED ET" />
+            </field>
+        </field>
+    </record>
+
+    <!-- Purpose-built inline-editable list so the FIR-to-country mapping can be
+         maintained from Flight > Configuration without developer mode. -->
+    <record id="view_res_country_list_icao_prefixes" model="ir.ui.view">
+        <field name="name">res.country.list.icao.prefixes</field>
+        <field name="model">res.country</field>
+        <field name="arch" type="xml">
+            <list string="Country ICAO Prefixes" editable="bottom">
+                <field name="name" readonly="1" />
+                <field name="code" readonly="1" />
+                <field name="icao_prefixes" placeholder="e.g. EH  or  ED ET" />
+            </list>
+        </field>
+    </record>
+
+    <record id="view_res_country_search_icao_prefixes" model="ir.ui.view">
+        <field name="name">res.country.search.icao.prefixes</field>
+        <field name="model">res.country</field>
+        <field name="inherit_id" ref="base.view_country_search" />
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="icao_prefixes" />
+                <filter
+          name="icao_prefixes_set"
+          string="ICAO Prefixes set"
+          domain="[('icao_prefixes', '!=', False)]"
+        />
+            </field>
+        </field>
+    </record>
+
+    <record id="action_res_country_icao_prefixes" model="ir.actions.act_window">
+        <field name="name">Country ICAO Prefixes</field>
+        <field name="res_model">res.country</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_res_country_list_icao_prefixes" />
+        <field name="context">{"search_default_icao_prefixes_set": 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Maintain the ICAO location-indicator prefixes per country.
+            </p>
+            <p>
+                These resolve the FIRs / aerodrome codes in a flight plan to
+                countries (longest match wins). The defaults are derived from
+                the airportsdata dataset; refine them here as needed.
+            </p>
+        </field>
+    </record>
+</odoo>
