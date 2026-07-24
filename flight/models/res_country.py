@@ -11,9 +11,13 @@ class ResCountry(models.Model):
     Resolution is longest-prefix-match; there are no broad catch-alls, so an
     unmapped code resolves to no country (skipped) rather than a wrong one.
 
-    The default table is seeded from ``data/res.country.csv``, derived from the
-    ``airportsdata`` dataset (the same source the aerodrome data comes from) by
-    ``data/generate_icao_prefixes.py``.
+    The table is seeded from ``data/res.country.csv`` (the official Astana Air
+    location-indicator list, cross-checked against ``airportsdata`` by
+    ``data/generate_aerodrome_and_runway_csvs.py``). Because the country
+    records belong to ``base`` (loaded ``noupdate="1"``), Odoo skips the CSV on
+    plain ``-u flight`` upgrades; a version-pinned migration reloads it in
+    ``mode='init'`` to force the values through — see
+    ``migrations/18.0.1.5.2/post-migrate.py``.
     """
 
     _inherit = "res.country"
